@@ -10,6 +10,7 @@ import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Tenant {
   slug: string;
@@ -175,6 +176,7 @@ export default function TenantSelectorScreen() {
   const theme = useAppTheme();
   const { setTenant } = useTenantTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleTenantSelect = async (tenant: Tenant) => {
@@ -215,7 +217,7 @@ export default function TenantSelectorScreen() {
         {/* Header mejorado */}
         <Animated.View 
           entering={FadeInUp.duration(600).springify()}
-          style={styles.header}
+          style={[styles.header, { marginTop: insets.top + 16 }]}
         >
           <View style={styles.headerIcon}>
             <ThemedText style={styles.headerEmoji}>🏛️</ThemedText>
@@ -404,7 +406,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   header: {
-    marginTop: 40,
     marginBottom: 24,
     alignItems: "center",
     gap: 12,

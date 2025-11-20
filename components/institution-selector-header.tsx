@@ -1,17 +1,18 @@
 import { ThemedText } from "@/components/themed-text";
-import { useAppTheme } from "@/hooks/use-app-theme";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
-import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View, Dimensions } from "react-native";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import Animated, { 
-  useAnimatedStyle, 
-  useSharedValue, 
-  withSpring,
-  withSequence,
-  withTiming
+import { useRouter } from "expo-router";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withSequence,
+    withSpring,
+    withTiming
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -28,6 +29,7 @@ export function InstitutionSelectorHeader() {
   const theme = useAppTheme();
   const { currentTheme } = useTenantTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const scaleValue = useSharedValue(1);
   const glowValue = useSharedValue(0);
 
@@ -57,7 +59,7 @@ export function InstitutionSelectorHeader() {
   };
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, { paddingTop: insets.top + 8 }]}>
       <Animated.View style={[styles.container, animatedStyle]}>
         <Pressable
           onPress={handlePress}
@@ -86,17 +88,6 @@ export function InstitutionSelectorHeader() {
           }]}>
             {/* Avatar de institución con logo real */}
             <View style={styles.avatarContainer}>
-              {/* Fondo con gradiente sutil */}
-              <LinearGradient
-                colors={[
-                  `${theme.tenant.mainColor}25`,
-                  `${theme.tenant.mainColor}15`,
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFillObject}
-              />
-              
               {/* Logo de la institución */}
               <Image
                 source={{ uri: currentTheme?.logoUrl }}
@@ -133,7 +124,6 @@ export function InstitutionSelectorHeader() {
 const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
-    paddingTop: 8,
     paddingBottom: 4,
   },
   container: {
@@ -165,23 +155,24 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   avatarContainer: {
-    aspectRatio: 1,
-    width: '12%',
+    width: 42,
+    height: 42,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    overflow: 'hidden',
     flexShrink: 0,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    padding: 6,
     // Shadow para el avatar
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
   institutionLogo: {
-    width: '75%',
-    height: '75%',
+    width: 30,
+    height: 30,
   },
   statusDot: {
     aspectRatio: 1,

@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
@@ -28,8 +29,10 @@ function Navigation() {
 
 export default function RootLayout() {
   return (
-    <TenantThemeProvider>
-      <Navigation />
-    </TenantThemeProvider>
+    <SafeAreaProvider>
+      <TenantThemeProvider>
+        <Navigation />
+      </TenantThemeProvider>
+    </SafeAreaProvider>
   );
 }
