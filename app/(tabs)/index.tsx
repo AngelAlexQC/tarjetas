@@ -1,10 +1,10 @@
-import { Image } from "expo-image";
-import { StyleSheet, View, Pressable, ScrollView } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { BlurView } from "expo-blur";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 interface Tenant {
   slug: string;
