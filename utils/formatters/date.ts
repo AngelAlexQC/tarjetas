@@ -41,6 +41,73 @@ export const formatDate = (
 };
 
 /**
+ * Formatea una fecha de vencimiento para tarjeta (MM/AA)
+ * @param date - Fecha a formatear
+ * @param locale - Locale para el formateo
+ * @returns String formateado (ej: "12/25")
+ */
+export const formatCardExpiry = (
+  date: Date | string,
+  locale: string = 'es-ES'
+): string => {
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = String(dateObj.getFullYear()).slice(-2);
+    return `${month}/${year}`;
+  } catch (error) {
+    console.warn('Error formateando fecha de vencimiento:', error);
+    return '--/--';
+  }
+};
+
+/**
+ * Formatea fecha con estilo compacto y relativo (ej: "En 12 días", "Vence el 1 Dic")
+ * @param date - Fecha a formatear
+ * @param locale - Locale para el formateo
+ * @returns String formateado
+ */
+export const formatPaymentDueDate = (
+  date: Date | string,
+  locale: string = 'es-ES'
+): { relative: string; absolute: string } => {
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const today = new Date();
+    const diffTime = dateObj.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // Formato relativo
+    let relative: string;
+    if (diffDays < 0) {
+      relative = 'Vencido';
+    } else if (diffDays === 0) {
+      relative = 'Vence hoy';
+    } else if (diffDays === 1) {
+      relative = 'Vence mañana';
+    } else if (diffDays <= 7) {
+      relative = `En ${diffDays} días`;
+    } else if (diffDays <= 14) {
+      relative = `En ${diffDays} días`;
+    } else {
+      relative = `En ${diffDays} días`;
+    }
+
+    // Formato absoluto compacto
+    const formatter = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+    });
+    const absolute = `Vence el ${formatter.format(dateObj)}`;
+
+    return { relative, absolute };
+  } catch (error) {
+    console.warn('Error formateando fecha de pago:', error);
+    return { relative: 'Fecha inválida', absolute: 'Fecha inválida' };
+  }
+};
+
+/**
  * Formatea una fecha con hora
  * @param date - Fecha a formatear
  * @param options - Opciones de formateo

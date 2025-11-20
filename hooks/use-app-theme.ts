@@ -34,6 +34,9 @@ export function useAppTheme() {
     secondaryColor: currentTheme?.secondaryColor || '#2196F3',
     accentColor: currentTheme?.accentColor || '#FF9800',
     name: currentTheme?.name || 'App',
+    locale: currentTheme?.locale || 'en-US',
+    currency: currentTheme?.currency || 'USD',
+    currencySymbol: currentTheme?.currencySymbol || '$',
   };
 
   // Tokens semánticos según el modo

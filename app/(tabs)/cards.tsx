@@ -10,8 +10,9 @@ import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { formatCardExpiry } from "@/utils/formatters/date";
 import { LinearGradient } from "expo-linear-gradient";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
     Alert,
     Dimensions,
@@ -29,112 +30,148 @@ const CARD_WIDTH = SCREEN_WIDTH * 0.85;
 const CARD_HEIGHT = 200;
 const CARD_SPACING = 20;
 
+// Función para generar valores aleatorios
+const generateRandomBalance = () => Math.floor(Math.random() * 5000) + 500;
+const generateRandomCreditLimit = () => Math.floor(Math.random() * 8000) + 2000;
+
 // Datos de ejemplo - Una tarjeta de cada marca con tipo diferente
-const mockCards: Card[] = [
+const generateMockCards = (): Card[] => [
   // VISA - Crédito (todas las acciones)
-  {
-    id: "1",
-    cardNumber: "4532 1234 5678 9010",
-    cardHolder: "Juan Pérez",
-    expiryDate: "12/25",
-    balance: 2500.0,
-    cardType: "credit",
-    cardBrand: "visa",
-    status: "active",
-    creditLimit: 5000,
-    availableCredit: 2500,
-  },
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
+    return {
+      id: "1",
+      cardNumber: "•••• •••• •••• 9010",
+      cardHolder: "Juan Pérez",
+      expiryDate: "12/27",
+      balance: creditLimit - availableCredit,
+      cardType: "credit" as const,
+      cardBrand: "visa" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // hace 2 horas
+    };
+  })(),
   // Mastercard - Débito (sin diferir ni avances)
   {
     id: "2",
-    cardNumber: "5234 5678 9012 3456",
+    cardNumber: "•••• •••• •••• 3456",
     cardHolder: "María García",
-    expiryDate: "08/26",
-    balance: 1850.5,
-    cardType: "debit",
-    cardBrand: "mastercard",
-    status: "active",
+    expiryDate: "08/28",
+    balance: generateRandomBalance(),
+    cardType: "debit" as const,
+    cardBrand: "mastercard" as const,
+    status: "active" as const,
+    lastTransactionDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // hace 1 día
   },
   // American Express - Virtual (sin PIN)
-  {
-    id: "3",
-    cardNumber: "3782 822463 10005",
-    cardHolder: "Ana Martínez",
-    expiryDate: "06/25",
-    balance: 980.25,
-    cardType: "virtual",
-    cardBrand: "amex",
-    status: "active",
-    creditLimit: 3000,
-    availableCredit: 2019.75,
-  },
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
+    return {
+      id: "3",
+      cardNumber: "•••• •••••• •0005",
+      cardHolder: "Ana Martínez",
+      expiryDate: "06/29",
+      balance: creditLimit - availableCredit,
+      cardType: "virtual" as const,
+      cardBrand: "amex" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // hace 5 minutos
+    };
+  })(),
   // Discover - Crédito (todas las acciones)
-  {
-    id: "4",
-    cardNumber: "6011 1111 1111 1117",
-    cardHolder: "Pedro Sánchez",
-    expiryDate: "09/26",
-    balance: 3200.0,
-    cardType: "credit",
-    cardBrand: "discover",
-    status: "active",
-    creditLimit: 7500,
-    availableCredit: 4300,
-  },
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
+    return {
+      id: "4",
+      cardNumber: "•••• •••• •••• 1117",
+      cardHolder: "Pedro Sánchez",
+      expiryDate: "09/28",
+      balance: creditLimit - availableCredit,
+      cardType: "credit" as const,
+      cardBrand: "discover" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // hace 3 días
+    };
+  })(),
   // Diners Club - Débito (sin diferir ni avances)
   {
     id: "5",
-    cardNumber: "3056 9309 0259 04",
+    cardNumber: "•••• •••• •••• 9504",
     cardHolder: "Fernando Díaz",
-    expiryDate: "04/26",
-    balance: 4200.0,
-    cardType: "debit",
-    cardBrand: "diners",
-    status: "active",
+    expiryDate: "04/27",
+    balance: generateRandomBalance(),
+    cardType: "debit" as const,
+    cardBrand: "diners" as const,
+    status: "active" as const,
+    lastTransactionDate: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // hace 45 minutos
   },
   // JCB - Virtual (sin PIN)
-  {
-    id: "6",
-    cardNumber: "3530 1113 3330 0000",
-    cardHolder: "Yuki Tanaka",
-    expiryDate: "11/27",
-    balance: 1560.0,
-    cardType: "virtual",
-    cardBrand: "jcb",
-    status: "active",
-    creditLimit: 4000,
-    availableCredit: 2440,
-  },
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
+    return {
+      id: "6",
+      cardNumber: "•••• •••• •••• 0000",
+      cardHolder: "Yuki Tanaka",
+      expiryDate: "11/29",
+      balance: creditLimit - availableCredit,
+      cardType: "virtual" as const,
+      cardBrand: "jcb" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // hace 6 días
+    };
+  })(),
   // Maestro - Crédito (todas las acciones)
-  {
-    id: "7",
-    cardNumber: "6304 0000 0000 0000",
-    cardHolder: "Laura Fernández",
-    expiryDate: "04/26",
-    balance: 890.25,
-    cardType: "credit",
-    cardBrand: "maestro",
-    status: "active",
-    creditLimit: 2500,
-    availableCredit: 1609.75,
-  },
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
+    return {
+      id: "7",
+      cardNumber: "•••• •••• •••• 0000",
+      cardHolder: "Laura Fernández",
+      expiryDate: "04/28",
+      balance: creditLimit - availableCredit,
+      cardType: "credit" as const,
+      cardBrand: "maestro" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // hace 30 minutos
+    };
+  })(),
   // UnionPay - Débito (sin diferir ni avances)
   {
     id: "8",
-    cardNumber: "6200 0000 0000 0005",
+    cardNumber: "•••• •••• •••• 0005",
     cardHolder: "Wei Chen",
-    expiryDate: "07/28",
-    balance: 4750.5,
-    cardType: "debit",
-    cardBrand: "unionpay",
-    status: "active",
+    expiryDate: "07/29",
+    balance: generateRandomBalance(),
+    cardType: "debit" as const,
+    cardBrand: "unionpay" as const,
+    status: "active" as const,
+    lastTransactionDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // hace 2 días
   },
 ];
 
 export default function CardsScreen() {
   const theme = useAppTheme();
+  const styles = createStyles(theme);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  
+  // Generar tarjetas con valores aleatorios al inicio
+  const mockCards = useMemo(() => generateMockCards(), []);
   
   // Hook de acciones de tarjetas (solo si hay tarjeta activa)
   const activeCard = mockCards[activeCardIndex];
@@ -193,14 +230,7 @@ export default function CardsScreen() {
             height={CARD_HEIGHT} 
           />
           
-          <View style={styles.cardBlur}>
-            {/* Chip EMV - Posicionado según estándar ISO */}
-            {item.cardType !== 'virtual' && (
-              <View style={styles.cardChip}>
-                <ChipIcon width={50} height={40} />
-              </View>
-            )}
-
+          <View style={styles.cardContent}>
             {/* Header con tipo de tarjeta y logo */}
             <View style={styles.cardHeader}>
               <View style={styles.cardTypeBadge}>
@@ -217,30 +247,37 @@ export default function CardsScreen() {
               </View>
             </View>
 
-            {/* Espaciador flexible */}
-            <View style={{ flex: 1 }} />
+            {/* Sección media con chip */}
+            <View style={styles.cardMiddle}>
+              {item.cardType !== 'virtual' && (
+                <View style={styles.cardChipContainer}>
+                  <ChipIcon width={50} height={40} />
+                </View>
+              )}
+            </View>
 
-            {/* Número de tarjeta */}
-            <View style={styles.cardNumberContainer}>
+            {/* Sección inferior: Solo datos de tarjeta */}
+            <View style={styles.cardBottomSection}>
+              {/* Número de tarjeta */}
               <ThemedText
                 style={[styles.cardNumber, { color: cardDesign.textColor }]}
               >
                 {item.cardNumber}
               </ThemedText>
-            </View>
 
-            {/* Footer compacto con titular y fecha */}
-            <View style={styles.cardFooter}>
-              <ThemedText
-                style={[styles.cardHolder, { color: cardDesign.textColor }]}
-              >
-                {item.cardHolder}
-              </ThemedText>
-              <ThemedText
-                style={[styles.cardExpiry, { color: cardDesign.textColor }]}
-              >
-                {item.expiryDate}
-              </ThemedText>
+              {/* Nombre y fecha */}
+              <View style={styles.cardFooter}>
+                <ThemedText
+                  style={[styles.cardHolder, { color: cardDesign.textColor }]}
+                >
+                  {item.cardHolder}
+                </ThemedText>
+                <ThemedText
+                  style={[styles.cardExpiry, { color: cardDesign.textColor }]}
+                >
+                  {formatCardExpiry(item.expiryDate)}
+                </ThemedText>
+              </View>
             </View>
           </View>
         </LinearGradient>
@@ -255,7 +292,20 @@ export default function CardsScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header */}
-        <View style={styles.header}>
+        <Pressable 
+          style={styles.header}
+          onPress={() => Alert.alert(
+            'Cambiar Institución',
+            '¿Deseas cambiar a otra institución financiera?',
+            [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Cambiar', onPress: () => {
+                // Aquí iría la navegación al selector de tenant
+                Alert.alert('Selector', 'Navegando al selector de institución...');
+              }}
+            ]
+          )}
+        >
           <View style={[styles.logoContainer, { backgroundColor: theme.tenant.mainColor + '20' }]}>
             <ThemedText style={[styles.logoText, { color: theme.tenant.mainColor }]}>
               {theme.tenant.name.substring(0, 2).toUpperCase()}
@@ -264,7 +314,8 @@ export default function CardsScreen() {
           <ThemedText type="title" style={styles.title}>
             {theme.tenant.name}
           </ThemedText>
-        </View>
+          <ThemedText style={styles.headerChevron}>›</ThemedText>
+        </Pressable>
 
         {/* Carrusel de tarjetas */}
         <View style={styles.carouselContainer}>
@@ -289,16 +340,7 @@ export default function CardsScreen() {
         )}
       </View>
 
-        {/* Panel de información financiera */}
-        {activeCard && (
-          <CardFinancialInfo
-            card={activeCard}
-            locale="en-US"
-            currency="USD"
-          />
-        )}
-
-        {/* Carousel de acciones de tarjeta */}
+        {/* Acciones rápidas */}
         {activeCard && (
           <Animated.View 
             style={styles.actionsSection}
@@ -306,12 +348,6 @@ export default function CardsScreen() {
             exiting={FadeOut.duration(400)}
             layout={LinearTransition.springify().damping(25).stiffness(90)}
           >
-            <View style={styles.actionsSectionHeader}>
-              <ThemedText type="subtitle" style={styles.actionsSectionTitle}>
-                Acciones Rápidas
-              </ThemedText>
-              <View style={[styles.activeIndicator, { backgroundColor: theme.tenant.mainColor }]} />
-            </View>
             <CardActionsGrid
               cardType={activeCard.cardType}
               isLoading={cardActions.isLoading}
@@ -321,6 +357,18 @@ export default function CardsScreen() {
             />
           </Animated.View>
         )}
+
+        {/* Panel de información financiera - Componente actualizado con diseños específicos por tipo de tarjeta */}
+        {activeCard && (
+          <CardFinancialInfo 
+            card={activeCard}
+            locale={theme.tenant.locale}
+            currency={theme.tenant.currency}
+            currencySymbol={theme.tenant.currencySymbol}
+          />
+        )}
+
+
 
         {/* Botón agregar a Apple Wallet */}
         <Animated.View 
@@ -336,43 +384,49 @@ export default function CardsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.create({
   container: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: 16,
   },
   header: {
-    paddingTop: 60,
-    paddingBottom: 16,
+    paddingTop: 40,
+    paddingBottom: 8,
     paddingHorizontal: 20,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 12,
+    gap: 10,
   },
   logoContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   logoText: {
     fontSize: 18,
     fontWeight: "700",
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
+  },
+  headerChevron: {
+    fontSize: 28,
+    fontWeight: '600',
+    opacity: 0.4,
+    marginLeft: 4,
   },
   carouselContainer: {
-    height: CARD_HEIGHT + 40,
-    marginBottom: 10,
+    height: CARD_HEIGHT + 30,
+    marginBottom: 12,
   },
   carouselContent: {
-    paddingVertical: 20,
+    paddingVertical: 15,
     alignItems: "center",
   },
   cardContainer: {
@@ -390,20 +444,38 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 10,
   },
-  cardBlur: {
+  cardContent: {
     flex: 1,
-    padding: 18,
-    justifyContent: "flex-start",
-    position: "relative",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 8,
+    padding: 18,
+    paddingBottom: 0,
+  },
+  cardMiddle: {
+    flex: 1,
+    justifyContent: "center",
+    paddingLeft: 18,
+  },
+  cardChipContainer: {
+    marginLeft: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  cardBottomSection: {
+    paddingHorizontal: 18,
+    paddingTop: 12,
+    gap: 8,
   },
   cardTypeBadge: {
-    backgroundColor: "rgba(255, 255, 255, 0.25)",
+    backgroundColor: theme.isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.25)",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
@@ -415,12 +487,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   cardBrandLogoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.95)',
     borderRadius: 8,
     padding: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -428,23 +500,32 @@ const styles = StyleSheet.create({
   },
   cardChip: {
     position: "absolute",
-    top: 60,
+    top: 70,
     left: 24,
     width: 50,
     height: 40,
-    shadowColor: "#000",
+    shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3,
     elevation: 5,
   },
   cardNumberContainer: {
-    marginBottom: 8,
+    marginBottom: 16,
+    alignItems: 'flex-end',
   },
   cardNumber: {
     fontSize: 18,
     fontWeight: "600",
     letterSpacing: 2,
+    textAlign: 'right',
+  },
+  cardDataSection: {
+    position: 'absolute',
+    bottom: 75,
+    left: 18,
+    right: 18,
+    gap: 8,
   },
   cardFooter: {
     flexDirection: "row",
@@ -462,9 +543,197 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 0.5,
   },
+  // Panel de balance en la pantalla principal
+  balancePanel: {
+    marginHorizontal: 20,
+    marginTop: 0,
+    marginBottom: 8,
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: theme.isDark ? 'rgba(0, 122, 255, 0.12)' : 'rgba(0, 122, 255, 0.06)',
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 16,
+  },
+  balanceItem: {
+    flex: 1,
+  },
+  creditItem: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  creditSlider: {
+    width: '100%',
+    height: 20,
+    marginTop: 4,
+  },
+  creditLimitText: {
+    fontSize: 10,
+    fontWeight: '600',
+    opacity: 0.5,
+    marginTop: 2,
+  },
+  balanceLabel: {
+    fontSize: 9,
+    fontWeight: '600',
+    opacity: 0.6,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 3,
+  },
+  lastTransactionText: {
+    fontSize: 10,
+    fontWeight: '600',
+    opacity: 0.5,
+    letterSpacing: 0.2,
+  },
+  balanceAmount: {
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+  },
+  // Estilos para panel de pagos compacto
+  paymentPanel: {
+    marginHorizontal: 20,
+    marginTop: 0,
+    marginBottom: 8,
+    padding: 6,
+    borderRadius: 10,
+    backgroundColor: theme.isDark ? 'rgba(0, 122, 255, 0.15)' : 'rgba(0, 122, 255, 0.08)',
+  },
+  compactPaymentGrid: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  compactPaymentCol: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compactPaymentLabel: {
+    fontSize: 8,
+    fontWeight: '600',
+    opacity: 0.5,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+    marginBottom: 2,
+  },
+  compactPaymentValue: {
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  compactPaymentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  compactPaymentInfo: {
+    flex: 1,
+  },
+  compactPaymentTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: -0.2,
+    marginBottom: 4,
+    opacity: 0.7,
+  },
+  compactAmountsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  compactAmountItem: {
+    flex: 1,
+  },
+  compactAmountLabel: {
+    fontSize: 8,
+    fontWeight: '600',
+    opacity: 0.5,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 1,
+  },
+  compactAmountValue: {
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: -0.3,
+  },
+  compactAmountDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+    opacity: 0.3,
+  },
+  paymentPanelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  paymentIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: theme.isDark ? 'rgba(0, 122, 255, 0.25)' : 'rgba(0, 122, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paymentIcon: {
+    fontSize: 20,
+  },
+  paymentInfo: {
+    flex: 1,
+  },
+  paymentTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: -0.2,
+    marginBottom: 6,
+  },
+  paymentDateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  paymentSubtitle: {
+    fontSize: 11,
+    fontWeight: '500',
+    opacity: 0.6,
+    flex: 1,
+  },
+  paymentAmounts: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  paymentAmountCard: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.5)',
+    gap: 4,
+  },
+  paymentAmountCardHighlight: {
+    backgroundColor: theme.isDark ? 'rgba(52, 199, 89, 0.2)' : 'rgba(52, 199, 89, 0.1)',
+  },
+  paymentAmountLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    opacity: 0.6,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  paymentAmountValue: {
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
   actionsSection: {
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 0,
+    marginBottom: 8,
   },
   actionsSectionHeader: {
     flexDirection: 'row',

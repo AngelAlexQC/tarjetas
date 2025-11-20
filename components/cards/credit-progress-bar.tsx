@@ -4,6 +4,7 @@
  */
 
 import { ThemedText } from '@/components/themed-text';
+import { useAppTheme } from '@/hooks/use-app-theme';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -39,6 +40,7 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
   showLabels = true,
   animated = true,
 }) => {
+  const theme = useAppTheme();
   const percentage = Math.min((used / total) * 100, 100);
   const progressWidth = useSharedValue(0);
 
@@ -99,13 +101,13 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
         >
           <View style={styles.labelItem}>
             <ThemedText style={styles.labelValue}>
-              ${used.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {`${theme.tenant.currencySymbol}${used.toLocaleString(theme.tenant.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             </ThemedText>
             <ThemedText style={styles.labelText}>usado</ThemedText>
           </View>
           <View style={[styles.labelItem, styles.labelRight]}>
             <ThemedText style={styles.labelValue}>
-              ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {`${theme.tenant.currencySymbol}${total.toLocaleString(theme.tenant.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             </ThemedText>
             <ThemedText style={styles.labelText}>total</ThemedText>
           </View>

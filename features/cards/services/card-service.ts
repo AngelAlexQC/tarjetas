@@ -11,6 +11,7 @@ export interface Card {
   status: 'active' | 'blocked' | 'expired' | 'pending';
   creditLimit?: number;
   availableCredit?: number;
+  lastTransactionDate?: string;
 }
 
 export interface CardActionResult {
@@ -43,7 +44,7 @@ class CardService {
     
     return {
       success: true,
-      message: `Compra de $${amount} diferida a ${months} meses`,
+      message: `Compra diferida a ${months} meses`,
       data: {
         monthlyPayment: (amount / months).toFixed(2),
         totalInterest: (amount * 0.02 * months).toFixed(2),
@@ -82,7 +83,7 @@ class CardService {
     
     return {
       success: true,
-      message: `Avance de $${amount} aprobado`,
+      message: `Avance aprobado`,
       data: {
         fee: (amount * 0.05).toFixed(2),
         total: (amount * 1.05).toFixed(2),
