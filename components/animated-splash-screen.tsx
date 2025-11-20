@@ -155,21 +155,21 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
       1200, // Empieza antes para overlap
       withRepeat(
         withSequence(
-          withTiming(1, { duration: 75, easing: Easing.bezier(0.33, 0, 0.67, 1) }), // Ease-out
-          withTiming(-0.8, { duration: 75, easing: Easing.bezier(0.33, 0, 0.67, 1) })
+          withTiming(1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) }),
+          withTiming(-1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) })
         ),
         -1,
         true
       )
     );
     
-    // Aleteo de alas inferiores (desfasado 20ms)
+    // Aleteo de alas inferiores (desfasado ligeramente para movimiento natural)
     wingFlapBottomValue.value = withDelay(
-      1220,
+      1250,
       withRepeat(
         withSequence(
-          withTiming(-0.7, { duration: 75, easing: Easing.bezier(0.33, 0, 0.67, 1) }),
-          withTiming(0.9, { duration: 75, easing: Easing.bezier(0.33, 0, 0.67, 1) })
+          withTiming(-1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) }),
+          withTiming(1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) })
         ),
         -1,
         true
@@ -220,61 +220,49 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
   
   // Estilos animados para alas superiores con más naturalidad
   const topLeftWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapTop.value, [-1, 0, 1], [-30, 0, 18]);
-    const rotateX = interpolate(wingFlapTop.value, [-1, 0, 1], [5, 0, -5]);
+    const rotateZ = interpolate(wingFlapTop.value, [-1, 0, 1], [-8, 0, 12]);
+    const scaleX = interpolate(wingFlapTop.value, [-1, 0, 1], [1.05, 1, 0.95]);
     return {
+      transformOrigin: '150px 150px',
       transform: [
-        { translateX: 150 },
-        { translateY: 150 },
         { rotateZ: `${rotateZ}deg` },
-        { rotateX: `${rotateX}deg` },
-        { translateX: -150 },
-        { translateY: -150 },
+        { scaleX },
       ],
     };
   });
   
   const topRightWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapTop.value, [-1, 0, 1], [18, 0, -30]);
-    const rotateX = interpolate(wingFlapTop.value, [-1, 0, 1], [-5, 0, 5]);
+    const rotateZ = interpolate(wingFlapTop.value, [-1, 0, 1], [12, 0, -8]);
+    const scaleX = interpolate(wingFlapTop.value, [-1, 0, 1], [0.95, 1, 1.05]);
     return {
+      transformOrigin: '150px 150px',
       transform: [
-        { translateX: 150 },
-        { translateY: 150 },
         { rotateZ: `${rotateZ}deg` },
-        { rotateX: `${rotateX}deg` },
-        { translateX: -150 },
-        { translateY: -150 },
+        { scaleX },
       ],
     };
   });
   
   const bottomLeftWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapBottom.value, [-1, 0, 1], [22, 0, -18]);
-    const rotateX = interpolate(wingFlapBottom.value, [-1, 0, 1], [-4, 0, 4]);
+    const rotateZ = interpolate(wingFlapBottom.value, [-1, 0, 1], [-10, 0, 15]);
+    const scaleX = interpolate(wingFlapBottom.value, [-1, 0, 1], [1.08, 1, 0.92]);
     return {
+      transformOrigin: '150px 150px',
       transform: [
-        { translateX: 150 },
-        { translateY: 150 },
         { rotateZ: `${rotateZ}deg` },
-        { rotateX: `${rotateX}deg` },
-        { translateX: -150 },
-        { translateY: -150 },
+        { scaleX },
       ],
     };
   });
   
   const bottomRightWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapBottom.value, [-1, 0, 1], [-18, 0, 22]);
-    const rotateX = interpolate(wingFlapBottom.value, [-1, 0, 1], [4, 0, -4]);
+    const rotateZ = interpolate(wingFlapBottom.value, [-1, 0, 1], [15, 0, -10]);
+    const scaleX = interpolate(wingFlapBottom.value, [-1, 0, 1], [0.92, 1, 1.08]);
     return {
+      transformOrigin: '150px 150px',
       transform: [
-        { translateX: 150 },
-        { translateY: 150 },
         { rotateZ: `${rotateZ}deg` },
-        { rotateX: `${rotateX}deg` },
-        { translateX: -150 },
-        { translateY: -150 },
+        { scaleX },
       ],
     };
   });
