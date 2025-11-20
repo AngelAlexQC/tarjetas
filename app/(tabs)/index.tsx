@@ -208,16 +208,19 @@ export default function TenantSelectorScreen() {
   const countries = Object.keys(groupedTenants).sort();
 
   return (
-    <ScrollView 
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-    >
-      <ThemedView style={styles.content}>
+    <ThemedView style={styles.container}>
+      <View style={{ paddingTop: insets.top }} />
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.contentWrapper}>
         {/* Header mejorado */}
         <Animated.View 
           entering={FadeInUp.duration(600).springify()}
-          style={[styles.header, { marginTop: insets.top + 16 }]}
+          style={styles.header}
         >
           <View style={styles.headerIcon}>
             <ThemedText style={styles.headerEmoji}>🏛️</ThemedText>
@@ -391,8 +394,9 @@ export default function TenantSelectorScreen() {
             </Animated.View>
           )}
         </View>
-      </ThemedView>
-    </ScrollView>
+      </View>
+      </ScrollView>
+    </ThemedView>
   );
 }
 
@@ -401,9 +405,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    paddingBottom: 40,
+  },
+  contentWrapper: {
     flex: 1,
     padding: 20,
-    paddingBottom: 40,
   },
   header: {
     marginBottom: 24,
