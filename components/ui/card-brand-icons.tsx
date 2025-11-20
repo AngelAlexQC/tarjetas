@@ -1,13 +1,13 @@
 import {
-  VisaLogo,
-  MastercardLogo,
-  AmexLogo,
-  DiscoverLogo,
-  DinersLogo,
-  JcbLogo,
-  MaestroLogo,
-  UnionpayLogo,
-  GenericCardLogo,
+    AmexLogo,
+    DinersLogo,
+    DiscoverLogo,
+    GenericCardLogo,
+    JcbLogo,
+    MaestroLogo,
+    MastercardLogo,
+    UnionpayLogo,
+    VisaLogo,
 } from "react-native-payment-card-icons";
 
 export interface BrandIconProps {

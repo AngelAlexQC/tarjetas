@@ -2,6 +2,7 @@ import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
+import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
 import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
@@ -24,8 +25,9 @@ const CARD_WIDTH = SCREEN_WIDTH * 0.85;
 const CARD_HEIGHT = 200;
 const CARD_SPACING = 20;
 
-// Datos de ejemplo para las tarjetas
+// Datos de ejemplo - Una tarjeta de cada marca con tipo diferente
 const mockCards: Card[] = [
+  // VISA - Crédito (todas las acciones)
   {
     id: "1",
     cardNumber: "4532 1234 5678 9010",
@@ -38,6 +40,7 @@ const mockCards: Card[] = [
     creditLimit: 5000,
     availableCredit: 2500,
   },
+  // Mastercard - Débito (sin diferir ni avances)
   {
     id: "2",
     cardNumber: "5234 5678 9012 3456",
@@ -48,32 +51,22 @@ const mockCards: Card[] = [
     cardBrand: "mastercard",
     status: "active",
   },
+  // American Express - Virtual (sin PIN)
   {
     id: "3",
-    cardNumber: "4111 1111 1111 1111",
-    cardHolder: "Carlos Rodríguez",
-    expiryDate: "03/27",
-    balance: 5320.75,
-    cardType: "virtual",
-    cardBrand: "visa",
-    status: "active",
-    creditLimit: 10000,
-    availableCredit: 4679.25,
-  },
-  {
-    id: "4",
     cardNumber: "3782 822463 10005",
     cardHolder: "Ana Martínez",
     expiryDate: "06/25",
     balance: 980.25,
-    cardType: "credit",
+    cardType: "virtual",
     cardBrand: "amex",
     status: "active",
     creditLimit: 3000,
     availableCredit: 2019.75,
   },
+  // Discover - Crédito (todas las acciones)
   {
-    id: "5",
+    id: "4",
     cardNumber: "6011 1111 1111 1117",
     cardHolder: "Pedro Sánchez",
     expiryDate: "09/26",
@@ -84,39 +77,53 @@ const mockCards: Card[] = [
     creditLimit: 7500,
     availableCredit: 4300,
   },
+  // Diners Club - Débito (sin diferir ni avances)
+  {
+    id: "5",
+    cardNumber: "3056 9309 0259 04",
+    cardHolder: "Fernando Díaz",
+    expiryDate: "04/26",
+    balance: 4200.0,
+    cardType: "debit",
+    cardBrand: "diners",
+    status: "active",
+  },
+  // JCB - Virtual (sin PIN)
   {
     id: "6",
     cardNumber: "3530 1113 3330 0000",
     cardHolder: "Yuki Tanaka",
     expiryDate: "11/27",
     balance: 1560.0,
-    cardType: "credit",
+    cardType: "virtual",
     cardBrand: "jcb",
     status: "active",
     creditLimit: 4000,
     availableCredit: 2440,
   },
+  // Maestro - Crédito (todas las acciones)
   {
     id: "7",
     cardNumber: "6304 0000 0000 0000",
     cardHolder: "Laura Fernández",
     expiryDate: "04/26",
     balance: 890.25,
-    cardType: "debit",
+    cardType: "credit",
     cardBrand: "maestro",
     status: "active",
+    creditLimit: 2500,
+    availableCredit: 1609.75,
   },
+  // UnionPay - Débito (sin diferir ni avances)
   {
     id: "8",
     cardNumber: "6200 0000 0000 0005",
     cardHolder: "Wei Chen",
     expiryDate: "07/28",
     balance: 4750.5,
-    cardType: "credit",
+    cardType: "debit",
     cardBrand: "unionpay",
     status: "active",
-    creditLimit: 8000,
-    availableCredit: 3249.5,
   },
 ];
 
@@ -175,6 +182,13 @@ export default function CardsScreen() {
           end={{ x: 1, y: 1 }}
           style={[styles.card, { opacity: isActive ? 1 : 0.6 }]}
         >
+          {/* Patrón de fondo */}
+          <CardBackgroundPattern 
+            brand={item.cardBrand} 
+            width={CARD_WIDTH} 
+            height={CARD_HEIGHT} 
+          />
+          
           <View style={styles.cardBlur}>
             {/* Header con tipo de tarjeta y logo */}
             <View style={styles.cardHeader}>
