@@ -136,141 +136,101 @@ interface DragonflyProps {
 }
 
 const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
-  // Animaciones de aleteo continuo - más natural y fluido
-  const wingFlapTop = useSharedValue(0);
-  const wingFlapBottom = useSharedValue(0);
-  const bodyHover = useSharedValue(0);
-  const wingShimmer = useSharedValue(0);
-  const iridescence = useSharedValue(0);
+  // Usar una única animación maestra para sincronizar todo
+  const masterAnimation = useSharedValue(0);
   
   useEffect(() => {
-    const wingFlapTopValue = wingFlapTop;
-    const wingFlapBottomValue = wingFlapBottom;
-    const bodyHoverValue = bodyHover;
-    const wingShimmerValue = wingShimmer;
-    const iridescenceValue = iridescence;
-
-    // Aleteo continuo de alas superiores - LOOP INFINITO (empieza antes, overlapping)
-    wingFlapTopValue.value = withDelay(
-      1200, // Empieza antes para overlap
-      withRepeat(
-        withSequence(
-          withTiming(1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) }),
-          withTiming(-1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) })
-        ),
-        -1,
-        true
-      )
-    );
-    
-    // Aleteo de alas inferiores (desfasado ligeramente para movimiento natural)
-    wingFlapBottomValue.value = withDelay(
-      1250,
-      withRepeat(
-        withSequence(
-          withTiming(-1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) }),
-          withTiming(1, { duration: 100, easing: Easing.bezier(0.4, 0, 0.2, 1) })
-        ),
-        -1,
-        true
-      )
-    );
-    
-    // Floating suave del cuerpo - empieza antes
-    bodyHoverValue.value = withDelay(
-      1300,
-      withRepeat(
-        withSequence(
-          withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.sin) }),
-          withTiming(-1, { duration: 1000, easing: Easing.inOut(Easing.sin) })
-        ),
-        -1,
-        true
-      )
-    );
-    
-    // Iridiscencia dinámica - más rápida y fluida
-    iridescenceValue.value = withDelay(
-      1300,
+    // Animación maestra única que controla todo sincronizadamente
+    masterAnimation.value = withDelay(
+      1200,
       withRepeat(
         withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
         -1,
         true
       )
     );
-    
-    // Shimmer que recorre las alas - empieza antes
-    wingShimmerValue.value = withDelay(
-      1400,
-      withRepeat(
-        withSequence(
-          withTiming(1, { duration: 500 }),
-          withTiming(0.4, { duration: 500 })
-        ),
-        -1,
-        true
-      )
-    );
-  }, [wingFlapTop, wingFlapBottom, bodyHover, wingShimmer, iridescence]);
+  }, [masterAnimation]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(progress.value, [0.2, 0.5, 1], [0, 1, 1]);
     return { opacity };
   });
   
-  // Estilos animados para alas superiores con más naturalidad
+  // Estilos animados para alas superiores - sincronizados con masterAnimation
   const topLeftWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapTop.value, [-1, 0, 1], [-8, 0, 12]);
-    const scaleX = interpolate(wingFlapTop.value, [-1, 0, 1], [1.05, 1, 0.95]);
+    // Ciclo rápido de aleteo usando la animación maestra
+    const wingCycle = interpolate(masterAnimation.value, [0, 0.25, 0.5, 0.75, 1], [-1, 1, -1, 1, -1]);
+    const rotateZ = interpolate(wingCycle, [-1, 0, 1], [-8, 0, 12]);
+    const scaleX = interpolate(wingCycle, [-1, 0, 1], [1.05, 1, 0.95]);
     return {
-      transformOrigin: '150px 150px',
+      // Rotar alrededor del punto (150, 150) - base del ala
       transform: [
-        { rotateZ: `${rotateZ}deg` },
+        { translateX: 150 },
+        { translateY: 150 },
+        { rotate: `${rotateZ}deg` },
         { scaleX },
+        { translateX: -150 },
+        { translateY: -150 },
       ],
     };
   });
   
   const topRightWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapTop.value, [-1, 0, 1], [12, 0, -8]);
-    const scaleX = interpolate(wingFlapTop.value, [-1, 0, 1], [0.95, 1, 1.05]);
+    const wingCycle = interpolate(masterAnimation.value, [0, 0.25, 0.5, 0.75, 1], [-1, 1, -1, 1, -1]);
+    const rotateZ = interpolate(wingCycle, [-1, 0, 1], [12, 0, -8]);
+    const scaleX = interpolate(wingCycle, [-1, 0, 1], [0.95, 1, 1.05]);
     return {
-      transformOrigin: '150px 150px',
+      // Rotar alrededor del punto (150, 150) - base del ala
       transform: [
-        { rotateZ: `${rotateZ}deg` },
+        { translateX: 150 },
+        { translateY: 150 },
+        { rotate: `${rotateZ}deg` },
         { scaleX },
+        { translateX: -150 },
+        { translateY: -150 },
       ],
     };
   });
   
   const bottomLeftWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapBottom.value, [-1, 0, 1], [-10, 0, 15]);
-    const scaleX = interpolate(wingFlapBottom.value, [-1, 0, 1], [1.08, 1, 0.92]);
+    // Desfase sutil (offset de 0.125) para naturalidad
+    const wingCycle = interpolate(masterAnimation.value, [0, 0.125, 0.375, 0.625, 0.875, 1], [1, -1, 1, -1, 1, -1]);
+    const rotateZ = interpolate(wingCycle, [-1, 0, 1], [-10, 0, 15]);
+    const scaleX = interpolate(wingCycle, [-1, 0, 1], [1.08, 1, 0.92]);
     return {
-      transformOrigin: '150px 150px',
+      // Rotar alrededor del punto (150, 150) - base del ala
       transform: [
-        { rotateZ: `${rotateZ}deg` },
+        { translateX: 150 },
+        { translateY: 150 },
+        { rotate: `${rotateZ}deg` },
         { scaleX },
+        { translateX: -150 },
+        { translateY: -150 },
       ],
     };
   });
   
   const bottomRightWingStyle = useAnimatedStyle(() => {
-    const rotateZ = interpolate(wingFlapBottom.value, [-1, 0, 1], [15, 0, -10]);
-    const scaleX = interpolate(wingFlapBottom.value, [-1, 0, 1], [0.92, 1, 1.08]);
+    const wingCycle = interpolate(masterAnimation.value, [0, 0.125, 0.375, 0.625, 0.875, 1], [1, -1, 1, -1, 1, -1]);
+    const rotateZ = interpolate(wingCycle, [-1, 0, 1], [15, 0, -10]);
+    const scaleX = interpolate(wingCycle, [-1, 0, 1], [0.92, 1, 1.08]);
     return {
-      transformOrigin: '150px 150px',
+      // Rotar alrededor del punto (150, 150) - base del ala
       transform: [
-        { rotateZ: `${rotateZ}deg` },
+        { translateX: 150 },
+        { translateY: 150 },
+        { rotate: `${rotateZ}deg` },
         { scaleX },
+        { translateX: -150 },
+        { translateY: -150 },
       ],
     };
   });
   
-  // Breathing suave del cuerpo - sin movimiento de posición
+  // Breathing suave del cuerpo - sincronizado con la misma animación maestra
   const bodyStyle = useAnimatedStyle(() => {
-    // Solo breathing sutil, sin translateY ni rotateZ
-    const scaleY = interpolate(bodyHover.value, [-1, 0, 1], [0.99, 1, 1.01]);
+    // Usa la animación maestra directamente para sincronización perfecta
+    const scaleY = interpolate(masterAnimation.value, [0, 0.5, 1], [0.99, 1.01, 0.99]);
     return {
       transform: [
         { scaleY },
@@ -278,11 +238,10 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
     };
   });
   
-  // Shimmer e iridiscencia dinámica
+  // Shimmer e iridiscencia sincronizada
   const wingOpacityStyle = useAnimatedStyle(() => {
-    const baseOpacity = interpolate(wingShimmer.value, [0, 1], [0.85, 0.98]);
-    // Efecto iridiscente integrado
-    const iridescenceEffect = interpolate(iridescence.value, [0, 0.5, 1], [1, 0.9, 1]);
+    const baseOpacity = interpolate(masterAnimation.value, [0, 0.5, 1], [0.85, 0.98, 0.85]);
+    const iridescenceEffect = interpolate(masterAnimation.value, [0, 0.33, 0.66, 1], [1, 0.9, 1, 0.9]);
     return { opacity: baseOpacity * iridescenceEffect };
   });
 
