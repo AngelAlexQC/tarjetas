@@ -4,15 +4,8 @@
  */
 
 import { useAppTheme } from '@/hooks/use-app-theme';
-import React, { useEffect, useState } from 'react';
-import { TextStyle } from 'react-native';
-import Animated, {
-    Easing,
-    runOnJS,
-    useDerivedValue,
-    useSharedValue,
-    withTiming,
-} from 'react-native-reanimated';
+import React, { useMemo } from 'react';
+import { Text, TextStyle } from 'react-native';
 
 export interface AnimatedNumberProps {
   value: number;
@@ -22,6 +15,7 @@ export interface AnimatedNumberProps {
   decimals?: number;
   duration?: number;
   locale?: string;
+  currency?: string;
 }
 
 export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
@@ -30,39 +24,35 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   prefix = '',
   suffix = '',
   decimals = 2,
-  duration = 800,
   locale = 'en-US',
+  currency,
 }) => {
   const theme = useAppTheme();
-  const [displayText, setDisplayText] = useState(
-    `${prefix}${value.toLocaleString(locale, {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    })}${suffix}`
-  );
-
-  const animatedValue = useSharedValue(value);
-
-  useEffect(() => {
-    animatedValue.value = withTiming(value, {
-      duration,
-      easing: Easing.out(Easing.cubic),
-    });
-  }, [value, duration, animatedValue]);
-
-  // Actualizar el texto en cada frame de la animación
-  useDerivedValue(() => {
-    const formattedValue = animatedValue.value.toLocaleString(locale, {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    });
-    
-    runOnJS(setDisplayText)(`${prefix}${formattedValue}${suffix}`);
-  });
+  
+  // Formatear el valor
+  const displayText = useMemo(() => {
+    try {
+      if (currency) {
+        return new Intl.NumberFormat(locale, {
+          style: 'currency',
+          currency,
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        }).format(value);
+      }
+      return `${prefix}${value.toLocaleString(locale, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}${suffix}`;
+    } catch (error) {
+      console.warn('Error formateando número:', error);
+      return `${prefix}${value.toFixed(decimals)}${suffix}`;
+    }
+  }, [value, currency, locale, decimals, prefix, suffix]);
 
   return (
-    <Animated.Text style={[{ color: theme.colors.text }, style]}>
+    <Text style={[{ color: theme.colors.text }, style]}>
       {displayText}
-    </Animated.Text>
+    </Text>
   );
 };

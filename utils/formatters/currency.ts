@@ -74,32 +74,83 @@ export const formatAmount = (
 
 /**
  * Formatea un número compacto (ej: 1.2K, 1.5M)
+ * Compatible con React Native/Hermes que no soporta notation: 'compact'
  * @param amount - Cantidad a formatear
- * @param locale - Locale a usar
- * @returns String compacto (ej: "1.2K")
+ * @param options - Opciones de formateo
+ * @returns String compacto (ej: "1.2K", "$1.5M")
  */
 export const formatCompactCurrency = (
   amount: number,
-  locale: string = 'en-US'
+  options: {
+    locale?: string;
+    currency?: string;
+    showCurrencySymbol?: boolean;
+    maximumFractionDigits?: number;
+  } = {}
 ): string => {
+  const {
+    locale = 'en-US',
+    currency = 'USD',
+    showCurrencySymbol = false,
+    maximumFractionDigits = 1,
+  } = options;
+
   try {
-    const formatter = new Intl.NumberFormat(locale, {
-      notation: 'compact',
-      compactDisplay: 'short',
-      maximumFractionDigits: 1,
+    const absAmount = Math.abs(amount);
+    const sign = amount < 0 ? '-' : '';
+    let value: number;
+    let suffix: string;
+
+    // Determinar el divisor y sufijo
+    if (absAmount >= 1_000_000_000_000) {
+      value = absAmount / 1_000_000_000_000;
+      suffix = 'T';
+    } else if (absAmount >= 1_000_000_000) {
+      value = absAmount / 1_000_000_000;
+      suffix = 'B';
+    } else if (absAmount >= 1_000_000) {
+      value = absAmount / 1_000_000;
+      suffix = 'M';
+    } else if (absAmount >= 1_000) {
+      value = absAmount / 1_000;
+      suffix = 'K';
+    } else {
+      // Números menores a 1000
+      if (showCurrencySymbol) {
+        return formatCurrency(amount, { locale, currency, maximumFractionDigits });
+      }
+      return amount.toLocaleString(locale, { 
+        minimumFractionDigits: 0,
+        maximumFractionDigits 
+      });
+    }
+
+    // Formatear el número con decimales
+    const formattedValue = value.toLocaleString(locale, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits,
     });
 
-    return formatter.format(amount);
+    // Agregar símbolo de moneda si se requiere
+    if (showCurrencySymbol) {
+      const symbol = getCurrencySymbol(currency, locale);
+      return `${sign}${symbol}${formattedValue}${suffix}`;
+    }
+
+    return `${sign}${formattedValue}${suffix}`;
   } catch (error) {
     console.warn('Error formateando moneda compacta:', error);
     
-    // Fallback manual
-    if (amount >= 1_000_000) {
-      return `${(amount / 1_000_000).toFixed(1)}M`;
-    } else if (amount >= 1_000) {
-      return `${(amount / 1_000).toFixed(1)}K`;
+    // Fallback simple
+    const absAmount = Math.abs(amount);
+    const sign = amount < 0 ? '-' : '';
+    
+    if (absAmount >= 1_000_000) {
+      return `${sign}${(absAmount / 1_000_000).toFixed(1)}M`;
+    } else if (absAmount >= 1_000) {
+      return `${sign}${(absAmount / 1_000).toFixed(1)}K`;
     }
-    return amount.toString();
+    return `${sign}${absAmount}`;
   }
 };
 

@@ -7,12 +7,11 @@ import { ThemedText } from '@/components/themed-text';
 import { AnimatedNumber } from '@/components/ui/animated-number';
 import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { formatRelativeDate } from '@/utils/formatters/date';
+import { formatCurrency } from '@/utils/formatters/currency';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
-import { StatusBadge } from './status-badge';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -158,7 +157,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
         <AnimatedNumber 
           value={balance}
           style={styles.heroAmount}
-          prefix={currencySymbol}
+          currency={currency}
           decimals={2}
           duration={1000}
           locale={locale}
@@ -173,12 +172,12 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <ThemedText style={styles.statValue}>
-              {new Intl.NumberFormat(locale, { 
-                style: 'currency', 
-                currency, 
-                notation: 'compact',
-                maximumFractionDigits: 1 
-              }).format(availableCredit)}
+              {formatCurrency(availableCredit, {
+                locale,
+                currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
             </ThemedText>
             <ThemedText style={styles.statLabel}>disponible</ThemedText>
           </View>
@@ -197,24 +196,24 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <ThemedText style={styles.statValue}>
-              {new Intl.NumberFormat(locale, { 
-                style: 'currency', 
-                currency, 
-                notation: 'compact',
-                maximumFractionDigits: 1 
-              }).format(todaySpent)}
+              {formatCurrency(todaySpent, {
+                locale,
+                currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
             </ThemedText>
             <ThemedText style={styles.statLabel}>hoy</ThemedText>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <ThemedText style={styles.statValue}>
-              {new Intl.NumberFormat(locale, { 
-                style: 'currency', 
-                currency, 
-                notation: 'compact',
-                maximumFractionDigits: 1 
-              }).format(dailyPurchaseLimit)}
+              {formatCurrency(dailyPurchaseLimit, {
+                locale,
+                currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
             </ThemedText>
             <ThemedText style={styles.statLabel}>límite diario</ThemedText>
           </View>
@@ -223,12 +222,12 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <ThemedText style={styles.statValue}>
-              {new Intl.NumberFormat(locale, { 
-                style: 'currency', 
-                currency, 
-                notation: 'compact',
-                maximumFractionDigits: 1 
-              }).format(spendingLimit)}
+              {formatCurrency(spendingLimit, {
+                locale,
+                currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
             </ThemedText>
             <ThemedText style={styles.statLabel}>límite</ThemedText>
           </View>

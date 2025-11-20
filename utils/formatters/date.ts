@@ -42,7 +42,7 @@ export const formatDate = (
 
 /**
  * Formatea una fecha de vencimiento para tarjeta (MM/AA)
- * @param date - Fecha a formatear
+ * @param date - Fecha a formatear (puede ser Date, string ISO, o formato "MM/YY")
  * @param locale - Locale para el formateo
  * @returns String formateado (ej: "12/25")
  */
@@ -51,7 +51,31 @@ export const formatCardExpiry = (
   locale: string = 'es-ES'
 ): string => {
   try {
+    // Si ya está en formato MM/YY o MM/YYYY, devolverlo tal cual
+    if (typeof date === 'string') {
+      // Verificar si ya tiene el formato correcto MM/YY
+      const mmyyPattern = /^\d{2}\/\d{2}$/;
+      if (mmyyPattern.test(date)) {
+        return date;
+      }
+      
+      // Verificar si tiene formato MM/YYYY
+      const mmyyyyPattern = /^\d{2}\/\d{4}$/;
+      if (mmyyyyPattern.test(date)) {
+        const [month, year] = date.split('/');
+        return `${month}/${year.slice(-2)}`;
+      }
+    }
+    
+    // Si es una fecha, convertirla
     const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    // Verificar si la fecha es válida
+    if (isNaN(dateObj.getTime())) {
+      console.warn('Fecha inválida recibida:', date);
+      return '--/--';
+    }
+    
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     const year = String(dateObj.getFullYear()).slice(-2);
     return `${month}/${year}`;
@@ -161,20 +185,37 @@ export const formatRelativeDate = (
     const diffInHours = Math.floor(diffInMinutes / 60);
     const diffInDays = Math.floor(diffInHours / 24);
 
-    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+    const isPast = diffInSeconds < 0;
+    const absDays = Math.abs(diffInDays);
+    const absHours = Math.abs(diffInHours);
+    const absMinutes = Math.abs(diffInMinutes);
+    const absSeconds = Math.abs(diffInSeconds);
+
+    const isSpanish = locale.startsWith('es');
 
     // Determinar la unidad más apropiada
-    if (Math.abs(diffInDays) >= 7) {
+    if (absDays >= 7) {
       // Más de 7 días: mostrar fecha absoluta
       return formatDate(dateObj, { locale, dateStyle: 'medium' });
-    } else if (Math.abs(diffInDays) >= 1) {
-      return rtf.format(diffInDays, 'day');
-    } else if (Math.abs(diffInHours) >= 1) {
-      return rtf.format(diffInHours, 'hour');
-    } else if (Math.abs(diffInMinutes) >= 1) {
-      return rtf.format(diffInMinutes, 'minute');
+    } else if (absDays >= 1) {
+      if (absDays === 1) {
+        return isPast 
+          ? (isSpanish ? 'ayer' : 'yesterday')
+          : (isSpanish ? 'mañana' : 'tomorrow');
+      }
+      return isPast
+        ? (isSpanish ? `hace ${absDays} días` : `${absDays} days ago`)
+        : (isSpanish ? `en ${absDays} días` : `in ${absDays} days`);
+    } else if (absHours >= 1) {
+      return isPast
+        ? (isSpanish ? `hace ${absHours}h` : `${absHours}h ago`)
+        : (isSpanish ? `en ${absHours}h` : `in ${absHours}h`);
+    } else if (absMinutes >= 1) {
+      return isPast
+        ? (isSpanish ? `hace ${absMinutes}m` : `${absMinutes}m ago`)
+        : (isSpanish ? `en ${absMinutes}m` : `in ${absMinutes}m`);
     } else {
-      return rtf.format(diffInSeconds, 'second');
+      return isSpanish ? 'ahora' : 'now';
     }
   } catch (error) {
     console.warn('Error formateando fecha relativa:', error);
