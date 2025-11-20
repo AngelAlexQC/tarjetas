@@ -2,7 +2,7 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SplashScreen from 'expo-splash-screen';
 import { ReactNode, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View, Platform } from 'react-native';
 import Animated, {
     Easing,
     interpolate,
@@ -159,66 +159,56 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
   
   // Estilos animados para alas superiores - sincronizados con masterAnimation
   const topLeftWingStyle = useAnimatedProps(() => {
-    // Ciclo rápido de aleteo usando la animación maestra
     const wingCycle = interpolate(masterAnimation.value, [0, 0.25, 0.5, 0.75, 1], [-1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [-8, 0, 12]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [1.05, 1, 0.95]);
-    return {
-      // Rotar alrededor del punto (150, 150) - base del ala
-      rotation,
-      originX: 150,
-      originY: 150,
-      scaleX: scale,
-    };
+    if (Platform.OS === 'web') {
+      const cx = 150, cy = 150;
+      return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
+    }
+    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
   });
   
   const topRightWingStyle = useAnimatedProps(() => {
     const wingCycle = interpolate(masterAnimation.value, [0, 0.25, 0.5, 0.75, 1], [-1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [12, 0, -8]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [0.95, 1, 1.05]);
-    return {
-      // Rotar alrededor del punto (150, 150) - base del ala
-      rotation,
-      originX: 150,
-      originY: 150,
-      scaleX: scale,
-    };
+    if (Platform.OS === 'web') {
+      const cx = 150, cy = 150;
+      return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
+    }
+    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
   });
   
   const bottomLeftWingStyle = useAnimatedProps(() => {
-    // Desfase sutil (offset de 0.125) para naturalidad
     const wingCycle = interpolate(masterAnimation.value, [0, 0.125, 0.375, 0.625, 0.875, 1], [1, -1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [-10, 0, 15]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [1.08, 1, 0.92]);
-    return {
-      // Rotar alrededor del punto (150, 150) - base del ala
-      rotation,
-      originX: 150,
-      originY: 150,
-      scaleX: scale,
-    };
+    if (Platform.OS === 'web') {
+      const cx = 150, cy = 150;
+      return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
+    }
+    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
   });
   
   const bottomRightWingStyle = useAnimatedProps(() => {
     const wingCycle = interpolate(masterAnimation.value, [0, 0.125, 0.375, 0.625, 0.875, 1], [1, -1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [15, 0, -10]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [0.92, 1, 1.08]);
-    return {
-      // Rotar alrededor del punto (150, 150) - base del ala
-      rotation,
-      originX: 150,
-      originY: 150,
-      scaleX: scale,
-    };
+    if (Platform.OS === 'web') {
+      const cx = 150, cy = 150;
+      return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
+    }
+    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
   });
   
   // Breathing suave del cuerpo - sincronizado con la misma animación maestra
   const bodyStyle = useAnimatedProps(() => {
-    // Usa la animación maestra directamente para sincronización perfecta
     const scale = interpolate(masterAnimation.value, [0, 0.5, 1], [0.99, 1.01, 0.99]);
-    return {
-      scaleY: scale,
-    };
+    if (Platform.OS === 'web') {
+      return { transform: `scale(1 ${scale})` };
+    }
+    return { scaleY: scale } as any;
   });
   
   // Shimmer e iridiscencia sincronizada
@@ -676,15 +666,16 @@ const styles = StyleSheet.create({
   },
   glowContainer: {
     position: 'absolute',
-    width: 320,
-    height: 320,
+    width: '70%',
+    aspectRatio: 1,
+    maxWidth: 360,
     alignItems: 'center',
     justifyContent: 'center',
   },
   glow: {
-    width: 280,
-    height: 280,
-    borderRadius: 140,
+    width: '88%',
+    aspectRatio: 1,
+    borderRadius: 9999,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -696,9 +687,9 @@ const styles = StyleSheet.create({
   },
   glowRing: {
     position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
+    width: '95%',
+    aspectRatio: 1,
+    borderRadius: 9999,
     borderWidth: 2,
     borderColor: 'rgba(0, 229, 255, 0.2)',
   },

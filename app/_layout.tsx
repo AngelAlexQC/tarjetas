@@ -3,6 +3,16 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { View } from 'react-native';
+import React from 'react';
+function ThemedLayoutContainer({ children }: { children: React.ReactNode }) {
+  const theme = useAppTheme();
+  return (
+    <View style={{ flex: 1, width: '100%', height: '100%', backgroundColor: theme.colors.background }}>
+      <View style={{ flex: 1, width: '100%', paddingHorizontal: 16 }}>{children}</View>
+    </View>
+  );
+}
 
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
@@ -31,7 +41,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <TenantThemeProvider>
-        <Navigation />
+        <ThemedLayoutContainer>
+          <Navigation />
+        </ThemedLayoutContainer>
       </TenantThemeProvider>
     </SafeAreaProvider>
   );
