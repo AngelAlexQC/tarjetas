@@ -386,9 +386,9 @@ export function AnimatedSplashScreen({
             end={{ x: 1, y: 0 }}
             style={styles.textGradient}
           >
-            <Animated.Text style={styles.brandText}>Libélula</Animated.Text>
+            <Animated.Text style={styles.brandText}>Libélula<strong>Soft</strong></Animated.Text>
           </LinearGradient>
-          <Animated.Text style={styles.subText}>Financial Evolution</Animated.Text>
+          <Animated.Text style={styles.subText}>Agilidad Tecnológica</Animated.Text>
         </Animated.View>
       </Animated.View>
     </View>
