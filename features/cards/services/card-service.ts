@@ -7,7 +7,7 @@ export interface Card {
   expiryDate: string;
   balance: number;
   cardType: 'credit' | 'debit' | 'virtual';
-  cardBrand: 'visa' | 'mastercard' | 'amex' | 'discover' | 'diners';
+  cardBrand: 'visa' | 'mastercard' | 'amex' | 'discover' | 'diners' | 'jcb' | 'maestro' | 'unionpay';
   status: 'active' | 'blocked' | 'expired' | 'pending';
   creditLimit?: number;
   availableCredit?: number;

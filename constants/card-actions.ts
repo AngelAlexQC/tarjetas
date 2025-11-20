@@ -77,3 +77,26 @@ export const CARD_ACTIONS: CardAction[] = [
 export function getCardAction(actionId: CardActionType): CardAction | undefined {
   return CARD_ACTIONS.find(action => action.id === actionId);
 }
+
+/**
+ * Obtiene las acciones disponibles según el tipo de tarjeta
+ * Crédito: todas las acciones
+ * Débito: sin diferir ni avances
+ * Virtual: sin PIN físico
+ */
+export function getAvailableActions(cardType: 'credit' | 'debit' | 'virtual'): CardAction[] {
+  if (cardType === 'debit') {
+    // Débito: no puede diferir compras ni solicitar avances
+    return CARD_ACTIONS.filter(action => 
+      action.id !== 'defer' && action.id !== 'advances'
+    );
+  }
+  
+  if (cardType === 'virtual') {
+    // Virtual: no tiene PIN físico
+    return CARD_ACTIONS.filter(action => action.id !== 'pin');
+  }
+  
+  // Crédito: todas las acciones disponibles
+  return CARD_ACTIONS;
+}

@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import { FinancialIcons } from '@/components/ui/financial-icons';
-import { CARD_ACTIONS, CardAction, CardActionType } from '@/constants/card-actions';
+import { getAvailableActions, CardAction, CardActionType } from '@/constants/card-actions';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
@@ -9,12 +9,14 @@ const ACTION_BUTTON_SIZE = 80;
 const ACTION_BUTTON_SPACING = 14;
 
 interface CardActionsGridProps {
+  cardType: 'credit' | 'debit' | 'virtual';
   isLoading?: boolean;
   onActionPress: (actionType: CardActionType) => void;
 }
 
-export function CardActionsGrid({ isLoading, onActionPress }: CardActionsGridProps) {
+export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActionsGridProps) {
   const theme = useAppTheme();
+  const availableActions = getAvailableActions(cardType);
 
   const renderActionButton = ({ item: action }: { item: CardAction }) => {
     const gradientColors = theme.helpers.getThemeGradient();
@@ -80,7 +82,7 @@ export function CardActionsGrid({ isLoading, onActionPress }: CardActionsGridPro
       )}
       
       <FlatList
-        data={CARD_ACTIONS}
+        data={availableActions}
         renderItem={renderActionButton}
         keyExtractor={(item) => item.id}
         horizontal

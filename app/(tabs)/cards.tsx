@@ -2,6 +2,7 @@ import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
+import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
@@ -71,6 +72,52 @@ const mockCards: Card[] = [
     creditLimit: 3000,
     availableCredit: 2019.75,
   },
+  {
+    id: "5",
+    cardNumber: "6011 1111 1111 1117",
+    cardHolder: "Pedro Sánchez",
+    expiryDate: "09/26",
+    balance: 3200.0,
+    cardType: "credit",
+    cardBrand: "discover",
+    status: "active",
+    creditLimit: 7500,
+    availableCredit: 4300,
+  },
+  {
+    id: "6",
+    cardNumber: "3530 1113 3330 0000",
+    cardHolder: "Yuki Tanaka",
+    expiryDate: "11/27",
+    balance: 1560.0,
+    cardType: "credit",
+    cardBrand: "jcb",
+    status: "active",
+    creditLimit: 4000,
+    availableCredit: 2440,
+  },
+  {
+    id: "7",
+    cardNumber: "6304 0000 0000 0000",
+    cardHolder: "Laura Fernández",
+    expiryDate: "04/26",
+    balance: 890.25,
+    cardType: "debit",
+    cardBrand: "maestro",
+    status: "active",
+  },
+  {
+    id: "8",
+    cardNumber: "6200 0000 0000 0005",
+    cardHolder: "Wei Chen",
+    expiryDate: "07/28",
+    balance: 4750.5,
+    cardType: "credit",
+    cardBrand: "unionpay",
+    status: "active",
+    creditLimit: 8000,
+    availableCredit: 3249.5,
+  },
 ];
 
 export default function CardsScreen() {
@@ -138,8 +185,18 @@ export default function CardsScreen() {
                   {CARD_TYPE_LABELS[item.cardType]}
                 </ThemedText>
               </View>
-              <View style={styles.cardChip} />
+              <View style={styles.cardBrandLogoContainer}>
+                {CardBrandIcons[item.cardBrand] && 
+                  CardBrandIcons[item.cardBrand]({ width: 60, height: 38 })
+                }
+              </View>
             </View>
+            
+            {/* Chip EMV */}
+            <View style={styles.cardChip} />
+
+            {/* Espaciador flexible */}
+            <View style={{ flex: 1 }} />
 
             {/* Número de tarjeta */}
             <View style={styles.cardNumberContainer}>
@@ -183,13 +240,20 @@ export default function CardsScreen() {
               <ThemedText
                 style={[styles.balanceLabel, { color: cardDesign.textColor }]}
               >
-                Saldo Disponible
+                {item.cardType === 'credit' ? 'Crédito Disponible' : 'Saldo Disponible'}
               </ThemedText>
               <ThemedText
                 style={[styles.balanceAmount, { color: cardDesign.textColor }]}
               >
                 ${item.balance.toFixed(2)}
               </ThemedText>
+              {item.cardType === 'credit' && item.creditLimit && (
+                <ThemedText
+                  style={[styles.creditLimitText, { color: cardDesign.textColor }]}
+                >
+                  Límite: ${item.creditLimit.toFixed(2)}
+                </ThemedText>
+              )}
             </View>
 
             {/* Decoración */}
@@ -269,6 +333,7 @@ export default function CardsScreen() {
             <View style={[styles.activeIndicator, { backgroundColor: theme.tenant.mainColor }]} />
           </View>
           <CardActionsGrid
+            cardType={activeCard.cardType}
             isLoading={cardActions.isLoading}
             onActionPress={(actionType) => {
               cardActions.executeAction(actionType);
@@ -339,13 +404,14 @@ const styles = StyleSheet.create({
   },
   cardBlur: {
     flex: 1,
-    padding: 20,
-    justifyContent: "space-between",
+    padding: 18,
+    justifyContent: "flex-start",
   },
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    marginBottom: 8,
   },
   cardTypeBadge: {
     backgroundColor: "rgba(255, 255, 255, 0.25)",
@@ -359,14 +425,27 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 1,
   },
+  cardBrandLogoContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   cardChip: {
-    width: 40,
-    height: 32,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    width: 44,
+    height: 34,
+    backgroundColor: "rgba(255, 255, 255, 0.35)",
     borderRadius: 6,
+    marginBottom: 6,
   },
   cardNumberContainer: {
-    marginTop: 15,
+    marginBottom: 8,
   },
   cardNumber: {
     fontSize: 18,
@@ -376,7 +455,7 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 12,
+    marginBottom: 10,
   },
   cardHolderContainer: {
     flex: 1,
@@ -385,25 +464,24 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   cardLabel: {
-    fontSize: 8,
-    opacity: 0.7,
-    marginBottom: 3,
-    letterSpacing: 1,
+    fontSize: 9,
+    opacity: 0.8,
+    marginBottom: 2,
+    letterSpacing: 0.5,
   },
   cardHolder: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
     textTransform: "uppercase",
   },
   cardExpiry: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
   },
   balanceContainer: {
-    marginTop: 12,
     backgroundColor: "rgba(255, 255, 255, 0.15)",
-    padding: 12,
-    borderRadius: 12,
+    padding: 10,
+    borderRadius: 10,
   },
   balanceLabel: {
     fontSize: 10,
@@ -413,6 +491,11 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontSize: 22,
     fontWeight: "700",
+  },
+  creditLimitText: {
+    fontSize: 9,
+    opacity: 0.7,
+    marginTop: 4,
   },
   cardDecoration: {
     position: "absolute",
