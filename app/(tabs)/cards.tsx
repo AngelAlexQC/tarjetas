@@ -11,11 +11,10 @@ import {
     Alert,
     Dimensions,
     FlatList,
-    Image,
     Pressable,
     StyleSheet,
     View,
-    ViewToken,
+    ViewToken
 } from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");

@@ -1,7 +1,7 @@
+import { defaultTheme, TenantTheme } from '@/constants/tenant-themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
-import { TenantTheme, defaultTheme } from '@/constants/tenant-themes';
 
 interface TenantThemeContextType {
   currentTheme: TenantTheme | null;
