@@ -7,7 +7,9 @@ import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useMemo, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 interface Tenant {
   slug: string;
@@ -173,6 +175,7 @@ export default function TenantSelectorScreen() {
   const theme = useAppTheme();
   const { setTenant } = useTenantTheme();
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleTenantSelect = async (tenant: Tenant) => {
     const tenantTheme = getTenantTheme(tenant.slug);
@@ -182,104 +185,209 @@ export default function TenantSelectorScreen() {
     router.push("/(tabs)/cards");
   };
 
+  // Agrupar instituciones por país
+  const groupedTenants = useMemo(() => {
+    const filtered = tenants.filter((tenant) =>
+      tenant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tenant.country.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const grouped = filtered.reduce((acc, tenant) => {
+      if (!acc[tenant.country]) {
+        acc[tenant.country] = [];
+      }
+      acc[tenant.country].push(tenant);
+      return acc;
+    }, {} as Record<string, Tenant[]>);
+
+    return grouped;
+  }, [searchQuery]);
+
+  const countries = Object.keys(groupedTenants).sort();
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+    >
       <ThemedView style={styles.content}>
-        <ThemedView style={styles.header}>
+        {/* Header mejorado */}
+        <Animated.View 
+          entering={FadeInUp.duration(600).springify()}
+          style={styles.header}
+        >
+          <View style={styles.headerIcon}>
+            <ThemedText style={styles.headerEmoji}>🏛️</ThemedText>
+          </View>
           <ThemedText type="title" style={styles.title}>
             Selecciona tu Institución
           </ThemedText>
           <ThemedText style={styles.subtitle}>
             Elige tu entidad financiera para continuar
           </ThemedText>
-        </ThemedView>
+        </Animated.View>
 
-        <View style={styles.tenantsContainer}>
-          {tenants.map((tenant) => (
+        {/* Barra de búsqueda */}
+        <Animated.View 
+          entering={FadeInDown.duration(600).delay(100).springify()}
+          style={styles.searchContainer}
+        >
+          <View style={styles.searchIconContainer}>
+            <ThemedText style={styles.searchIcon}>🔍</ThemedText>
+          </View>
+          <TextInput
+            style={[
+              styles.searchInput,
+              {
+                color: theme.isDark ? "#ECEDEE" : "#11181C",
+                backgroundColor: theme.isDark
+                  ? "rgba(255, 255, 255, 0.08)"
+                  : "rgba(0, 0, 0, 0.04)",
+              },
+            ]}
+            placeholder="Buscar institución o país..."
+            placeholderTextColor={theme.isDark ? "#888" : "#999"}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
             <Pressable
-              key={tenant.slug}
-              style={({ pressed }) => [
-                styles.tenantCard,
-                {
-                  opacity: pressed ? 0.9 : 1,
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                },
-              ]}
-              onPress={() => handleTenantSelect(tenant)}
+              onPress={() => setSearchQuery("")}
+              style={styles.clearButton}
             >
-              {/* Fondo con gradiente colorido basado en el color de la institución */}
-              <LinearGradient
-                colors={[
-                  `${tenant.mainColor}15`,
-                  `${tenant.mainColor}25`,
-                  `${tenant.mainColor}35`,
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFillObject}
-              />
-              
-              {/* Capa de blur glassmorphism */}
-              <BlurView
-                intensity={20}
-                tint={theme.isDark ? "dark" : "light"}
-                style={styles.blurContainer}
+              <ThemedText style={styles.clearButtonText}>✕</ThemedText>
+            </Pressable>
+          )}
+        </Animated.View>
+
+        {/* Lista de instituciones agrupadas por país */}
+        <View style={styles.tenantsContainer}>
+          {countries.length > 0 ? (
+            countries.map((country, countryIndex) => (
+              <Animated.View
+                key={country}
+                entering={FadeInDown.duration(600)
+                  .delay(200 + countryIndex * 50)
+                  .springify()}
               >
-                <View style={styles.cardContent}>
-                  {/* Orbe de color animado en el fondo */}
-                  <View style={[
-                    styles.colorOrb,
-                    { backgroundColor: tenant.mainColor }
-                  ]} />
-                  
-                  <View style={styles.logoContainer}>
-                    <Image
-                      source={{ uri: tenant.logoUrl }}
-                      style={styles.logo}
-                      contentFit="contain"
-                    />
-                  </View>
-                  
-                  <View style={styles.tenantInfo}>
-                    <ThemedText type="defaultSemiBold" style={styles.tenantName}>
-                      {tenant.name}
+                {/* Header de país */}
+                <View style={styles.countryHeader}>
+                  <ThemedText style={styles.countryFlag}>
+                    {groupedTenants[country][0].countryFlag}
+                  </ThemedText>
+                  <ThemedText type="defaultSemiBold" style={styles.countryName}>
+                    {country}
+                  </ThemedText>
+                  <View style={styles.countryBadge}>
+                    <ThemedText style={styles.countryBadgeText}>
+                      {groupedTenants[country].length}
                     </ThemedText>
-                    <View style={styles.metadataRow}>
-                      <ThemedText style={styles.countryFlag}>
-                        {tenant.countryFlag}
-                      </ThemedText>
-                      <View style={styles.separator} />
-                      <ThemedText style={styles.currency}>
-                        {tenant.currencyCode}
-                      </ThemedText>
-                    </View>
-                  </View>
-                  
-                  {/* Indicador de color con blur */}
-                  <View style={styles.colorIndicatorContainer}>
-                    <View
-                      style={[
-                        styles.colorIndicator,
-                        { backgroundColor: tenant.mainColor }
-                      ]}
-                    />
                   </View>
                 </View>
-              </BlurView>
-              
-              {/* Borde con gradiente sutil */}
-              <View
-                style={[
-                  styles.cardBorder,
-                  {
-                    borderColor: theme.isDark
-                      ? `${tenant.mainColor}60`
-                      : `${tenant.mainColor}40`,
-                  },
-                ]}
-              />
-            </Pressable>
-          ))}
+
+                {/* Instituciones del país */}
+                {groupedTenants[country].map((tenant) => (
+                  <Pressable
+                    key={tenant.slug}
+                    style={({ pressed }) => [
+                      styles.tenantCard,
+                      {
+                        opacity: pressed ? 0.9 : 1,
+                        transform: [{ scale: pressed ? 0.98 : 1 }],
+                      },
+                    ]}
+                    onPress={() => handleTenantSelect(tenant)}
+                  >
+                    {/* Fondo con gradiente colorido basado en el color de la institución */}
+                    <LinearGradient
+                      colors={[
+                        `${tenant.mainColor}15`,
+                        `${tenant.mainColor}25`,
+                        `${tenant.mainColor}35`,
+                      ]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={StyleSheet.absoluteFillObject}
+                    />
+                    
+                    {/* Capa de blur glassmorphism */}
+                    <BlurView
+                      intensity={20}
+                      tint={theme.isDark ? "dark" : "light"}
+                      style={styles.blurContainer}
+                    >
+                      <View style={styles.cardContent}>
+                        {/* Orbe de color animado en el fondo */}
+                        <View style={[
+                          styles.colorOrb,
+                          { backgroundColor: tenant.mainColor }
+                        ]} />
+                        
+                        <View style={styles.logoContainer}>
+                          <Image
+                            source={{ uri: tenant.logoUrl }}
+                            style={styles.logo}
+                            contentFit="contain"
+                          />
+                        </View>
+                        
+                        <View style={styles.tenantInfo}>
+                          <ThemedText type="defaultSemiBold" style={styles.tenantName}>
+                            {tenant.name}
+                          </ThemedText>
+                          <View style={styles.metadataRow}>
+                            <ThemedText style={styles.countryFlag}>
+                              {tenant.countryFlag}
+                            </ThemedText>
+                            <View style={styles.separator} />
+                            <ThemedText style={styles.currency}>
+                              {tenant.currencyCode}
+                            </ThemedText>
+                          </View>
+                        </View>
+                        
+                        {/* Indicador de color con blur */}
+                        <View style={styles.colorIndicatorContainer}>
+                          <View
+                            style={[
+                              styles.colorIndicator,
+                              { backgroundColor: tenant.mainColor }
+                            ]}
+                          />
+                        </View>
+                      </View>
+                    </BlurView>
+                    
+                    {/* Borde con gradiente sutil */}
+                    <View
+                      style={[
+                        styles.cardBorder,
+                        {
+                          borderColor: theme.isDark
+                            ? `${tenant.mainColor}60`
+                            : `${tenant.mainColor}40`,
+                        },
+                      ]}
+                    />
+                  </Pressable>
+                ))}
+              </Animated.View>
+            ))
+          ) : (
+            <Animated.View
+              entering={FadeInDown.duration(600).delay(300).springify()}
+              style={styles.emptyState}
+            >
+              <ThemedText style={styles.emptyStateIcon}>🔍</ThemedText>
+              <ThemedText type="defaultSemiBold" style={styles.emptyStateTitle}>
+                No se encontraron instituciones
+              </ThemedText>
+              <ThemedText style={styles.emptyStateText}>
+                Intenta con otro término de búsqueda
+              </ThemedText>
+            </Animated.View>
+          )}
         </View>
       </ThemedView>
     </ScrollView>
@@ -293,27 +401,112 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+    paddingBottom: 40,
   },
   header: {
     marginTop: 40,
-    marginBottom: 30,
+    marginBottom: 24,
     alignItems: "center",
+    gap: 12,
+  },
+  headerIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "rgba(0, 122, 255, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  headerEmoji: {
+    fontSize: 32,
   },
   title: {
-    marginBottom: 10,
+    marginBottom: 8,
     textAlign: "center",
+    fontSize: 28,
   },
   subtitle: {
-    fontSize: 16,
-    opacity: 0.7,
+    fontSize: 15,
+    opacity: 0.65,
     textAlign: "center",
+    paddingHorizontal: 20,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 28,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    gap: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  searchIconContainer: {
+    width: 32,
+    height: 32,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  searchIcon: {
+    fontSize: 18,
+    opacity: 0.5,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 10,
+    fontSize: 16,
+    borderRadius: 10,
+  },
+  clearButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.08)",
+  },
+  clearButtonText: {
+    fontSize: 14,
+    opacity: 0.6,
   },
   tenantsContainer: {
-    gap: 16,
+    gap: 20,
+  },
+  countryHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    marginBottom: 12,
+    gap: 10,
+  },
+  countryFlag: {
+    fontSize: 24,
+  },
+  countryName: {
+    fontSize: 18,
+    flex: 1,
+  },
+  countryBadge: {
+    backgroundColor: "rgba(0, 122, 255, 0.12)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  countryBadgeText: {
+    fontSize: 13,
+    fontWeight: "600",
+    opacity: 0.7,
   },
   tenantCard: {
     borderRadius: 20,
     overflow: "hidden",
+    marginBottom: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
@@ -371,9 +564,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  countryFlag: {
-    fontSize: 18,
-  },
   separator: {
     width: 1,
     height: 14,
@@ -404,5 +594,25 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1.5,
     pointerEvents: "none",
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 60,
+    paddingHorizontal: 40,
+  },
+  emptyStateIcon: {
+    fontSize: 64,
+    opacity: 0.3,
+    marginBottom: 16,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  emptyStateText: {
+    fontSize: 15,
+    opacity: 0.6,
+    textAlign: "center",
   },
 });

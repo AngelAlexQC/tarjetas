@@ -1,0 +1,204 @@
+import { ThemedText } from "@/components/themed-text";
+import { useAppTheme } from "@/hooks/use-app-theme";
+import { useTenantTheme } from "@/contexts/tenant-theme-context";
+import { useRouter } from "expo-router";
+import { Pressable, StyleSheet, View, Dimensions } from "react-native";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import Animated, { 
+  useAnimatedStyle, 
+  useSharedValue, 
+  withSpring,
+  withSequence,
+  withTiming
+} from "react-native-reanimated";
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+/**
+ * Header minimalista moderno - Fintech Design 2025
+ * Siguiendo tendencias de apps como Revolut, N26, Nubank
+ * - Diseño limpio sin bordes pesados
+ * - Avatar de institución prominente con gradiente
+ * - Tipografía clara y jerárquica
+ * - Micro-animaciones sutiles
+ * - Espaciado generoso
+ */
+export function InstitutionSelectorHeader() {
+  const theme = useAppTheme();
+  const { currentTheme } = useTenantTheme();
+  const router = useRouter();
+  const scaleValue = useSharedValue(1);
+  const glowValue = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleValue.value }],
+  }));
+
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: glowValue.value,
+  }));
+
+  const handlePress = () => {
+    router.push("/" as any);
+  };
+
+  const handlePressIn = () => {
+    scaleValue.value = withSpring(0.97, { damping: 20, stiffness: 300 });
+    glowValue.value = withTiming(1, { duration: 150 });
+  };
+
+  const handlePressOut = () => {
+    scaleValue.value = withSpring(1, { damping: 20, stiffness: 300 });
+    glowValue.value = withSequence(
+      withTiming(0.6, { duration: 100 }),
+      withTiming(0, { duration: 200 })
+    );
+  };
+
+  return (
+    <View style={styles.wrapper}>
+      <Animated.View style={[styles.container, animatedStyle]}>
+        <Pressable
+          onPress={handlePress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={styles.pressable}
+        >
+          {/* Glow effect de fondo al presionar */}
+          <Animated.View style={[styles.glowBackground, glowStyle]}>
+            <LinearGradient
+              colors={[
+                `${theme.tenant.mainColor}15`,
+                `${theme.tenant.mainColor}05`,
+                'transparent'
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+          </Animated.View>
+
+          <View style={[styles.content, {
+            backgroundColor: theme.isDark 
+              ? 'rgba(28, 28, 30, 0.6)'
+              : 'rgba(255, 255, 255, 0.7)'
+          }]}>
+            {/* Avatar de institución con logo real */}
+            <View style={styles.avatarContainer}>
+              {/* Fondo con gradiente sutil */}
+              <LinearGradient
+                colors={[
+                  `${theme.tenant.mainColor}25`,
+                  `${theme.tenant.mainColor}15`,
+                ]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              
+              {/* Logo de la institución */}
+              <Image
+                source={{ uri: currentTheme?.logoUrl }}
+                style={styles.institutionLogo}
+                contentFit="contain"
+                transition={200}
+                placeholder={require('@/assets/images/icon.png')}
+              />
+            </View>
+
+            {/* Dot de estado */}
+            <View style={[styles.statusDot, { 
+              backgroundColor: theme.tenant.mainColor 
+            }]} />
+
+            {/* Nombre de la institución */}
+            <ThemedText style={styles.institutionName} numberOfLines={1}>
+              {currentTheme?.name || "Seleccionar institución"}
+            </ThemedText>
+
+            {/* Chevron minimalista */}
+            <ThemedText style={[styles.chevron, {
+              color: theme.colors.textSecondary
+            }]}>
+              ›
+            </ThemedText>
+          </View>
+        </Pressable>
+      </Animated.View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  wrapper: {
+    alignItems: 'center',
+    paddingTop: 8,
+    paddingBottom: 4,
+  },
+  container: {
+    width: SCREEN_WIDTH * 0.85,
+  },
+  pressable: {
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  glowBackground: {
+    position: 'absolute',
+    top: -20,
+    left: -20,
+    right: -20,
+    bottom: -20,
+  },
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: '4%',
+    paddingVertical: '2.5%',
+    gap: '3%',
+    borderRadius: 16,
+    // Shadow sutil y moderna
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  avatarContainer: {
+    aspectRatio: 1,
+    width: '12%',
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: 'hidden',
+    flexShrink: 0,
+    // Shadow para el avatar
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  institutionLogo: {
+    width: '75%',
+    height: '75%',
+  },
+  statusDot: {
+    aspectRatio: 1,
+    width: '1.8%',
+    borderRadius: 100,
+    flexShrink: 0,
+  },
+  institutionName: {
+    fontSize: 15,
+    fontWeight: "600",
+    letterSpacing: -0.3,
+    flex: 1,
+  },
+  chevron: {
+    fontSize: 22,
+    fontWeight: "400",
+    opacity: 0.3,
+    flexShrink: 0,
+  },
+});

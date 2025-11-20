@@ -1,5 +1,6 @@
 import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { CardFinancialInfo } from "@/components/cards/card-financial-info";
+import { InstitutionSelectorHeader } from "@/components/institution-selector-header";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
@@ -291,31 +292,8 @@ export default function CardsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header */}
-        <Pressable 
-          style={styles.header}
-          onPress={() => Alert.alert(
-            'Cambiar Institución',
-            '¿Deseas cambiar a otra institución financiera?',
-            [
-              { text: 'Cancelar', style: 'cancel' },
-              { text: 'Cambiar', onPress: () => {
-                // Aquí iría la navegación al selector de tenant
-                Alert.alert('Selector', 'Navegando al selector de institución...');
-              }}
-            ]
-          )}
-        >
-          <View style={[styles.logoContainer, { backgroundColor: theme.tenant.mainColor + '20' }]}>
-            <ThemedText style={[styles.logoText, { color: theme.tenant.mainColor }]}>
-              {theme.tenant.name.substring(0, 2).toUpperCase()}
-            </ThemedText>
-          </View>
-          <ThemedText type="title" style={styles.title}>
-            {theme.tenant.name}
-          </ThemedText>
-          <ThemedText style={styles.headerChevron}>›</ThemedText>
-        </Pressable>
+        {/* Header mejorado - Selector de institución */}
+        <InstitutionSelectorHeader />
 
         {/* Carrusel de tarjetas */}
         <View style={styles.carouselContainer}>
@@ -391,35 +369,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 16,
-  },
-  header: {
-    paddingTop: 40,
-    paddingBottom: 8,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-  },
-  logoContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: {
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  title: {
-    fontSize: 18,
-  },
-  headerChevron: {
-    fontSize: 28,
-    fontWeight: '600',
-    opacity: 0.4,
-    marginLeft: 4,
   },
   carouselContainer: {
     height: CARD_HEIGHT + 30,

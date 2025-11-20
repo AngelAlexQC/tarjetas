@@ -5,6 +5,8 @@
 
 import { ThemedText } from '@/components/themed-text';
 import { AnimatedNumber } from '@/components/ui/animated-number';
+import { InfoIcon } from '@/components/ui/info-icon';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { formatCurrency } from '@/utils/formatters/currency';
@@ -162,106 +164,204 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
           duration={1000}
           locale={locale}
         />
-        <ThemedText style={styles.heroLabel}>
-          {isCredit ? 'Saldo actual' : isDebit ? 'Disponible' : 'Balance'}
-        </ThemedText>
+        <View style={styles.heroLabelContainer}>
+          <ThemedText style={styles.heroLabel}>
+            {isCredit ? 'Saldo actual' : isDebit ? 'Disponible' : 'Balance'}
+          </ThemedText>
+          <InfoTooltip
+            title={isCredit ? 'Saldo Actual' : isDebit ? 'Saldo Disponible' : 'Balance'}
+            content={
+              isCredit
+                ? 'Es el total que has usado de tu línea de crédito. Este monto debe ser pagado en o antes de la fecha de vencimiento.'
+                : isDebit
+                ? 'Es el dinero que tienes disponible en tu cuenta para usar inmediatamente en compras o retiros.'
+                : 'Es el saldo total disponible en tu tarjeta virtual. Puede ser recargable o de un solo uso.'
+            }
+            placement="bottom"
+          >
+            <View style={styles.infoIconWrapper}>
+              <InfoIcon size={14} />
+            </View>
+          </InfoTooltip>
+        </View>
       </View>
 
       {/* Stats compactos - Solo info esencial */}
       {isCredit && creditLimit > 0 ? (
         <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>
-              {formatCurrency(availableCredit, {
-                locale,
-                currency,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
-            </ThemedText>
-            <ThemedText style={styles.statLabel}>disponible</ThemedText>
-          </View>
+          <InfoTooltip
+            title="Crédito Disponible"
+            content={`Tienes ${formatCurrency(availableCredit, { locale, currency })} disponibles de tu línea de crédito de ${formatCurrency(creditLimit, { locale, currency })}. Este es el monto que puedes usar sin exceder tu límite.`}
+            placement="bottom"
+          >
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>
+                {formatCurrency(availableCredit, {
+                  locale,
+                  currency,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
+              </ThemedText>
+              <View style={styles.statLabelWithIcon}>
+                <ThemedText style={styles.statLabel}>disponible</ThemedText>
+                <InfoIcon size={12} opacity={0.3} />
+              </View>
+            </View>
+          </InfoTooltip>
           <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>{usagePercentage}%</ThemedText>
-            <ThemedText style={styles.statLabel}>usado</ThemedText>
-          </View>
+          <InfoTooltip
+            title="Porcentaje de Uso"
+            content={`Has usado el ${usagePercentage}% de tu línea de crédito. ${usagePercentage >= 75 ? 'Se recomienda mantener el uso por debajo del 30% para un mejor score crediticio.' : 'Mantén un buen manejo de tu crédito.'}`}
+            placement="bottom"
+          >
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>{usagePercentage}%</ThemedText>
+              <View style={styles.statLabelWithIcon}>
+                <ThemedText style={styles.statLabel}>usado</ThemedText>
+                <InfoIcon size={12} opacity={0.3} />
+              </View>
+            </View>
+          </InfoTooltip>
           <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>{nextPaymentDays}d</ThemedText>
-            <ThemedText style={styles.statLabel}>próximo pago</ThemedText>
-          </View>
+          <InfoTooltip
+            title="Próximo Pago"
+            content={`Tienes ${nextPaymentDays} días para realizar tu pago. ${isPaymentSoon ? 'Tu fecha de pago está cerca, considera programar tu pago pronto.' : 'El pago mínimo sugerido es de ' + formatCurrency(minimumPayment, { locale, currency }) + '.'}`}
+            placement="bottom"
+          >
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>{nextPaymentDays}d</ThemedText>
+              <View style={styles.statLabelWithIcon}>
+                <ThemedText style={styles.statLabel}>próximo pago</ThemedText>
+                <InfoIcon size={12} opacity={0.3} />
+              </View>
+            </View>
+          </InfoTooltip>
         </View>
       ) : isDebit ? (
         <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>
-              {formatCurrency(todaySpent, {
-                locale,
-                currency,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
-            </ThemedText>
-            <ThemedText style={styles.statLabel}>hoy</ThemedText>
-          </View>
+          <InfoTooltip
+            title="Gasto de Hoy"
+            content={`Has gastado ${formatCurrency(todaySpent, { locale, currency })} hoy. Este contador se reinicia cada 24 horas. Te quedan ${formatCurrency(dailyPurchaseLimit - todaySpent, { locale, currency })} disponibles para compras hoy.`}
+            placement="bottom"
+          >
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>
+                {formatCurrency(todaySpent, {
+                  locale,
+                  currency,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
+              </ThemedText>
+              <View style={styles.statLabelWithIcon}>
+                <ThemedText style={styles.statLabel}>hoy</ThemedText>
+                <InfoIcon size={12} opacity={0.3} />
+              </View>
+            </View>
+          </InfoTooltip>
           <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>
-              {formatCurrency(dailyPurchaseLimit, {
-                locale,
-                currency,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
-            </ThemedText>
-            <ThemedText style={styles.statLabel}>límite diario</ThemedText>
-          </View>
+          <InfoTooltip
+            title="Límite Diario de Compras"
+            content={`Tu límite de compras diario es de ${formatCurrency(dailyPurchaseLimit, { locale, currency })}. Este límite se establece por seguridad y se reinicia automáticamente cada día. También tienes un límite para cajeros de ${formatCurrency(dailyATMLimit, { locale, currency })} diarios.`}
+            placement="bottom"
+          >
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>
+                {formatCurrency(dailyPurchaseLimit, {
+                  locale,
+                  currency,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
+              </ThemedText>
+              <View style={styles.statLabelWithIcon}>
+                <ThemedText style={styles.statLabel}>límite diario</ThemedText>
+                <InfoIcon size={12} opacity={0.3} />
+              </View>
+            </View>
+          </InfoTooltip>
         </View>
       ) : (
         <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>
-              {formatCurrency(spendingLimit, {
-                locale,
-                currency,
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
-            </ThemedText>
-            <ThemedText style={styles.statLabel}>límite</ThemedText>
-          </View>
+          <InfoTooltip
+            title="Límite de Gasto"
+            content={`Esta tarjeta virtual tiene un límite máximo de ${formatCurrency(spendingLimit, { locale, currency })}. ${isReloadable ? 'Puedes recargarla múltiples veces hasta este límite.' : 'Es una tarjeta de un solo uso, ideal para compras online seguras.'}`}
+            placement="bottom"
+          >
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>
+                {formatCurrency(spendingLimit, {
+                  locale,
+                  currency,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
+              </ThemedText>
+              <View style={styles.statLabelWithIcon}>
+                <ThemedText style={styles.statLabel}>límite</ThemedText>
+                <InfoIcon size={12} opacity={0.3} />
+              </View>
+            </View>
+          </InfoTooltip>
           <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <ThemedText style={styles.statValue}>
-              {isReloadable ? '∞' : '1×'}
-            </ThemedText>
-            <ThemedText style={styles.statLabel}>
-              {isReloadable ? 'recargas' : 'uso único'}
-            </ThemedText>
-          </View>
+          <InfoTooltip
+            title={isReloadable ? 'Tarjeta Recargable' : 'Tarjeta de Uso Único'}
+            content={
+              isReloadable
+                ? 'Esta tarjeta virtual es recargable. Puedes agregar fondos ilimitadamente y usarla múltiples veces. Ideal para uso frecuente con máxima flexibilidad.'
+                : 'Esta es una tarjeta virtual de un solo uso. Una vez utilizada, se desactiva automáticamente. Perfecta para compras únicas con máxima seguridad.'
+            }
+            placement="bottom"
+          >
+            <View style={styles.statItem}>
+              <ThemedText style={styles.statValue}>
+                {isReloadable ? '∞' : '1×'}
+              </ThemedText>
+              <View style={styles.statLabelWithIcon}>
+                <ThemedText style={styles.statLabel}>
+                  {isReloadable ? 'recargas' : 'uso único'}
+                </ThemedText>
+                <InfoIcon size={12} opacity={0.3} />
+              </View>
+            </View>
+          </InfoTooltip>
         </View>
       )}
 
       {/* Barra de progreso minimalista - Solo para crédito con uso */}
       {isCredit && creditLimit > 0 && usedCredit > 0 && (
-        <Animated.View 
-          style={styles.progressContainer}
-          entering={FadeIn.duration(400)}
+        <InfoTooltip
+          title="Indicador de Uso de Crédito"
+          content={`Este indicador muestra qué tan cerca estás de tu límite de crédito. ${
+            usagePercentage >= 90
+              ? '⚠️ Estás cerca del límite. Considera hacer un pago pronto.'
+              : usagePercentage >= 75
+              ? '⚡ Uso alto. Un pago pronto ayudará a tu score crediticio.'
+              : usagePercentage >= 50
+              ? '✓ Uso moderado. Mantén un buen control de tus gastos.'
+              : '✓ Excelente manejo. Estás usando tu crédito responsablemente.'
+          }`}
+          placement="bottom"
         >
-          <View style={styles.progressTrack}>
-            <Animated.View 
-              style={[
-                styles.progressBar,
-                { 
-                  width: `${Math.min(usagePercentage, 100)}%`,
-                  backgroundColor: usageColors.fg,
-                }
-              ]}
-              entering={FadeIn.duration(600)}
-            />
-          </View>
-        </Animated.View>
+          <Animated.View 
+            style={styles.progressContainer}
+            entering={FadeIn.duration(400)}
+          >
+            <View style={styles.progressTrack}>
+              <Animated.View 
+                style={[
+                  styles.progressBar,
+                  { 
+                    width: `${Math.min(usagePercentage, 100)}%`,
+                    backgroundColor: usageColors.fg,
+                  }
+                ]}
+                entering={FadeIn.duration(600)}
+              />
+            </View>
+          </Animated.View>
+        </InfoTooltip>
       )}
     </Animated.View>
   );
@@ -314,6 +414,11 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
     letterSpacing: -1.5,
     color: theme.colors.text,
   },
+  heroLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   heroLabel: {
     fontSize: 11,
     fontWeight: '500',
@@ -321,6 +426,10 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
     letterSpacing: 0.8,
     opacity: 0.5,
     color: theme.colors.textSecondary,
+  },
+  infoIconWrapper: {
+    paddingVertical: 2,
+    paddingHorizontal: 2,
   },
   // Stats row minimalista
   statsRow: {
@@ -338,6 +447,11 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
     fontWeight: '600',
     letterSpacing: -0.3,
     color: theme.colors.text,
+  },
+  statLabelWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
   },
   statLabel: {
     fontSize: 10,
