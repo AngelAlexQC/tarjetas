@@ -267,15 +267,12 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
     };
   });
   
-  // Breathing y floating del cuerpo
+  // Breathing suave del cuerpo - sin movimiento de posición
   const bodyStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(bodyHover.value, [-1, 0, 1], [4, 0, -4]);
-    const rotateZ = interpolate(bodyHover.value, [-1, 0, 1], [-3, 0, 3]);
-    const scaleY = interpolate(bodyHover.value, [-1, 0, 1], [0.98, 1, 1.02]);
+    // Solo breathing sutil, sin translateY ni rotateZ
+    const scaleY = interpolate(bodyHover.value, [-1, 0, 1], [0.99, 1, 1.01]);
     return {
       transform: [
-        { translateY },
-        { rotateZ: `${rotateZ}deg` },
         { scaleY },
       ],
     };
