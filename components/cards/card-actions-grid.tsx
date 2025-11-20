@@ -1,12 +1,17 @@
 /**
- * Componente reutilizable para grid de acciones de tarjeta
+ * Componente reutilizable para carousel de acciones de tarjeta
  */
 
-import { StyleSheet, View, Pressable, ActivityIndicator } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { CARD_ACTIONS, CardAction, CardActionType } from '@/constants/card-actions';
-import { useThemedColors } from '@/contexts/tenant-theme-context';
+import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, View, Dimensions } from 'react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const ACTION_BUTTON_SIZE = 90;
+const ACTION_BUTTON_SPACING = 16;
 
 interface CardActionsGridProps {
   cardId: string;
@@ -15,106 +20,123 @@ interface CardActionsGridProps {
 }
 
 export function CardActionsGrid({ cardId, isLoading, onActionPress }: CardActionsGridProps) {
-  const colors = useThemedColors();
+  const { currentTheme } = useTenantTheme();
   const colorScheme = useColorScheme();
 
-  const renderActionButton = (action: CardAction) => {
+  const blendColorWithTheme = (actionColor: string): string => {
+    // Mezclar el color de la acción con el color principal del tema
+    const themeColor = currentTheme?.mainColor || '#007AFF';
+    return actionColor; // Mantener color de acción pero con adaptación
+  };
+
+  const renderActionButton = ({ item: action }: { item: CardAction }) => {
+    const themeColor = currentTheme?.mainColor || '#007AFF';
+    const secondaryColor = currentTheme?.secondaryColor || '#2196F3';
+    const isDark = colorScheme === 'dark';
+    
     return (
-      <Pressable
-        key={action.id}
-        style={({ pressed }) => [
-          styles.actionButton,
-          {
-            backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#ffffff',
-            borderColor: colorScheme === 'dark' ? '#333' : '#e0e0e0',
-            opacity: pressed ? 0.7 : 1,
-            transform: [{ scale: pressed ? 0.95 : 1 }],
-          },
-        ]}
-        onPress={() => onActionPress(action.id)}
-        disabled={isLoading}
-      >
-        <View style={[styles.iconContainer, { backgroundColor: `${action.color}15` }]}>
-          <ThemedText style={styles.icon}>{action.icon}</ThemedText>
-        </View>
-        <ThemedText style={styles.actionTitle} numberOfLines={1}>
+      <View style={styles.actionWrapper}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.actionButton,
+            {
+              transform: [{ scale: pressed ? 0.92 : 1 }],
+            },
+          ]}
+          onPress={() => onActionPress(action.id)}
+          disabled={isLoading}
+        >
+          <LinearGradient
+            colors={isDark 
+              ? [`${themeColor}CC`, `${secondaryColor}CC`]
+              : [themeColor, secondaryColor]
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.buttonGradient}
+          >
+            <View style={styles.iconContainer}>
+              <ThemedText style={styles.icon}>{action.icon}</ThemedText>
+            </View>
+          </LinearGradient>
+        </Pressable>
+        <ThemedText style={styles.actionLabel} numberOfLines={2}>
           {action.title}
         </ThemedText>
-        <ThemedText style={styles.actionDescription} numberOfLines={2}>
-          {action.description}
-        </ThemedText>
-      </Pressable>
+      </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <ThemedText type="subtitle" style={styles.sectionTitle}>
-        Acciones Rápidas
-      </ThemedText>
-      
       {isLoading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" color={currentTheme?.mainColor || '#007AFF'} />
         </View>
       )}
       
-      <View style={styles.grid}>
-        {CARD_ACTIONS.map(renderActionButton)}
-      </View>
+      <FlatList
+        data={CARD_ACTIONS}
+        renderItem={renderActionButton}
+        keyExtractor={(item) => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.carouselContent}
+        ItemSeparatorComponent={() => <View style={{ width: ACTION_BUTTON_SPACING }} />}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
+  },
+  carouselContent: {
     paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 30,
+    paddingVertical: 4,
   },
-  sectionTitle: {
-    marginBottom: 16,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    justifyContent: 'space-between',
+  actionWrapper: {
+    alignItems: 'center',
+    width: ACTION_BUTTON_SIZE,
   },
   actionButton: {
-    width: '48%',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    alignItems: 'center',
+    width: ACTION_BUTTON_SIZE,
+    height: ACTION_BUTTON_SIZE,
+    borderRadius: ACTION_BUTTON_SIZE / 2,
+    overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+    marginBottom: 8,
+  },
+  buttonGradient: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconContainer: {
     width: 56,
     height: 56,
     borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
   icon: {
     fontSize: 28,
+    color: '#FFFFFF',
   },
-  actionTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  actionDescription: {
+  actionLabel: {
     fontSize: 11,
-    opacity: 0.6,
+    fontWeight: '600',
     textAlign: 'center',
-    lineHeight: 14,
+    lineHeight: 13,
   },
   loadingOverlay: {
     position: 'absolute',
@@ -122,10 +144,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
-    borderRadius: 16,
+    borderRadius: 20,
   },
 });

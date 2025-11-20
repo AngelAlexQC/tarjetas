@@ -1,27 +1,27 @@
-import { useState, useRef, useCallback } from "react";
-import {
-  StyleSheet,
-  View,
-  Pressable,
-  FlatList,
-  Dimensions,
-  ViewToken,
-  Alert,
-} from "react-native";
+import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
+import { useTenantTheme } from "@/contexts/tenant-theme-context";
+import { useCardActions } from "@/features/cards/hooks/use-card-actions";
+import type { Card } from "@/features/cards/services/card-service";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTenantTheme } from "@/contexts/tenant-theme-context";
-import { getCardDesign, CARD_TYPE_LABELS } from "@/constants/card-types";
-import { CardActionsGrid } from "@/components/cards/card-actions-grid";
-import { useCardActions } from "@/features/cards/hooks/use-card-actions";
-import type { Card } from "@/features/cards/services/card-service";
+import { useCallback, useRef, useState } from "react";
+import {
+    Alert,
+    Dimensions,
+    FlatList,
+    Pressable,
+    StyleSheet,
+    View,
+    ViewToken,
+} from "react-native";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
-const CARD_HEIGHT = SCREEN_HEIGHT * 0.55;
+const CARD_HEIGHT = 200;
 const CARD_SPACING = 20;
 
 // Datos de ejemplo para las tarjetas
@@ -137,11 +137,7 @@ export default function CardsScreen() {
           end={{ x: 1, y: 1 }}
           style={[styles.card, { opacity: isActive ? 1 : 0.6 }]}
         >
-          <BlurView
-            intensity={15}
-            tint={colorScheme === "dark" ? "dark" : "light"}
-            style={styles.cardBlur}
-          >
+          <View style={styles.cardBlur}>
             {/* Header con tipo de tarjeta y logo */}
             <View style={styles.cardHeader}>
               <View style={styles.cardTypeBadge}>
@@ -212,7 +208,7 @@ export default function CardsScreen() {
                 { backgroundColor: `${cardDesign.textColor}20` },
               ]}
             />
-          </BlurView>
+          </View>
         </LinearGradient>
       </Pressable>
     );
@@ -231,19 +227,27 @@ export default function CardsScreen() {
       </View>
 
       {/* Carrusel de tarjetas */}
-      <FlatList
-        ref={flatListRef}
-        data={mockCards}
-        renderItem={renderCard}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={CARD_WIDTH + CARD_SPACING}
-        decelerationRate="fast"
-        contentContainerStyle={styles.carouselContent}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-      />
+      <View style={styles.carouselContainer}>
+        {mockCards.length > 0 ? (
+          <FlatList
+            ref={flatListRef}
+            data={mockCards}
+            renderItem={renderCard}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={CARD_WIDTH + CARD_SPACING}
+            decelerationRate="fast"
+            contentContainerStyle={styles.carouselContent}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={viewabilityConfig}
+          />
+        ) : (
+          <ThemedText style={{ textAlign: 'center', padding: 20 }}>
+            No hay tarjetas disponibles
+          </ThemedText>
+        )}
+      </View>
 
       {/* Indicadores de paginación */}
       <View style={styles.pagination}>
@@ -262,12 +266,15 @@ export default function CardsScreen() {
         ))}
       </View>
 
-      {/* Grid de acciones de tarjeta */}
+      {/* Carousel de acciones de tarjeta */}
       {activeCard && (
         <View style={styles.actionsSection}>
-          <ThemedText type="subtitle" style={styles.actionsSectionTitle}>
-            Acciones
-          </ThemedText>
+          <View style={styles.actionsSectionHeader}>
+            <ThemedText type="subtitle" style={styles.actionsSectionTitle}>
+              Acciones Rápidas
+            </ThemedText>
+            <View style={[styles.activeIndicator, { backgroundColor: themeColors.primary }]} />
+          </View>
           <CardActionsGrid
             cardId={activeCard.id}
             isLoading={cardActions.isLoading}
@@ -281,12 +288,26 @@ export default function CardsScreen() {
       {/* Botón agregar tarjeta */}
       <View style={styles.addCardContainer}>
         <Pressable
-          style={[styles.actionButton, { borderColor: themeColors.primary }]}
+          style={({ pressed }) => [
+            styles.addCardButton,
+            {
+              backgroundColor: pressed ? themeColors.primary : 'transparent',
+              borderColor: themeColors.primary,
+              opacity: pressed ? 0.8 : 1,
+            }
+          ]}
           onPress={() => Alert.alert("Agregar Tarjeta", "Funcionalidad próximamente")}
         >
-          <ThemedText style={[styles.actionButtonText, { color: themeColors.primary }]}>
-            + Agregar Tarjeta
-          </ThemedText>
+          {({ pressed }) => (
+            <>
+              <ThemedText style={[styles.addCardIcon, { color: pressed ? '#FFFFFF' : themeColors.primary }]}>
+                +
+              </ThemedText>
+              <ThemedText style={[styles.addCardText, { color: pressed ? '#FFFFFF' : themeColors.primary }]}>
+                Agregar Tarjeta
+              </ThemedText>
+            </>
+          )}
         </Pressable>
       </View>
     </ThemedView>
@@ -310,8 +331,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.7,
   },
+  carouselContainer: {
+    height: CARD_HEIGHT + 40,
+    marginBottom: 10,
+  },
   carouselContent: {
     paddingVertical: 20,
+    alignItems: "center",
   },
   cardContainer: {
     height: CARD_HEIGHT,
@@ -330,7 +356,7 @@ const styles = StyleSheet.create({
   },
   cardBlur: {
     flex: 1,
-    padding: 24,
+    padding: 20,
     justifyContent: "space-between",
   },
   cardHeader: {
@@ -340,34 +366,34 @@ const styles = StyleSheet.create({
   },
   cardTypeBadge: {
     backgroundColor: "rgba(255, 255, 255, 0.25)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
   },
   cardTypeText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   cardChip: {
-    width: 48,
-    height: 38,
+    width: 40,
+    height: 32,
     backgroundColor: "rgba(255, 255, 255, 0.3)",
-    borderRadius: 8,
+    borderRadius: 6,
   },
   cardNumberContainer: {
-    marginTop: 40,
+    marginTop: 15,
   },
   cardNumber: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "600",
     letterSpacing: 2,
   },
   cardFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
+    marginTop: 12,
   },
   cardHolderContainer: {
     flex: 1,
@@ -376,43 +402,43 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   cardLabel: {
-    fontSize: 10,
+    fontSize: 8,
     opacity: 0.7,
-    marginBottom: 4,
+    marginBottom: 3,
     letterSpacing: 1,
   },
   cardHolder: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
     textTransform: "uppercase",
   },
   cardExpiry: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
   },
   balanceContainer: {
-    marginTop: 20,
+    marginTop: 12,
     backgroundColor: "rgba(255, 255, 255, 0.15)",
-    padding: 16,
-    borderRadius: 16,
+    padding: 12,
+    borderRadius: 12,
   },
   balanceLabel: {
-    fontSize: 12,
+    fontSize: 10,
     opacity: 0.8,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   balanceAmount: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: "700",
   },
   cardDecoration: {
     position: "absolute",
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    right: -50,
-    bottom: -50,
-    opacity: 0.3,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    right: -40,
+    bottom: -40,
+    opacity: 0.2,
   },
   pagination: {
     flexDirection: "row",
@@ -426,26 +452,48 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   actionsSection: {
-    paddingHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
   },
+  actionsSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 12,
+    gap: 8,
+  },
   actionsSectionTitle: {
-    marginBottom: 16,
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "700",
+  },
+  activeIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   addCardContainer: {
     paddingHorizontal: 20,
     paddingBottom: 30,
   },
-  actionButton: {
-    padding: 16,
+  addCardButton: {
+    flexDirection: 'row',
+    padding: 18,
     borderRadius: 16,
     borderWidth: 2,
     alignItems: "center",
+    justifyContent: 'center',
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  actionButtonText: {
+  addCardIcon: {
+    fontSize: 24,
+    fontWeight: "700",
+  },
+  addCardText: {
     fontSize: 16,
     fontWeight: "600",
   },

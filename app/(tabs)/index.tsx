@@ -1,13 +1,13 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { getTenantTheme } from "@/constants/tenant-themes";
+import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { useTenantTheme } from "@/contexts/tenant-theme-context";
-import { getTenantTheme } from "@/constants/tenant-themes";
 import { useRouter } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 interface Tenant {
   slug: string;
