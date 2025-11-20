@@ -1,17 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
-
-export interface TenantTheme {
-  slug: string;
-  name: string;
-  mainColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  gradientColors: string[];
-  textOnPrimary: string;
-  textOnSecondary: string;
-}
+import { TenantTheme, defaultTheme } from '@/constants/tenant-themes';
 
 interface TenantThemeContextType {
   currentTheme: TenantTheme | null;
@@ -20,17 +10,6 @@ interface TenantThemeContextType {
   clearTenant: () => Promise<void>;
   isLoading: boolean;
 }
-
-const defaultTheme: TenantTheme = {
-  slug: 'default',
-  name: 'Default',
-  mainColor: '#0a7ea4',
-  secondaryColor: '#2196F3',
-  accentColor: '#FF9800',
-  gradientColors: ['#0a7ea4', '#2196F3'],
-  textOnPrimary: '#FFFFFF',
-  textOnSecondary: '#FFFFFF',
-};
 
 const TenantThemeContext = createContext<TenantThemeContextType | undefined>(undefined);
 

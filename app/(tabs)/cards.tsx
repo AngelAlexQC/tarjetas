@@ -11,6 +11,7 @@ import {
     Alert,
     Dimensions,
     FlatList,
+    Image,
     Pressable,
     StyleSheet,
     View,
@@ -208,11 +209,13 @@ export default function CardsScreen() {
     <ThemedView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <View style={[styles.logoContainer, { backgroundColor: theme.tenant.mainColor + '20' }]}>
+          <ThemedText style={[styles.logoText, { color: theme.tenant.mainColor }]}>
+            {theme.tenant.name.substring(0, 2).toUpperCase()}
+          </ThemedText>
+        </View>
         <ThemedText type="title" style={styles.title}>
-          Mis Tarjetas
-        </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          {theme.tenant.name || "Institución Financiera"}
+          {theme.tenant.name}
         </ThemedText>
       </View>
 
@@ -312,14 +315,24 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 20,
     paddingHorizontal: 20,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  logoContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoText: {
+    fontSize: 18,
+    fontWeight: "700",
   },
   title: {
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    opacity: 0.7,
+    fontSize: 20,
   },
   carouselContainer: {
     height: CARD_HEIGHT + 40,
