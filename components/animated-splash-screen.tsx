@@ -95,110 +95,120 @@ const DragonflyComponent = ({ progress }: DragonflyProps) => {
         viewBox="0 0 300 300"
       >
       <Defs>
-        <RadialGradient id="bodyGrad" cx="50%" cy="50%">
-          <Stop offset="0%" stopColor="#00D4FF" stopOpacity="1" />
-          <Stop offset="50%" stopColor="#9D4EDD" stopOpacity="0.9" />
-          <Stop offset="100%" stopColor="#0066FF" stopOpacity="0.8" />
-        </RadialGradient>
         <RadialGradient id="wingGrad1" cx="30%" cy="30%">
-          <Stop offset="0%" stopColor="#00FFB8" stopOpacity="0.4" />
-          <Stop offset="40%" stopColor="#00D4FF" stopOpacity="0.25" />
+          <Stop offset="0%" stopColor="#00FFB8" stopOpacity="0.5" />
+          <Stop offset="50%" stopColor="#00D4FF" stopOpacity="0.3" />
           <Stop offset="100%" stopColor="#9D4EDD" stopOpacity="0.15" />
         </RadialGradient>
         <RadialGradient id="wingGrad2" cx="70%" cy="30%">
-          <Stop offset="0%" stopColor="#FFD700" stopOpacity="0.4" />
-          <Stop offset="40%" stopColor="#FF1744" stopOpacity="0.25" />
-          <Stop offset="100%" stopColor="#9D4EDD" stopOpacity="0.15" />
+          <Stop offset="0%" stopColor="#00D4FF" stopOpacity="0.5" />
+          <Stop offset="50%" stopColor="#9D4EDD" stopOpacity="0.3" />
+          <Stop offset="100%" stopColor="#0066FF" stopOpacity="0.15" />
         </RadialGradient>
       </Defs>
 
-      {/* Ala superior izquierda */}
+      {/* Ala superior izquierda - Forma geométrica puntiaguda */}
       <Path
-        d="M 150 150 Q 80 100, 70 60 Q 65 40, 75 30 Q 90 25, 100 40 Q 120 80, 150 150 Z"
+        d="M 150 150 L 70 100 L 55 70 L 60 50 L 75 45 L 95 60 L 120 110 Z"
         fill="url(#wingGrad1)"
         stroke="#00D4FF"
-        strokeWidth="1.5"
-        opacity="0.8"
+        strokeWidth="2"
+        opacity="0.85"
       />
-
-      {/* Ala superior derecha */}
+      
+      {/* Ala superior derecha - Forma geométrica puntiaguda */}
       <Path
-        d="M 150 150 Q 220 100, 230 60 Q 235 40, 225 30 Q 210 25, 200 40 Q 180 80, 150 150 Z"
+        d="M 150 150 L 230 100 L 245 70 L 240 50 L 225 45 L 205 60 L 180 110 Z"
         fill="url(#wingGrad2)"
-        stroke="#FFD700"
-        strokeWidth="1.5"
-        opacity="0.8"
+        stroke="#00D4FF"
+        strokeWidth="2"
+        opacity="0.85"
       />
 
-      {/* Ala inferior izquierda */}
+      {/* Ala inferior izquierda - Más pequeña y angular */}
       <Path
-        d="M 150 150 Q 90 180, 80 210 Q 75 230, 85 240 Q 100 245, 110 230 Q 130 190, 150 150 Z"
+        d="M 150 150 L 85 185 L 70 210 L 75 225 L 90 230 L 105 215 L 130 175 Z"
         fill="url(#wingGrad1)"
         stroke="#00FFB8"
-        strokeWidth="1.5"
-        opacity="0.7"
+        strokeWidth="2"
+        opacity="0.75"
       />
 
-      {/* Ala inferior derecha */}
+      {/* Ala inferior derecha - Más pequeña y angular */}
       <Path
-        d="M 150 150 Q 210 180, 220 210 Q 225 230, 215 240 Q 200 245, 190 230 Q 170 190, 150 150 Z"
+        d="M 150 150 L 215 185 L 230 210 L 225 225 L 210 230 L 195 215 L 170 175 Z"
         fill="url(#wingGrad2)"
-        stroke="#9D4EDD"
-        strokeWidth="1.5"
-        opacity="0.7"
-      />
-
-      {/* Cuerpo - Abdomen segmentado */}
-      <Path
-        d="M 150 140 L 150 220 Q 150 230, 145 235 Q 150 240, 155 235 Q 150 230, 150 220 Z"
-        fill="url(#bodyGrad)"
-        stroke="#0066FF"
+        stroke="#00FFB8"
         strokeWidth="2"
+        opacity="0.75"
       />
 
-      {/* Tórax */}
+      {/* Detalles internos de alas superiores - Nervaduras geométricas */}
       <Path
-        d="M 145 140 Q 145 120, 150 115 Q 155 120, 155 140 Z"
-        fill="url(#bodyGrad)"
+        d="M 150 150 L 80 90 M 150 150 L 70 80 M 90 100 L 75 70"
         stroke="#00D4FF"
-        strokeWidth="2"
+        strokeWidth="1"
+        opacity="0.4"
+        fill="none"
+      />
+      <Path
+        d="M 150 150 L 220 90 M 150 150 L 230 80 M 210 100 L 225 70"
+        stroke="#00D4FF"
+        strokeWidth="1"
+        opacity="0.4"
+        fill="none"
       />
 
-      {/* Cabeza */}
+      {/* Cuerpo - Delgado y recto (más geométrico) */}
       <Path
-        d="M 150 115 m -12 0 a 12 12 0 1 0 24 0 a 12 12 0 1 0 -24 0"
+        d="M 147 145 L 147 230 L 153 230 L 153 145 Z"
+        fill="#00D4FF"
+        opacity="0.9"
+      />
+      
+      {/* Segmentos del abdomen */}
+      <Path d="M 147 160 L 153 160" stroke="#0066FF" strokeWidth="2" opacity="0.6" />
+      <Path d="M 147 175 L 153 175" stroke="#0066FF" strokeWidth="2" opacity="0.6" />
+      <Path d="M 147 190 L 153 190" stroke="#0066FF" strokeWidth="2" opacity="0.6" />
+      <Path d="M 147 205 L 153 205" stroke="#0066FF" strokeWidth="2" opacity="0.6" />
+      <Path d="M 147 220 L 153 220" stroke="#0066FF" strokeWidth="2" opacity="0.6" />
+
+      {/* Tórax - Forma angular */}
+      <Path
+        d="M 145 145 L 145 130 L 150 125 L 155 130 L 155 145 Z"
+        fill="#00D4FF"
+        stroke="#00FFB8"
+        strokeWidth="1.5"
+        opacity="0.95"
+      />
+
+      {/* Cabeza - Más pequeña y angular */}
+      <Path
+        d="M 146 125 L 146 115 L 150 110 L 154 115 L 154 125 Z"
         fill="#9D4EDD"
         stroke="#FFD700"
         strokeWidth="1.5"
       />
 
-      {/* Ojos holográficos */}
+      {/* Ojos - Puntos brillantes */}
       <Path
-        d="M 143 113 m -5 0 a 5 5 0 1 0 10 0 a 5 5 0 1 0 -10 0"
+        d="M 148 118 m -2 0 a 2 2 0 1 0 4 0 a 2 2 0 1 0 -4 0"
         fill="#00FFE5"
-        opacity="0.9"
+        opacity="1"
       />
       <Path
-        d="M 157 113 m -5 0 a 5 5 0 1 0 10 0 a 5 5 0 1 0 -10 0"
+        d="M 152 118 m -2 0 a 2 2 0 1 0 4 0 a 2 2 0 1 0 -4 0"
         fill="#00FFE5"
-        opacity="0.9"
+        opacity="1"
       />
 
-      {/* Detalles iridiscentes en las alas */}
-      <Path
-        d="M 90 80 Q 100 70, 110 85"
-        stroke="#FFD700"
-        strokeWidth="1"
-        fill="none"
-        opacity="0.6"
-      />
-      <Path
-        d="M 210 80 Q 200 70, 190 85"
-        stroke="#00FFE5"
-        strokeWidth="1"
-        fill="none"
-        opacity="0.6"
-      />
+      {/* Patas delanteras - Líneas delgadas */}
+      <Path d="M 148 135 L 135 145" stroke="#00D4FF" strokeWidth="1.5" opacity="0.7" />
+      <Path d="M 152 135 L 165 145" stroke="#00D4FF" strokeWidth="1.5" opacity="0.7" />
+      
+      {/* Patas medias */}
+      <Path d="M 148 140 L 130 155" stroke="#00D4FF" strokeWidth="1.5" opacity="0.7" />
+      <Path d="M 152 140 L 170 155" stroke="#00D4FF" strokeWidth="1.5" opacity="0.7" />
     </Svg>
     </Animated.View>
   );
