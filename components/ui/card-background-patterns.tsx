@@ -1,6 +1,6 @@
 import type { CardBrand } from '@/constants/card-types';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Pattern, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 interface CardPatternProps {
