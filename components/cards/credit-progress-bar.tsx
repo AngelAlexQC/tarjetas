@@ -10,6 +10,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  LinearTransition,
 } from 'react-native-reanimated';
 
 export interface CreditProgressBarProps {
@@ -44,8 +45,9 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
   useEffect(() => {
     if (animated) {
       progressWidth.value = withSpring(percentage, {
-        damping: 15,
-        stiffness: 100,
+        damping: 25,
+        stiffness: 90,
+        mass: 1,
       });
     } else {
       progressWidth.value = percentage;
@@ -60,10 +62,19 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
   const progressColor = getProgressColor(percentage);
 
   return (
-    <View style={styles.container}>
+    <Animated.View 
+      style={styles.container}
+      layout={LinearTransition.springify().damping(25).stiffness(90)}
+    >
       {/* Progress Bar */}
-      <View style={styles.trackContainer}>
-        <View style={[styles.track, { backgroundColor: `${progressColor}10` }]}>
+      <Animated.View 
+        style={styles.trackContainer}
+        layout={LinearTransition.springify().damping(25).stiffness(90)}
+      >
+        <Animated.View 
+          style={[styles.track, { backgroundColor: `${progressColor}10` }]}
+          layout={LinearTransition.springify().damping(25).stiffness(90)}
+        >
           <Animated.View
             style={[
               styles.fill,
@@ -72,16 +83,20 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
               },
               animatedStyle,
             ]}
+            layout={LinearTransition.springify().damping(25).stiffness(90)}
           />
-        </View>
+        </Animated.View>
         <ThemedText style={styles.percentageText}>
           {Math.round(percentage)}%
         </ThemedText>
-      </View>
+      </Animated.View>
 
       {/* Labels opcionales */}
       {showLabels && (
-        <View style={styles.labelsContainer}>
+        <Animated.View 
+          style={styles.labelsContainer}
+          layout={LinearTransition.springify().damping(25).stiffness(90)}
+        >
           <View style={styles.labelItem}>
             <ThemedText style={styles.labelValue}>
               ${used.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -94,9 +109,9 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
             </ThemedText>
             <ThemedText style={styles.labelText}>total</ThemedText>
           </View>
-        </View>
+        </Animated.View>
       )}
-    </View>
+    </Animated.View>
   );
 };
 

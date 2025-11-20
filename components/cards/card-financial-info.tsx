@@ -5,11 +5,11 @@
 
 import { ThemedText } from '@/components/themed-text';
 import type { Card } from '@/features/cards/services/card-service';
-import { formatCurrency } from '@/utils/formatters';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import { AnimatedNumber } from '@/components/ui/animated-number';
 import { CreditProgressBar } from './credit-progress-bar';
 import { StatusBadge } from './status-badge';
 
@@ -38,8 +38,9 @@ export const CardFinancialInfo: React.FC<CardFinancialInfoProps> = ({
 
   return (
     <Animated.View
-      entering={FadeIn.duration(300)}
-      exiting={FadeOut.duration(200)}
+      entering={FadeIn.duration(500)}
+      exiting={FadeOut.duration(300)}
+      layout={LinearTransition.springify().damping(25).stiffness(90)}
       style={styles.container}
     >
       {Platform.OS === 'ios' ? (
@@ -99,9 +100,15 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   currency,
 }) => {
   return (
-    <View style={styles.content}>
+    <Animated.View 
+      style={styles.content}
+      layout={LinearTransition.springify().damping(25).stiffness(90)}
+    >
       {/* Header con título y badge */}
-      <View style={styles.header}>
+      <Animated.View 
+        style={styles.header}
+        layout={LinearTransition.springify().damping(25).stiffness(90)}
+      >
         <View style={styles.headerLeft}>
           <ThemedText style={styles.headerIcon}>💰</ThemedText>
           <ThemedText style={styles.headerTitle}>
@@ -109,54 +116,62 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
           </ThemedText>
         </View>
         <StatusBadge status={card.status} size="small" />
-      </View>
+      </Animated.View>
 
       {/* Balance principal */}
-      <View style={styles.balanceSection}>
-        <ThemedText style={styles.balanceAmount}>
-          {formatCurrency(balance, { locale, currency })}
-        </ThemedText>
+      <Animated.View 
+        style={styles.balanceSection}
+        layout={LinearTransition.springify().damping(25).stiffness(90)}
+      >
+        <AnimatedNumber 
+          value={balance}
+          style={styles.balanceAmount}
+          prefix="$"
+          decimals={2}
+          duration={1000}
+          locale={locale}
+        />
         <ThemedText style={styles.balanceCurrency}>{currency}</ThemedText>
-      </View>
+      </Animated.View>
 
       {/* Progress bar para tarjetas de crédito */}
       {isCredit && creditLimit > 0 && (
-        <View style={styles.progressSection}>
+        <Animated.View 
+          style={styles.progressSection}
+          entering={FadeIn.duration(600).springify()}
+          exiting={FadeOut.duration(400)}
+          layout={LinearTransition.springify().damping(25).stiffness(90)}
+        >
           <CreditProgressBar
             used={usedCredit}
             total={creditLimit}
             showLabels={true}
           />
-        </View>
+        </Animated.View>
       )}
 
       {/* Información adicional */}
-      <View style={styles.metadataSection}>
+      <Animated.View 
+        style={styles.metadataSection}
+        layout={LinearTransition.springify().damping(25).stiffness(90)}
+      >
         {isCredit ? (
-          <>
-            <View style={styles.metadataItem}>
-              <ThemedText style={styles.metadataIcon}>📅</ThemedText>
-              <ThemedText style={styles.metadataText}>
-                Último pago: Hace {lastPaymentDays} días
-              </ThemedText>
-            </View>
-            <View style={styles.metadataItem}>
-              <ThemedText style={styles.metadataIcon}>📅</ThemedText>
-              <ThemedText style={styles.metadataText}>
-                Próximo corte: En {nextPaymentDays} días
-              </ThemedText>
-            </View>
-          </>
+          <View style={styles.metadataItem}>
+            <ThemedText style={styles.metadataIcon}>📅</ThemedText>
+            <ThemedText style={styles.metadataText}>
+              Próximo corte en {nextPaymentDays} días · Último pago hace {lastPaymentDays}d
+            </ThemedText>
+          </View>
         ) : (
           <View style={styles.metadataItem}>
             <ThemedText style={styles.metadataIcon}>📊</ThemedText>
             <ThemedText style={styles.metadataText}>
-              Movimientos hoy: 3 transacciones
+              3 movimientos hoy
             </ThemedText>
           </View>
         )}
-      </View>
-    </View>
+      </Animated.View>
+    </Animated.View>
   );
 };
 
@@ -164,90 +179,90 @@ const styles = StyleSheet.create({
   container: {
     width: SCREEN_WIDTH * 0.85,
     alignSelf: 'center',
-    marginTop: 16,
-    marginBottom: 8,
-    borderRadius: 20,
+    marginTop: 12,
+    marginBottom: 6,
+    borderRadius: 16,
     overflow: Platform.OS === 'ios' ? 'hidden' : 'visible',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
       },
       android: {
-        elevation: 4,
+        elevation: 3,
       },
     }),
   },
   blurContainer: {
-    borderRadius: 20,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     overflow: 'hidden',
   },
   androidContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.05)',
   },
   content: {
-    padding: 16,
+    padding: 12,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   headerIcon: {
-    fontSize: 16,
+    fontSize: 14,
   },
   headerTitle: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '500',
-    opacity: 0.7,
+    opacity: 0.6,
   },
   balanceSection: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 6,
-    marginBottom: 12,
+    gap: 4,
+    marginBottom: 8,
   },
   balanceAmount: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '700',
     letterSpacing: -1,
-    lineHeight: 40,
+    lineHeight: 36,
   },
   balanceCurrency: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
     opacity: 0.5,
   },
   progressSection: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   metadataSection: {
-    gap: 6,
+    gap: 4,
   },
   metadataItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   metadataIcon: {
-    fontSize: 14,
+    fontSize: 12,
   },
   metadataText: {
-    fontSize: 14,
-    opacity: 0.7,
-    lineHeight: 20,
+    fontSize: 11,
+    opacity: 0.65,
+    lineHeight: 16,
   },
 });

@@ -8,102 +8,95 @@ interface CardPatternProps {
   height: number;
 }
 
-// Patrón para Visa: Mesh waves topográficas con gradientes dinámicos
+// Patrón para Visa: Ondas suaves y minimalistas con sombras sutiles
 const VisaPattern = ({ width, height }: { width: number; height: number }) => (
   <Svg width={width} height={height} style={{ position: 'absolute' }}>
     <Defs>
-      <RadialGradient id="visaGlow" cx="50%" cy="50%" r="50%">
-        <Stop offset="0%" stopColor="rgba(255,255,255,0.08)" />
-        <Stop offset="100%" stopColor="rgba(255,255,255,0)" />
+      <RadialGradient id="visaGlow" cx="70%" cy="30%" r="60%">
+        <Stop offset="0%" stopColor="rgba(0,0,0,0.08)" />
+        <Stop offset="100%" stopColor="rgba(0,0,0,0)" />
       </RadialGradient>
-      <Pattern id="visaPattern" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
-        <Path d="M0,60 Q30,40 60,60 T120,60" stroke="rgba(255,255,255,0.15)" strokeWidth="4" fill="none" />
-        <Path d="M0,80 Q30,60 60,80 T120,80" stroke="rgba(255,255,255,0.1)" strokeWidth="3" fill="none" />
-        <Path d="M0,40 Q30,20 60,40 T120,40" stroke="rgba(255,255,255,0.08)" strokeWidth="2" fill="none" />
-        <Path d="M0,20 Q30,10 60,15 T120,20" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" fill="none" />
-        <Path d="M0,100 Q30,90 60,95 T120,100" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" fill="none" />
-        <Circle cx="90" cy="30" r="35" fill="url(#visaGlow)" />
-        <Circle cx="20" cy="90" r="25" fill="url(#visaGlow)" opacity="0.5" />
-        <Rect x="0" y="0" width="120" height="120" fill="rgba(255,255,255,0.02)" opacity="0.3" />
+      <LinearGradient id="visaLine" x1="0%" y1="0%" x2="100%" y2="0%">
+        <Stop offset="0%" stopColor="rgba(0,0,0,0)" />
+        <Stop offset="50%" stopColor="rgba(0,0,0,0.12)" />
+        <Stop offset="100%" stopColor="rgba(0,0,0,0)" />
+      </LinearGradient>
+      <Pattern id="visaPattern" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+        <Path d="M0,70 Q35,55 70,70 T140,70" stroke="url(#visaLine)" strokeWidth="2" fill="none" />
+        <Path d="M0,90 Q35,75 70,90 T140,90" stroke="rgba(0,0,0,0.08)" strokeWidth="1.5" fill="none" />
+        <Path d="M0,50 Q35,35 70,50 T140,50" stroke="rgba(0,0,0,0.06)" strokeWidth="1" fill="none" />
+        <Circle cx="100" cy="40" r="50" fill="url(#visaGlow)" />
+        <Circle cx="30" cy="100" r="30" fill="url(#visaGlow)" opacity="0.6" />
       </Pattern>
     </Defs>
     <Rect width={width} height={height} fill="url(#visaPattern)" />
   </Svg>
 );
 
-// Patrón para Mastercard: Mesh gradient orgánico con burbujas
+// Patrón para Mastercard: Círculos entrelazados sutiles con profundidad
 const MastercardPattern = ({ width, height }: { width: number; height: number }) => (
   <Svg width={width} height={height} style={{ position: 'absolute' }}>
     <Defs>
       <RadialGradient id="mcGlow1" cx="50%" cy="50%" r="50%">
-        <Stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
-        <Stop offset="100%" stopColor="rgba(255,255,255,0.02)" />
+        <Stop offset="0%" stopColor="rgba(0,0,0,0.1)" />
+        <Stop offset="100%" stopColor="rgba(0,0,0,0)" />
       </RadialGradient>
       <RadialGradient id="mcGlow2" cx="50%" cy="50%" r="50%">
-        <Stop offset="0%" stopColor="rgba(255,255,255,0.08)" />
-        <Stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        <Stop offset="0%" stopColor="rgba(0,0,0,0.08)" />
+        <Stop offset="100%" stopColor="rgba(0,0,0,0)" />
       </RadialGradient>
-      <Pattern id="mastercardPattern" x="0" y="0" width="110" height="110" patternUnits="userSpaceOnUse">
-        <Ellipse cx="30" cy="30" rx="25" ry="30" fill="url(#mcGlow1)" />
-        <Ellipse cx="80" cy="30" rx="28" ry="22" fill="url(#mcGlow2)" />
-        <Ellipse cx="55" cy="60" rx="35" ry="40" fill="rgba(255,255,255,0.04)" />
-        <Circle cx="25" cy="85" r="18" fill="url(#mcGlow2)" />
-        <Circle cx="85" cy="85" r="15" fill="rgba(255,255,255,0.06)" />
-        <Path d="M10,10 Q55,40 100,10" stroke="rgba(255,255,255,0.05)" strokeWidth="2" fill="none" />
-        <Path d="M10,100 Q55,70 100,100" stroke="rgba(255,255,255,0.05)" strokeWidth="2" fill="none" />
+      <Pattern id="mastercardPattern" x="0" y="0" width="130" height="130" patternUnits="userSpaceOnUse">
+        <Circle cx="45" cy="45" r="40" fill="url(#mcGlow1)" />
+        <Circle cx="85" cy="45" r="40" fill="url(#mcGlow2)" />
+        <Circle cx="65" cy="75" r="35" fill="rgba(0,0,0,0.06)" />
+        <Circle cx="30" cy="90" r="20" fill="url(#mcGlow2)" opacity="0.6" />
+        <Circle cx="100" cy="90" r="18" fill="rgba(0,0,0,0.07)" opacity="0.6" />
       </Pattern>
     </Defs>
     <Rect width={width} height={height} fill="url(#mastercardPattern)" />
   </Svg>
 );
 
-// Patrón para American Express: Glass morphism con líneas metálicas
+// Patrón para American Express: Líneas diagonales minimalistas premium
 const AmexPattern = ({ width, height }: { width: number; height: number }) => (
   <Svg width={width} height={height} style={{ position: 'absolute' }}>
     <Defs>
       <LinearGradient id="amexGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <Stop offset="0%" stopColor="rgba(255,255,255,0.15)" />
-        <Stop offset="50%" stopColor="rgba(255,255,255,0.05)" />
-        <Stop offset="100%" stopColor="rgba(255,255,255,0.12)" />
+        <Stop offset="0%" stopColor="rgba(0,0,0,0.12)" />
+        <Stop offset="50%" stopColor="rgba(0,0,0,0.05)" />
+        <Stop offset="100%" stopColor="rgba(0,0,0,0.1)" />
       </LinearGradient>
-      <Pattern id="amexPattern" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <Rect x="0" y="0" width="80" height="80" fill="rgba(255,255,255,0.02)" />
-        <Line x1="0" y1="15" x2="80" y2="15" stroke="url(#amexGradient)" strokeWidth="3" />
-        <Line x1="0" y1="25" x2="80" y2="25" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
-        <Line x1="0" y1="35" x2="80" y2="35" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
-        <Line x1="0" y1="45" x2="80" y2="45" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
-        <Line x1="0" y1="55" x2="80" y2="55" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-        <Line x1="0" y1="65" x2="80" y2="65" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
-        <Rect x="25" y="0" width="15" height="80" fill="rgba(255,255,255,0.04)" />
-        <Rect x="50" y="0" width="8" height="80" fill="rgba(255,255,255,0.06)" />
+      <Pattern id="amexPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+        <Line x1="0" y1="20" x2="100" y2="20" stroke="url(#amexGradient)" strokeWidth="2" />
+        <Line x1="0" y1="35" x2="100" y2="35" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+        <Line x1="0" y1="50" x2="100" y2="50" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
+        <Line x1="0" y1="65" x2="100" y2="65" stroke="url(#amexGradient)" strokeWidth="1.5" />
+        <Line x1="0" y1="80" x2="100" y2="80" stroke="rgba(0,0,0,0.05)" strokeWidth="0.8" />
+        <Rect x="35" y="0" width="12" height="100" fill="rgba(0,0,0,0.06)" />
       </Pattern>
     </Defs>
     <Rect width={width} height={height} fill="url(#amexPattern)" />
   </Svg>
 );
 
-// Patrón para Discover: Noise gradient con constelaciones dinámicas
+// Patrón para Discover: Estrellas sutiles con profundidad
 const DiscoverPattern = ({ width, height }: { width: number; height: number }) => (
   <Svg width={width} height={height} style={{ position: 'absolute' }}>
     <Defs>
       <RadialGradient id="discoverStar" cx="50%" cy="50%" r="50%">
-        <Stop offset="0%" stopColor="rgba(255,255,255,0.2)" />
-        <Stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        <Stop offset="0%" stopColor="rgba(0,0,0,0.15)" />
+        <Stop offset="100%" stopColor="rgba(0,0,0,0)" />
       </RadialGradient>
-      <Pattern id="discoverPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-        <Rect x="0" y="0" width="100" height="100" fill="rgba(255,255,255,0.015)" />
-        <Circle cx="20" cy="20" r="4" fill="url(#discoverStar)" />
-        <Circle cx="65" cy="35" r="3" fill="rgba(255,255,255,0.15)" />
-        <Circle cx="45" cy="60" r="3.5" fill="url(#discoverStar)" opacity="0.8" />
-        <Circle cx="80" cy="75" r="2" fill="rgba(255,255,255,0.12)" />
-        <Circle cx="30" cy="85" r="2.5" fill="rgba(255,255,255,0.14)" />
-        <Polygon points="20,20 23,17 20,14 17,17" fill="rgba(255,255,255,0.1)" />
-        <Polygon points="65,35 68,32 65,29 62,32" fill="rgba(255,255,255,0.08)" />
-        <Polygon points="45,60 49,56 45,52 41,56" fill="rgba(255,255,255,0.09)" />
-        <Line x1="20" y1="20" x2="45" y2="60" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-        <Line x1="65" y1="35" x2="45" y2="60" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-        <Circle cx="85" cy="15" r="1.5" fill="rgba(255,255,255,0.12)" />
-        <Circle cx="10" cy="50" r="1.2" fill="rgba(255,255,255,0.1)" />
+      <Pattern id="discoverPattern" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+        <Circle cx="25" cy="25" r="3" fill="url(#discoverStar)" />
+        <Circle cx="70" cy="40" r="2.5" fill="rgba(0,0,0,0.12)" />
+        <Circle cx="50" cy="70" r="3" fill="url(#discoverStar)" opacity="0.7" />
+        <Circle cx="90" cy="85" r="2" fill="rgba(0,0,0,0.1)" />
+        <Circle cx="35" cy="95" r="2" fill="rgba(0,0,0,0.11)" />
+        <Circle cx="95" cy="20" r="1.5" fill="rgba(0,0,0,0.1)" />
+        <Circle cx="15" cy="60" r="1.5" fill="rgba(0,0,0,0.09)" />
+        <Path d="M25,25 L23,20 L25,15 L27,20 Z" fill="rgba(0,0,0,0.08)" />
+        <Path d="M70,40 L68,36 L70,32 L72,36 Z" fill="rgba(0,0,0,0.07)" />
       </Pattern>
     </Defs>
     <Rect width={width} height={height} fill="url(#discoverPattern)" />

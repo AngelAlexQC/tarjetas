@@ -4,6 +4,7 @@ import { CardAction, CardActionType, getAvailableActions } from '@/constants/car
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { LinearTransition, FadeIn, FadeOut } from 'react-native-reanimated';
 
 const ACTION_BUTTON_SIZE = 80;
 const ACTION_BUTTON_SPACING = 14;
@@ -24,7 +25,12 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
     const shadowColor = theme.colors.shadowElevated;
     
     return (
-      <View style={styles.actionWrapper}>
+      <Animated.View 
+        style={styles.actionWrapper}
+        entering={FadeIn.duration(600).springify()}
+        exiting={FadeOut.duration(400)}
+        layout={LinearTransition.springify().damping(25).stiffness(90)}
+      >
         <Pressable
           style={({ pressed }) => [
             styles.actionButton,
@@ -56,7 +62,7 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
               }]}>
                 {(() => {
                   const IconComponent = FinancialIcons[action.icon];
-                  return <IconComponent size={28} color="#FFFFFF" />;
+                  return <IconComponent size={28} color={theme.isDark ? '#E0E0E0' : '#FFFFFF'} />;
                 })()}
               </View>
               
@@ -69,12 +75,15 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
         <ThemedText style={styles.actionLabel} numberOfLines={2}>
           {action.title}
         </ThemedText>
-      </View>
+      </Animated.View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View 
+      style={styles.container}
+      layout={LinearTransition.springify().damping(25).stiffness(90)}
+    >
       {isLoading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={theme.tenant.mainColor} />
@@ -90,7 +99,7 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
         contentContainerStyle={styles.carouselContent}
         ItemSeparatorComponent={() => <View style={{ width: ACTION_BUTTON_SPACING }} />}
       />
-    </View>
+    </Animated.View>
   );
 }
 

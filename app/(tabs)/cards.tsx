@@ -22,6 +22,7 @@ import {
     View,
     ViewToken
 } from "react-native";
+import Animated, { LinearTransition, FadeIn, FadeOut } from "react-native-reanimated";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
@@ -299,7 +300,12 @@ export default function CardsScreen() {
 
         {/* Carousel de acciones de tarjeta */}
         {activeCard && (
-          <View style={styles.actionsSection}>
+          <Animated.View 
+            style={styles.actionsSection}
+            entering={FadeIn.duration(600).springify()}
+            exiting={FadeOut.duration(400)}
+            layout={LinearTransition.springify().damping(25).stiffness(90)}
+          >
             <View style={styles.actionsSectionHeader}>
               <ThemedText type="subtitle" style={styles.actionsSectionTitle}>
                 Acciones Rápidas
@@ -313,15 +319,18 @@ export default function CardsScreen() {
                 cardActions.executeAction(actionType);
               }}
             />
-          </View>
+          </Animated.View>
         )}
 
         {/* Botón agregar a Apple Wallet */}
-        <View style={styles.addCardContainer}>
+        <Animated.View 
+          style={styles.addCardContainer}
+          layout={LinearTransition.springify().damping(25).stiffness(90)}
+        >
           <AddToWalletButton
             onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
           />
-        </View>
+        </Animated.View>
       </ScrollView>
     </ThemedView>
   );
@@ -406,7 +415,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   cardBrandLogoContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 8,
     padding: 6,
     alignItems: 'center',
