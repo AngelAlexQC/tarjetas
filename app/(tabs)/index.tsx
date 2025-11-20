@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { getTenantTheme } from "@/constants/tenant-themes";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -83,7 +83,7 @@ const tenants: Tenant[] = [
 ];
 
 export default function TenantSelectorScreen() {
-  const colorScheme = useColorScheme();
+  const theme = useAppTheme();
   const { setTenant } = useTenantTheme();
   const router = useRouter();
 
@@ -138,7 +138,7 @@ export default function TenantSelectorScreen() {
               {/* Capa de blur glassmorphism */}
               <BlurView
                 intensity={20}
-                tint={colorScheme === "dark" ? "dark" : "light"}
+                tint={theme.isDark ? "dark" : "light"}
                 style={styles.blurContainer}
               >
                 <View style={styles.cardContent}>
@@ -188,7 +188,7 @@ export default function TenantSelectorScreen() {
                 style={[
                   styles.cardBorder,
                   {
-                    borderColor: colorScheme === "dark"
+                    borderColor: theme.isDark
                       ? `${tenant.mainColor}60`
                       : `${tenant.mainColor}40`,
                   },

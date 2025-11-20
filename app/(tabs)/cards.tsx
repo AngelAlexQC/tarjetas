@@ -2,11 +2,9 @@ import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
-import { useTenantTheme } from "@/contexts/tenant-theme-context";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -75,17 +73,9 @@ const mockCards: Card[] = [
 ];
 
 export default function CardsScreen() {
-  const colorScheme = useColorScheme();
-  const { currentTheme } = useTenantTheme();
+  const theme = useAppTheme();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
-  
-  // Colores del tema actual
-  const themeColors = {
-    primary: currentTheme?.mainColor || '#1A73E8',
-    secondary: currentTheme?.secondaryColor || '#0D47A1',
-    border: colorScheme === 'dark' ? '#444' : '#DDD',
-  };
   
   // Hook de acciones de tarjetas (solo si hay tarjeta activa)
   const activeCard = mockCards[activeCardIndex];
@@ -222,7 +212,7 @@ export default function CardsScreen() {
           Mis Tarjetas
         </ThemedText>
         <ThemedText style={styles.subtitle}>
-          {currentTheme?.name || "Institución Financiera"}
+          {theme.tenant.name || "Institución Financiera"}
         </ThemedText>
       </View>
 
@@ -258,7 +248,7 @@ export default function CardsScreen() {
               styles.paginationDot,
               {
                 backgroundColor:
-                  index === activeCardIndex ? themeColors.primary : themeColors.border,
+                  index === activeCardIndex ? theme.tenant.mainColor : theme.colors.border.default,
                 width: index === activeCardIndex ? 24 : 8,
               },
             ]}
@@ -273,7 +263,7 @@ export default function CardsScreen() {
             <ThemedText type="subtitle" style={styles.actionsSectionTitle}>
               Acciones Rápidas
             </ThemedText>
-            <View style={[styles.activeIndicator, { backgroundColor: themeColors.primary }]} />
+            <View style={[styles.activeIndicator, { backgroundColor: theme.tenant.mainColor }]} />
           </View>
           <CardActionsGrid
             cardId={activeCard.id}
@@ -291,8 +281,8 @@ export default function CardsScreen() {
           style={({ pressed }) => [
             styles.addCardButton,
             {
-              backgroundColor: pressed ? themeColors.primary : 'transparent',
-              borderColor: themeColors.primary,
+              backgroundColor: pressed ? theme.tenant.mainColor : 'transparent',
+              borderColor: theme.tenant.mainColor,
               opacity: pressed ? 0.8 : 1,
             }
           ]}
@@ -300,10 +290,10 @@ export default function CardsScreen() {
         >
           {({ pressed }) => (
             <>
-              <ThemedText style={[styles.addCardIcon, { color: pressed ? '#FFFFFF' : themeColors.primary }]}>
+              <ThemedText style={[styles.addCardIcon, { color: pressed ? '#FFFFFF' : theme.tenant.mainColor }]}>
                 +
               </ThemedText>
-              <ThemedText style={[styles.addCardText, { color: pressed ? '#FFFFFF' : themeColors.primary }]}>
+              <ThemedText style={[styles.addCardText, { color: pressed ? '#FFFFFF' : theme.tenant.mainColor }]}>
                 Agregar Tarjeta
               </ThemedText>
             </>
