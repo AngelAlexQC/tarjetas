@@ -2,9 +2,9 @@ import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
-import { useAppTheme } from "@/hooks/use-app-theme";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useRef, useState } from "react";
 import {

@@ -3,17 +3,17 @@
  * Combina tenant theme + design tokens + color scheme
  */
 
+import {
+    ComponentTokens,
+    getButtonGradient,
+    getGlassOverlay,
+    getSurfaceColor,
+    getTextColor,
+    PrimitiveColors,
+    SemanticColors,
+} from '@/constants/design-tokens';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { 
-  SemanticColors, 
-  ComponentTokens,
-  getButtonGradient,
-  getGlassOverlay,
-  getSurfaceColor,
-  getTextColor,
-  PrimitiveColors,
-} from '@/constants/design-tokens';
 
 export type ColorMode = 'light' | 'dark';
 export type GlassIntensity = 'light' | 'medium' | 'heavy';

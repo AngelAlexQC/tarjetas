@@ -1,9 +1,6 @@
 /**
  * @deprecated Este hook está obsoleto. Usa `useAppTheme()` en su lugar.
  * 
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- * 
  * MIGRACIÓN:
  * ```
  * // Antes:
@@ -13,21 +10,23 @@
  * const theme = useAppTheme();
  * const color = theme.colors.text.primary; // o secondary, tertiary, etc.
  * ```
+ * 
+ * Este archivo se mantiene solo para compatibilidad temporal.
  */
 
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAppTheme } from '@/hooks/use-app-theme';
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  _colorName: string
 ) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+  const theme = useAppTheme();
+  const colorFromProps = props[theme.mode];
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    // Fallback al color de texto primario
+    return theme.colors.text.primary;
   }
 }
