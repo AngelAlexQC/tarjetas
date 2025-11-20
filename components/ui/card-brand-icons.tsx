@@ -1,4 +1,4 @@
-import Svg, { Path, Rect, Circle } from "react-native-svg";
+import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 interface BrandIconProps {
   size?: number;

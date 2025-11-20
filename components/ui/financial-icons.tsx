@@ -1,5 +1,5 @@
-import Svg, { Circle, Path, Rect, Line } from "react-native-svg";
 import { ViewStyle } from "react-native";
+import Svg, { Circle, Line, Path, Rect } from "react-native-svg";
 
 interface IconProps {
   size?: number;

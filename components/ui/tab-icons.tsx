@@ -1,4 +1,4 @@
-import Svg, { Path, Circle, Rect, Line } from "react-native-svg";
+import Svg, { Circle, Line, Path, Rect } from "react-native-svg";
 
 interface TabIconProps {
   size?: number;

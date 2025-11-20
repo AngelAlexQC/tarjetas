@@ -1,7 +1,3 @@
-/**
- * Servicio centralizado para acciones de tarjetas
- */
-
 import { CardActionType } from '@/constants/card-actions';
 
 export interface Card {
@@ -23,11 +19,8 @@ export interface CardActionResult {
   data?: any;
 }
 
-// Simulación de llamadas a API
 class CardService {
-  // Bloquear tarjeta
   async blockCard(cardId: string): Promise<CardActionResult> {
-    // Simular delay de red
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     return {
@@ -36,7 +29,6 @@ class CardService {
     };
   }
 
-  // Desbloquear tarjeta
   async unblockCard(cardId: string): Promise<CardActionResult> {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -46,7 +38,6 @@ class CardService {
     };
   }
 
-  // Diferir compra
   async deferPayment(cardId: string, amount: number, months: number): Promise<CardActionResult> {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
@@ -60,7 +51,6 @@ class CardService {
     };
   }
 
-  // Obtener estado de cuenta
   async getStatement(cardId: string, month?: number, year?: number): Promise<CardActionResult> {
     await new Promise(resolve => setTimeout(resolve, 800));
     
@@ -80,7 +70,6 @@ class CardService {
     };
   }
 
-  // Solicitar avance
   async requestAdvance(cardId: string, amount: number): Promise<CardActionResult> {
     await new Promise(resolve => setTimeout(resolve, 1200));
     
@@ -101,7 +90,6 @@ class CardService {
     };
   }
 
-  // Obtener cupos/límites
   async getLimits(cardId: string): Promise<CardActionResult> {
     await new Promise(resolve => setTimeout(resolve, 600));
     
@@ -117,7 +105,6 @@ class CardService {
     };
   }
 
-  // Cambiar PIN
   async changePin(cardId: string, oldPin: string, newPin: string): Promise<CardActionResult> {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -134,7 +121,6 @@ class CardService {
     };
   }
 
-  // Configurar notificaciones
   async updateNotifications(
     cardId: string,
     settings: {
@@ -152,7 +138,6 @@ class CardService {
     };
   }
 
-  // Ejecutar acción genérica
   async executeAction(
     cardId: string,
     actionType: CardActionType,
@@ -184,5 +169,4 @@ class CardService {
   }
 }
 
-// Exportar instancia singleton
 export const cardService = new CardService();
