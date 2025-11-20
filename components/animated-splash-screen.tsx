@@ -15,7 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import Svg, { Defs, Path, RadialGradient, Stop, G } from 'react-native-svg';
+import Svg, { Defs, G, Path, RadialGradient, Stop } from 'react-native-svg';
 
 // Crear versiones animadas de los componentes SVG
 const AnimatedPath = Animated.createAnimatedComponent(Path);
