@@ -1,4 +1,5 @@
 import { CardActionsGrid } from "@/components/cards/card-actions-grid";
+import { CardFinancialInfo } from "@/components/cards/card-financial-info";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
@@ -16,6 +17,7 @@ import {
     Dimensions,
     FlatList,
     Pressable,
+    ScrollView,
     StyleSheet,
     View,
     ViewToken
@@ -226,62 +228,19 @@ export default function CardsScreen() {
               </ThemedText>
             </View>
 
-            {/* Footer con info del titular y fecha */}
+            {/* Footer compacto con titular y fecha */}
             <View style={styles.cardFooter}>
-              <View style={styles.cardHolderContainer}>
-                <ThemedText
-                  style={[styles.cardLabel, { color: cardDesign.textColor }]}
-                >
-                  TITULAR
-                </ThemedText>
-                <ThemedText
-                  style={[styles.cardHolder, { color: cardDesign.textColor }]}
-                >
-                  {item.cardHolder}
-                </ThemedText>
-              </View>
-              <View style={styles.cardExpiryContainer}>
-                <ThemedText
-                  style={[styles.cardLabel, { color: cardDesign.textColor }]}
-                >
-                  VÁLIDA HASTA
-                </ThemedText>
-                <ThemedText
-                  style={[styles.cardExpiry, { color: cardDesign.textColor }]}
-                >
-                  {item.expiryDate}
-                </ThemedText>
-              </View>
-            </View>
-
-            {/* Balance */}
-            <View style={styles.balanceContainer}>
               <ThemedText
-                style={[styles.balanceLabel, { color: cardDesign.textColor }]}
+                style={[styles.cardHolder, { color: cardDesign.textColor }]}
               >
-                {item.cardType === 'credit' ? 'Crédito Disponible' : 'Saldo Disponible'}
+                {item.cardHolder}
               </ThemedText>
               <ThemedText
-                style={[styles.balanceAmount, { color: cardDesign.textColor }]}
+                style={[styles.cardExpiry, { color: cardDesign.textColor }]}
               >
-                ${item.balance.toFixed(2)}
+                {item.expiryDate}
               </ThemedText>
-              {item.cardType === 'credit' && item.creditLimit && (
-                <ThemedText
-                  style={[styles.creditLimitText, { color: cardDesign.textColor }]}
-                >
-                  Límite: ${item.creditLimit.toFixed(2)}
-                </ThemedText>
-              )}
             </View>
-
-            {/* Decoración */}
-            <View
-              style={[
-                styles.cardDecoration,
-                { backgroundColor: `${cardDesign.textColor}20` },
-              ]}
-            />
           </View>
         </LinearGradient>
       </Pressable>
@@ -290,20 +249,24 @@ export default function CardsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={[styles.logoContainer, { backgroundColor: theme.tenant.mainColor + '20' }]}>
-          <ThemedText style={[styles.logoText, { color: theme.tenant.mainColor }]}>
-            {theme.tenant.name.substring(0, 2).toUpperCase()}
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={[styles.logoContainer, { backgroundColor: theme.tenant.mainColor + '20' }]}>
+            <ThemedText style={[styles.logoText, { color: theme.tenant.mainColor }]}>
+              {theme.tenant.name.substring(0, 2).toUpperCase()}
+            </ThemedText>
+          </View>
+          <ThemedText type="title" style={styles.title}>
+            {theme.tenant.name}
           </ThemedText>
         </View>
-        <ThemedText type="title" style={styles.title}>
-          {theme.tenant.name}
-        </ThemedText>
-      </View>
 
-      {/* Carrusel de tarjetas */}
-      <View style={styles.carouselContainer}>
+        {/* Carrusel de tarjetas */}
+        <View style={styles.carouselContainer}>
         {mockCards.length > 0 ? (
           <FlatList
             ref={flatListRef}
@@ -325,48 +288,41 @@ export default function CardsScreen() {
         )}
       </View>
 
-      {/* Indicadores de paginación */}
-      <View style={styles.pagination}>
-        {mockCards.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.paginationDot,
-              {
-                backgroundColor:
-                  index === activeCardIndex ? theme.tenant.mainColor : theme.colors.border.default,
-                width: index === activeCardIndex ? 24 : 8,
-              },
-            ]}
+        {/* Panel de información financiera */}
+        {activeCard && (
+          <CardFinancialInfo
+            card={activeCard}
+            locale="en-US"
+            currency="USD"
           />
-        ))}
-      </View>
+        )}
 
-      {/* Carousel de acciones de tarjeta */}
-      {activeCard && (
-        <View style={styles.actionsSection}>
-          <View style={styles.actionsSectionHeader}>
-            <ThemedText type="subtitle" style={styles.actionsSectionTitle}>
-              Acciones Rápidas
-            </ThemedText>
-            <View style={[styles.activeIndicator, { backgroundColor: theme.tenant.mainColor }]} />
+        {/* Carousel de acciones de tarjeta */}
+        {activeCard && (
+          <View style={styles.actionsSection}>
+            <View style={styles.actionsSectionHeader}>
+              <ThemedText type="subtitle" style={styles.actionsSectionTitle}>
+                Acciones Rápidas
+              </ThemedText>
+              <View style={[styles.activeIndicator, { backgroundColor: theme.tenant.mainColor }]} />
+            </View>
+            <CardActionsGrid
+              cardType={activeCard.cardType}
+              isLoading={cardActions.isLoading}
+              onActionPress={(actionType) => {
+                cardActions.executeAction(actionType);
+              }}
+            />
           </View>
-          <CardActionsGrid
-            cardType={activeCard.cardType}
-            isLoading={cardActions.isLoading}
-            onActionPress={(actionType) => {
-              cardActions.executeAction(actionType);
-            }}
+        )}
+
+        {/* Botón agregar a Apple Wallet */}
+        <View style={styles.addCardContainer}>
+          <AddToWalletButton
+            onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
           />
         </View>
-      )}
-
-      {/* Botón agregar a Apple Wallet */}
-      <View style={styles.addCardContainer}>
-        <AddToWalletButton
-          onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
-        />
-      </View>
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -375,9 +331,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
   header: {
     paddingTop: 60,
-    paddingBottom: 20,
+    paddingBottom: 16,
     paddingHorizontal: 20,
     flexDirection: "row",
     alignItems: "center",
@@ -480,71 +440,22 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  cardHolderContainer: {
-    flex: 1,
-  },
-  cardExpiryContainer: {
-    alignItems: "flex-end",
-  },
-  cardLabel: {
-    fontSize: 9,
-    opacity: 0.8,
-    marginBottom: 2,
-    letterSpacing: 0.5,
+    alignItems: "center",
   },
   cardHolder: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
     textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   cardExpiry: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
-  },
-  balanceContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    padding: 10,
-    borderRadius: 10,
-  },
-  balanceLabel: {
-    fontSize: 10,
-    opacity: 0.8,
-    marginBottom: 3,
-  },
-  balanceAmount: {
-    fontSize: 22,
-    fontWeight: "700",
-  },
-  creditLimitText: {
-    fontSize: 9,
-    opacity: 0.7,
-    marginTop: 4,
-  },
-  cardDecoration: {
-    position: "absolute",
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    right: -40,
-    bottom: -40,
-    opacity: 0.2,
-  },
-  pagination: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    marginVertical: 20,
-  },
-  paginationDot: {
-    height: 8,
-    borderRadius: 4,
+    letterSpacing: 0.5,
   },
   actionsSection: {
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: 16,
+    marginBottom: 16,
   },
   actionsSectionHeader: {
     flexDirection: 'row',
@@ -564,6 +475,7 @@ const styles = StyleSheet.create({
   },
   addCardContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingBottom: 20,
+    marginTop: 8,
   },
 });
