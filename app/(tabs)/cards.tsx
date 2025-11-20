@@ -1,6 +1,7 @@
 import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
@@ -277,30 +278,11 @@ export default function CardsScreen() {
         </View>
       )}
 
-      {/* Botón agregar tarjeta */}
+      {/* Botón agregar a Apple Wallet */}
       <View style={styles.addCardContainer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.addCardButton,
-            {
-              backgroundColor: pressed ? theme.tenant.mainColor : 'transparent',
-              borderColor: theme.tenant.mainColor,
-              opacity: pressed ? 0.8 : 1,
-            }
-          ]}
-          onPress={() => Alert.alert("Agregar Tarjeta", "Funcionalidad próximamente")}
-        >
-          {({ pressed }) => (
-            <>
-              <ThemedText style={[styles.addCardIcon, { color: pressed ? '#FFFFFF' : theme.tenant.mainColor }]}>
-                +
-              </ThemedText>
-              <ThemedText style={[styles.addCardText, { color: pressed ? '#FFFFFF' : theme.tenant.mainColor }]}>
-                Agregar Tarjeta
-              </ThemedText>
-            </>
-          )}
-        </Pressable>
+        <AddToWalletButton
+          onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
+        />
       </View>
     </ThemedView>
   );
@@ -476,27 +458,5 @@ const styles = StyleSheet.create({
   addCardContainer: {
     paddingHorizontal: 20,
     paddingBottom: 30,
-  },
-  addCardButton: {
-    flexDirection: 'row',
-    padding: 18,
-    borderRadius: 16,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: 'center',
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  addCardIcon: {
-    fontSize: 24,
-    fontWeight: "700",
-  },
-  addCardText: {
-    fontSize: 16,
-    fontWeight: "600",
   },
 });
