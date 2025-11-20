@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, StyleSheet, View } from "react-native";
-import Svg, { Path, Rect } from "react-native-svg";
+import Svg, { Rect } from "react-native-svg";
 
 interface AddToWalletButtonProps {
   onPress: () => void;

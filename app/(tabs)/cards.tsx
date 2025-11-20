@@ -269,7 +269,6 @@ export default function CardsScreen() {
             <View style={[styles.activeIndicator, { backgroundColor: theme.tenant.mainColor }]} />
           </View>
           <CardActionsGrid
-            cardId={activeCard.id}
             isLoading={cardActions.isLoading}
             onActionPress={(actionType) => {
               cardActions.executeAction(actionType);

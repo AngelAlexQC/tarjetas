@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { HomeIcon, CardsIcon } from '@/components/ui/tab-icons';
 import { useAppTheme } from '@/hooks/use-app-theme';
 
 export default function TabLayout() {
@@ -11,7 +11,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.tenant.mainColor || theme.colors.text.primary,
+        tabBarActiveTintColor: theme.tenant.mainColor,
         headerShown: false,
         tabBarButton: HapticTab,
       }}>
@@ -19,14 +19,14 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Instituciones',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => <HomeIcon size={26} color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="cards"
         options={{
           title: 'Tarjetas',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => <CardsIcon size={26} color={color} focused={focused} />,
         }}
       />
     </Tabs>

@@ -1,9 +1,5 @@
-/**
- * Componente reutilizable para carousel de acciones de tarjeta
- * Usando Design System centralizado
- */
-
 import { ThemedText } from '@/components/themed-text';
+import { FinancialIcons } from '@/components/ui/financial-icons';
 import { CARD_ACTIONS, CardAction, CardActionType } from '@/constants/card-actions';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,16 +9,14 @@ const ACTION_BUTTON_SIZE = 80;
 const ACTION_BUTTON_SPACING = 14;
 
 interface CardActionsGridProps {
-  cardId: string;
   isLoading?: boolean;
   onActionPress: (actionType: CardActionType) => void;
 }
 
-export function CardActionsGrid({ cardId, isLoading, onActionPress }: CardActionsGridProps) {
+export function CardActionsGrid({ isLoading, onActionPress }: CardActionsGridProps) {
   const theme = useAppTheme();
 
   const renderActionButton = ({ item: action }: { item: CardAction }) => {
-    // Usar el theme centralizado
     const gradientColors = theme.helpers.getThemeGradient();
     const glassTokens = theme.helpers.getGlassTokens();
     const shadowColor = theme.colors.shadowElevated;
@@ -50,7 +44,6 @@ export function CardActionsGrid({ cardId, isLoading, onActionPress }: CardAction
               end={{ x: 1, y: 1 }}
               style={styles.buttonGradient}
             >
-              {/* Glassmorphism overlay usando design tokens */}
               <View style={[styles.glassOverlay, {
                 backgroundColor: theme.helpers.getOverlay('light')
               }]} />
@@ -59,10 +52,12 @@ export function CardActionsGrid({ cardId, isLoading, onActionPress }: CardAction
                 backgroundColor: glassTokens.innerGlow,
                 borderColor: glassTokens.border,
               }]}>
-                <ThemedText style={styles.icon}>{action.icon}</ThemedText>
+                {(() => {
+                  const IconComponent = FinancialIcons[action.icon];
+                  return <IconComponent size={28} color="#FFFFFF" />;
+                })()}
               </View>
               
-              {/* Shimmer effect usando design tokens */}
               <View style={[styles.shimmerOverlay, {
                 backgroundColor: theme.helpers.getOverlay('medium'),
               }]} />
