@@ -88,9 +88,6 @@ export default function TenantSelectorScreen() {
   const router = useRouter();
 
   const handleTenantSelect = async (tenant: Tenant) => {
-    console.log("Institución seleccionada:", tenant.name);
-    
-    // Obtener y establecer el tema del tenant
     const tenantTheme = getTenantTheme(tenant.slug);
     await setTenant(tenantTheme);
     
