@@ -1,98 +1,314 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Image } from "expo-image";
+import { StyleSheet, View, Pressable, ScrollView } from "react-native";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+interface Tenant {
+  slug: string;
+  name: string;
+  logoUrl: string;
+  mainColor: string;
+  currencyCode: string;
+  country: string;
+  countryFlag: string;
+}
 
-export default function HomeScreen() {
+const tenants: Tenant[] = [
+  {
+    slug: "bpichincha",
+    name: "Banco Pichincha",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/4/45/Banco_Pichincha_nuevo.png",
+    mainColor: "#ffdf00",
+    currencyCode: "USD",
+    country: "Ecuador",
+    countryFlag: "🇪🇨",
+  },
+  {
+    slug: "coopchone",
+    name: "Cooperativa de Ahorro y Crédito Chone",
+    logoUrl:
+      "https://coopchone.fin.ec/wp-content/uploads/2025/01/LogoHorizontal.png",
+    mainColor: "#006837",
+    currencyCode: "USD",
+    country: "Ecuador",
+    countryFlag: "🇪🇨",
+  },
+  {
+    slug: "dinersclub-ec",
+    name: "Diners Club",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/a/a6/Diners_Club_Logo3.svg",
+    mainColor: "#0079be",
+    currencyCode: "USD",
+    country: "Ecuador",
+    countryFlag: "🇪🇨",
+  },
+  {
+    slug: "bancolombia",
+    name: "Bancolombia",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/d/dc/Bancolombia_S.A._logo.svg",
+    mainColor: "#FFEB00",
+    currencyCode: "COP",
+    country: "Colombia",
+    countryFlag: "🇨🇴",
+  },
+  {
+    slug: "davivienda-co",
+    name: "Davivienda",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/a/ac/Davivienda_Logo.png",
+    mainColor: "#D22C21",
+    currencyCode: "COP",
+    country: "Colombia",
+    countryFlag: "🇨🇴",
+  },
+  {
+    slug: "bbva-mx",
+    name: "BBVA Mexico",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/9/98/BBVA_logo_2025.svg",
+    mainColor: "#0f1f7a",
+    currencyCode: "MXN",
+    country: "México",
+    countryFlag: "🇲🇽",
+  },
+];
+
+export default function TenantSelectorScreen() {
+  const colorScheme = useColorScheme();
+
+  const handleTenantSelect = (tenant: Tenant) => {
+    console.log("Institución seleccionada:", tenant.name);
+    // Aquí puedes navegar a otra pantalla o guardar la selección
+    // Por ejemplo: router.push(`/auth?tenant=${tenant.slug}`);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ScrollView style={styles.container}>
+      <ThemedView style={styles.content}>
+        <ThemedView style={styles.header}>
+          <ThemedText type="title" style={styles.title}>
+            Selecciona tu Institución
+          </ThemedText>
+          <ThemedText style={styles.subtitle}>
+            Elige tu entidad financiera para continuar
+          </ThemedText>
+        </ThemedView>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
+        <View style={styles.tenantsContainer}>
+          {tenants.map((tenant) => (
+            <Pressable
+              key={tenant.slug}
+              style={({ pressed }) => [
+                styles.tenantCard,
+                {
+                  opacity: pressed ? 0.9 : 1,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                },
+              ]}
+              onPress={() => handleTenantSelect(tenant)}
+            >
+              {/* Fondo con gradiente colorido basado en el color de la institución */}
+              <LinearGradient
+                colors={[
+                  `${tenant.mainColor}15`,
+                  `${tenant.mainColor}25`,
+                  `${tenant.mainColor}35`,
+                ]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              
+              {/* Capa de blur glassmorphism */}
+              <BlurView
+                intensity={20}
+                tint={colorScheme === "dark" ? "dark" : "light"}
+                style={styles.blurContainer}
+              >
+                <View style={styles.cardContent}>
+                  {/* Orbe de color animado en el fondo */}
+                  <View style={[
+                    styles.colorOrb,
+                    { backgroundColor: tenant.mainColor }
+                  ]} />
+                  
+                  <View style={styles.logoContainer}>
+                    <Image
+                      source={{ uri: tenant.logoUrl }}
+                      style={styles.logo}
+                      contentFit="contain"
+                    />
+                  </View>
+                  
+                  <View style={styles.tenantInfo}>
+                    <ThemedText type="defaultSemiBold" style={styles.tenantName}>
+                      {tenant.name}
+                    </ThemedText>
+                    <View style={styles.metadataRow}>
+                      <ThemedText style={styles.countryFlag}>
+                        {tenant.countryFlag}
+                      </ThemedText>
+                      <View style={styles.separator} />
+                      <ThemedText style={styles.currency}>
+                        {tenant.currencyCode}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  
+                  {/* Indicador de color con blur */}
+                  <View style={styles.colorIndicatorContainer}>
+                    <View
+                      style={[
+                        styles.colorIndicator,
+                        { backgroundColor: tenant.mainColor }
+                      ]}
+                    />
+                  </View>
+                </View>
+              </BlurView>
+              
+              {/* Borde con gradiente sutil */}
+              <View
+                style={[
+                  styles.cardBorder,
+                  {
+                    borderColor: colorScheme === "dark"
+                      ? `${tenant.mainColor}60`
+                      : `${tenant.mainColor}40`,
+                  },
+                ]}
+              />
+            </Pressable>
+          ))}
+        </View>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  header: {
+    marginTop: 40,
+    marginBottom: 30,
+    alignItems: "center",
+  },
+  title: {
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.7,
+    textAlign: "center",
+  },
+  tenantsContainer: {
+    gap: 16,
+  },
+  tenantCard: {
+    borderRadius: 20,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  blurContainer: {
+    overflow: "hidden",
+  },
+  cardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 18,
+    position: "relative",
+  },
+  colorOrb: {
+    position: "absolute",
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    right: -30,
+    top: -20,
+    opacity: 0.15,
+  },
+  logoContainer: {
+    width: 65,
+    height: 65,
+    marginRight: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderRadius: 12,
+    padding: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  logo: {
+    width: "100%",
+    height: "100%",
+  },
+  tenantInfo: {
+    flex: 1,
+  },
+  tenantName: {
+    fontSize: 17,
     marginBottom: 8,
+    lineHeight: 22,
+    fontWeight: "600",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  metadataRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  countryFlag: {
+    fontSize: 18,
+  },
+  separator: {
+    width: 1,
+    height: 14,
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
+    opacity: 0.6,
+  },
+  currency: {
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    opacity: 0.75,
+  },
+  colorIndicatorContainer: {
+    marginLeft: 12,
+  },
+  colorIndicator: {
+    width: 6,
+    height: 50,
+    borderRadius: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    pointerEvents: "none",
   },
 });
