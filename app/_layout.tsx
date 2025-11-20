@@ -5,6 +5,7 @@ import 'react-native-reanimated';
 
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -14,14 +15,16 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <AnimatedSplashScreen>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </AnimatedSplashScreen>
+    <TenantThemeProvider>
+      <AnimatedSplashScreen>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </AnimatedSplashScreen>
+    </TenantThemeProvider>
   );
 }

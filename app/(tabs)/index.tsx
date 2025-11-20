@@ -5,6 +5,9 @@ import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useTenantTheme } from "@/contexts/tenant-theme-context";
+import { getTenantTheme } from "@/constants/tenant-themes";
+import { useRouter } from "expo-router";
 
 interface Tenant {
   slug: string;
@@ -81,11 +84,18 @@ const tenants: Tenant[] = [
 
 export default function TenantSelectorScreen() {
   const colorScheme = useColorScheme();
+  const { setTenant } = useTenantTheme();
+  const router = useRouter();
 
-  const handleTenantSelect = (tenant: Tenant) => {
+  const handleTenantSelect = async (tenant: Tenant) => {
     console.log("Institución seleccionada:", tenant.name);
-    // Aquí puedes navegar a otra pantalla o guardar la selección
-    // Por ejemplo: router.push(`/auth?tenant=${tenant.slug}`);
+    
+    // Obtener y establecer el tema del tenant
+    const tenantTheme = getTenantTheme(tenant.slug);
+    await setTenant(tenantTheme);
+    
+    // Navegar automáticamente a la pantalla de tarjetas
+    router.push("/(tabs)/cards");
   };
 
   return (
