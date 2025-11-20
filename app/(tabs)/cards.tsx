@@ -4,6 +4,7 @@ import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
 import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
 import { CardBrandIcons } from "@/components/ui/card-brand-icons";
+import { ChipIcon } from "@/components/ui/chip-icon";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
@@ -190,6 +191,13 @@ export default function CardsScreen() {
           />
           
           <View style={styles.cardBlur}>
+            {/* Chip EMV - Posicionado según estándar ISO */}
+            {item.cardType !== 'virtual' && (
+              <View style={styles.cardChip}>
+                <ChipIcon width={50} height={40} />
+              </View>
+            )}
+
             {/* Header con tipo de tarjeta y logo */}
             <View style={styles.cardHeader}>
               <View style={styles.cardTypeBadge}>
@@ -205,9 +213,6 @@ export default function CardsScreen() {
                 }
               </View>
             </View>
-            
-            {/* Chip EMV */}
-            <View style={styles.cardChip} />
 
             {/* Espaciador flexible */}
             <View style={{ flex: 1 }} />
@@ -420,6 +425,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 18,
     justifyContent: "flex-start",
+    position: "relative",
   },
   cardHeader: {
     flexDirection: "row",
@@ -452,11 +458,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardChip: {
-    width: 44,
-    height: 34,
-    backgroundColor: "rgba(255, 255, 255, 0.35)",
-    borderRadius: 6,
-    marginBottom: 6,
+    position: "absolute",
+    top: 60,
+    left: 24,
+    width: 50,
+    height: 40,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 5,
   },
   cardNumberContainer: {
     marginBottom: 8,
