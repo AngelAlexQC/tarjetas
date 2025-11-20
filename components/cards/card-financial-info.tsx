@@ -4,12 +4,12 @@
  */
 
 import { ThemedText } from '@/components/themed-text';
+import { AnimatedNumber } from '@/components/ui/animated-number';
 import type { Card } from '@/features/cards/services/card-service';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
-import { AnimatedNumber } from '@/components/ui/animated-number';
 import { CreditProgressBar } from './credit-progress-bar';
 import { StatusBadge } from './status-badge';
 

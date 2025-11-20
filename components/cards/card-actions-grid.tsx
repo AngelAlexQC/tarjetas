@@ -4,7 +4,7 @@ import { CardAction, CardActionType, getAvailableActions } from '@/constants/car
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { LinearTransition, FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 const ACTION_BUTTON_SIZE = 80;
 const ACTION_BUTTON_SPACING = 14;

@@ -3,16 +3,16 @@
  * Anima números suavemente cuando cambian de valor
  */
 
+import { useAppTheme } from '@/hooks/use-app-theme';
 import React, { useEffect, useState } from 'react';
 import { TextStyle } from 'react-native';
 import Animated, {
-  useSharedValue,
-  useDerivedValue,
-  withTiming,
-  Easing,
-  runOnJS,
+    Easing,
+    runOnJS,
+    useDerivedValue,
+    useSharedValue,
+    withTiming,
 } from 'react-native-reanimated';
-import { useAppTheme } from '@/hooks/use-app-theme';
 
 export interface AnimatedNumberProps {
   value: number;

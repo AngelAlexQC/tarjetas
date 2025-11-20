@@ -7,10 +7,10 @@ import { ThemedText } from '@/components/themed-text';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  LinearTransition,
+    LinearTransition,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from 'react-native-reanimated';
 
 export interface CreditProgressBarProps {

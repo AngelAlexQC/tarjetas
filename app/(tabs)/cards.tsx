@@ -22,7 +22,7 @@ import {
     View,
     ViewToken
 } from "react-native";
-import Animated, { LinearTransition, FadeIn, FadeOut } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
