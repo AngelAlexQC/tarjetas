@@ -4,16 +4,16 @@ import * as SplashScreen from 'expo-splash-screen';
 import { ReactNode, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, {
-  Easing,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
-  withSpring,
-  withTiming,
+    Easing,
+    interpolate,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withDelay,
+    withRepeat,
+    withSequence,
+    withSpring,
+    withTiming,
 } from 'react-native-reanimated';
 import Svg, { Defs, G, Path, RadialGradient, Stop } from 'react-native-svg';
 
