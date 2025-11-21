@@ -73,7 +73,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   const theme = useAppTheme();
   const styles = useStyles();
   const insets = useSafeAreaInsets();
-  const { register, unregister, onTooltipClosed } = useTour();
+  const { register, unregister, onTooltipClosed, stopTour } = useTour();
   const [isVisible, setIsVisible] = useState(false);
   const [openedByTour, setOpenedByTour] = useState(false);
   const [triggerLayout, setTriggerLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -129,6 +129,14 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
     }
   };
 
+  const handleOverlayPress = () => {
+    setIsVisible(false);
+    if (tourKey) {
+      onTooltipClosed(tourKey);
+      stopTour();
+    }
+  };
+
   return (
     <>
       <Pressable
@@ -153,13 +161,13 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
       >
         <SpotlightOverlay 
           layout={triggerLayout} 
-          onClose={handleClose} 
+          onClose={handleOverlayPress} 
           borderRadius={finalBorderRadius}
         />
         
         <Animated.View
-          entering={FadeIn.duration(200)}
-          exiting={FadeOut.duration(150)}
+          entering={FadeIn.duration(500).delay(100)}
+          exiting={FadeOut.duration(300)}
           style={[
             styles.tooltipContainer,
             getTooltipPosition(triggerLayout, placement, insets),
@@ -267,7 +275,11 @@ const SpotlightOverlay = ({
   };
 
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <Animated.View 
+      style={StyleSheet.absoluteFill}
+      entering={FadeIn.duration(400)}
+      exiting={FadeOut.duration(300)}
+    >
       {/* Top */}
       <Pressable 
         style={{ position: 'absolute', top: 0, left: 0, right: 0, height: Math.max(0, y), backgroundColor: overlayColor }} 
@@ -297,7 +309,7 @@ const SpotlightOverlay = ({
       
       {/* Highlight Border */}
       <Animated.View 
-        entering={FadeIn.duration(300)}
+        entering={FadeIn.duration(500).delay(100)}
         style={{
           position: 'absolute',
           top: y,
@@ -313,10 +325,10 @@ const SpotlightOverlay = ({
           shadowOpacity: 0.5,
           shadowRadius: 10,
           elevation: 10,
-        }} 
+        }}
         pointerEvents="none"
       />
-    </View>
+    </Animated.View>
   );
 };
 

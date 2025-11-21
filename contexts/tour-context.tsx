@@ -12,6 +12,8 @@ interface TourContextType {
   unregister: (key: string) => void;
   onTooltipClosed: (key: string) => void;
   resetTour: () => Promise<void>;
+  setAppReady: () => void;
+  stopTour: () => void;
 }
 
 const TourContext = createContext<TourContextType | undefined>(undefined);
@@ -23,6 +25,8 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const [registeredItems, setRegisteredItems] = useState<TourItem[]>([]);
   const [currentKey, setCurrentKey] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [isAppReady, setAppReadyState] = useState(false);
+  const [isTourStopped, setIsTourStopped] = useState(false);
 
   // Cargar keys vistas al inicio
   useEffect(() => {
@@ -55,7 +59,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   // Gestionar la cola de tooltips
   useEffect(() => {
-    if (!isReady || currentKey) return;
+    if (!isReady || !isAppReady || currentKey || isTourStopped) return;
 
     // Filtrar items que no han sido vistos
     const unseenItems = registeredItems
@@ -70,7 +74,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
         nextItem.show();
       }, 500);
     }
-  }, [isReady, currentKey, registeredItems, seenKeys]);
+  }, [isReady, isAppReady, currentKey, registeredItems, seenKeys, isTourStopped]);
 
   const register = useCallback((key: string, show: () => void, order: number = 0) => {
     setRegisteredItems(prev => {
@@ -93,18 +97,28 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     }
   }, [currentKey]); // saveSeenKey is stable enough or we can add it if we wrap it in useCallback too, but for now this fixes the lint warning about seenKeys which wasn't used inside but was in deps
 
+  const stopTour = useCallback(() => {
+    setIsTourStopped(true);
+    setCurrentKey(null);
+  }, []);
+
   const resetTour = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEY_SEEN_TOOLTIPS);
       setSeenKeys(new Set());
       setCurrentKey(null);
+      setIsTourStopped(false);
     } catch (e) {
       console.error('Error resetting tour', e);
     }
   }, []);
 
+  const setAppReady = useCallback(() => {
+    setAppReadyState(true);
+  }, []);
+
   return (
-    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour }}>
+    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour, setAppReady, stopTour }}>
       {children}
     </TourContext.Provider>
   );

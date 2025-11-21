@@ -1,6 +1,6 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { TenantThemeProvider, useTenantTheme } from '@/contexts/tenant-theme-context';
-import { TourProvider } from '@/contexts/tour-context';
+import { TourProvider, useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -37,6 +37,7 @@ export const unstable_settings = {
 function Navigation() {
   const theme = useAppTheme();
   const { currentTheme, isLoading } = useTenantTheme();
+  const { setAppReady } = useTour();
   const router = useRouter();
   const initialCheckDone = useRef(false);
 
@@ -45,9 +46,18 @@ function Navigation() {
       initialCheckDone.current = true;
       if (currentTheme && currentTheme.slug !== 'default') {
         router.replace('/(tabs)/cards');
+        // Esperar a que la navegación termine y el splash desaparezca (3s splash + navegación)
+        setTimeout(() => {
+          setAppReady();
+        }, 4500);
+      } else {
+        // Esperar a que el splash desaparezca completamente (3s splash + buffer)
+        setTimeout(() => {
+          setAppReady();
+        }, 4000);
       }
     }
-  }, [isLoading, currentTheme, router]);
+  }, [isLoading, currentTheme, router, setAppReady]);
 
   const navBase = theme.isDark ? DarkTheme : DefaultTheme;
   const navTheme = {

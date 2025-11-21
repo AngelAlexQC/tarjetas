@@ -621,9 +621,10 @@ export function AnimatedSplashScreen({
               end={{ x: 1, y: 1 }}
               style={styles.textGradient}
             >
-              <Animated.Text style={styles.brandText}>
-                Libélula<Animated.Text style={styles.brandTextBold}>Soft</Animated.Text>
-              </Animated.Text>
+              <View style={styles.titleWrapper}>
+                <Animated.Text style={styles.brandText}>Libélula</Animated.Text>
+                <Animated.Text style={[styles.brandText, styles.brandTextBold]}>Soft</Animated.Text>
+              </View>
             </LinearGradient>
           </BlurView>
           <Animated.Text style={styles.subText}>AGILIDAD TECNOLÓGICA</Animated.Text>
@@ -716,6 +717,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: SCREEN_WIDTH < 350 ? 20 : 28,
     paddingVertical: 10,
     borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   brandText: {
     fontSize: SCREEN_WIDTH < 350 ? 36 : SCREEN_WIDTH > 768 ? 48 : 42, // Móvil pequeño | Desktop | Normal
@@ -725,7 +734,7 @@ const styles = StyleSheet.create({
     textShadowColor: '#00E5FF',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 25,
-    flexWrap: 'nowrap', // No permitir salto de línea
+    textAlign: 'center',
     includeFontPadding: false,
   },
   brandTextBold: {
