@@ -6,6 +6,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { AnimatedNumber } from '@/components/ui/animated-number';
 import { CircularProgress } from '@/components/ui/circular-progress';
+import { SettingsIcon } from '@/components/ui/icons';
 import { InfoIcon } from '@/components/ui/info-icon';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { useThemedColors } from '@/contexts/tenant-theme-context';
@@ -14,8 +15,9 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { formatCurrency } from '@/utils/formatters/currency';
 import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, Switch, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 // Formatea la moneda usando el símbolo personalizado si está definido
 function formatCurrencyWithSymbol(amount: number, options: { locale: string; currency: string; currencySymbol?: string; minimumFractionDigits?: number; maximumFractionDigits?: number }) {
@@ -130,6 +132,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   primaryColor,
 }) => {
   const styles = useStyles();
+  const router = useRouter();
   const [useInstitutionTheme, setUseInstitutionTheme] = useState(false);
   const isDebit = card.cardType === 'debit';
   const isVirtual = card.cardType === 'virtual';
@@ -308,18 +311,35 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Gasto de Hoy"
             content={`Has gastado ${formatCurrencyWithSymbol(todaySpent, { locale, currency, currencySymbol })} hoy. Este contador se reinicia cada 24 horas. Te quedan ${formatCurrencyWithSymbol(dailyPurchaseLimit - todaySpent, { locale, currency, currencySymbol })} disponibles para compras hoy.`}
             placement="bottom"
-            extraContent={
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <ThemedText style={{ fontSize: 13 }}>Usar tema institucional</ThemedText>
-                <Switch
-                  value={useInstitutionTheme}
-                  onValueChange={setUseInstitutionTheme}
-                  trackColor={{ false: '#767577', true: primaryColor }}
-                  thumbColor={useInstitutionTheme ? '#fff' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                />
+            extraContent={({ close }) => (
+              <View style={{ gap: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <ThemedText style={{ fontSize: 13 }}>Usar tema institucional</ThemedText>
+                  <Switch
+                    value={useInstitutionTheme}
+                    onValueChange={setUseInstitutionTheme}
+                    trackColor={{ false: '#767577', true: primaryColor }}
+                    thumbColor={useInstitutionTheme ? '#fff' : '#f4f3f4'}
+                    ios_backgroundColor="#3e3e3e"
+                  />
+                </View>
+                <Pressable 
+                  onPress={() => {
+                    close();
+                    router.push(`/cards/${card.id}/limits`);
+                  }}
+                  style={({ pressed }) => ({
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                    opacity: pressed ? 0.7 : 1,
+                  })}
+                >
+                  <SettingsIcon size={16} color={primaryColor} />
+                  <ThemedText style={{ fontSize: 13, color: primaryColor, fontWeight: '600' }}>Configurar límites</ThemedText>
+                </Pressable>
               </View>
-            }
+            )}
           >
             <View style={styles.statItem}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -349,6 +369,25 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Límite Diario de Compras"
             content={`Tu límite de compras diario es de ${formatCurrencyWithSymbol(dailyPurchaseLimit, { locale, currency, currencySymbol })}. Este límite se establece por seguridad y se reinicia automáticamente cada día. También tienes un límite para cajeros de ${formatCurrencyWithSymbol(dailyATMLimit, { locale, currency, currencySymbol })} diarios.`}
             placement="bottom"
+            extraContent={({ close }) => (
+              <View style={{ gap: 16 }}>
+                <Pressable 
+                  onPress={() => {
+                    close();
+                    router.push(`/cards/${card.id}/limits`);
+                  }}
+                  style={({ pressed }) => ({
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                    opacity: pressed ? 0.7 : 1,
+                  })}
+                >
+                  <SettingsIcon size={16} color={primaryColor} />
+                  <ThemedText style={{ fontSize: 13, color: primaryColor, fontWeight: '600' }}>Configurar límites</ThemedText>
+                </Pressable>
+              </View>
+            )}
           >
             <View style={styles.statItem}>
               <ThemedText style={[styles.statValue, { color: primaryColor }]}>
@@ -374,6 +413,25 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Límite de Gasto"
             content={`Esta tarjeta virtual tiene un límite máximo de ${formatCurrencyWithSymbol(spendingLimit, { locale, currency, currencySymbol })}. ${isReloadable ? 'Puedes recargarla múltiples veces hasta este límite.' : 'Es una tarjeta de un solo uso, ideal para compras online seguras.'}`}
             placement="bottom"
+            extraContent={({ close }) => (
+              <View style={{ gap: 16 }}>
+                <Pressable 
+                  onPress={() => {
+                    close();
+                    router.push(`/cards/${card.id}/limits`);
+                  }}
+                  style={({ pressed }) => ({
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                    opacity: pressed ? 0.7 : 1,
+                  })}
+                >
+                  <SettingsIcon size={16} color={primaryColor} />
+                  <ThemedText style={{ fontSize: 13, color: primaryColor, fontWeight: '600' }}>Configurar límites</ThemedText>
+                </Pressable>
+              </View>
+            )}
           >
             <View style={styles.statItem}>
               <ThemedText style={[styles.statValue, { color: primaryColor }]}>
@@ -414,41 +472,6 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             </View>
           </InfoTooltip>
         </View>
-      )}
-
-      {/* Barra de progreso minimalista - Solo para crédito con uso */}
-      {isCredit && creditLimit > 0 && usedCredit > 0 && (
-        <InfoTooltip
-          title="Indicador de Uso de Crédito"
-          content={`Este indicador muestra qué tan cerca estás de tu límite de crédito. ${
-            usagePercentage >= 90
-              ? '⚠️ Estás cerca del límite. Considera hacer un pago pronto.'
-              : usagePercentage >= 75
-              ? '⚡ Uso alto. Un pago pronto ayudará a tu score crediticio.'
-              : usagePercentage >= 50
-              ? '✓ Uso moderado. Mantén un buen control de tus gastos.'
-              : '✓ Excelente manejo. Estás usando tu crédito responsablemente.'
-          }`}
-          placement="bottom"
-        >
-          <Animated.View 
-            style={styles.progressContainer}
-            entering={FadeIn.duration(400)}
-          >
-            <View style={styles.progressTrack}>
-              <Animated.View 
-                style={[
-                  styles.progressBar,
-                  { 
-                    width: `${Math.min(usagePercentage, 100)}%`,
-                    backgroundColor: usageColors.fg,
-                  }
-                ]}
-                entering={FadeIn.duration(600)}
-              />
-            </View>
-          </Animated.View>
-        </InfoTooltip>
       )}
     </Animated.View>
   );
@@ -553,21 +576,6 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
     backgroundColor: theme.colors.borderSubtle,
     opacity: 0.3,
   },
-  // Progress bar minimalista
-  progressContainer: {
-    marginTop: 4,
-  },
-  progressTrack: {
-    height: 4,
-    backgroundColor: theme.helpers.getSurface(1),
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  progressBar: {
-    height: '100%',
-    borderRadius: 2,
-  },
-
 });
 
 // Hook para usar estilos con tema

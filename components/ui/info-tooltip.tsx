@@ -27,7 +27,7 @@ export interface InfoTooltipProps {
   /** Configuración para añadir evento al calendario */
   calendarEvent?: CalendarEventConfig;
   /** Contenido extra opcional (ej. controles interactivos) */
-  extraContent?: React.ReactNode;
+  extraContent?: React.ReactNode | ((props: { close: () => void }) => React.ReactNode);
   /** Elemento hijo que activa el tooltip */
   children: React.ReactNode;
   /** Posición del tooltip relativo al hijo */
@@ -96,7 +96,13 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                 tint={theme.isDark ? 'dark' : 'light'}
                 style={[styles.tooltipContent, { borderColor: theme.colors.borderSubtle }]}
               >
-                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} extraContent={extraContent} />
+                <TooltipContent 
+                  title={title} 
+                  content={content} 
+                  calendarEvent={calendarEvent} 
+                  extraContent={extraContent}
+                  onClose={handleClose}
+                />
               </BlurView>
             ) : (
               <View
@@ -111,7 +117,13 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                   },
                 ]}
               >
-                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} extraContent={extraContent} />
+                <TooltipContent 
+                  title={title} 
+                  content={content} 
+                  calendarEvent={calendarEvent} 
+                  extraContent={extraContent}
+                  onClose={handleClose}
+                />
               </View>
             )}
           </Animated.View>
@@ -125,10 +137,11 @@ interface TooltipContentProps {
   title?: string;
   content: string;
   calendarEvent?: CalendarEventConfig;
-  extraContent?: React.ReactNode;
+  extraContent?: React.ReactNode | ((props: { close: () => void }) => React.ReactNode);
+  onClose: () => void;
 }
 
-const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calendarEvent, extraContent }) => {
+const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calendarEvent, extraContent, onClose }) => {
   const styles = useStyles();
   const theme = useAppTheme();
 
@@ -237,7 +250,9 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
       
       {extraContent && (
         <View style={styles.extraContent}>
-          {extraContent}
+          {typeof extraContent === 'function' 
+            ? extraContent({ close: onClose }) 
+            : (extraContent as React.ReactNode)}
         </View>
       )}
 
