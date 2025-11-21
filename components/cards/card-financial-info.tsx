@@ -14,8 +14,8 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { formatCurrency } from '@/utils/formatters/currency';
 import { BlurView } from 'expo-blur';
-import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { Platform, StyleSheet, View, Switch } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 // Formatea la moneda usando el símbolo personalizado si está definido
 function formatCurrencyWithSymbol(amount: number, options: { locale: string; currency: string; currencySymbol?: string; minimumFractionDigits?: number; maximumFractionDigits?: number }) {
@@ -130,6 +130,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   primaryColor,
 }) => {
   const styles = useStyles();
+  const [useInstitutionTheme, setUseInstitutionTheme] = useState(false);
   const isDebit = card.cardType === 'debit';
   const isVirtual = card.cardType === 'virtual';
   
@@ -143,6 +144,9 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   const dailyPurchaseLimit = isDebit ? 5000 : 0;
   const dailyATMLimit = isDebit ? 2000 : 0;
   const todaySpent = isDebit ? 1250 : 0; // Mockup
+  const dailySpentPercentage = dailyPurchaseLimit > 0 
+    ? Math.round((todaySpent / dailyPurchaseLimit) * 100) 
+    : 0;
   
   // Para virtual/prepago: límites y recargas
   const spendingLimit = isVirtual ? 3000 : 0;
@@ -159,13 +163,23 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
 
   // Colores semánticos mejorados para accesibilidad
   const getUsageColor = (percentage: number) => {
+    if (useInstitutionTheme) {
+      return { bg: `${primaryColor}20`, fg: primaryColor };
+    }
     if (percentage >= 90) return { bg: 'rgba(255, 59, 48, 0.12)', fg: '#FF3B30' };
     if (percentage >= 75) return { bg: 'rgba(255, 149, 0, 0.12)', fg: '#FF9500' };
     if (percentage >= 50) return { bg: 'rgba(255, 204, 0, 0.12)', fg: '#FFCC00' };
-    return { bg: `${primaryColor}20` || 'rgba(52, 199, 89, 0.12)', fg: primaryColor || '#34C759' };
+    return { bg: 'rgba(52, 199, 89, 0.12)', fg: '#34C759' };
   };
   
   const usageColors = getUsageColor(usagePercentage);
+  const dailySpentColors = getUsageColor(dailySpentPercentage);
+
+  // Color para el balance principal
+  // El usuario prefiere que el valor principal tenga siempre el tema de la institución
+  const heroColor = primaryColor;
+
+  const balanceColor = heroColor;
 
   return (
     <Animated.View 
@@ -176,7 +190,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
       <View style={styles.heroSection}>
         <AnimatedNumber 
           value={balance}
-          style={[styles.heroAmount, { color: primaryColor }]}
+          style={[styles.heroAmount, { color: heroColor }]}
           currency={currency}
           currencySymbol={currencySymbol}
           decimals={2}
@@ -235,6 +249,18 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Porcentaje de Uso"
             content={`Has usado el ${usagePercentage}% de tu línea de crédito. ${usagePercentage >= 75 ? 'Se recomienda mantener el uso por debajo del 30% para un mejor score crediticio.' : 'Mantén un buen manejo de tu crédito.'}`}
             placement="bottom"
+            extraContent={
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <ThemedText style={{ fontSize: 13 }}>Usar tema institucional</ThemedText>
+                <Switch
+                  value={useInstitutionTheme}
+                  onValueChange={setUseInstitutionTheme}
+                  trackColor={{ false: '#767577', true: primaryColor }}
+                  thumbColor={useInstitutionTheme ? '#fff' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                />
+              </View>
+            }
           >
             <View style={styles.statItem}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -245,7 +271,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                   strokeWidth={4}
                   color={usageColors.fg}
                   backgroundColor={`${usageColors.fg}20`}
-                  textStyle={{ fontSize: 10, fontWeight: '700' }}
+                  textStyle={{ fontSize: 10, fontWeight: '700', color: primaryColor }}
                 />
               </View>
               <View style={styles.statLabelWithIcon}>
@@ -282,6 +308,18 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Gasto de Hoy"
             content={`Has gastado ${formatCurrencyWithSymbol(todaySpent, { locale, currency, currencySymbol })} hoy. Este contador se reinicia cada 24 horas. Te quedan ${formatCurrencyWithSymbol(dailyPurchaseLimit - todaySpent, { locale, currency, currencySymbol })} disponibles para compras hoy.`}
             placement="bottom"
+            extraContent={
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <ThemedText style={{ fontSize: 13 }}>Usar tema institucional</ThemedText>
+                <Switch
+                  value={useInstitutionTheme}
+                  onValueChange={setUseInstitutionTheme}
+                  trackColor={{ false: '#767577', true: primaryColor }}
+                  thumbColor={useInstitutionTheme ? '#fff' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                />
+              </View>
+            }
           >
             <View style={styles.statItem}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -290,13 +328,13 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                   max={dailyPurchaseLimit} 
                   size={42} 
                   strokeWidth={4}
-                  color={primaryColor}
-                  backgroundColor={`${primaryColor}20`}
+                  color={dailySpentColors.fg}
+                  backgroundColor={dailySpentColors.bg}
                   showText={false}
                 />
                 <View style={{ position: 'absolute' }}>
                   <ThemedText style={{ fontSize: 10, fontWeight: '700', color: primaryColor }}>
-                    {Math.round((todaySpent / dailyPurchaseLimit) * 100)}%
+                    {dailySpentPercentage}%
                   </ThemedText>
                 </View>
               </View>
@@ -338,7 +376,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             placement="bottom"
           >
             <View style={styles.statItem}>
-              <ThemedText style={styles.statValue}>
+              <ThemedText style={[styles.statValue, { color: primaryColor }]}>
                 {formatCurrencyWithSymbol(spendingLimit, {
                   locale,
                   currency,
@@ -364,7 +402,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             placement="bottom"
           >
             <View style={styles.statItem}>
-              <ThemedText style={styles.statValue}>
+              <ThemedText style={[styles.statValue, { color: primaryColor }]}>
                 {isReloadable ? '∞' : '1×'}
               </ThemedText>
               <View style={styles.statLabelWithIcon}>

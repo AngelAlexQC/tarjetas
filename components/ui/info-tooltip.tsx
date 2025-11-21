@@ -26,6 +26,8 @@ export interface InfoTooltipProps {
   title?: string;
   /** Configuración para añadir evento al calendario */
   calendarEvent?: CalendarEventConfig;
+  /** Contenido extra opcional (ej. controles interactivos) */
+  extraContent?: React.ReactNode;
   /** Elemento hijo que activa el tooltip */
   children: React.ReactNode;
   /** Posición del tooltip relativo al hijo */
@@ -36,6 +38,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   content,
   title,
   calendarEvent,
+  extraContent,
   children,
   placement = 'top',
 }) => {
@@ -93,7 +96,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                 tint={theme.isDark ? 'dark' : 'light'}
                 style={[styles.tooltipContent, { borderColor: theme.colors.borderSubtle }]}
               >
-                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} />
+                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} extraContent={extraContent} />
               </BlurView>
             ) : (
               <View
@@ -108,7 +111,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                   },
                 ]}
               >
-                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} />
+                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} extraContent={extraContent} />
               </View>
             )}
           </Animated.View>
@@ -122,9 +125,10 @@ interface TooltipContentProps {
   title?: string;
   content: string;
   calendarEvent?: CalendarEventConfig;
+  extraContent?: React.ReactNode;
 }
 
-const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calendarEvent }) => {
+const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calendarEvent, extraContent }) => {
   const styles = useStyles();
   const theme = useAppTheme();
 
@@ -231,6 +235,12 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
       )}
       <ThemedText style={styles.tooltipText}>{content}</ThemedText>
       
+      {extraContent && (
+        <View style={styles.extraContent}>
+          {extraContent}
+        </View>
+      )}
+
       {calendarEvent && (
         <Pressable 
           style={({ pressed }) => [
@@ -336,6 +346,12 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       lineHeight: 18,
       color: theme.colors.textSecondary,
       fontWeight: '400',
+    },
+    extraContent: {
+      marginTop: 8,
+      paddingTop: 8,
+      borderTopWidth: 0.5,
+      borderTopColor: theme.colors.borderSubtle,
     },
     dismissHint: {
       marginTop: 8,
