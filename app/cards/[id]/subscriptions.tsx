@@ -1,5 +1,5 @@
-import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { CreditCard } from '@/components/cards/credit-card';
+import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -7,7 +7,7 @@ import { FinancialIcons } from '@/components/ui/financial-icons';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { AlertCircle, PauseCircle, PlayCircle } from 'lucide-react-native';
+import { PauseCircle, PlayCircle } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
@@ -203,8 +203,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   listContent: {
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 0,
+    paddingBottom: 140,
     gap: 16,
   },
   card: {

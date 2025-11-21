@@ -217,7 +217,17 @@ export default function TenantSelectorScreen() {
     return grouped;
   }, [searchQuery]);
 
-  const countries = Object.keys(groupedTenants).sort();
+  const countries = Object.keys(groupedTenants).sort((a, b) => {
+    const priority = ["Ecuador", "Colombia", "México"];
+    const indexA = priority.indexOf(a);
+    const indexB = priority.indexOf(b);
+
+    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+
+    return a.localeCompare(b);
+  });
   const isIOS = Platform.OS === 'ios';
 
   return (

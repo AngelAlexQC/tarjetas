@@ -1,5 +1,5 @@
-import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { CreditCard } from '@/components/cards/credit-card';
+import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 20,
-    paddingBottom: 100,
+    paddingBottom: 140,
   },
   txItem: {
     flexDirection: 'row',

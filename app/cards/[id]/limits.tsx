@@ -1,7 +1,7 @@
+import { CreditCard } from '@/components/cards/credit-card';
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
-import { CreditCard } from '@/components/cards/credit-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { cardService } from '@/features/cards/services/card-service';
@@ -11,7 +11,7 @@ import Slider from '@react-native-community/slider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LimitsScreen() {
@@ -55,13 +55,20 @@ export default function LimitsScreen() {
   };
 
   if (result) {
-    return <OperationResultScreen result={result} onClose={() => router.back()} />;
+    return (
+      <ThemedView style={styles.container} surface="level1">
+        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
+          <OperationResultScreen result={result} onClose={() => router.back()} />
+        </Animated.View>
+      </ThemedView>
+    );
   }
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader title="Configurar Cupos" card={card} isModal />
-      <ScrollView contentContainerStyle={styles.content}>
+      <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
+        <CardOperationHeader title="Configurar Cupos" card={card} isModal />
+        <ScrollView contentContainerStyle={styles.content}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -125,6 +132,7 @@ export default function LimitsScreen() {
           </ThemedText>
         </TouchableOpacity>
       </View>
+      </Animated.View>
 
       <BiometricGuard
         isVisible={showBiometrics}
@@ -185,6 +193,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     gap: 24,
+    paddingBottom: 140,
   },
   description: {
     textAlign: 'center',
@@ -218,8 +227,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     padding: 20,
     paddingBottom: 40,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.05)',
   },
   button: {
     height: 56,

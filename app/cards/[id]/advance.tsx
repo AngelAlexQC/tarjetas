@@ -1,7 +1,7 @@
+import { CreditCard } from '@/components/cards/credit-card';
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
-import { CreditCard } from '@/components/cards/credit-card';
 import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -11,9 +11,9 @@ import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight, DollarSign, Info } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import React, { useMemo, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Mock Accounts
@@ -34,6 +34,7 @@ export default function AdvanceScreen() {
   const insets = useSafeAreaInsets();
   
   const [step, setStep] = useState<Step>('form');
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const [amount, setAmount] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(12);
   const [selectedAccount, setSelectedAccount] = useState(ACCOUNTS[0].id);
@@ -41,6 +42,7 @@ export default function AdvanceScreen() {
   // Validation Form State
   const [cvv, setCvv] = useState('');
   const [expiry, setExpiry] = useState('');
+  const cvvRef = useRef<TextInput>(null);
   
   const [showBiometrics, setShowBiometrics] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
@@ -56,7 +58,26 @@ export default function AdvanceScreen() {
     return { val, interest, total, monthly };
   }, [amount, selectedTerm]);
 
+  const handleExpiryChange = (text: string) => {
+    // Remove non-numeric characters
+    const cleaned = text.replace(/[^0-9]/g, '');
+    
+    // Format as MM/YY
+    let formatted = cleaned;
+    if (cleaned.length >= 2) {
+      formatted = cleaned.substring(0, 2) + '/' + cleaned.substring(2, 4);
+    }
+    
+    setExpiry(formatted);
+
+    // Auto-focus next field when complete (4 digits)
+    if (cleaned.length === 4) {
+      cvvRef.current?.focus();
+    }
+  };
+
   const handleNext = () => {
+    setDirection('forward');
     if (step === 'form') {
       if (!amount || parseFloat(amount) <= 0) return;
       setStep('summary');
@@ -69,6 +90,7 @@ export default function AdvanceScreen() {
   };
 
   const handleBack = () => {
+    setDirection('back');
     if (step === 'validation') setStep('summary');
     else if (step === 'summary') setStep('form');
     else router.back();
@@ -87,180 +109,205 @@ export default function AdvanceScreen() {
   };
 
   if (result) {
-    return <OperationResultScreen result={result} onClose={() => router.back()} />;
+    return (
+      <ThemedView style={styles.container} surface="level1">
+        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
+          <OperationResultScreen result={result} onClose={() => router.back()} />
+        </Animated.View>
+      </ThemedView>
+    );
   }
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader title="Avance de Efectivo" card={card} onBack={handleBack} isModal />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={{ alignItems: 'center', marginBottom: 24 }}>
-          {card && <CreditCard card={card} width={300} />}
-        </View>
-
-        <Animated.View 
-          key={step}
-          entering={SlideInRight.duration(300)} 
-          exiting={SlideOutLeft.duration(300)}
-          style={styles.stepContainer}
+      <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
         >
-          {step === 'form' && (
-            <>
-              <ThemedText style={styles.sectionTitle}>Monto a solicitar</ThemedText>
-              <View style={[styles.inputContainer, { borderColor: theme.colors.border, backgroundColor: theme.colors.surface }]}>
-                <DollarSign size={20} color={theme.colors.textSecondary} />
-                <TextInput
-                  style={[styles.input, { color: theme.colors.text }]}
-                  placeholder="0.00"
-                  placeholderTextColor={theme.colors.textDisabled}
-                  keyboardType="numeric"
-                  value={amount}
-                  onChangeText={setAmount}
-                />
-              </View>
+          <CardOperationHeader 
+            title="Avance de Efectivo" 
+            card={card} 
+            onBack={handleBack} 
+            isModal={step === 'form'} 
+          />
 
-              <ThemedText style={styles.sectionTitle}>Plazo (meses)</ThemedText>
-              <View style={styles.termsGrid}>
-                {TERMS.map(t => (
-                  <TouchableOpacity
-                    key={t}
-                    style={[
-                      styles.termCard,
-                      { 
-                        borderColor: selectedTerm === t ? theme.tenant.mainColor : theme.colors.border,
-                        backgroundColor: selectedTerm === t ? theme.colors.surfaceHigher : theme.colors.surface
-                      }
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+            <View style={{ alignItems: 'center', marginBottom: 24 }}>
+              {card && <CreditCard card={card} width={300} />}
+            </View>
+
+            <Animated.View 
+              key={step}
+              entering={direction === 'forward' ? SlideInRight.duration(300) : SlideInLeft.duration(300)} 
+              exiting={direction === 'forward' ? SlideOutLeft.duration(300) : SlideOutRight.duration(300)}
+              style={styles.stepContainer}
+            >
+              {step === 'form' && (
+                <>
+                  <ThemedText style={styles.sectionTitle}>Monto a solicitar</ThemedText>
+                  <View style={[styles.inputContainer, { borderColor: theme.colors.border, backgroundColor: theme.colors.surface }]}>
+                    <DollarSign size={20} color={theme.colors.textSecondary} />
+                    <TextInput
+                      style={[styles.input, { color: theme.colors.text }]}
+                      placeholder="0.00"
+                      placeholderTextColor={theme.colors.textDisabled}
+                      keyboardType="decimal-pad"
+                      returnKeyType="done"
+                      value={amount}
+                      onChangeText={setAmount}
+                    />
+                  </View>
+
+                  <ThemedText style={styles.sectionTitle}>Plazo (meses)</ThemedText>
+                  <View style={styles.termsGrid}>
+                    {TERMS.map(t => (
+                      <TouchableOpacity
+                        key={t}
+                        style={[
+                          styles.termCard,
+                          { 
+                            borderColor: selectedTerm === t ? theme.tenant.mainColor : theme.colors.border,
+                            backgroundColor: selectedTerm === t ? theme.colors.surfaceHigher : theme.colors.surface
+                          }
+                        ]}
+                        onPress={() => setSelectedTerm(t)}
+                      >
+                        <ThemedText style={{ fontWeight: selectedTerm === t ? 'bold' : 'normal' }}>{t}</ThemedText>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <ThemedText style={styles.sectionTitle}>Cuenta de destino</ThemedText>
+                  {ACCOUNTS.map(acc => (
+                    <TouchableOpacity
+                      key={acc.id}
+                      style={[
+                        styles.accountCard,
+                        { 
+                          borderColor: selectedAccount === acc.id ? theme.tenant.mainColor : theme.colors.border,
+                          backgroundColor: selectedAccount === acc.id ? theme.colors.surfaceHigher : theme.colors.surface
+                        }
+                      ]}
+                      onPress={() => setSelectedAccount(acc.id)}
+                    >
+                      <View style={[styles.iconBox, { backgroundColor: theme.colors.surfaceHigher }]}>
+                        <FinancialIcons.wallet size={24} color={theme.colors.textSecondary} />
+                      </View>
+                      <View>
+                        <ThemedText type="defaultSemiBold">Cuenta {acc.type}</ThemedText>
+                        <ThemedText style={{ opacity: 0.6 }}>{acc.number} - Saldo: ${acc.balance}</ThemedText>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </>
+              )}
+
+              {step === 'summary' && (
+                <>
+                  <SummaryPanel 
+                    title="Resumen de la solicitud"
+                    items={[
+                      { label: 'Monto Solicitado', value: `$${calculations.val.toFixed(2)}` },
+                      { label: 'Interés Aprox. (16%)', value: `$${calculations.interest.toFixed(2)}` },
+                      { label: 'Total a Pagar', value: `$${calculations.total.toFixed(2)}` },
+                      { label: 'Cuota Mensual', value: `$${calculations.monthly.toFixed(2)}`, isTotal: true },
                     ]}
-                    onPress={() => setSelectedTerm(t)}
-                  >
-                    <ThemedText style={{ fontWeight: selectedTerm === t ? 'bold' : 'normal' }}>{t}</ThemedText>
-                  </TouchableOpacity>
-                ))}
-              </View>
+                    style={{ marginBottom: 24 }}
+                  />
 
-              <ThemedText style={styles.sectionTitle}>Cuenta de destino</ThemedText>
-              {ACCOUNTS.map(acc => (
-                <TouchableOpacity
-                  key={acc.id}
-                  style={[
-                    styles.accountCard,
-                    { 
-                      borderColor: selectedAccount === acc.id ? theme.tenant.mainColor : theme.colors.border,
-                      backgroundColor: selectedAccount === acc.id ? theme.colors.surfaceHigher : theme.colors.surface
-                    }
-                  ]}
-                  onPress={() => setSelectedAccount(acc.id)}
-                >
-                  <View style={[styles.iconBox, { backgroundColor: theme.colors.surfaceHigher }]}>
-                    <FinancialIcons.wallet size={24} color={theme.colors.textSecondary} />
+                  <ThemedText type="subtitle" style={{ marginBottom: 16 }}>Tabla de Amortización (Proyección)</ThemedText>
+                  <View style={[styles.table, { borderColor: theme.colors.border }]}>
+                    <View style={[styles.tableHeader, { backgroundColor: theme.colors.surfaceHigher }]}>
+                      <ThemedText style={styles.col1}>Mes</ThemedText>
+                      <ThemedText style={styles.col2}>Cuota</ThemedText>
+                      <ThemedText style={styles.col3}>Saldo</ThemedText>
+                    </View>
+                    {Array.from({ length: Math.min(selectedTerm, 5) }).map((_, i) => (
+                      <View key={i} style={[styles.tableRow, { borderBottomColor: theme.colors.borderSubtle }]}>
+                        <ThemedText style={styles.col1}>{i + 1}</ThemedText>
+                        <ThemedText style={styles.col2}>${calculations.monthly.toFixed(2)}</ThemedText>
+                        <ThemedText style={styles.col3}>
+                          ${(calculations.total - (calculations.monthly * (i + 1))).toFixed(2)}
+                        </ThemedText>
+                      </View>
+                    ))}
+                    {selectedTerm > 5 && (
+                      <View style={styles.tableRow}>
+                        <ThemedText style={{ opacity: 0.5, fontStyle: 'italic' }}>... {selectedTerm - 5} cuotas más</ThemedText>
+                      </View>
+                    )}
                   </View>
-                  <View>
-                    <ThemedText type="defaultSemiBold">Cuenta {acc.type}</ThemedText>
-                    <ThemedText style={{ opacity: 0.6 }}>{acc.number} - Saldo: ${acc.balance}</ThemedText>
+                </>
+              )}
+
+              {step === 'validation' && (
+                <>
+                  <ThemedText type="subtitle">Validación de Seguridad</ThemedText>
+                  <ThemedText style={{ opacity: 0.7, marginBottom: 24 }}>
+                    Ingresa los datos de tu tarjeta para confirmar.
+                  </ThemedText>
+
+                  <View style={styles.formGroup}>
+                    <ThemedText style={styles.label}>Fecha de Expiración (MM/YY)</ThemedText>
+                    <TextInput
+                      style={[styles.inputField, { borderColor: theme.colors.border, color: theme.colors.text, backgroundColor: theme.colors.surface }]}
+                      placeholder="MM/YY"
+                      placeholderTextColor={theme.colors.textDisabled}
+                      value={expiry}
+                      onChangeText={handleExpiryChange}
+                      maxLength={5}
+                      keyboardType="number-pad"
+                      returnKeyType="next"
+                      blurOnSubmit={false}
+                      onSubmitEditing={() => cvvRef.current?.focus()}
+                    />
                   </View>
-                </TouchableOpacity>
-              ))}
-            </>
-          )}
 
-          {step === 'summary' && (
-            <>
-              <SummaryPanel 
-                title="Resumen de la solicitud"
-                items={[
-                  { label: 'Monto Solicitado', value: `$${calculations.val.toFixed(2)}` },
-                  { label: 'Interés Aprox. (16%)', value: `$${calculations.interest.toFixed(2)}` },
-                  { label: 'Total a Pagar', value: `$${calculations.total.toFixed(2)}` },
-                  { label: 'Cuota Mensual', value: `$${calculations.monthly.toFixed(2)}`, isTotal: true },
-                ]}
-                style={{ marginBottom: 24 }}
-              />
+                  <View style={styles.formGroup}>
+                    <ThemedText style={styles.label}>Código de Seguridad (CVV)</ThemedText>
+                    <TextInput
+                      ref={cvvRef}
+                      style={[styles.inputField, { borderColor: theme.colors.border, color: theme.colors.text, backgroundColor: theme.colors.surface }]}
+                      placeholder="123"
+                      placeholderTextColor={theme.colors.textDisabled}
+                      value={cvv}
+                      onChangeText={setCvv}
+                      maxLength={4}
+                      secureTextEntry
+                      keyboardType="number-pad"
+                      returnKeyType="done"
+                    />
+                  </View>
 
-              <ThemedText type="subtitle" style={{ marginBottom: 16 }}>Tabla de Amortización (Proyección)</ThemedText>
-              <View style={[styles.table, { borderColor: theme.colors.border }]}>
-                <View style={[styles.tableHeader, { backgroundColor: theme.colors.surfaceHigher }]}>
-                  <ThemedText style={styles.col1}>Mes</ThemedText>
-                  <ThemedText style={styles.col2}>Cuota</ThemedText>
-                  <ThemedText style={styles.col3}>Saldo</ThemedText>
-                </View>
-                {Array.from({ length: Math.min(selectedTerm, 5) }).map((_, i) => (
-                  <View key={i} style={[styles.tableRow, { borderBottomColor: theme.colors.borderSubtle }]}>
-                    <ThemedText style={styles.col1}>{i + 1}</ThemedText>
-                    <ThemedText style={styles.col2}>${calculations.monthly.toFixed(2)}</ThemedText>
-                    <ThemedText style={styles.col3}>
-                      ${(calculations.total - (calculations.monthly * (i + 1))).toFixed(2)}
+                  <View style={styles.infoBox}>
+                    <Info size={20} color={theme.tenant.mainColor} />
+                    <ThemedText style={{ flex: 1, fontSize: 12 }}>
+                      Al continuar, aceptas los términos y condiciones del servicio de Avance de Efectivo.
                     </ThemedText>
                   </View>
-                ))}
-                {selectedTerm > 5 && (
-                  <View style={styles.tableRow}>
-                    <ThemedText style={{ opacity: 0.5, fontStyle: 'italic' }}>... {selectedTerm - 5} cuotas más</ThemedText>
-                  </View>
-                )}
-              </View>
-            </>
-          )}
+                </>
+              )}
+            </Animated.View>
+          </ScrollView>
 
-          {step === 'validation' && (
-            <>
-              <ThemedText type="subtitle">Validación de Seguridad</ThemedText>
-              <ThemedText style={{ opacity: 0.7, marginBottom: 24 }}>
-                Ingresa los datos de tu tarjeta para confirmar.
+          <View style={[styles.footer, { backgroundColor: theme.colors.surface, paddingBottom: insets.bottom + 20 }]}>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: theme.tenant.mainColor, opacity: (step === 'form' && !amount) ? 0.5 : 1 }
+              ]}
+              onPress={handleNext}
+              disabled={step === 'form' && !amount}
+            >
+              <ThemedText style={styles.buttonText}>
+                {step === 'validation' ? 'Confirmar y Acreditar' : 'Continuar'}
               </ThemedText>
-
-              <View style={styles.formGroup}>
-                <ThemedText style={styles.label}>Fecha de Expiración (MM/YY)</ThemedText>
-                <TextInput
-                  style={[styles.inputField, { borderColor: theme.colors.border, color: theme.colors.text, backgroundColor: theme.colors.surface }]}
-                  placeholder="MM/YY"
-                  placeholderTextColor={theme.colors.textDisabled}
-                  value={expiry}
-                  onChangeText={setExpiry}
-                  maxLength={5}
-                />
-              </View>
-
-              <View style={styles.formGroup}>
-                <ThemedText style={styles.label}>Código de Seguridad (CVV)</ThemedText>
-                <TextInput
-                  style={[styles.inputField, { borderColor: theme.colors.border, color: theme.colors.text, backgroundColor: theme.colors.surface }]}
-                  placeholder="123"
-                  placeholderTextColor={theme.colors.textDisabled}
-                  value={cvv}
-                  onChangeText={setCvv}
-                  maxLength={4}
-                  secureTextEntry
-                  keyboardType="numeric"
-                />
-              </View>
-
-              <View style={styles.infoBox}>
-                <Info size={20} color={theme.tenant.mainColor} />
-                <ThemedText style={{ flex: 1, fontSize: 12 }}>
-                  Al continuar, aceptas los términos y condiciones del servicio de Avance de Efectivo.
-                </ThemedText>
-              </View>
-            </>
-          )}
-        </Animated.View>
-      </ScrollView>
-
-      <View style={[styles.footer, { backgroundColor: theme.colors.surface, paddingBottom: insets.bottom + 20 }]}>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: theme.tenant.mainColor, opacity: (step === 'form' && !amount) ? 0.5 : 1 }
-          ]}
-          onPress={handleNext}
-          disabled={step === 'form' && !amount}
-        >
-          <ThemedText style={styles.buttonText}>
-            {step === 'validation' ? 'Confirmar y Acreditar' : 'Continuar'}
-          </ThemedText>
-          <ArrowRight size={20} color="#FFF" />
-        </TouchableOpacity>
-      </View>
+              <ArrowRight size={20} color="#FFF" />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Animated.View>
 
       <BiometricGuard
         isVisible={showBiometrics}
@@ -287,7 +334,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 140,
   },
   stepContainer: {
     gap: 20,
@@ -397,10 +444,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     padding: 20,
     paddingBottom: 40,
     borderTopWidth: 1,

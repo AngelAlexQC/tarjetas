@@ -1,7 +1,7 @@
+import { CreditCard } from '@/components/cards/credit-card';
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
-import { CreditCard } from '@/components/cards/credit-card';
 import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -13,7 +13,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight, Check } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Mock Data
@@ -37,6 +37,7 @@ export default function DeferScreen() {
   const insets = useSafeAreaInsets();
   
   const [step, setStep] = useState<Step>('select');
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const [selectedTxIds, setSelectedTxIds] = useState<Set<string>>(new Set());
   const [selectedMonths, setSelectedMonths] = useState<number>(3);
   const [showBiometrics, setShowBiometrics] = useState(false);
@@ -69,12 +70,14 @@ export default function DeferScreen() {
   };
 
   const handleNext = () => {
+    setDirection('forward');
     if (step === 'select') setStep('term');
     else if (step === 'term') setStep('summary');
     else if (step === 'summary') setShowBiometrics(true);
   };
 
   const handleBack = () => {
+    setDirection('back');
     if (step === 'summary') setStep('term');
     else if (step === 'term') setStep('select');
     else router.back();
@@ -93,19 +96,26 @@ export default function DeferScreen() {
   };
 
   if (result) {
-    return <OperationResultScreen result={result} onClose={() => router.back()} />;
+    return (
+      <ThemedView style={styles.container} surface="level1">
+        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
+          <OperationResultScreen result={result} onClose={() => router.back()} />
+        </Animated.View>
+      </ThemedView>
+    );
   }
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader 
-        title="Diferir Consumos" 
-        card={card}
-        onBack={handleBack}
-        isModal
-      />
-      
-      {/* Header Progress */}
+      <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
+        <CardOperationHeader 
+          title="Diferir Consumos" 
+          card={card}
+          onBack={handleBack}
+          isModal={step === 'select'}
+        />
+        
+        {/* Header Progress */}
       <View style={styles.progressHeader}>
         <View style={styles.progressContainer}>
           <View style={[styles.progressBar, { width: step === 'select' ? '33%' : step === 'term' ? '66%' : '100%', backgroundColor: theme.tenant.mainColor }]} />
@@ -121,8 +131,8 @@ export default function DeferScreen() {
         </View>
         <Animated.View 
           key={step}
-          entering={SlideInRight.duration(300)} 
-          exiting={SlideOutLeft.duration(300)}
+          entering={direction === 'forward' ? SlideInRight.duration(300) : SlideInLeft.duration(300)} 
+          exiting={direction === 'forward' ? SlideOutLeft.duration(300) : SlideOutRight.duration(300)}
           style={styles.stepContainer}
         >
           {step === 'select' && (
@@ -243,6 +253,7 @@ export default function DeferScreen() {
           {step !== 'summary' && <ArrowRight size={20} color={theme.colors.textInverse} />}
         </TouchableOpacity>
       </View>
+      </Animated.View>
 
       <BiometricGuard
         isVisible={showBiometrics}
@@ -284,7 +295,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 140,
   },
   stepContainer: {
     gap: 20,

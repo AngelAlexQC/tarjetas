@@ -1,17 +1,19 @@
+import { CreditCard } from '@/components/cards/credit-card';
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
-import { CreditCard } from '@/components/cards/credit-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ThemedButton } from '@/components/ui/themed-button';
+import { OptionCard } from '@/components/ui/option-card';
 import { cardService } from '@/features/cards/services/card-service';
 import { BlockType, OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AlertTriangle, Lock, PauseCircle } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function BlockCardScreen() {
@@ -46,13 +48,20 @@ export default function BlockCardScreen() {
   };
 
   if (result) {
-    return <OperationResultScreen result={result} onClose={() => router.back()} />;
+    return (
+      <ThemedView style={styles.container} surface="level1">
+        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
+          <OperationResultScreen result={result} onClose={() => router.back()} />
+        </Animated.View>
+      </ThemedView>
+    );
   }
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader title="Bloquear Tarjeta" card={card} isModal />
-      <ScrollView contentContainerStyle={styles.content}>
+      <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
+        <CardOperationHeader title="Bloquear Tarjeta" card={card} isModal />
+        <ScrollView contentContainerStyle={styles.content}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -62,23 +71,21 @@ export default function BlockCardScreen() {
 
         <View style={styles.optionsContainer}>
           <OptionCard
-            type="temporary"
             title="Bloqueo Temporal"
             description="Pausa tu tarjeta si no la encuentras. Puedes reactivarla cuando quieras."
-            icon={PauseCircle}
-            isSelected={selectedType === 'temporary'}
-            onSelect={() => setSelectedType('temporary')}
-            color={theme.tenant.accentColor} // Warning/Orange usually
+            icon={<PauseCircle />}
+            selected={selectedType === 'temporary'}
+            onPress={() => setSelectedType('temporary')}
+            iconColor={theme.tenant.accentColor}
           />
 
           <OptionCard
-            type="permanent"
             title="Bloqueo Definitivo"
             description="Reportar como robada o perdida. Se cancelará la tarjeta actual y se emitirá una nueva."
-            icon={Lock}
-            isSelected={selectedType === 'permanent'}
-            onSelect={() => setSelectedType('permanent')}
-            color="#F44336" // Error Red
+            icon={<Lock />}
+            selected={selectedType === 'permanent'}
+            onPress={() => setSelectedType('permanent')}
+            iconColor="#F44336"
           />
         </View>
 
@@ -92,20 +99,15 @@ export default function BlockCardScreen() {
         )}
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
-        <TouchableOpacity
-          style={[
-            styles.button, 
-            { backgroundColor: theme.tenant.mainColor, opacity: selectedType ? 1 : 0.5 }
-          ]}
-          disabled={!selectedType}
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 20, backgroundColor: theme.colors.surface }]}>
+        <ThemedButton
+          title="Bloquear Tarjeta"
           onPress={handleBlock}
-        >
-          <ThemedText style={{ color: theme.colors.textInverse, fontWeight: 'bold', fontSize: 16 }}>
-            {selectedType === 'permanent' ? 'Bloquear Definitivamente' : 'Pausar Tarjeta'}
-          </ThemedText>
-        </TouchableOpacity>
+          disabled={!selectedType}
+          variant="danger"
+        />
       </View>
+      </Animated.View>
 
       <BiometricGuard
         isVisible={showBiometrics}
@@ -117,30 +119,6 @@ export default function BlockCardScreen() {
   );
 }
 
-function OptionCard({ type, title, description, icon: Icon, isSelected, onSelect, color }: any) {
-  const theme = useAppTheme();
-  
-  return (
-    <Pressable onPress={onSelect}>
-      <ThemedView 
-        style={[
-          styles.optionCard, 
-          isSelected && { borderColor: color, borderWidth: 2 }
-        ]} 
-        surface={isSelected ? "level2" : "level1"}
-      >
-        <View style={[styles.iconContainer, { backgroundColor: isSelected ? color : theme.colors.surfaceHigher }]}>
-          <Icon size={32} color={isSelected ? '#FFF' : theme.colors.textSecondary} />
-        </View>
-        <View style={styles.textContainer}>
-          <ThemedText type="subtitle" style={{ color: isSelected ? color : theme.colors.text }}>{title}</ThemedText>
-          <ThemedText style={{ color: theme.colors.textSecondary, fontSize: 14 }}>{description}</ThemedText>
-        </View>
-      </ThemedView>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -148,6 +126,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     gap: 24,
+    paddingBottom: 140,
   },
   description: {
     textAlign: 'center',
@@ -155,26 +134,6 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     gap: 16,
-  },
-  optionCard: {
-    flexDirection: 'row',
-    padding: 16,
-    borderRadius: 16,
-    gap: 16,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textContainer: {
-    flex: 1,
-    gap: 4,
   },
   warningBox: {
     flexDirection: 'row',
@@ -189,8 +148,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     padding: 20,
     paddingBottom: 40,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'transparent', // Will be overridden by theme in component if needed, or we can set it here
   },
   button: {
     height: 56,
