@@ -9,7 +9,7 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
-import { Alert, Modal, Platform, Pressable, StyleSheet, View, Linking } from 'react-native';
+import { Alert, Linking, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export interface CalendarEventConfig {
@@ -192,16 +192,18 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
             text: 'Ver evento', 
             onPress: async () => {
               if (Platform.OS === 'android') {
+                // Android: Abrir calendario en la fecha del evento (más confiable que por ID)
                 try {
-                  const uri = `content://com.android.calendar/events/${eventId}`;
-                  const canOpen = await Linking.canOpenURL(uri);
+                  const timeUri = `content://com.android.calendar/time/${calendarEvent.startDate.getTime()}`;
+                  const canOpen = await Linking.canOpenURL(timeUri);
                   if (canOpen) {
-                    await Linking.openURL(uri);
+                    await Linking.openURL(timeUri);
                     return;
                   }
                 } catch (e) {
-                  console.warn('Error trying to open Android calendar via Linking', e);
+                  console.warn('Error trying to open Android calendar by time', e);
                 }
+                // Fallback si falla la apertura por tiempo
                 Calendar.openEventInCalendar(eventId);
               } else {
                 // iOS: Abrir calendario en la fecha del evento
