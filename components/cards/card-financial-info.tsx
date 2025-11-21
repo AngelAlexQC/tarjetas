@@ -184,35 +184,37 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
     >
       {/* Balance principal - Hero section minimalista */}
       <View style={styles.heroSection}>
-        <AnimatedNumber 
-          value={balance}
-          style={[styles.heroAmount, { color: heroColor }]}
-          currency={currency}
-          currencySymbol={currencySymbol}
-          decimals={2}
-          duration={1000}
-          locale={locale}
-        />
-        <View style={styles.heroLabelContainer}>
-          <ThemedText style={styles.heroLabel}>
-            {isCredit ? 'Saldo actual' : isDebit ? 'Disponible' : 'Balance'}
-          </ThemedText>
-          <InfoTooltip
-            title={isCredit ? 'Saldo Actual' : isDebit ? 'Saldo Disponible' : 'Balance'}
-            content={
-              isCredit
-                ? 'Es el total que has usado de tu línea de crédito. Este monto debe ser pagado en o antes de la fecha de vencimiento.'
-                : isDebit
-                ? 'Es el dinero que tienes disponible en tu cuenta para usar inmediatamente en compras o retiros.'
-                : 'Es el saldo total disponible en tu tarjeta virtual. Puede ser recargable o de un solo uso.'
-            }
-            placement="bottom"
-          >
-            <View style={styles.infoIconWrapper}>
-              <InfoIcon size={14} />
+        <InfoTooltip
+          title={isCredit ? 'Saldo Actual' : isDebit ? 'Saldo Disponible' : 'Balance'}
+          content={
+            isCredit
+              ? 'Es el total que has usado de tu línea de crédito. Este monto debe ser pagado en o antes de la fecha de vencimiento.'
+              : isDebit
+              ? 'Es el dinero que tienes disponible en tu cuenta para usar inmediatamente en compras o retiros.'
+              : 'Es el saldo total disponible en tu tarjeta virtual. Puede ser recargable o de un solo uso.'
+          }
+          placement="bottom"
+        >
+          <View style={{ alignItems: 'center', gap: 4 }}>
+            <AnimatedNumber 
+              value={balance}
+              style={[styles.heroAmount, { color: heroColor }]}
+              currency={currency}
+              currencySymbol={currencySymbol}
+              decimals={2}
+              duration={1000}
+              locale={locale}
+            />
+            <View style={styles.heroLabelContainer}>
+              <ThemedText style={styles.heroLabel}>
+                {isCredit ? 'Saldo actual' : isDebit ? 'Disponible' : 'Balance'}
+              </ThemedText>
+              <View style={styles.infoIconWrapper}>
+                <InfoIcon size={14} />
+              </View>
             </View>
-          </InfoTooltip>
-        </View>
+          </View>
+        </InfoTooltip>
       </View>
 
       {/* Stats compactos - Solo info esencial */}

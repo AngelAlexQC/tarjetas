@@ -92,8 +92,8 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
           >
             {Platform.OS === 'ios' ? (
               <BlurView
-                intensity={theme.isDark ? 40 : 25}
-                tint={theme.isDark ? 'dark' : 'light'}
+                intensity={80}
+                tint="systemMaterial"
                 style={[styles.tooltipContent, { borderColor: theme.colors.borderSubtle }]}
               >
                 <TooltipContent 
@@ -359,7 +359,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
     tooltipText: {
       fontSize: 13,
       lineHeight: 18,
-      color: theme.colors.textSecondary,
+      color: theme.colors.text,
       fontWeight: '400',
     },
     extraContent: {
