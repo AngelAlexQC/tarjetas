@@ -5,6 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
 import { printToFileAsync } from 'expo-print';
 import { useLocalSearchParams } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
@@ -104,9 +105,13 @@ export default function StatementsScreen() {
 
       const closingBalance = totalPurchases - totalPayments;
 
-      const logoHtml = theme.tenant.logoUrl 
-        ? `<img src="${theme.tenant.logoUrl}" style="height: 40px; object-fit: contain;" />`
-        : `<div class="brand-logo">${theme.tenant.name}</div>`;
+      // Convert logo to base64 for proper rendering in PDF
+      const institutionLogoHtml = await getLogoHtmlForPdf(
+        theme.tenant.logoUrl,
+        theme.tenant.name,
+        theme.tenant.mainColor,
+        40
+      );
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -324,7 +329,7 @@ export default function StatementsScreen() {
         <!-- Fixed Header -->
         <div class="page-header">
             <div class="brand-logo">
-                ${logoHtml}
+                ${institutionLogoHtml}
             </div>
             <div class="statement-info">
                 <h1>Estado de Cuenta</h1>
@@ -360,7 +365,7 @@ export default function StatementsScreen() {
                                     <p><strong>Usuario Ejemplo</strong></p>
                                     <p>Av. Principal 123</p>
                                     <p>Ciudad, País</p>
-                                    <p>Tarjeta: •••• ${card?.last4 || '9010'}</p>
+                                    <p>Tarjeta: ${card?.cardNumber || '•••• •••• •••• 9010'}</p>
                                 </div>
                                 <div class="address-block" style="text-align: right;">
                                     <h3>Emisor</h3>

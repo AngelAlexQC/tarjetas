@@ -28,7 +28,7 @@ export function OperationResultScreen({ result, onClose, card, transactionDetail
 
   const handleShare = async () => {
     try {
-      const html = generateReceiptHtml({
+      const html = await generateReceiptHtml({
         result,
         card,
         transactionDetails,

@@ -1,5 +1,6 @@
 import { Card } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
+import { getLogoHtmlForPdf } from './image-to-base64';
 
 interface ReceiptData {
   result: OperationResult;
@@ -8,7 +9,7 @@ interface ReceiptData {
   theme: any; // Using any for theme to avoid complex type imports, but should be AppTheme
 }
 
-export const generateReceiptHtml = ({ result, card, transactionDetails, theme }: ReceiptData) => {
+export const generateReceiptHtml = async ({ result, card, transactionDetails, theme }: ReceiptData) => {
   const isSuccess = result.success;
   const color = isSuccess ? '#4CAF50' : '#F44336';
   const iconBgColor = isSuccess ? '#E8F5E9' : '#FFEBEE';
@@ -39,9 +40,13 @@ export const generateReceiptHtml = ({ result, card, transactionDetails, theme }:
     </svg>
   `;
 
-  const logoHtml = theme.tenant.logoUrl 
-    ? `<img src="${theme.tenant.logoUrl}" style="height: 32px; object-fit: contain; margin-bottom: 4px;" />`
-    : `<div style="font-weight: bold; font-size: 20px; color: ${theme.tenant.mainColor}; margin-bottom: 4px;">${theme.tenant.name}</div>`;
+  // Convert logo to base64 for proper rendering in PDF
+  const logoHtml = await getLogoHtmlForPdf(
+    theme.tenant.logoUrl,
+    theme.tenant.name,
+    theme.tenant.mainColor,
+    32
+  );
 
   const detailsHtml = transactionDetails?.map(detail => `
     <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px;">
