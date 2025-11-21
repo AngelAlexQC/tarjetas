@@ -11,6 +11,12 @@ import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { formatCurrency } from '@/utils/formatters/currency';
+// Formatea la moneda usando el símbolo personalizado si está definido
+function formatCurrencyWithSymbol(amount: number, options: { locale: string; currency: string; currencySymbol?: string; minimumFractionDigits?: number; maximumFractionDigits?: number }) {
+  const { currencySymbol, locale, currency, minimumFractionDigits, maximumFractionDigits } = options;
+  const value = formatCurrency(amount, { locale, currency, minimumFractionDigits, maximumFractionDigits });
+  return currencySymbol ? `${currencySymbol} ${value.replace(/[^\d.,-]+/, '').trim()}` : value;
+}
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -160,6 +166,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
           value={balance}
           style={styles.heroAmount}
           currency={currency}
+          currencySymbol={currencySymbol}
           decimals={2}
           duration={1000}
           locale={locale}
@@ -191,14 +198,15 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
         <View style={styles.statsRow}>
           <InfoTooltip
             title="Crédito Disponible"
-            content={`Tienes ${formatCurrency(availableCredit, { locale, currency })} disponibles de tu línea de crédito de ${formatCurrency(creditLimit, { locale, currency })}. Este es el monto que puedes usar sin exceder tu límite.`}
+            content={`Tienes ${formatCurrencyWithSymbol(availableCredit, { locale, currency, currencySymbol })} disponibles de tu línea de crédito de ${formatCurrencyWithSymbol(creditLimit, { locale, currency, currencySymbol })}. Este es el monto que puedes usar sin exceder tu límite.`}
             placement="bottom"
           >
             <View style={styles.statItem}>
               <ThemedText style={styles.statValue}>
-                {formatCurrency(availableCredit, {
+                {formatCurrencyWithSymbol(availableCredit, {
                   locale,
                   currency,
+                  currencySymbol,
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 })}
@@ -226,7 +234,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
           <View style={styles.statDivider} />
           <InfoTooltip
             title="Próximo Pago"
-            content={`Tienes ${nextPaymentDays} días para realizar tu pago. ${isPaymentSoon ? 'Tu fecha de pago está cerca, considera programar tu pago pronto.' : 'El pago mínimo sugerido es de ' + formatCurrency(minimumPayment, { locale, currency }) + '.'}`}
+            content={`Tienes ${nextPaymentDays} días para realizar tu pago. ${isPaymentSoon ? 'Tu fecha de pago está cerca, considera programar tu pago pronto.' : 'El pago mínimo sugerido es de ' + formatCurrencyWithSymbol(minimumPayment, { locale, currency, currencySymbol }) + '.'}`}
             placement="bottom"
           >
             <View style={styles.statItem}>
@@ -242,14 +250,15 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
         <View style={styles.statsRow}>
           <InfoTooltip
             title="Gasto de Hoy"
-            content={`Has gastado ${formatCurrency(todaySpent, { locale, currency })} hoy. Este contador se reinicia cada 24 horas. Te quedan ${formatCurrency(dailyPurchaseLimit - todaySpent, { locale, currency })} disponibles para compras hoy.`}
+            content={`Has gastado ${formatCurrencyWithSymbol(todaySpent, { locale, currency, currencySymbol })} hoy. Este contador se reinicia cada 24 horas. Te quedan ${formatCurrencyWithSymbol(dailyPurchaseLimit - todaySpent, { locale, currency, currencySymbol })} disponibles para compras hoy.`}
             placement="bottom"
           >
             <View style={styles.statItem}>
               <ThemedText style={styles.statValue}>
-                {formatCurrency(todaySpent, {
+                {formatCurrencyWithSymbol(todaySpent, {
                   locale,
                   currency,
+                  currencySymbol,
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 })}
@@ -263,14 +272,15 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
           <View style={styles.statDivider} />
           <InfoTooltip
             title="Límite Diario de Compras"
-            content={`Tu límite de compras diario es de ${formatCurrency(dailyPurchaseLimit, { locale, currency })}. Este límite se establece por seguridad y se reinicia automáticamente cada día. También tienes un límite para cajeros de ${formatCurrency(dailyATMLimit, { locale, currency })} diarios.`}
+            content={`Tu límite de compras diario es de ${formatCurrencyWithSymbol(dailyPurchaseLimit, { locale, currency, currencySymbol })}. Este límite se establece por seguridad y se reinicia automáticamente cada día. También tienes un límite para cajeros de ${formatCurrencyWithSymbol(dailyATMLimit, { locale, currency, currencySymbol })} diarios.`}
             placement="bottom"
           >
             <View style={styles.statItem}>
               <ThemedText style={styles.statValue}>
-                {formatCurrency(dailyPurchaseLimit, {
+                {formatCurrencyWithSymbol(dailyPurchaseLimit, {
                   locale,
                   currency,
+                  currencySymbol,
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 })}
@@ -286,14 +296,15 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
         <View style={styles.statsRow}>
           <InfoTooltip
             title="Límite de Gasto"
-            content={`Esta tarjeta virtual tiene un límite máximo de ${formatCurrency(spendingLimit, { locale, currency })}. ${isReloadable ? 'Puedes recargarla múltiples veces hasta este límite.' : 'Es una tarjeta de un solo uso, ideal para compras online seguras.'}`}
+            content={`Esta tarjeta virtual tiene un límite máximo de ${formatCurrencyWithSymbol(spendingLimit, { locale, currency, currencySymbol })}. ${isReloadable ? 'Puedes recargarla múltiples veces hasta este límite.' : 'Es una tarjeta de un solo uso, ideal para compras online seguras.'}`}
             placement="bottom"
           >
             <View style={styles.statItem}>
               <ThemedText style={styles.statValue}>
-                {formatCurrency(spendingLimit, {
+                {formatCurrencyWithSymbol(spendingLimit, {
                   locale,
                   currency,
+                  currencySymbol,
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 })}

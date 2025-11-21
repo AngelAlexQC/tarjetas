@@ -16,6 +16,7 @@ export interface AnimatedNumberProps {
   duration?: number;
   locale?: string;
   currency?: string;
+  currencySymbol?: string;
 }
 
 export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
@@ -26,6 +27,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   decimals = 2,
   locale = 'en-US',
   currency,
+  currencySymbol,
 }) => {
   const theme = useAppTheme();
   
@@ -33,12 +35,16 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   const displayText = useMemo(() => {
     try {
       if (currency) {
-        return new Intl.NumberFormat(locale, {
+        let formatted = new Intl.NumberFormat(locale, {
           style: 'currency',
           currency,
           minimumFractionDigits: decimals,
           maximumFractionDigits: decimals,
         }).format(value);
+        if (currencySymbol) {
+          formatted = `${currencySymbol} ${formatted.replace(/[^\d.,-]+/, '').trim()}`;
+        }
+        return formatted;
       }
       return `${prefix}${value.toLocaleString(locale, {
         minimumFractionDigits: decimals,
@@ -48,7 +54,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
       console.warn('Error formateando número:', error);
       return `${prefix}${value.toFixed(decimals)}${suffix}`;
     }
-  }, [value, currency, locale, decimals, prefix, suffix]);
+  }, [value, currency, currencySymbol, locale, decimals, prefix, suffix]);
 
   return (
     <Text style={[{ color: theme.colors.text }, style]}>
