@@ -11,16 +11,16 @@ import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { formatCurrency } from '@/utils/formatters/currency';
+import { BlurView } from 'expo-blur';
+import React from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 // Formatea la moneda usando el símbolo personalizado si está definido
 function formatCurrencyWithSymbol(amount: number, options: { locale: string; currency: string; currencySymbol?: string; minimumFractionDigits?: number; maximumFractionDigits?: number }) {
   const { currencySymbol, locale, currency, minimumFractionDigits, maximumFractionDigits } = options;
   const value = formatCurrency(amount, { locale, currency, minimumFractionDigits, maximumFractionDigits });
   return currencySymbol ? `${currencySymbol} ${value.replace(/[^\d.,-]+/, '').trim()}` : value;
 }
-import { BlurView } from 'expo-blur';
-import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 export interface CardFinancialInfoProps {
   card: Card;

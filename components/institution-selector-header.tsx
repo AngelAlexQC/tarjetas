@@ -2,6 +2,8 @@ import { ThemedText } from "@/components/themed-text";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
+import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -13,8 +15,6 @@ import Animated, {
     withSpring,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 
 /**
  * Header minimalista moderno - Fintech Design 2025
