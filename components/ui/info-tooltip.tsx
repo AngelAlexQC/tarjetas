@@ -33,6 +33,8 @@ export interface InfoTooltipProps {
   children: React.ReactNode;
   /** Posición del tooltip relativo al hijo */
   placement?: 'top' | 'bottom' | 'left' | 'right';
+  /** Modo de activación del tooltip */
+  triggerMode?: 'press' | 'longPress';
   /** Identificador único para el tour (opcional) */
   tourKey?: string;
   /** Orden en el tour (opcional) */
@@ -46,6 +48,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   extraContent,
   children,
   placement = 'top',
+  triggerMode = 'press',
   tourKey,
   tourOrder = 0,
 }) => {
@@ -73,10 +76,21 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   }, [tourKey, tourOrder, register, unregister]);
 
   const handlePress = (event: any) => {
-    event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
-      setTriggerLayout({ x: pageX, y: pageY, width, height });
-      setIsVisible(true);
-    });
+    if (triggerMode === 'press') {
+      event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
+        setTriggerLayout({ x: pageX, y: pageY, width, height });
+        setIsVisible(true);
+      });
+    }
+  };
+
+  const handleLongPress = (event: any) => {
+    if (triggerMode === 'longPress') {
+      event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
+        setTriggerLayout({ x: pageX, y: pageY, width, height });
+        setIsVisible(true);
+      });
+    }
   };
 
   const handleClose = () => {
@@ -91,6 +105,8 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
       <Pressable
         ref={triggerRef}
         onPress={handlePress}
+        onLongPress={handleLongPress}
+        delayLongPress={500}
         accessibilityRole="button"
         accessibilityLabel={title || 'Información'}
         accessibilityHint="Toca para ver más detalles"

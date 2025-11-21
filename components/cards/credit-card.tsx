@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
 import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { ChipIcon } from "@/components/ui/chip-icon";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { Card } from "@/features/cards/services/card-service";
 import { formatCardExpiry } from "@/utils/formatters/date";
@@ -26,6 +27,7 @@ export function CreditCard({
 }: CreditCardProps) {
   const cardHeight = height || width * 0.63;
   const cardDesign = getCardDesign(card.cardBrand, card.cardType);
+  const baseOrder = card.cardType === 'credit' ? 100 : card.cardType === 'debit' ? 200 : 300;
 
   return (
     <View style={[styles.container, { width, height: cardHeight }, style]}>
@@ -45,26 +47,51 @@ export function CreditCard({
         <View style={styles.cardContent}>
           {/* Header con tipo de tarjeta y logo */}
           <View style={styles.cardHeader}>
-            <View style={styles.cardTypeBadge}>
-              <ThemedText
-                style={[styles.cardTypeText, { color: cardDesign.textColor }]}
-              >
-                {CARD_TYPE_LABELS[card.cardType]}
-              </ThemedText>
-            </View>
-            <View style={styles.cardBrandLogoContainer}>
-              {CardBrandIcons[card.cardBrand] && 
-                CardBrandIcons[card.cardBrand]({ width: 60, height: 38 })
-              }
-            </View>
+            <InfoTooltip
+              content={`Esta es tu tarjeta ${CARD_TYPE_LABELS[card.cardType]}. Disfruta de sus beneficios exclusivos.`}
+              title="Tipo de Tarjeta"
+              triggerMode="longPress"
+              tourKey={`tour-${card.cardType}-type`}
+              tourOrder={baseOrder + 1}
+            >
+              <View style={styles.cardTypeBadge}>
+                <ThemedText
+                  style={[styles.cardTypeText, { color: cardDesign.textColor }]}
+                >
+                  {CARD_TYPE_LABELS[card.cardType]}
+                </ThemedText>
+              </View>
+            </InfoTooltip>
+            
+            <InfoTooltip
+              content={`Tarjeta respaldada por ${card.cardBrand.toUpperCase()}. Aceptada en millones de establecimientos.`}
+              title="Marca"
+              triggerMode="longPress"
+              tourKey={`tour-${card.cardType}-brand`}
+              tourOrder={baseOrder + 2}
+            >
+              <View style={styles.cardBrandLogoContainer}>
+                {CardBrandIcons[card.cardBrand] && 
+                  CardBrandIcons[card.cardBrand]({ width: 60, height: 38 })
+                }
+              </View>
+            </InfoTooltip>
           </View>
 
           {/* Sección media con chip */}
           <View style={styles.cardMiddle}>
             {showChip && card.cardType !== 'virtual' && (
-              <View style={styles.cardChipContainer}>
-                <ChipIcon width={50} height={40} />
-              </View>
+              <InfoTooltip
+                content="El chip EMV protege tus transacciones contra fraudes y clonación."
+                title="Chip de Seguridad"
+                triggerMode="longPress"
+                tourKey={`tour-${card.cardType}-chip`}
+                tourOrder={baseOrder + 3}
+              >
+                <View style={styles.cardChipContainer}>
+                  <ChipIcon width={50} height={40} />
+                </View>
+              </InfoTooltip>
             )}
           </View>
 
@@ -84,11 +111,19 @@ export function CreditCard({
               >
                 {card.cardHolder}
               </ThemedText>
-              <ThemedText
-                style={[styles.cardExpiry, { color: cardDesign.textColor }]}
+              <InfoTooltip
+                content={`Tu tarjeta vence el ${formatCardExpiry(card.expiryDate)}. Te enviaremos una nueva antes de esa fecha.`}
+                title="Vencimiento"
+                triggerMode="longPress"
+                tourKey={`tour-${card.cardType}-expiry`}
+                tourOrder={baseOrder + 4}
               >
-                {formatCardExpiry(card.expiryDate)}
-              </ThemedText>
+                <ThemedText
+                  style={[styles.cardExpiry, { color: cardDesign.textColor }]}
+                >
+                  {formatCardExpiry(card.expiryDate)}
+                </ThemedText>
+              </InfoTooltip>
             </View>
           </View>
         </View>
