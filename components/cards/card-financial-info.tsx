@@ -7,6 +7,8 @@ import { ThemedText } from '@/components/themed-text';
 import { AnimatedNumber } from '@/components/ui/animated-number';
 import { InfoIcon } from '@/components/ui/info-icon';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { CircularProgress } from '@/components/ui/circular-progress';
+import { useThemedColors } from '@/contexts/tenant-theme-context';
 import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
@@ -36,6 +38,7 @@ export const CardFinancialInfo: React.FC<CardFinancialInfoProps> = ({
   currencySymbol = '$',
 }) => {
   const theme = useAppTheme();
+  const themedColors = useThemedColors();
   const layout = useResponsiveLayout();
   const styles = useStyles();
   const isCredit = card.cardType === 'credit';
@@ -72,6 +75,7 @@ export const CardFinancialInfo: React.FC<CardFinancialInfoProps> = ({
             locale={locale}
             currency={currency}
             currencySymbol={currencySymbol}
+            primaryColor={themedColors.primary}
           />
         </BlurView>
       ) : (
@@ -90,6 +94,7 @@ export const CardFinancialInfo: React.FC<CardFinancialInfoProps> = ({
             locale={locale}
             currency={currency}
             currencySymbol={currencySymbol}
+            primaryColor={themedColors.primary}
           />
         </View>
       )}
@@ -108,6 +113,7 @@ interface CardFinancialInfoContentProps {
   locale: string;
   currency: string;
   currencySymbol: string;
+  primaryColor?: string;
 }
 
 const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
@@ -121,6 +127,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   locale,
   currency,
   currencySymbol,
+  primaryColor,
 }) => {
   const styles = useStyles();
   const isDebit = card.cardType === 'debit';
@@ -145,12 +152,17 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   const minimumPayment = isCredit && creditLimit > 0 ? usedCredit * 0.05 : 0;
   const isPaymentSoon = isCredit && nextPaymentDays <= 5;
 
+  // Calcular fecha de pago para el calendario
+  const nextPaymentDate = new Date();
+  nextPaymentDate.setDate(nextPaymentDate.getDate() + nextPaymentDays);
+  nextPaymentDate.setHours(9, 0, 0, 0); // 9:00 AM
+
   // Colores semánticos mejorados para accesibilidad
   const getUsageColor = (percentage: number) => {
     if (percentage >= 90) return { bg: 'rgba(255, 59, 48, 0.12)', fg: '#FF3B30' };
     if (percentage >= 75) return { bg: 'rgba(255, 149, 0, 0.12)', fg: '#FF9500' };
     if (percentage >= 50) return { bg: 'rgba(255, 204, 0, 0.12)', fg: '#FFCC00' };
-    return { bg: 'rgba(52, 199, 89, 0.12)', fg: '#34C759' };
+    return { bg: `${primaryColor}20` || 'rgba(52, 199, 89, 0.12)', fg: primaryColor || '#34C759' };
   };
   
   const usageColors = getUsageColor(usagePercentage);
@@ -164,7 +176,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
       <View style={styles.heroSection}>
         <AnimatedNumber 
           value={balance}
-          style={styles.heroAmount}
+          style={[styles.heroAmount, { color: primaryColor }]}
           currency={currency}
           currencySymbol={currencySymbol}
           decimals={2}
@@ -195,6 +207,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
 
       {/* Stats compactos - Solo info esencial */}
       {isCredit && creditLimit > 0 ? (
+        <>
         <View style={styles.statsRow}>
           <InfoTooltip
             title="Crédito Disponible"
@@ -202,7 +215,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             placement="bottom"
           >
             <View style={styles.statItem}>
-              <ThemedText style={styles.statValue}>
+              <ThemedText style={[styles.statValue, { color: primaryColor }]}>
                 {formatCurrencyWithSymbol(availableCredit, {
                   locale,
                   currency,
@@ -224,7 +237,17 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             placement="bottom"
           >
             <View style={styles.statItem}>
-              <ThemedText style={styles.statValue}>{usagePercentage}%</ThemedText>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress 
+                  value={usedCredit} 
+                  max={creditLimit} 
+                  size={42} 
+                  strokeWidth={4}
+                  color={usageColors.fg}
+                  backgroundColor={`${usageColors.fg}20`}
+                  textStyle={{ fontSize: 10, fontWeight: '700' }}
+                />
+              </View>
               <View style={styles.statLabelWithIcon}>
                 <ThemedText style={styles.statLabel}>usado</ThemedText>
                 <InfoIcon size={12} opacity={0.3} />
@@ -236,9 +259,14 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Próximo Pago"
             content={`Tienes ${nextPaymentDays} días para realizar tu pago. ${isPaymentSoon ? 'Tu fecha de pago está cerca, considera programar tu pago pronto.' : 'El pago mínimo sugerido es de ' + formatCurrencyWithSymbol(minimumPayment, { locale, currency, currencySymbol }) + '.'}`}
             placement="bottom"
+            calendarEvent={{
+              title: `Pago de Tarjeta ${card.cardNumber ? `(**** ${card.cardNumber.slice(-4)})` : ''}`,
+              startDate: nextPaymentDate,
+              notes: `Pago mínimo sugerido: ${formatCurrencyWithSymbol(minimumPayment, { locale, currency, currencySymbol })}. Saldo actual: ${formatCurrencyWithSymbol(usedCredit, { locale, currency, currencySymbol })}`,
+            }}
           >
             <View style={styles.statItem}>
-              <ThemedText style={styles.statValue}>{nextPaymentDays}d</ThemedText>
+              <ThemedText style={[styles.statValue, { color: primaryColor }]}>{nextPaymentDays}d</ThemedText>
               <View style={styles.statLabelWithIcon}>
                 <ThemedText style={styles.statLabel}>próximo pago</ThemedText>
                 <InfoIcon size={12} opacity={0.3} />
@@ -246,7 +274,9 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             </View>
           </InfoTooltip>
         </View>
+      </>
       ) : isDebit ? (
+        <>
         <View style={styles.statsRow}>
           <InfoTooltip
             title="Gasto de Hoy"
@@ -254,15 +284,22 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             placement="bottom"
           >
             <View style={styles.statItem}>
-              <ThemedText style={styles.statValue}>
-                {formatCurrencyWithSymbol(todaySpent, {
-                  locale,
-                  currency,
-                  currencySymbol,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                })}
-              </ThemedText>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress 
+                  value={todaySpent} 
+                  max={dailyPurchaseLimit} 
+                  size={42} 
+                  strokeWidth={4}
+                  color={primaryColor}
+                  backgroundColor={`${primaryColor}20`}
+                  showText={false}
+                />
+                <View style={{ position: 'absolute' }}>
+                  <ThemedText style={{ fontSize: 10, fontWeight: '700', color: primaryColor }}>
+                    {Math.round((todaySpent / dailyPurchaseLimit) * 100)}%
+                  </ThemedText>
+                </View>
+              </View>
               <View style={styles.statLabelWithIcon}>
                 <ThemedText style={styles.statLabel}>hoy</ThemedText>
                 <InfoIcon size={12} opacity={0.3} />
@@ -276,7 +313,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             placement="bottom"
           >
             <View style={styles.statItem}>
-              <ThemedText style={styles.statValue}>
+              <ThemedText style={[styles.statValue, { color: primaryColor }]}>
                 {formatCurrencyWithSymbol(dailyPurchaseLimit, {
                   locale,
                   currency,
@@ -292,6 +329,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             </View>
           </InfoTooltip>
         </View>
+        </>
       ) : (
         <View style={styles.statsRow}>
           <InfoTooltip

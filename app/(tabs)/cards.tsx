@@ -17,25 +17,25 @@ import { useScrollToTop } from '@react-navigation/native';
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
-    Alert,
-    FlatList,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View,
-    ViewToken
+  Alert,
+  FlatList,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+  ViewToken
 } from "react-native";
 import Animated, {
-    FadeInDown,
-    FadeInLeft,
-    FadeInUp,
-    FadeOut,
-    LinearTransition,
-    SlideInLeft,
-    SlideInRight,
-    ZoomIn,
-    ZoomOut
+  FadeInDown,
+  FadeInLeft,
+  FadeInUp,
+  FadeOut,
+  LinearTransition,
+  SlideInLeft,
+  SlideInRight,
+  ZoomIn,
+  ZoomOut
 } from "react-native-reanimated";
 
 // Las dimensiones serán calculadas dinámicamente en el componente

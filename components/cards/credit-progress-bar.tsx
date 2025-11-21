@@ -5,6 +5,7 @@
 
 import { ThemedText } from '@/components/themed-text';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useThemedColors } from '@/contexts/tenant-theme-context';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -18,29 +19,19 @@ export interface CreditProgressBarProps {
   used: number;
   total: number;
   showLabels?: boolean;
+  showPercentage?: boolean;
   animated?: boolean;
 }
-
-/**
- * Obtiene el color según el porcentaje de uso
- */
-const getProgressColor = (percentage: number): string => {
-  if (percentage <= 50) {
-    return '#10B981'; // Verde
-  } else if (percentage <= 75) {
-    return '#F59E0B'; // Amarillo
-  } else {
-    return '#EF4444'; // Rojo
-  }
-};
 
 export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
   used,
   total,
   showLabels = true,
+  showPercentage = true,
   animated = true,
 }) => {
   const theme = useAppTheme();
+  const themedColors = useThemedColors();
   const percentage = Math.min((used / total) * 100, 100);
   const progressWidth = useSharedValue(0);
 
@@ -61,7 +52,10 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
     width: `${progressWidth.value}%`,
   }));
 
-  const progressColor = getProgressColor(percentage);
+  // Usar el color primario de la institución para la barra de progreso
+  // Si se prefiere mantener la lógica de semáforo pero con el tema, se podría mezclar,
+  // pero la solicitud indica aplicar el tema de la institución.
+  const progressColor = themedColors.primary;
 
   return (
     <Animated.View 
@@ -74,7 +68,7 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
         layout={LinearTransition.springify().damping(25).stiffness(90)}
       >
         <Animated.View 
-          style={[styles.track, { backgroundColor: `${progressColor}10` }]}
+          style={[styles.track, { backgroundColor: `${progressColor}20` }]}
           layout={LinearTransition.springify().damping(25).stiffness(90)}
         >
           <Animated.View
@@ -88,9 +82,11 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
             layout={LinearTransition.springify().damping(25).stiffness(90)}
           />
         </Animated.View>
-        <ThemedText style={styles.percentageText}>
-          {Math.round(percentage)}%
-        </ThemedText>
+        {showPercentage && (
+          <ThemedText style={[styles.percentageText, { color: progressColor }]}>
+            {Math.round(percentage)}%
+          </ThemedText>
+        )}
       </Animated.View>
 
       {/* Labels opcionales */}

@@ -5,16 +5,26 @@
 
 import { ThemedText } from '@/components/themed-text';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import * as Calendar from 'expo-calendar';
 import { BlurView } from 'expo-blur';
 import React, { useState } from 'react';
-import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+
+export interface CalendarEventConfig {
+  title: string;
+  startDate: Date;
+  endDate?: Date;
+  notes?: string;
+}
 
 export interface InfoTooltipProps {
   /** Contenido del tooltip */
   content: string;
   /** Título opcional del tooltip */
   title?: string;
+  /** Configuración para añadir evento al calendario */
+  calendarEvent?: CalendarEventConfig;
   /** Elemento hijo que activa el tooltip */
   children: React.ReactNode;
   /** Posición del tooltip relativo al hijo */
@@ -24,6 +34,7 @@ export interface InfoTooltipProps {
 export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   content,
   title,
+  calendarEvent,
   children,
   placement = 'top',
 }) => {
@@ -81,7 +92,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                 tint={theme.isDark ? 'dark' : 'light'}
                 style={[styles.tooltipContent, { borderColor: theme.colors.borderSubtle }]}
               >
-                <TooltipContent title={title} content={content} />
+                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} />
               </BlurView>
             ) : (
               <View
@@ -96,7 +107,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                   },
                 ]}
               >
-                <TooltipContent title={title} content={content} />
+                <TooltipContent title={title} content={content} calendarEvent={calendarEvent} />
               </View>
             )}
           </Animated.View>
@@ -109,10 +120,60 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
 interface TooltipContentProps {
   title?: string;
   content: string;
+  calendarEvent?: CalendarEventConfig;
 }
 
-const TooltipContent: React.FC<TooltipContentProps> = ({ title, content }) => {
+const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calendarEvent }) => {
   const styles = useStyles();
+  const theme = useAppTheme();
+
+  const handleAddToCalendar = async () => {
+    if (!calendarEvent) return;
+
+    try {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        const defaultCalendarSource =
+          Platform.OS === 'ios'
+            ? await Calendar.getDefaultCalendarSourceAsync()
+            : { isLocalAccount: true, name: 'Expo Calendar' };
+            
+        let defaultCalendarId;
+        
+        if (Platform.OS === 'ios') {
+           const defaultCalendar = calendars.find(c => c.source.id === defaultCalendarSource.id);
+           defaultCalendarId = defaultCalendar?.id;
+        } else {
+           // En Android, buscamos un calendario editable
+           const editableCalendar = calendars.find(c => c.accessLevel === Calendar.CalendarAccessLevel.OWNER || c.accessLevel === Calendar.CalendarAccessLevel.EDITOR);
+           defaultCalendarId = editableCalendar?.id;
+        }
+
+        if (!defaultCalendarId) {
+            Alert.alert('Error', 'No se encontró un calendario disponible');
+            return;
+        }
+
+        const endDate = calendarEvent.endDate || new Date(calendarEvent.startDate.getTime() + 60 * 60 * 1000); // 1 hora por defecto
+
+        await Calendar.createEventAsync(defaultCalendarId, {
+          title: calendarEvent.title,
+          startDate: calendarEvent.startDate,
+          endDate: endDate,
+          notes: calendarEvent.notes,
+          timeZone: 'GMT',
+        });
+        
+        Alert.alert('Éxito', 'Evento añadido al calendario');
+      } else {
+        Alert.alert('Permiso denegado', 'Se necesitan permisos de calendario para añadir el evento.');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'No se pudo añadir el evento al calendario');
+    }
+  };
 
   return (
     <View style={styles.contentWrapper}>
@@ -120,6 +181,19 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content }) => {
         <ThemedText style={styles.tooltipTitle}>{title}</ThemedText>
       )}
       <ThemedText style={styles.tooltipText}>{content}</ThemedText>
+      
+      {calendarEvent && (
+        <Pressable 
+          style={({ pressed }) => [
+            styles.calendarButton,
+            { opacity: pressed ? 0.7 : 1, backgroundColor: theme.colors.primary }
+          ]}
+          onPress={handleAddToCalendar}
+        >
+          <ThemedText style={styles.calendarButtonText}>Añadir al calendario</ThemedText>
+        </Pressable>
+      )}
+
       <View style={styles.dismissHint}>
         <ThemedText style={styles.dismissText}>Toca para cerrar</ThemedText>
       </View>
@@ -220,6 +294,19 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       opacity: 0.5,
       textAlign: 'center',
       color: theme.colors.textSecondary,
+    },
+    calendarButton: {
+      marginTop: 12,
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    calendarButtonText: {
+      color: '#FFFFFF',
+      fontSize: 12,
+      fontWeight: '600',
     },
   });
 

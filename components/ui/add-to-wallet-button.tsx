@@ -1,4 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
+import { useThemedColors } from "@/contexts/tenant-theme-context";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 
@@ -75,6 +76,7 @@ const GoogleWalletLogo = () => (
 
 export function AddToWalletButton({ onPress, style }: AddToWalletButtonProps) {
   const isAndroid = Platform.OS === 'android';
+  const themedColors = useThemedColors();
   
   if (isAndroid) {
     return (
@@ -82,13 +84,14 @@ export function AddToWalletButton({ onPress, style }: AddToWalletButtonProps) {
         onPress={onPress}
         style={({ pressed }) => [
           styles.googleContainer,
+          { backgroundColor: themedColors.primary },
           { opacity: pressed ? 0.9 : 1 },
           style,
         ]}
       >
         <View style={styles.content}>
           <GoogleWalletLogo />
-          <ThemedText style={styles.googleText}>Agregar a la Billetera de Google</ThemedText>
+          <ThemedText style={[styles.googleText, { color: themedColors.textOnPrimary }]}>Agregar a la Billetera de Google</ThemedText>
         </View>
       </Pressable>
     );
@@ -99,13 +102,14 @@ export function AddToWalletButton({ onPress, style }: AddToWalletButtonProps) {
       onPress={onPress}
       style={({ pressed }) => [
         styles.appleContainer,
+        { backgroundColor: themedColors.primary },
         { opacity: pressed ? 0.9 : 1 },
         style,
       ]}
     >
       <View style={styles.content}>
         <AppleWalletLogo />
-        <ThemedText style={styles.appleText}>Agregar a Apple Wallet</ThemedText>
+        <ThemedText style={[styles.appleText, { color: themedColors.textOnPrimary }]}>Agregar a Apple Wallet</ThemedText>
       </View>
     </Pressable>
   );
