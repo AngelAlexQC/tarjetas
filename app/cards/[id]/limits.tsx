@@ -56,11 +56,21 @@ export default function LimitsScreen() {
 
   if (result) {
     return (
-      <ThemedView style={styles.container} surface="level1">
-        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
-          <OperationResultScreen result={result} onClose={() => router.back()} />
-        </Animated.View>
-      </ThemedView>
+      <OperationResultScreen 
+        result={result} 
+        onClose={() => router.back()}
+        card={card}
+        transactionDetails={[
+          { label: 'Acción', value: 'Actualización Cupos' },
+          { label: 'Fecha', value: new Date().toLocaleDateString() },
+        ]}
+      >
+        {card && (
+          <View style={{ transform: [{ scale: 0.8 }], alignItems: 'center' }}>
+            <CreditCard card={card} />
+          </View>
+        )}
+      </OperationResultScreen>
     );
   }
 

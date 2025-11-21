@@ -40,6 +40,7 @@ export function useAppTheme() {
     locale: currentTheme?.locale || 'en-US',
     currency: currentTheme?.currency || 'USD',
     currencySymbol: currentTheme?.currencySymbol || '$',
+    gradientColors: currentTheme?.gradientColors || [currentTheme?.mainColor || '#007AFF', currentTheme?.secondaryColor || '#2196F3'],
   };
 
   // Tokens semánticos según el modo

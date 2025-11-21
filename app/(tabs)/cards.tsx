@@ -15,23 +15,23 @@ import { useScrollToTop } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
-  Alert,
-  FlatList,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-  ViewToken
+    Alert,
+    FlatList,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View,
+    ViewToken
 } from "react-native";
 import Animated, {
-  FadeInDown,
-  FadeInLeft,
-  FadeInUp,
-  FadeOut,
-  SlideInLeft,
-  SlideInRight,
-  ZoomIn,
-  ZoomOut
+    FadeInDown,
+    FadeInLeft,
+    FadeInUp,
+    FadeOut,
+    SlideInLeft,
+    SlideInRight,
+    ZoomIn,
+    ZoomOut
 } from "react-native-reanimated";
 
 // Las dimensiones serán calculadas dinámicamente en el componente
@@ -108,6 +108,27 @@ export default function CardsScreen() {
         break;
       case 'subscriptions':
         router.push(`/cards/${activeCard.id}/subscriptions` as any);
+        break;
+      case 'pay':
+        router.push(`/cards/${activeCard.id}/pay` as any);
+        break;
+      case 'cardless_atm':
+        router.push(`/cards/${activeCard.id}/cardless-atm` as any);
+        break;
+      case 'travel':
+        router.push(`/cards/${activeCard.id}/travel` as any);
+        break;
+      case 'channels':
+        router.push(`/cards/${activeCard.id}/channels` as any);
+        break;
+      case 'cvv':
+        router.push(`/cards/${activeCard.id}/cvv` as any);
+        break;
+      case 'replace':
+        router.push(`/cards/${activeCard.id}/replace` as any);
+        break;
+      case 'rewards':
+        router.push(`/cards/${activeCard.id}/rewards` as any);
         break;
       default:
         cardActions.executeAction(actionType);

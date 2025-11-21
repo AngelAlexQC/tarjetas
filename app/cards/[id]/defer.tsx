@@ -97,11 +97,22 @@ export default function DeferScreen() {
 
   if (result) {
     return (
-      <ThemedView style={styles.container} surface="level1">
-        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
-          <OperationResultScreen result={result} onClose={() => router.back()} />
-        </Animated.View>
-      </ThemedView>
+      <OperationResultScreen 
+        result={result} 
+        onClose={() => router.back()}
+        card={card}
+        transactionDetails={[
+          { label: 'Monto Diferido', value: `$${totalAmount.toFixed(2)}`, isAmount: true },
+          { label: 'Plazo', value: `${selectedMonths} meses` },
+          { label: 'Cuota Aprox.', value: `$${monthlyPayment.toFixed(2)}` },
+        ]}
+      >
+        {card && (
+          <View style={{ transform: [{ scale: 0.8 }], alignItems: 'center' }}>
+            <CreditCard card={card} />
+          </View>
+        )}
+      </OperationResultScreen>
     );
   }
 

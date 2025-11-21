@@ -49,11 +49,22 @@ export default function BlockCardScreen() {
 
   if (result) {
     return (
-      <ThemedView style={styles.container} surface="level1">
-        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
-          <OperationResultScreen result={result} onClose={() => router.back()} />
-        </Animated.View>
-      </ThemedView>
+      <OperationResultScreen 
+        result={result} 
+        onClose={() => router.back()}
+        card={card}
+        transactionDetails={[
+          { label: 'Tipo Bloqueo', value: selectedType === 'temporary' ? 'Temporal' : 'Definitivo' },
+          { label: 'Estado', value: 'Inactiva' },
+          { label: 'Fecha', value: new Date().toLocaleDateString() },
+        ]}
+      >
+        {card && (
+          <View style={{ transform: [{ scale: 0.8 }], alignItems: 'center' }}>
+            <CreditCard card={card} />
+          </View>
+        )}
+      </OperationResultScreen>
     );
   }
 

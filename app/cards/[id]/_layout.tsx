@@ -56,6 +56,49 @@ export default function CardOperationsLayout() {
           presentation: 'modal',
         }} 
       />
+      <Stack.Screen 
+        name="pay" 
+        options={{ 
+          presentation: 'formSheet',
+        }} 
+      />
+      <Stack.Screen 
+        name="cardless-atm" 
+        options={{ 
+          presentation: 'modal',
+        }} 
+      />
+      <Stack.Screen 
+        name="travel" 
+        options={{ 
+          presentation: 'formSheet',
+        }} 
+      />
+      <Stack.Screen 
+        name="channels" 
+        options={{ 
+          presentation: 'formSheet',
+        }} 
+      />
+      <Stack.Screen 
+        name="cvv" 
+        options={{ 
+          presentation: 'transparentModal',
+          animation: 'fade',
+        }} 
+      />
+      <Stack.Screen 
+        name="replace" 
+        options={{ 
+          presentation: 'formSheet',
+        }} 
+      />
+      <Stack.Screen 
+        name="rewards" 
+        options={{ 
+          presentation: 'fullScreenModal',
+        }} 
+      />
     </Stack>
   );
 }

@@ -110,11 +110,22 @@ export default function AdvanceScreen() {
 
   if (result) {
     return (
-      <ThemedView style={styles.container} surface="level1">
-        <Animated.View entering={SlideInRight} style={{ flex: 1 }}>
-          <OperationResultScreen result={result} onClose={() => router.back()} />
-        </Animated.View>
-      </ThemedView>
+      <OperationResultScreen 
+        result={result} 
+        onClose={() => router.back()}
+        card={card}
+        transactionDetails={[
+          { label: 'Monto Avance', value: `$${parseFloat(amount).toFixed(2)}`, isAmount: true },
+          { label: 'Plazo', value: `${selectedTerm} meses` },
+          { label: 'Cuenta Destino', value: ACCOUNTS.find(a => a.id === selectedAccount)?.number || '****' },
+        ]}
+      >
+        {card && (
+          <View style={{ transform: [{ scale: 0.8 }], alignItems: 'center' }}>
+            <CreditCard card={card} />
+          </View>
+        )}
+      </OperationResultScreen>
     );
   }
 

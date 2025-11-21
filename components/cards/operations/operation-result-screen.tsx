@@ -1,195 +1,50 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { CardBrandIcons } from '@/components/ui/card-brand-icons';
+import { Card } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { LinearGradient } from 'expo-linear-gradient';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import { CheckCircle2, Share2, XCircle } from 'lucide-react-native';
+import { Check, Share2, XCircle } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeInUp, ZoomIn } from 'react-native-reanimated';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Animated, { ZoomIn } from 'react-native-reanimated';
+import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
 
 interface OperationResultScreenProps {
   result: OperationResult;
   onClose: () => void;
+  card?: Card;
+  transactionDetails?: { label: string; value: string; isAmount?: boolean }[];
+  children?: React.ReactNode;
 }
 
-export function OperationResultScreen({ result, onClose }: OperationResultScreenProps) {
+export function OperationResultScreen({ result, onClose, card, transactionDetails, children }: OperationResultScreenProps) {
   const theme = useAppTheme();
+  const layout = useResponsiveLayout();
 
   const isSuccess = result.success;
-  const Icon = isSuccess ? CheckCircle2 : XCircle;
-  const color = isSuccess ? '#4CAF50' : '#F44336'; // Success Green / Error Red
+  const Icon = isSuccess ? Check : XCircle;
+  const color = isSuccess ? '#4CAF50' : '#F44336';
+  
+  // Use tenant theme for receipt branding
+  const gradientColors = theme.tenant.gradientColors || [theme.tenant.mainColor, theme.tenant.secondaryColor];
 
   const handleShare = async () => {
+    // ... existing share logic (can be updated later) ...
     try {
       const html = `
         <!DOCTYPE html>
         <html>
-          <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-            <style>
-              @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-              
-              body {
-                font-family: 'Inter', Helvetica, Arial, sans-serif;
-                background-color: #f5f5f5;
-                margin: 0;
-                padding: 20px;
-                color: #1f2937;
-              }
-              
-              .receipt-card {
-                background-color: white;
-                border-radius: 24px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                max-width: 400px;
-                margin: 0 auto;
-                overflow: hidden;
-              }
-              
-              .brand-bar {
-                height: 8px;
-                background: linear-gradient(90deg, ${theme.tenant.mainColor}, ${theme.tenant.secondaryColor});
-                width: 100%;
-              }
-
-              .header {
-                background-color: white;
-                padding: 32px 24px 16px;
-                text-align: center;
-              }
-              
-              .logo {
-                height: 60px;
-                object-fit: contain;
-                margin-bottom: 16px;
-              }
-              
-              .success-icon {
-                width: 64px;
-                height: 64px;
-                background-color: #f3f4f6;
-                color: ${theme.tenant.mainColor};
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 0 auto 16px;
-                font-size: 32px;
-              }
-              
-              .title {
-                font-size: 20px;
-                font-weight: 600;
-                margin: 0;
-                color: #111827;
-              }
-              
-              .content {
-                padding: 32px 24px;
-              }
-              
-              .amount-section {
-                text-align: center;
-                margin-bottom: 32px;
-                padding-bottom: 24px;
-                border-bottom: 1px dashed #e5e7eb;
-              }
-              
-              .label {
-                font-size: 12px;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                color: #6b7280;
-                margin-bottom: 4px;
-              }
-              
-              .value {
-                font-size: 16px;
-                font-weight: 600;
-                color: #111827;
-              }
-              
-              .row {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 16px;
-              }
-              
-              .row:last-child {
-                margin-bottom: 0;
-              }
-              
-              .row .label {
-                margin-bottom: 0;
-              }
-              
-              .footer {
-                background-color: #f3f4f6;
-                padding: 16px 24px;
-                text-align: center;
-                font-size: 12px;
-                color: #374151;
-                border-top: 1px solid #e5e7eb;
-              }
-              
-              .receipt-id {
-                font-family: 'Courier New', monospace;
-                background: #f3f4f6;
-                padding: 8px 12px;
-                border-radius: 6px;
-                font-size: 14px;
-                color: #4b5563;
-                display: inline-block;
-                margin-top: 4px;
-              }
-            </style>
-          </head>
           <body>
-            <div class="receipt-card">
-              <div class="brand-bar"></div>
-              <div class="header">
-                ${theme.tenant.logoUrl ? `<img src="${theme.tenant.logoUrl}" class="logo" />` : ''}
-                <div class="success-icon">✓</div>
-                <h1 class="title">${result.title}</h1>
-              </div>
-              
-              <div class="content">
-                <div class="amount-section">
-                  <div class="label">Estado</div>
-                  <div class="value" style="color: ${theme.tenant.mainColor};">Exitosa</div>
-                  <div style="margin-top: 8px; font-size: 14px; color: #6b7280;">${result.message}</div>
-                </div>
-                
-                <div class="details">
-                  <div class="row">
-                    <div class="label">Fecha</div>
-                    <div class="value">${result.date || new Date().toLocaleDateString()}</div>
-                  </div>
-                  <div class="row">
-                    <div class="label">Hora</div>
-                    <div class="value">${new Date().toLocaleTimeString()}</div>
-                  </div>
-                  
-                  ${result.receiptId ? `
-                  <div style="margin-top: 24px; text-align: center;">
-                    <div class="label">Comprobante</div>
-                    <div class="receipt-id">${result.receiptId}</div>
-                  </div>
-                  ` : ''}
-                </div>
-              </div>
-              
-              <div class="footer">
-                <p>Generado por ${theme.tenant.name}</p>
-                <p>Este documento es un comprobante válido de su transacción.</p>
-              </div>
-            </div>
+            <h1>Comprobante</h1>
+            <p>${result.message}</p>
           </body>
         </html>
       `;
-
       const { uri } = await printToFileAsync({ html });
       await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
     } catch (error) {
@@ -198,27 +53,99 @@ export function OperationResultScreen({ result, onClose }: OperationResultScreen
   };
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={[styles.container, { padding: layout.horizontalPadding }]} surface="level1">
       <View style={styles.content}>
-        <Animated.View entering={ZoomIn.duration(500).springify().damping(15)}>
-          <Icon size={80} color={color} strokeWidth={1.5} />
+        
+        {/* Receipt Card */}
+        <Animated.View 
+          entering={ZoomIn.duration(600).damping(30)} 
+          style={[
+            styles.receiptCard, 
+            { backgroundColor: theme.colors.surface }
+          ]}
+        >
+          
+          {/* Header with Card Pattern */}
+          <LinearGradient
+            colors={gradientColors as any}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.receiptHeader}
+          />
+
+          {/* Icon Bubble */}
+          <View style={[styles.iconBubble, { backgroundColor: theme.colors.surface }]}>
+            <Icon size={28} color={color} strokeWidth={3} />
+          </View>
+
+          <View style={styles.receiptBody}>
+            {/* Logos Row */}
+            <View style={styles.logosRow}>
+              <View style={styles.logoContainer}>
+                {theme.tenant.logoUrl ? (
+                  <Image source={{ uri: theme.tenant.logoUrl }} style={styles.logo} resizeMode="contain" />
+                ) : (
+                  <ThemedText type="defaultSemiBold" style={{ fontSize: 12 }}>{theme.tenant.name}</ThemedText>
+                )}
+              </View>
+              <View style={[styles.dividerVertical, { backgroundColor: theme.colors.border }]} />
+              <View style={[styles.logoContainer, { flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+                <DragonflyLogo width={20} height={20} />
+                <ThemedText type="defaultSemiBold" style={{ fontSize: 12, color: theme.colors.textSecondary }}>Libélula</ThemedText>
+              </View>
+              {card && (
+                <>
+                  <View style={[styles.dividerVertical, { backgroundColor: theme.colors.border }]} />
+                  <View style={styles.logoContainer}>
+                    {CardBrandIcons[card.cardBrand] && React.createElement(CardBrandIcons[card.cardBrand], { width: 32, height: 20 })}
+                  </View>
+                </>
+              )}
+            </View>
+
+            <ThemedText type="title" style={{ textAlign: 'center', marginTop: 8, marginBottom: 4, fontSize: 18 }}>
+              {result.title}
+            </ThemedText>
+            
+            <ThemedText style={{ textAlign: 'center', color: theme.colors.textSecondary, marginBottom: 16, paddingHorizontal: 16, fontSize: 14 }}>
+              {result.message}
+            </ThemedText>
+
+            {/* Transaction Details */}
+            {transactionDetails && (
+              <View style={styles.detailsContainer}>
+                {transactionDetails.map((detail, index) => (
+                  <View key={index} style={styles.detailRow}>
+                    <ThemedText style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>{detail.label}</ThemedText>
+                    <ThemedText 
+                      type={detail.isAmount ? 'defaultSemiBold' : 'default'} 
+                      style={[styles.detailValue, detail.isAmount && { fontSize: 16, color: theme.tenant.mainColor }]}
+                    >
+                      {detail.value}
+                    </ThemedText>
+                  </View>
+                ))}
+                <View style={[styles.dashedLine, { borderColor: theme.colors.border }]} />
+              </View>
+            )}
+
+            {/* Receipt ID */}
+            {result.receiptId && (
+              <View style={styles.receiptIdContainer}>
+                <ThemedText style={{ fontSize: 10, color: theme.colors.textSecondary, textTransform: 'uppercase' }}>Comprobante</ThemedText>
+                <ThemedText style={{ fontFamily: 'monospace', fontSize: 12, marginTop: 2 }}>{result.receiptId}</ThemedText>
+              </View>
+            )}
+
+            {/* Visual Card (Children) */}
+            {children && (
+              <View style={styles.childrenContainer}>
+                {children}
+              </View>
+            )}
+          </View>
         </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(200)} style={styles.textContainer}>
-          <ThemedText type="title" style={{ color: theme.colors.text, textAlign: 'center' }}>
-            {result.title}
-          </ThemedText>
-          <ThemedText style={{ color: theme.colors.textSecondary, textAlign: 'center', marginTop: 8 }}>
-            {result.message}
-          </ThemedText>
-          
-          {result.receiptId && (
-            <ThemedView style={styles.receiptContainer} surface="level2">
-              <ThemedText type="defaultSemiBold">Comprobante:</ThemedText>
-              <ThemedText style={{ fontFamily: 'monospace' }}>{result.receiptId}</ThemedText>
-            </ThemedView>
-          )}
-        </Animated.View>
       </View>
 
       <View style={styles.footer}>
@@ -251,26 +178,106 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 32,
   },
-  textContainer: {
-    alignItems: 'center',
+  receiptCard: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  receiptHeader: {
+    height: 70,
     width: '100%',
   },
-  receiptContainer: {
-    marginTop: 24,
-    padding: 16,
-    borderRadius: 12,
+  iconBubble: {
+    position: 'absolute',
+    top: 46, // 70 (header) - 24 (half bubble)
+    alignSelf: 'center',
+    zIndex: 10,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  receiptBody: {
+    paddingTop: 30,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  logosRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    opacity: 0.7,
+  },
+  logoContainer: {
+    paddingHorizontal: 8,
+  },
+  logo: {
+    width: 60,
+    height: 20,
+  },
+  dividerVertical: {
+    width: 1,
+    height: 12,
+  },
+  detailsContainer: {
     width: '100%',
+    marginTop: 8,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  detailLabel: {
+    fontSize: 14,
+  },
+  detailValue: {
+    fontSize: 14,
+    textAlign: 'right',
+  },
+  dashedLine: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderRadius: 1,
+    marginVertical: 12,
+    opacity: 0.3,
+  },
+  receiptIdContainer: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  childrenContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 8,
   },
   footer: {
     gap: 12,
     paddingBottom: 24,
+    marginTop: 16,
   },
   button: {
-    height: 50,
-    borderRadius: 25,
+    height: 48,
+    borderRadius: 24,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

@@ -8,7 +8,14 @@ export type CardActionType =
   | 'advances'
   | 'limits'
   | 'pin'
-  | 'subscriptions';
+  | 'subscriptions'
+  | 'pay'
+  | 'cardless_atm'
+  | 'travel'
+  | 'channels'
+  | 'cvv'
+  | 'replace'
+  | 'rewards';
 
 export interface CardAction {
   id: CardActionType;
@@ -20,6 +27,14 @@ export interface CardAction {
 }
 
 export const CARD_ACTIONS: CardAction[] = [
+  {
+    id: 'pay',
+    title: 'Pagar Tarjeta',
+    description: 'Paga tu tarjeta de crédito',
+    icon: 'creditCard',
+    color: '#4CAF50',
+    requiresAuth: true,
+  },
   {
     id: 'block',
     title: 'Bloquear',
@@ -72,6 +87,50 @@ export const CARD_ACTIONS: CardAction[] = [
     icon: 'creditCard',
     color: '#00BCD4',
   },
+  {
+    id: 'cardless_atm',
+    title: 'Retiro s/ Tarjeta',
+    description: 'Retira dinero sin plástico',
+    icon: 'qr',
+    color: '#3F51B5',
+    requiresAuth: true,
+  },
+  {
+    id: 'travel',
+    title: 'Aviso de Viaje',
+    description: 'Notifica tus viajes',
+    icon: 'plane',
+    color: '#009688',
+  },
+  {
+    id: 'channels',
+    title: 'Canales',
+    description: 'Configura canales de uso',
+    icon: 'settings',
+    color: '#795548',
+  },
+  {
+    id: 'cvv',
+    title: 'CVV Dinámico',
+    description: 'Código de seguridad temporal',
+    icon: 'eye',
+    color: '#673AB7',
+    requiresAuth: true,
+  },
+  {
+    id: 'replace',
+    title: 'Reposición',
+    description: 'Solicita una nueva tarjeta',
+    icon: 'refresh',
+    color: '#FF5722',
+  },
+  {
+    id: 'rewards',
+    title: 'Puntos',
+    description: 'Tus puntos acumulados',
+    icon: 'gift',
+    color: '#E91E63',
+  },
 ];
 
 export function getCardAction(actionId: CardActionType): CardAction | undefined {
@@ -85,18 +144,24 @@ export function getCardAction(actionId: CardActionType): CardAction | undefined 
  * Virtual: sin PIN físico
  */
 export function getAvailableActions(cardType: 'credit' | 'debit' | 'virtual'): CardAction[] {
+  let actions = [...CARD_ACTIONS];
+
   if (cardType === 'debit') {
-    // Débito: no puede diferir compras ni solicitar avances
-    return CARD_ACTIONS.filter(action => 
-      action.id !== 'defer' && action.id !== 'advances'
+    // Débito: no puede diferir, avances, pagar tarjeta, recompensas
+    actions = actions.filter(action => 
+      !['defer', 'advances', 'pay', 'rewards'].includes(action.id)
+    );
+  } else if (cardType === 'credit') {
+      // Crédito: no retiro sin tarjeta (usualmente es avance)
+       actions = actions.filter(action => 
+      !['cardless_atm'].includes(action.id)
+    );
+  } else if (cardType === 'virtual') {
+    // Virtual: no PIN, no reposición física, no retiro cajero (a menos que sea NFC), no viaje (no física)
+     actions = actions.filter(action => 
+      !['pin', 'replace', 'cardless_atm', 'travel'].includes(action.id)
     );
   }
   
-  if (cardType === 'virtual') {
-    // Virtual: no tiene PIN físico
-    return CARD_ACTIONS.filter(action => action.id !== 'pin');
-  }
-  
-  // Crédito: todas las acciones disponibles
-  return CARD_ACTIONS;
+  return actions;
 }
