@@ -1,6 +1,7 @@
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
+import { CreditCard } from '@/components/cards/credit-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { cardService } from '@/features/cards/services/card-service';
@@ -50,8 +51,11 @@ export default function BlockCardScreen() {
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader title="Bloquear Tarjeta" card={card} />
+      <CardOperationHeader title="Bloquear Tarjeta" card={card} isModal />
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={{ alignItems: 'center', marginBottom: 24 }}>
+          {card && <CreditCard card={card} width={300} />}
+        </View>
         <ThemedText style={styles.description}>
           Selecciona el tipo de bloqueo que deseas aplicar a tu tarjeta.
         </ThemedText>

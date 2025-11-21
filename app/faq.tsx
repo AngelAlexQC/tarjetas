@@ -1,9 +1,10 @@
+import { NavigationButton } from '@/components/navigation/navigation-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Stack } from 'expo-router';
+import { useAppTheme } from '@/hooks/use-app-theme';
+import { Stack, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useAppTheme } from '@/hooks/use-app-theme';
 
 const FAQ_ITEMS = [
   { 
@@ -34,10 +35,21 @@ const FAQ_ITEMS = [
 
 export default function FaqScreen() {
   const theme = useAppTheme();
+  const router = useRouter();
 
   return (
     <ThemedView style={styles.container}>
-      <Stack.Screen options={{ title: 'Preguntas Frecuentes', headerBackTitle: 'Atrás' }} />
+      <Stack.Screen options={{ 
+        title: 'Preguntas Frecuentes',
+        headerLeft: () => (
+          <NavigationButton onPress={() => router.back()} />
+        ),
+        headerBackVisible: false,
+        headerTitleAlign: 'center',
+        headerShadowVisible: false,
+        headerStyle: { backgroundColor: theme.colors.background },
+        headerTitleStyle: { color: theme.colors.text },
+      }} />
       <ScrollView contentContainerStyle={styles.content}>
         {FAQ_ITEMS.map((item, index) => (
             <View key={index} style={[styles.item, { borderColor: theme.colors.border }]}>

@@ -1,6 +1,8 @@
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
+import { CreditCard } from '@/components/cards/credit-card';
+import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
@@ -90,9 +92,13 @@ export default function AdvanceScreen() {
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader title="Avance de Efectivo" card={card} onBack={handleBack} />
+      <CardOperationHeader title="Avance de Efectivo" card={card} onBack={handleBack} isModal />
 
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={{ alignItems: 'center', marginBottom: 24 }}>
+          {card && <CreditCard card={card} width={300} />}
+        </View>
+
         <Animated.View 
           key={step}
           entering={SlideInRight.duration(300)} 
@@ -160,31 +166,18 @@ export default function AdvanceScreen() {
 
           {step === 'summary' && (
             <>
-              <ThemedText type="subtitle" style={{ marginBottom: 16 }}>Resumen de la solicitud</ThemedText>
-              
-              <ThemedView style={styles.summaryCard} surface="level2">
-                <View style={styles.summaryRow}>
-                  <ThemedText>Monto Solicitado</ThemedText>
-                  <ThemedText type="defaultSemiBold">${calculations.val.toFixed(2)}</ThemedText>
-                </View>
-                <View style={styles.summaryRow}>
-                  <ThemedText>Interés Aprox. (16%)</ThemedText>
-                  <ThemedText type="defaultSemiBold">${calculations.interest.toFixed(2)}</ThemedText>
-                </View>
-                <View style={styles.summaryRow}>
-                  <ThemedText>Total a Pagar</ThemedText>
-                  <ThemedText type="defaultSemiBold">${calculations.total.toFixed(2)}</ThemedText>
-                </View>
-                <View style={styles.divider} />
-                <View style={styles.summaryRow}>
-                  <ThemedText type="defaultSemiBold">Cuota Mensual</ThemedText>
-                  <ThemedText type="title" style={{ color: theme.tenant.mainColor }}>
-                    ${calculations.monthly.toFixed(2)}
-                  </ThemedText>
-                </View>
-              </ThemedView>
+              <SummaryPanel 
+                title="Resumen de la solicitud"
+                items={[
+                  { label: 'Monto Solicitado', value: `$${calculations.val.toFixed(2)}` },
+                  { label: 'Interés Aprox. (16%)', value: `$${calculations.interest.toFixed(2)}` },
+                  { label: 'Total a Pagar', value: `$${calculations.total.toFixed(2)}` },
+                  { label: 'Cuota Mensual', value: `$${calculations.monthly.toFixed(2)}`, isTotal: true },
+                ]}
+                style={{ marginBottom: 24 }}
+              />
 
-              <ThemedText type="subtitle" style={{ marginTop: 24, marginBottom: 16 }}>Tabla de Amortización (Proyección)</ThemedText>
+              <ThemedText type="subtitle" style={{ marginBottom: 16 }}>Tabla de Amortización (Proyección)</ThemedText>
               <View style={[styles.table, { borderColor: theme.colors.border }]}>
                 <View style={[styles.tableHeader, { backgroundColor: theme.colors.surfaceHigher }]}>
                   <ThemedText style={styles.col1}>Mes</ThemedText>

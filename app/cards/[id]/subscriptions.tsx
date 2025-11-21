@@ -1,4 +1,6 @@
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
+import { CreditCard } from '@/components/cards/credit-card';
+import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
@@ -123,19 +125,19 @@ export default function SubscriptionsScreen() {
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader title="Suscripciones" card={card} />
+      <CardOperationHeader title="Suscripciones" card={card} isModal />
+
+      <View style={{ alignItems: 'center', marginVertical: 16 }}>
+        {card && <CreditCard card={card} width={300} />}
+      </View>
 
       {/* Summary */}
       <View style={styles.summaryContainer}>
-        <ThemedView style={[styles.summaryCard, { backgroundColor: theme.tenant.mainColor }]} surface="level2">
-          <View>
-            <ThemedText style={styles.summaryLabel}>Total Mensual</ThemedText>
-            <ThemedText style={styles.summaryAmount}>${totalMonthly.toFixed(2)}</ThemedText>
-          </View>
-          <View style={styles.summaryIcon}>
-            <AlertCircle size={24} color="#FFF" />
-          </View>
-        </ThemedView>
+        <SummaryPanel 
+          items={[
+            { label: 'Total Mensual', value: `$${totalMonthly.toFixed(2)}`, isTotal: true }
+          ]}
+        />
         <ThemedText style={styles.summaryNote}>
           Gestiona tus pagos recurrentes y evita cobros no deseados.
         </ThemedText>

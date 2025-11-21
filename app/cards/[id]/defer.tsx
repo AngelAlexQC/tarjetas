@@ -1,6 +1,8 @@
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
+import { CreditCard } from '@/components/cards/credit-card';
+import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
@@ -114,6 +116,9 @@ export default function DeferScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={{ alignItems: 'center', marginBottom: 24 }}>
+          {card && <CreditCard card={card} width={300} />}
+        </View>
         <Animated.View 
           key={step}
           entering={SlideInRight.duration(300)} 
@@ -203,26 +208,16 @@ export default function DeferScreen() {
               <ThemedText type="title" style={styles.title}>Resumen</ThemedText>
               <ThemedText style={styles.subtitle}>Confirma los detalles de tu solicitud.</ThemedText>
               
-              <ThemedView style={styles.summaryCard} surface="level2">
-                <View style={styles.summaryRow}>
-                  <ThemedText>Monto Total</ThemedText>
-                  <ThemedText type="defaultSemiBold">${totalAmount.toFixed(2)}</ThemedText>
-                </View>
-                <View style={styles.summaryRow}>
-                  <ThemedText>Plazo</ThemedText>
-                  <ThemedText type="defaultSemiBold">{selectedMonths} meses</ThemedText>
-                </View>
-                <View style={styles.divider} />
-                <View style={styles.summaryRow}>
-                  <ThemedText type="defaultSemiBold">Cuota Mensual Aprox.</ThemedText>
-                  <ThemedText type="title" style={{ color: theme.tenant.mainColor }}>
-                    ${monthlyPayment.toFixed(2)}
-                  </ThemedText>
-                </View>
-                <ThemedText style={styles.disclaimer}>
-                  * Incluye intereses aproximados del 15% anual. El valor final puede variar en tu estado de cuenta.
-                </ThemedText>
-              </ThemedView>
+              <SummaryPanel 
+                items={[
+                  { label: 'Monto Total', value: `$${totalAmount.toFixed(2)}` },
+                  { label: 'Plazo', value: `${selectedMonths} meses` },
+                  { label: 'Cuota Mensual Aprox.', value: `$${monthlyPayment.toFixed(2)}`, isTotal: true },
+                ]}
+              />
+              <ThemedText style={styles.disclaimer}>
+                * Incluye intereses aproximados del 15% anual. El valor final puede variar en tu estado de cuenta.
+              </ThemedText>
             </>
           )}
         </Animated.View>

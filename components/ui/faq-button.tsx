@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { useThemedColors } from "@/contexts/tenant-theme-context";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
 import { Info } from "lucide-react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 interface FaqButtonProps {
   onPress: () => void;

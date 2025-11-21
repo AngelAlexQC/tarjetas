@@ -4,10 +4,10 @@ import { InstitutionSelectorHeader } from "@/components/institution-selector-hea
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
-import { FaqButton } from "@/components/ui/faq-button";
 import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
 import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { ChipIcon } from "@/components/ui/chip-icon";
+import { FaqButton } from "@/components/ui/faq-button";
 import { CardActionType } from "@/constants/card-actions";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";

@@ -1,12 +1,12 @@
+import { NavigationButton } from '@/components/navigation/navigation-button';
 import { ThemedText } from '@/components/themed-text';
 import { CardBrandIcons } from '@/components/ui/card-brand-icons';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, X } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface CardOperationHeaderProps {
@@ -46,14 +46,11 @@ export function CardOperationHeader({
         paddingTop: insets.top + 12, // Add safe area inset
       }
     ]}>
-      <TouchableOpacity onPress={handlePress} style={styles.button}>
-        {isModal ? (
-          <X size={24} color={theme.colors.text} />
-        ) : (
-          <ChevronLeft size={24} color={theme.colors.text} />
-        )}
-      </TouchableOpacity>
-      
+      <NavigationButton 
+        type={isModal ? 'close' : 'back'}
+        onPress={handlePress}
+      />
+
       <View style={styles.titleContainer}>
         <ThemedText type="defaultSemiBold" style={styles.title}>{title}</ThemedText>
         <View style={styles.cardBadge}>

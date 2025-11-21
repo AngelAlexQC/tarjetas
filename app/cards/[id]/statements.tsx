@@ -1,4 +1,5 @@
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
+import { CreditCard } from '@/components/cards/credit-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
@@ -196,19 +197,8 @@ export default function StatementsScreen() {
     <ThemedView style={styles.container} surface="level1">
       <CardOperationHeader title="Estados de Cuenta" card={card} isModal />
 
-      {/* Card Preview (Mini) */}
-      <View style={styles.cardPreviewContainer}>
-        <ThemedView style={[styles.cardPreview, { backgroundColor: theme.tenant.mainColor }]} surface="level2">
-          <View style={styles.cardRow}>
-            <ThemedText style={styles.cardLabel}>Tarjeta de {card?.cardType === 'credit' ? 'Crédito' : 'Débito'}</ThemedText>
-            <FinancialIcons.creditCard size={20} color="#FFF" />
-          </View>
-          <ThemedText style={styles.cardNumber}>•••• •••• •••• {card?.cardNumber.slice(-4) || '••••'}</ThemedText>
-          <View style={styles.cardRow}>
-            <ThemedText style={styles.cardName}>{card?.cardHolder || 'USUARIO'}</ThemedText>
-            <ThemedText style={styles.cardExp}>{card?.expiryDate || 'MM/YY'}</ThemedText>
-          </View>
-        </ThemedView>
+      <View style={{ alignItems: 'center', marginVertical: 16 }}>
+        {card && <CreditCard card={card} width={300} />}
       </View>
 
       {/* Filters */}

@@ -1,6 +1,7 @@
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
+import { CreditCard } from '@/components/cards/credit-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
@@ -55,18 +56,11 @@ export default function PinScreen() {
 
   return (
     <ThemedView style={styles.container} surface="level1">
-      <CardOperationHeader title="Cambio de PIN" card={card} />
-
+      <CardOperationHeader title="Cambio de PIN" card={card} isModal />
       <View style={styles.content}>
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.cardInfo}>
-          <View style={[styles.iconBox, { backgroundColor: theme.tenant.mainColor }]}>
-            <FinancialIcons.creditCard size={24} color="#FFF" />
-          </View>
-          <View>
-            <ThemedText type="defaultSemiBold">Tarjeta {card?.cardBrand?.toUpperCase() || 'Crédito'}</ThemedText>
-            <ThemedText style={{ opacity: 0.6 }}>Terminada en •••• {card?.cardNumber.slice(-4) || '••••'}</ThemedText>
-          </View>
-        </Animated.View>
+        <View style={{ alignItems: 'center', marginBottom: 24 }}>
+          {card && <CreditCard card={card} width={300} />}
+        </View>
 
         <Animated.View entering={FadeInDown.delay(200)} style={styles.form}>
           <ThemedText style={styles.instruction}>
