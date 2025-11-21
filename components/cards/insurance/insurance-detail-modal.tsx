@@ -1,6 +1,8 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedButton } from '@/components/ui/themed-button';
+import { CardBrandIcons } from '@/components/ui/card-brand-icons';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { Card } from '@/features/cards/services/card-service';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -18,6 +20,7 @@ interface InsuranceDetailModalProps {
   visible: boolean;
   onClose: () => void;
   onContract?: (insurance: Insurance) => void;
+  activeCard?: Card;
 }
 
 // Mapeo de iconos
@@ -37,6 +40,7 @@ export function InsuranceDetailModal({
   visible,
   onClose,
   onContract,
+  activeCard,
 }: InsuranceDetailModalProps) {
   const theme = useAppTheme();
 
@@ -202,6 +206,50 @@ export function InsuranceDetailModal({
       marginTop: 10,
       textAlign: 'center',
     },
+    paymentCardSection: {
+      marginBottom: 14,
+      padding: 12,
+      borderRadius: 12,
+      backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+      borderWidth: 1,
+      borderColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+    },
+    paymentCardHeader: {
+      fontSize: 11,
+      opacity: 0.5,
+      marginBottom: 10,
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    paymentCardContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    cardIconContainer: {
+      width: 48,
+      height: 32,
+      borderRadius: 6,
+      backgroundColor: theme.isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+    },
+    cardInfo: {
+      flex: 1,
+    },
+    cardNumber: {
+      fontSize: 14,
+      fontWeight: '600',
+      marginBottom: 2,
+      letterSpacing: 0.5,
+    },
+    cardType: {
+      fontSize: 11,
+      opacity: 0.5,
+      textTransform: 'capitalize',
+    },
   });
 
   return (
@@ -298,6 +346,30 @@ export function InsuranceDetailModal({
 
             {/* Footer */}
             <View style={styles.footer}>
+              {/* Tarjeta de pago */}
+              {activeCard && (
+                <View style={styles.paymentCardSection}>
+                  <ThemedText style={styles.paymentCardHeader}>
+                    Se descontará de
+                  </ThemedText>
+                  <View style={styles.paymentCardContent}>
+                    <View style={styles.cardIconContainer}>
+                      {CardBrandIcons[activeCard.cardBrand] && 
+                        CardBrandIcons[activeCard.cardBrand]({ width: 40, height: 26 })
+                      }
+                    </View>
+                    <View style={styles.cardInfo}>
+                      <ThemedText style={styles.cardNumber}>
+                        {activeCard.cardNumber}
+                      </ThemedText>
+                      <ThemedText style={styles.cardType}>
+                        Tarjeta {activeCard.cardType === 'credit' ? 'de crédito' : activeCard.cardType === 'debit' ? 'de débito' : 'virtual'}
+                      </ThemedText>
+                    </View>
+                  </View>
+                </View>
+              )}
+
               <View style={styles.priceRow}>
                 <ThemedText style={styles.priceLabel}>Desde</ThemedText>
                 <ThemedText style={styles.priceValue}>

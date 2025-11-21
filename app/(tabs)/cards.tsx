@@ -4,6 +4,7 @@ import { CreditCard } from "@/components/cards/credit-card";
 import { InsuranceCarousel } from "@/components/cards/insurance/insurance-carousel";
 import { InsuranceDetailModal } from "@/components/cards/insurance/insurance-detail-modal";
 import { Insurance } from "@/components/cards/insurance/insurance-generator";
+import { OperationResultScreen } from "@/components/cards/operations/operation-result-screen";
 import { InstitutionSelectorHeader } from "@/components/institution-selector-header";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -13,6 +14,7 @@ import { PoweredBy } from "@/components/ui/powered-by";
 import { CardActionType } from "@/constants/card-actions";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import { Card, cardService } from "@/features/cards/services/card-service";
+import { OperationResult } from "@/features/cards/types/card-operations";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { useScrollToTop } from '@react-navigation/native';
@@ -21,6 +23,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
     Alert,
     FlatList,
+    Modal,
     Platform,
     ScrollView,
     StyleSheet,
@@ -47,6 +50,8 @@ export default function CardsScreen() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedInsurance, setSelectedInsurance] = useState<Insurance | null>(null);
   const [isInsuranceModalVisible, setIsInsuranceModalVisible] = useState(false);
+  const [insuranceResult, setInsuranceResult] = useState<OperationResult | null>(null);
+  const [contractedInsurance, setContractedInsurance] = useState<Insurance | null>(null);
   const flatListRef = useRef<FlatList>(null);
   const scrollRef = useRef(null);
 
@@ -159,6 +164,7 @@ export default function CardsScreen() {
   };
 
   return (
+    <>
     <ThemedView style={styles.container}>
       <ScrollView 
         ref={scrollRef}
@@ -170,7 +176,7 @@ export default function CardsScreen() {
         bounces={layout.isPortrait}
         contentInsetAdjustmentBehavior="automatic"
       >
-        {/* Header mejorado - Selector de institución */}
+        {/* Header - Selector de institución */}
         <InstitutionSelectorHeader />
 
         {/* Carrusel de tarjetas */}
@@ -329,27 +335,140 @@ export default function CardsScreen() {
       <InsuranceDetailModal
         insurance={selectedInsurance}
         visible={isInsuranceModalVisible}
+        activeCard={activeCard}
         onClose={() => {
           setIsInsuranceModalVisible(false);
           setSelectedInsurance(null);
         }}
         onContract={(insurance) => {
+          if (!activeCard) {
+            Alert.alert('Error', 'No hay una tarjeta seleccionada');
+            return;
+          }
+
+          // Validar fondos disponibles
+          const monthlyPrice = insurance.monthlyPrice;
+          let hasEnoughFunds = false;
+          let availableFunds = 0;
+          let fundType = '';
+
+          if (activeCard.cardType === 'credit' || activeCard.cardType === 'virtual') {
+            // Para tarjetas de crédito, verificar crédito disponible
+            availableFunds = activeCard.availableCredit || 0;
+            fundType = 'crédito disponible';
+            hasEnoughFunds = availableFunds >= monthlyPrice;
+          } else if (activeCard.cardType === 'debit') {
+            // Para tarjetas de débito, verificar saldo
+            availableFunds = activeCard.balance || 0;
+            fundType = 'saldo';
+            hasEnoughFunds = availableFunds >= monthlyPrice;
+          }
+
+          if (!hasEnoughFunds) {
+            const formatter = new Intl.NumberFormat('es-US', {
+              style: 'currency',
+              currency: insurance.currency,
+              minimumFractionDigits: 2,
+            });
+            
+            Alert.alert(
+              'Fondos Insuficientes',
+              `No tienes suficiente ${fundType} en esta tarjeta.\n\n` +
+              `Necesitas: ${formatter.format(monthlyPrice)}\n` +
+              `Disponible: ${formatter.format(availableFunds)}\n\n` +
+              `Por favor, selecciona otra tarjeta o realiza un pago/recarga.`,
+              [{ text: 'Entendido' }]
+            );
+            return;
+          }
+
+          // Si hay fondos suficientes, continuar con la contratación
+          const formatter = new Intl.NumberFormat('es-US', {
+            style: 'currency',
+            currency: insurance.currency,
+            minimumFractionDigits: 2,
+          });
+
           Alert.alert(
             'Contratar Seguro',
-            `¿Deseas contratar el seguro "${insurance.title}"?`,
+            `¿Deseas contratar el seguro "${insurance.title}"?\n\n` +
+            `Costo mensual: ${formatter.format(monthlyPrice)}\n` +
+            `Se cargará a: ${activeCard.cardNumber}\n` +
+            `${fundType === 'crédito disponible' ? 'Crédito' : 'Saldo'} disponible: ${formatter.format(availableFunds)}`,
             [
               { text: 'Cancelar', style: 'cancel' },
               { 
                 text: 'Confirmar', 
                 onPress: () => {
-                  Alert.alert('Éxito', 'Seguro contratado exitosamente');
+                  // Cerrar modal y mostrar comprobante
+                  setIsInsuranceModalVisible(false);
+                  setContractedInsurance(insurance);
+                  
+                  setTimeout(() => {
+                    setInsuranceResult({
+                      success: true,
+                      title: 'Seguro Contratado',
+                      message: `Tu seguro "${insurance.title}" ha sido contratado exitosamente. El cargo mensual se realizará automáticamente.`,
+                      receiptId: `INS-${Date.now().toString().slice(-8)}`,
+                      date: new Date().toISOString(),
+                    });
+                  }, 300);
                 }
               },
             ]
           );
         }}
       />
+
+      {/* Modal de Comprobante de Seguro */}
+      <Modal
+        visible={insuranceResult !== null && contractedInsurance !== null}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        statusBarTranslucent
+        onRequestClose={() => {
+          setInsuranceResult(null);
+          setContractedInsurance(null);
+          setSelectedInsurance(null);
+        }}
+      >
+        {insuranceResult && contractedInsurance && (() => {
+          const formatter = new Intl.NumberFormat('es-US', {
+            style: 'currency',
+            currency: contractedInsurance.currency,
+            minimumFractionDigits: 2,
+          });
+
+          return (
+            <OperationResultScreen
+              result={insuranceResult}
+              onClose={() => {
+                setInsuranceResult(null);
+                setContractedInsurance(null);
+                setSelectedInsurance(null);
+              }}
+              card={activeCard}
+              transactionDetails={[
+                { label: 'Seguro', value: contractedInsurance.title },
+                { label: 'Tipo de Producto', value: contractedInsurance.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) },
+                { label: 'Cobertura Máxima', value: `${formatter.format(contractedInsurance.coverageAmount)}` },
+                { label: 'Costo Mensual', value: formatter.format(contractedInsurance.monthlyPrice), isAmount: true },
+                { label: 'Método de Pago', value: activeCard?.cardNumber || 'N/A' },
+                { label: 'Primera Facturación', value: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) },
+                { label: 'Estado', value: 'Activo' },
+              ]}
+            >
+              {activeCard && (
+                <View style={{ transform: [{ scale: 0.55 }], alignItems: 'center', marginTop: -20, marginBottom: -28 }}>
+                  <CreditCard card={activeCard} width={300} />
+                </View>
+              )}
+            </OperationResultScreen>
+          );
+        })()}
+      </Modal>
     </ThemedView>
+    </>
   );
 }
 

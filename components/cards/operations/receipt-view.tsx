@@ -29,13 +29,14 @@ export function ReceiptView({ result, card, transactionDetails, children }: Rece
   const tertiaryTextColor = theme.isDark ? theme.colors.textSecondary : '#6B7280'; // Gray 500
 
   return (
-    <View style={[styles.receiptCard, { backgroundColor: theme.colors.surface }]}>
+    <View style={[styles.receiptCard, { 
+      backgroundColor: theme.colors.surface,
+      shadowColor: theme.colors.shadow,
+      borderWidth: theme.isDark ? 1 : 0,
+      borderColor: theme.isDark ? theme.colors.border : 'transparent',
+    }]}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.iconBubble, { backgroundColor: iconBgColor }]}>
-          <Icon size={32} color={color} strokeWidth={3} />
-        </View>
-        
         <View style={styles.institutionLogoContainer}>
           {theme.tenant.logoUrl ? (
             <Image source={{ uri: theme.tenant.logoUrl }} style={styles.logo} resizeMode="contain" />
@@ -55,8 +56,15 @@ export function ReceiptView({ result, card, transactionDetails, children }: Rece
 
       {/* Body */}
       <View style={styles.body}>
-        <ThemedText type="title" style={styles.title}>{result.title}</ThemedText>
-        <ThemedText style={[styles.message, { color: secondaryTextColor }]}>{result.message}</ThemedText>
+        <View style={styles.titleRow}>
+          <View style={[styles.iconBubble, { backgroundColor: iconBgColor }]}>
+            <Icon size={24} color={color} strokeWidth={3} />
+          </View>
+          <View style={styles.titleTextContainer}>
+            <ThemedText type="title" style={styles.title}>{result.title}</ThemedText>
+            <ThemedText style={[styles.message, { color: secondaryTextColor }]}>{result.message}</ThemedText>
+          </View>
+        </View>
 
         {transactionDetails && (
           <View style={styles.detailsContainer}>
@@ -67,7 +75,7 @@ export function ReceiptView({ result, card, transactionDetails, children }: Rece
                   type={detail.isAmount ? 'defaultSemiBold' : 'default'} 
                   style={[
                     styles.detailValue, 
-                    detail.isAmount && { color: theme.tenant.mainColor, fontSize: 16 }
+                    detail.isAmount && { color: theme.tenant.mainColor, fontSize: 16, fontWeight: '700' }
                   ]}
                 >
                   {detail.value}
@@ -81,7 +89,10 @@ export function ReceiptView({ result, card, transactionDetails, children }: Rece
       </View>
 
       {/* Footer */}
-      <View style={[styles.footer, { borderTopColor: theme.colors.border, backgroundColor: theme.colors.surfaceHigher }]}>
+      <View style={[styles.footer, { 
+        borderTopColor: theme.colors.border, 
+        backgroundColor: theme.isDark ? 'rgba(0, 0, 0, 0.2)' : theme.colors.surfaceHigher 
+      }]}>
         {result.receiptId && (
           <ThemedText style={[styles.receiptId, { color: tertiaryTextColor }]}>ID: {result.receiptId}</ThemedText>
         )}
@@ -115,26 +126,26 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: 20,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 10,
+    paddingHorizontal: 14,
   },
   iconBubble: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    flexShrink: 0,
   },
   institutionLogoContainer: {
-    height: 28,
+    height: 24,
     justifyContent: 'center',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   logo: {
-    width: 90,
-    height: 28,
+    width: 80,
+    height: 24,
   },
   receiptLabel: {
     fontSize: 10,
@@ -171,29 +182,35 @@ const styles = StyleSheet.create({
     right: -6,
   },
   body: {
-    padding: 16,
-    paddingTop: 4,
+    padding: 14,
+    paddingTop: 8,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  titleTextContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   message: {
-    textAlign: 'center',
-    marginBottom: 12,
     fontSize: 12,
     lineHeight: 16,
   },
   detailsContainer: {
-    gap: 6,
-    marginBottom: 12,
+    gap: 4,
+    marginBottom: 10,
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 4,
+    paddingBottom: 3,
     borderBottomWidth: 1,
   },
   detailLabel: {
@@ -223,18 +240,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   footer: {
-    padding: 12,
+    padding: 10,
+    paddingBottom: 8,
     alignItems: 'center',
     borderTopWidth: 1,
   },
   receiptId: {
     fontFamily: 'monospace',
     fontSize: 10,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   date: {
     fontSize: 9,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   poweredBy: {
     flexDirection: 'row',
