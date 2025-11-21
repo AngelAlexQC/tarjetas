@@ -192,7 +192,7 @@ export default function CardsScreen() {
   const CARD_HEIGHT = 200;
   const CARD_SPACING = 20;
   
-  const styles = createStyles(theme, layout, CARD_WIDTH, CARD_HEIGHT);
+  const styles = createStyles(theme, layout, CARD_WIDTH, CARD_HEIGHT, CARD_SPACING);
   
   // Generar tarjetas con valores aleatorios al inicio
   const mockCards = useMemo(() => generateMockCards(), []);
@@ -214,12 +214,12 @@ export default function CardsScreen() {
     itemVisiblePercentThreshold: 50,
   };
 
-  const handleCardPress = (card: Card) => {
-    Alert.alert(
-      "Detalles de Tarjeta",
-      `Tarjeta: ${card.cardNumber}\nTitular: ${card.cardHolder}\nBalance: $${card.balance.toFixed(2)}`,
-      [{ text: "OK" }]
-    );
+  const handleCardPress = (index: number) => {
+    flatListRef.current?.scrollToOffset({
+      offset: index * (CARD_WIDTH + CARD_SPACING),
+      animated: true
+    });
+    setActiveCardIndex(index);
   };
 
   const renderCard = ({ item, index }: { item: Card; index: number }) => {
@@ -234,7 +234,7 @@ export default function CardsScreen() {
             width: CARD_WIDTH,
           },
         ]}
-        onPress={() => handleCardPress(item)}
+        onPress={() => handleCardPress(index)}
       >
         <LinearGradient
           colors={cardDesign.gradientColors as any}
@@ -328,10 +328,7 @@ export default function CardsScreen() {
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
-            snapToOffsets={mockCards.map((_, index) => {
-              const padding = (SCREEN_WIDTH - CARD_WIDTH) / 2;
-              return index * (CARD_WIDTH + CARD_SPACING) + padding;
-            })}
+            snapToInterval={CARD_WIDTH + CARD_SPACING}
             snapToAlignment="start"
             decelerationRate="fast"
             contentContainerStyle={styles.carouselContent}
@@ -473,7 +470,8 @@ const createStyles = (
   theme: ReturnType<typeof useAppTheme>,
   layout: ReturnType<typeof useResponsiveLayout>,
   cardWidth: number,
-  cardHeight: number
+  cardHeight: number,
+  cardSpacing: number
 ) => StyleSheet.create({
   container: {
     flex: 1,
@@ -502,7 +500,7 @@ const createStyles = (
   },
   carouselContent: {
     paddingVertical: 15,
-    paddingHorizontal: (layout.screenWidth - cardWidth) / 2,
+    paddingHorizontal: (layout.screenWidth - cardWidth - cardSpacing) / 2,
     alignItems: "center",
   },
   carouselList: {
