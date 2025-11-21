@@ -5,8 +5,9 @@ import { ThemedButton } from '@/components/ui/themed-button';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { Stack, useRouter } from 'expo-router';
+import * as Updates from 'expo-updates';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View, NativeModules } from 'react-native';
 
 const FAQ_ITEMS = [
   { 
@@ -52,12 +53,21 @@ export default function FaqScreen() {
             // Reiniciar estado del tour
             await resetTour();
             
-            // Navegar al inicio para asegurar una recarga completa de la vista
-            if (router.canGoBack()) {
-              router.dismissAll();
+            try {
+              // Intentar recargar con expo-updates
+              await Updates.reloadAsync();
+            } catch {
+              // Fallback si falla expo-updates (común en desarrollo)
+              if (__DEV__ && NativeModules.DevSettings) {
+                NativeModules.DevSettings.reload();
+              } else {
+                // Fallback de navegación
+                if (router.canGoBack()) {
+                  router.dismissAll();
+                }
+                router.replace('/');
+              }
             }
-            // Reemplazar con la ruta raíz para forzar un re-montaje
-            router.replace('/');
           }
         }
       ]

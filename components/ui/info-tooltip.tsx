@@ -11,7 +11,6 @@ import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
 import { Alert, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
-import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
   FadeIn,
@@ -21,6 +20,7 @@ import Animated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface CalendarEventConfig {
   title: string;
