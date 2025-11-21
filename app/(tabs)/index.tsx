@@ -245,21 +245,23 @@ export default function TenantSelectorScreen() {
           entering={FadeInUp.duration(600).springify()}
           style={layout.isLandscape ? styles.headerCompact : styles.header}
         >
-          <View style={[styles.userAvatarContainer, {
-            shadowColor: theme.isDark ? '#000' : '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: theme.isDark ? 0.3 : 0.1,
-            shadowRadius: 12,
-            elevation: 8,
-            borderColor: theme.colors.borderSubtle,
-            borderWidth: 1,
-          }]}>
-            <Image
-              source={{ uri: authenticatedUser.avatar }}
-              style={styles.userAvatar}
-              contentFit="cover"
-            />
-          </View>
+          <Pressable onPress={() => router.push('/profile')}>
+            <View style={[styles.userAvatarContainer, {
+              shadowColor: theme.isDark ? '#000' : '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: theme.isDark ? 0.3 : 0.1,
+              shadowRadius: 12,
+              elevation: 8,
+              borderColor: theme.colors.borderSubtle,
+              borderWidth: 1,
+            }]}>
+              <Image
+                source={{ uri: authenticatedUser.avatar }}
+                style={styles.userAvatar}
+                contentFit="cover"
+              />
+            </View>
+          </Pressable>
           <View style={layout.isLandscape ? { flex: 1 } : undefined}>
             <ThemedText type="title" style={[styles.title, layout.isLandscape && { textAlign: 'left', fontSize: 24 }]}>
               Hola, {authenticatedUser.name}

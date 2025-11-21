@@ -1,13 +1,14 @@
-import { NavigationButton } from '@/components/navigation/navigation-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { Stack, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import * as Updates from 'expo-updates';
 import React from 'react';
-import { Alert, NativeModules, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, NativeModules, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const FAQ_ITEMS = [
   { 
@@ -39,6 +40,7 @@ const FAQ_ITEMS = [
 export default function FaqScreen() {
   const theme = useAppTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { resetTour } = useTour();
 
   const handleResetTour = async () => {
@@ -76,34 +78,44 @@ export default function FaqScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <Stack.Screen options={{ 
-        title: 'Preguntas Frecuentes',
-        headerLeft: () => (
-          <NavigationButton onPress={() => router.back()} />
-        ),
-        headerBackVisible: false,
-        headerTitleAlign: 'center',
-        headerShadowVisible: false,
-        headerStyle: { backgroundColor: theme.colors.background },
-        headerTitleStyle: { color: theme.colors.text },
-      }} />
+      <View style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <ThemedText type="subtitle" style={styles.headerTitle}>Preguntas Frecuentes</ThemedText>
+          <View style={{ width: 40 }} />
+        </View>
+      </View>
+
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.resetSection}>
-          <ThemedText type="subtitle" style={styles.resetTitle}>¿Necesitas ayuda con la app?</ThemedText>
-          <ThemedText style={styles.resetDescription}>
-            Si quieres volver a ver las explicaciones de las funcionalidades, puedes reiniciar el tour interactivo.
-          </ThemedText>
+        <View style={[styles.resetSection, { backgroundColor: theme.colors.surface }]}>
+          <View style={styles.resetContent}>
+            <View style={styles.resetHeader}>
+              <Ionicons name="help-buoy-outline" size={20} color={theme.tenant.mainColor} style={{ marginRight: 8 }} />
+              <ThemedText type="defaultSemiBold">¿Necesitas ayuda?</ThemedText>
+            </View>
+            <ThemedText style={[styles.resetDescription, { color: theme.colors.textSecondary }]}>
+              Inicia el tour para ver las guías nuevamente.
+            </ThemedText>
+          </View>
           <ThemedButton 
-            title="Iniciar Tour Guiado" 
+            title="Ver Tour" 
             onPress={handleResetTour}
             variant="secondary"
+            style={styles.resetButton}
           />
         </View>
 
+        <ThemedText type="subtitle" style={{ marginBottom: 16, marginTop: 8 }}>Temas Populares</ThemedText>
+
         {FAQ_ITEMS.map((item, index) => (
-            <View key={index} style={[styles.item, { borderColor: theme.colors.border }]}>
-                <ThemedText type="subtitle" style={styles.question}>{item.question}</ThemedText>
-                <ThemedText style={styles.answer}>{item.answer}</ThemedText>
+            <View key={index} style={[styles.item, { backgroundColor: theme.colors.surface, borderColor: theme.colors.borderSubtle }]}>
+                <View style={styles.questionRow}>
+                  <Ionicons name="chatbubble-ellipses-outline" size={20} color={theme.tenant.mainColor} style={{ marginRight: 12 }} />
+                  <ThemedText type="defaultSemiBold" style={styles.question}>{item.question}</ThemedText>
+                </View>
+                <ThemedText style={[styles.answer, { color: theme.colors.textSecondary }]}>{item.answer}</ThemedText>
             </View>
         ))}
       </ScrollView>
@@ -113,24 +125,89 @@ export default function FaqScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 16, gap: 16 },
-  resetSection: {
-    padding: 20,
-    borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.03)',
-    marginBottom: 8,
-    gap: 12,
+  header: {
+    backgroundColor: '#00838F',
+    paddingBottom: 20,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+    zIndex: 10,
+  },
+  headerContent: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 10,
   },
-  resetTitle: {
-    textAlign: 'center',
+  backButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.15)',
   },
-  resetDescription: {
-    textAlign: 'center',
-    opacity: 0.7,
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  content: { padding: 20, gap: 16 },
+  resetSection: {
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  resetContent: {
+    flex: 1,
+    marginRight: 12,
+  },
+  resetHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 4,
   },
-  item: { padding: 16, borderRadius: 12, borderWidth: 1 },
-  question: { marginBottom: 8, fontSize: 16, fontWeight: '600' },
-  answer: { opacity: 0.8, lineHeight: 20 },
+  resetTitle: {
+    textAlign: 'left',
+    marginBottom: 0,
+  },
+  resetDescription: {
+    textAlign: 'left',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  resetButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    minWidth: 80,
+  },
+  item: { 
+    padding: 16, 
+    borderRadius: 16, 
+    borderWidth: 1,
+  },
+  questionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  question: { 
+    flex: 1,
+    fontSize: 15, 
+  },
+  answer: { 
+    fontSize: 14, 
+    lineHeight: 22,
+    paddingLeft: 32,
+  },
 });
