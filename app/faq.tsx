@@ -94,7 +94,7 @@ export default function FaqScreen() {
             Si quieres volver a ver las explicaciones de las funcionalidades, puedes reiniciar el tour interactivo.
           </ThemedText>
           <ThemedButton 
-            title="Reiniciar Tour Guiado" 
+            title="Iniciar Tour Guiado" 
             onPress={handleResetTour}
             variant="secondary"
           />
