@@ -10,15 +10,15 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
-import { Alert, Linking, Modal, Platform, Pressable, StyleSheet, View, Dimensions } from 'react-native';
-import Animated, { 
-  FadeIn, 
-  FadeOut, 
-  useAnimatedStyle, 
-  useSharedValue, 
-  withTiming, 
-  runOnJS, 
-  Easing 
+import { Alert, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeOut,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
 } from 'react-native-reanimated';
 
 export interface CalendarEventConfig {
@@ -51,6 +51,8 @@ export interface InfoTooltipProps {
   tourDuration?: number;
   /** Acción a ejecutar al presionar (si triggerMode es longPress o si se quiere encadenar) */
   onPress?: () => void;
+  /** Radio del borde del elemento resaltado (default: 12) */
+  targetBorderRadius?: number;
 }
 
 export const InfoTooltip: React.FC<InfoTooltipProps> = ({
@@ -65,6 +67,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   tourOrder = 0,
   tourDuration = 5000,
   onPress,
+  targetBorderRadius,
 }) => {
   const theme = useAppTheme();
   const styles = useStyles();
@@ -73,6 +76,10 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   const [openedByTour, setOpenedByTour] = useState(false);
   const [triggerLayout, setTriggerLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const triggerRef = React.useRef<View>(null);
+
+  // Default radius based on platform if not provided
+  const defaultRadius = Platform.OS === 'ios' ? 12 : 16;
+  const finalBorderRadius = targetBorderRadius ?? defaultRadius;
 
   // Registrar en el tour si hay tourKey
   React.useEffect(() => {
@@ -142,64 +149,172 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
         onRequestClose={handleClose}
         statusBarTranslucent
       >
-        <Pressable 
-          style={styles.overlay} 
-          onPress={handleClose}
-          accessibilityLabel="Cerrar información"
-          accessibilityRole="button"
+        <SpotlightOverlay 
+          layout={triggerLayout} 
+          onClose={handleClose} 
+          borderRadius={finalBorderRadius}
+        />
+        
+        <Animated.View
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(150)}
+          style={[
+            styles.tooltipContainer,
+            getTooltipPosition(triggerLayout, placement),
+          ]}
         >
-          <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(150)}
-            style={[
-              styles.tooltipContainer,
-              getTooltipPosition(triggerLayout, placement),
-            ]}
-          >
-            {Platform.OS === 'ios' ? (
-              <BlurView
-                intensity={80}
-                tint="systemMaterial"
-                style={[styles.tooltipContent, { borderColor: theme.colors.borderSubtle }]}
-              >
-                <TooltipContent 
-                  title={title} 
-                  content={content} 
-                  calendarEvent={calendarEvent} 
-                  extraContent={extraContent}
-                  onClose={handleClose}
-                  isTour={openedByTour}
-                  duration={tourDuration}
-                />
-              </BlurView>
-            ) : (
-              <View
-                style={[
-                  styles.tooltipContent,
-                  styles.androidTooltip,
-                  {
-                    backgroundColor: theme.isDark
-                      ? 'rgba(28, 28, 30, 0.95)'
-                      : 'rgba(255, 255, 255, 0.98)',
-                    borderColor: theme.colors.borderSubtle,
-                  },
-                ]}
-              >
-                <TooltipContent 
-                  title={title} 
-                  content={content} 
-                  calendarEvent={calendarEvent} 
-                  extraContent={extraContent}
-                  onClose={handleClose}
-                  isTour={openedByTour}
-                  duration={tourDuration}
-                />
-              </View>
-            )}
-          </Animated.View>
-        </Pressable>
+          {Platform.OS === 'ios' ? (
+            <BlurView
+              intensity={80}
+              tint="systemMaterial"
+              style={[styles.tooltipContent, { borderColor: theme.colors.borderSubtle }]}
+            >
+              <TooltipContent 
+                title={title} 
+                content={content} 
+                calendarEvent={calendarEvent} 
+                extraContent={extraContent}
+                onClose={handleClose}
+                isTour={openedByTour}
+                duration={tourDuration}
+              />
+            </BlurView>
+          ) : (
+            <View
+              style={[
+                styles.tooltipContent,
+                styles.androidTooltip,
+                {
+                  backgroundColor: theme.isDark
+                    ? 'rgba(28, 28, 30, 0.95)'
+                    : 'rgba(255, 255, 255, 0.98)',
+                  borderColor: theme.colors.borderSubtle,
+                },
+              ]}
+            >
+              <TooltipContent 
+                title={title} 
+                content={content} 
+                calendarEvent={calendarEvent} 
+                extraContent={extraContent}
+                onClose={handleClose}
+                isTour={openedByTour}
+                duration={tourDuration}
+              />
+            </View>
+          )}
+        </Animated.View>
       </Modal>
     </>
+  );
+};
+
+const SpotlightOverlay = ({ 
+  layout, 
+  onClose, 
+  borderRadius 
+}: { 
+  layout: { x: number, y: number, width: number, height: number }, 
+  onClose: () => void,
+  borderRadius: number
+}) => {
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const overlayColor = 'rgba(0, 0, 0, 0.7)'; 
+  const padding = 4;
+
+  // Ajustar layout con padding
+  const x = layout.x - padding;
+  const y = layout.y - padding;
+  const w = layout.width + (padding * 2);
+  const h = layout.height + (padding * 2);
+
+  // Componente para las esquinas invertidas (Spandrels)
+  // Crea un relleno del color del overlay con un recorte circular transparente
+  const InvertedCorner = ({ style, position }: { style: any, position: 'TL' | 'TR' | 'BL' | 'BR' }) => {
+    const R = borderRadius;
+    // Parámetros para crear el círculo hueco
+    // Usamos un borde grueso para crear el relleno exterior
+    const size = 4 * R;
+    const radius = 2 * R;
+    const border = R;
+    
+    let top = 0, left = 0;
+    // Ajustar posición del círculo hueco según la esquina
+    switch (position) {
+      case 'TL': top = -R; left = -R; break;
+      case 'TR': top = -R; left = -2 * R; break;
+      case 'BL': top = -2 * R; left = -R; break;
+      case 'BR': top = -2 * R; left = -2 * R; break;
+    }
+
+    return (
+      <View style={[style, { width: R, height: R, overflow: 'hidden' }]}>
+        <View style={{
+          position: 'absolute',
+          top,
+          left,
+          width: size,
+          height: size,
+          borderRadius: radius,
+          borderWidth: border,
+          borderColor: overlayColor,
+          backgroundColor: 'transparent',
+        }} />
+      </View>
+    );
+  };
+
+  return (
+    <View style={StyleSheet.absoluteFill}>
+      {/* Top */}
+      <Pressable 
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: Math.max(0, y), backgroundColor: overlayColor }} 
+        onPress={onClose} 
+      />
+      {/* Bottom */}
+      <Pressable 
+        style={{ position: 'absolute', top: y + h, left: 0, right: 0, bottom: 0, backgroundColor: overlayColor }} 
+        onPress={onClose} 
+      />
+      {/* Left */}
+      <Pressable 
+        style={{ position: 'absolute', top: y, left: 0, width: Math.max(0, x), height: h, backgroundColor: overlayColor }} 
+        onPress={onClose} 
+      />
+      {/* Right */}
+      <Pressable 
+        style={{ position: 'absolute', top: y, left: x + w, right: 0, height: h, backgroundColor: overlayColor }} 
+        onPress={onClose} 
+      />
+
+      {/* Esquinas Invertidas para redondear el hueco */}
+      <InvertedCorner style={{ position: 'absolute', top: y, left: x }} position="TL" />
+      <InvertedCorner style={{ position: 'absolute', top: y, left: x + w - borderRadius }} position="TR" />
+      <InvertedCorner style={{ position: 'absolute', top: y + h - borderRadius, left: x + w - borderRadius }} position="BR" />
+      <InvertedCorner style={{ position: 'absolute', top: y + h - borderRadius, left: x }} position="BL" />
+      
+      {/* Highlight Border */}
+      <Animated.View 
+        entering={FadeIn.duration(300)}
+        style={{
+          position: 'absolute',
+          top: y,
+          left: x,
+          width: w,
+          height: h,
+          borderRadius: borderRadius,
+          borderWidth: 2,
+          borderColor: 'rgba(255, 255, 255, 0.5)',
+          backgroundColor: 'transparent',
+          shadowColor: "#FFF",
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.5,
+          shadowRadius: 10,
+          elevation: 10,
+        }} 
+        pointerEvents="none"
+      />
+    </View>
   );
 };
 

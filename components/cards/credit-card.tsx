@@ -45,6 +45,7 @@ export function CreditCard({
       tourOrder={baseOrder}
       placement="bottom"
       onPress={onPress}
+      targetBorderRadius={16}
     >
       <View style={[styles.container, { width, height: cardHeight }, style]}>
         <LinearGradient
@@ -69,6 +70,7 @@ export function CreditCard({
                 triggerMode="longPress"
                 tourKey={getTourKey('type')}
                 tourOrder={baseOrder + 1}
+                targetBorderRadius={8}
               >
                 <View style={styles.cardTypeBadge}>
                   <ThemedText
