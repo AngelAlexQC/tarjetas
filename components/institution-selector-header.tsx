@@ -5,7 +5,8 @@ import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View, Text } from "react-native";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -14,7 +15,6 @@ import Animated, {
     withTiming
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState, useEffect } from "react";
 
 /**
  * Header minimalista moderno - Fintech Design 2025
