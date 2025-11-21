@@ -7,7 +7,7 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { Stack, useRouter } from 'expo-router';
 import * as Updates from 'expo-updates';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, View, NativeModules } from 'react-native';
+import { Alert, NativeModules, ScrollView, StyleSheet, View } from 'react-native';
 
 const FAQ_ITEMS = [
   { 
