@@ -14,6 +14,8 @@ interface TourContextType {
   resetTour: () => Promise<void>;
   setAppReady: () => void;
   stopTour: () => void;
+  pauseTour: () => void;
+  resumeTour: () => void;
   isTourActive: boolean;
 }
 
@@ -28,6 +30,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [isAppReady, setAppReadyState] = useState(false);
   const [isTourStopped, setIsTourStopped] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Cargar keys vistas al inicio
   useEffect(() => {
@@ -60,7 +63,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   // Gestionar la cola de tooltips
   useEffect(() => {
-    if (!isReady || !isAppReady || currentKey || isTourStopped) return;
+    if (!isReady || !isAppReady || currentKey || isTourStopped || isPaused) return;
 
     // Filtrar items que no han sido vistos
     const unseenItems = registeredItems
@@ -75,7 +78,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
         nextItem.show();
       }, 500);
     }
-  }, [isReady, isAppReady, currentKey, registeredItems, seenKeys, isTourStopped]);
+  }, [isReady, isAppReady, currentKey, registeredItems, seenKeys, isTourStopped, isPaused]);
 
   const register = useCallback((key: string, show: () => void, order: number = 0) => {
     setRegisteredItems(prev => {
@@ -103,6 +106,14 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     setCurrentKey(null);
   }, []);
 
+  const pauseTour = useCallback(() => {
+    setIsPaused(true);
+  }, []);
+
+  const resumeTour = useCallback(() => {
+    setIsPaused(false);
+  }, []);
+
   const resetTour = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEY_SEEN_TOOLTIPS);
@@ -121,7 +132,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const isTourActive = currentKey !== null;
 
   return (
-    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour, setAppReady, stopTour, isTourActive }}>
+    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour, setAppReady, stopTour, pauseTour, resumeTour, isTourActive }}>
       {children}
     </TourContext.Provider>
   );

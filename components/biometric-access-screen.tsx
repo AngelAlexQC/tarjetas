@@ -3,7 +3,7 @@ import { ThemedButton } from '@/components/ui/themed-button';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { Fingerprint, ShieldCheck } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,8 +20,12 @@ export function BiometricAccessScreen({ onSuccess, onUsePassword, userName }: Bi
   const { authenticateWithBiometric } = useAuth();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isAuthenticatingRef = useRef(false);
 
   const authenticate = useCallback(async () => {
+    if (isAuthenticatingRef.current) return;
+    
+    isAuthenticatingRef.current = true;
     setIsAuthenticating(true);
     setError(null);
 
@@ -30,15 +34,18 @@ export function BiometricAccessScreen({ onSuccess, onUsePassword, userName }: Bi
 
       if (result.success) {
         setTimeout(() => {
+          isAuthenticatingRef.current = false;
           setIsAuthenticating(false);
           onSuccess();
         }, 500);
       } else {
+        isAuthenticatingRef.current = false;
         setIsAuthenticating(false);
         setError(result.error || 'Error en la autenticación');
       }
     } catch (err) {
       console.error('Biometric error:', err);
+      isAuthenticatingRef.current = false;
       setIsAuthenticating(false);
       setError('Error inesperado');
     }

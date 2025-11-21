@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
 // Storage Keys
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = useCallback(async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       // TODO: Reemplazar con llamada real a tu API
       // Por ahora, validación simple para desarrollo
@@ -122,9 +122,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Login error:', error);
       return { success: false, error: 'Error al iniciar sesión. Intenta de nuevo.' };
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       // Limpiar todos los datos excepto el tenant y onboarding
       if (Platform.OS === 'web') {
@@ -143,9 +143,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Logout error:', error);
     }
-  };
+  }, []);
 
-  const enableBiometric = async () => {
+  const enableBiometric = useCallback(async () => {
     try {
       if (!isBiometricAvailable) {
         console.warn('Biometric authentication not available');
@@ -157,18 +157,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Error enabling biometric:', error);
     }
-  };
+  }, [isBiometricAvailable]);
 
-  const disableBiometric = async () => {
+  const disableBiometric = useCallback(async () => {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.BIOMETRIC_ENABLED, 'false');
       setIsBiometricEnabled(false);
     } catch (error) {
       console.error('Error disabling biometric:', error);
     }
-  };
+  }, []);
 
-  const authenticateWithBiometric = async (): Promise<{ success: boolean; error?: string }> => {
+  const authenticateWithBiometric = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
     try {
       if (!isBiometricAvailable) {
         return { success: false, error: 'Autenticación biométrica no disponible' };
@@ -201,32 +201,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Biometric authentication error:', error);
       return { success: false, error: 'Error en la autenticación biométrica' };
     }
-  };
+  }, [isBiometricAvailable]);
 
-  const rememberUsername = async (username: string) => {
+  const rememberUsername = useCallback(async (username: string) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.USERNAME_REMEMBERED, username);
     } catch (error) {
       console.error('Error saving username:', error);
     }
-  };
+  }, []);
 
-  const getRememberedUsername = async (): Promise<string | null> => {
+  const getRememberedUsername = useCallback(async (): Promise<string | null> => {
     try {
       return await AsyncStorage.getItem(STORAGE_KEYS.USERNAME_REMEMBERED);
     } catch (error) {
       console.error('Error loading username:', error);
       return null;
     }
-  };
+  }, []);
 
-  const clearRememberedUsername = async () => {
+  const clearRememberedUsername = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.USERNAME_REMEMBERED);
     } catch (error) {
       console.error('Error clearing username:', error);
     }
-  };
+  }, []);
 
   return (
     <AuthContext.Provider

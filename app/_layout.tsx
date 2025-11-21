@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, Pressable, StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -51,7 +51,7 @@ function Navigation() {
     isBiometricAvailable,
     enableBiometric 
   } = useAuth();
-  const { setAppReady, isTourActive, stopTour } = useTour();
+  const { setAppReady, isTourActive, stopTour, pauseTour, resumeTour } = useTour();
   const router = useRouter();
   const initialCheckDone = useRef(false);
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
@@ -59,6 +59,7 @@ function Navigation() {
   const [showBiometricAccess, setShowBiometricAccess] = useState(false);
   const [showBiometricModal, setShowBiometricModal] = useState(false);
   const appState = useRef(AppState.currentState);
+  const lastBiometricSuccess = useRef<number>(0);
 
   // Manejar AppState para bloqueo biométrico al regresar a la app
   useEffect(() => {
@@ -67,7 +68,11 @@ function Navigation() {
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        if (isAuthenticated && isBiometricEnabled) {
+        const timeSinceLastSuccess = Date.now() - lastBiometricSuccess.current;
+        // Ignorar si la autenticación fue exitosa hace menos de 2 segundos
+        // Esto evita el bucle causado por el cierre del diálogo biométrico del sistema
+        if (isAuthenticated && isBiometricEnabled && timeSinceLastSuccess > 2000) {
+          pauseTour();
           setShowBiometricAccess(true);
         }
       }
@@ -82,6 +87,7 @@ function Navigation() {
   // Verificar biométrica al inicio si hay sesión guardada
   useEffect(() => {
     if (!isAuthLoading && isAuthenticated && isBiometricEnabled && !initialCheckDone.current) {
+      pauseTour();
       setShowBiometricAccess(true);
     }
   }, [isAuthLoading, isAuthenticated, isBiometricEnabled]);
@@ -125,17 +131,19 @@ function Navigation() {
     }
   }, [isTenantLoading, isAuthenticated, currentTheme, router, setAppReady]);
 
-  const handleBiometricSuccess = async () => {
+  const handleBiometricSuccess = useCallback(async () => {
     // La autenticación fue exitosa en el contexto
+    lastBiometricSuccess.current = Date.now();
     setShowBiometricAccess(false);
+    resumeTour();
     // No navegamos aquí para preservar el estado de navegación actual
     // Si es el inicio de la app, el useEffect de navegación inicial se encargará (o ya se encargó)
-  };
+  }, []);
 
-  const handleBiometricUsePassword = () => {
+  const handleBiometricUsePassword = useCallback(() => {
     setShowBiometricAccess(false);
     setShowLogin(true);
-  };
+  }, []);
 
   const handleOnboardingFinish = async () => {
     await AsyncStorage.setItem('@onboarding_completed', 'true');
