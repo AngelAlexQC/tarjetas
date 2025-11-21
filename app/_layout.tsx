@@ -1,13 +1,15 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
+import { OnboardingScreen } from '@/components/onboarding-screen';
 import { TenantThemeProvider, useTenantTheme } from '@/contexts/tenant-theme-context';
 import { TourProvider, useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useRef } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -37,12 +39,19 @@ export const unstable_settings = {
 function Navigation() {
   const theme = useAppTheme();
   const { currentTheme, isLoading } = useTenantTheme();
-  const { setAppReady } = useTour();
+  const { setAppReady, isTourActive, stopTour } = useTour();
   const router = useRouter();
   const initialCheckDone = useRef(false);
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!isLoading && !initialCheckDone.current) {
+    AsyncStorage.getItem('@onboarding_completed').then(value => {
+      setShowOnboarding(value !== 'true');
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && !initialCheckDone.current && showOnboarding === false) {
       initialCheckDone.current = true;
       if (currentTheme && currentTheme.slug !== 'default') {
         router.replace('/(tabs)/cards');
@@ -57,7 +66,12 @@ function Navigation() {
         }, 4000);
       }
     }
-  }, [isLoading, currentTheme, router, setAppReady]);
+  }, [isLoading, currentTheme, router, setAppReady, showOnboarding]);
+
+  const handleOnboardingFinish = async () => {
+    await AsyncStorage.setItem('@onboarding_completed', 'true');
+    setShowOnboarding(false);
+  };
 
   const navBase = theme.isDark ? DarkTheme : DefaultTheme;
   const navTheme = {
@@ -71,17 +85,32 @@ function Navigation() {
       primary: theme.tenant.mainColor,
     },
   };
+
   return (
     <AnimatedSplashScreen>
       <ThemeProvider value={navTheme}>
-        <Stack screenOptions={{
-          contentStyle: { backgroundColor: theme.colors.background },
-          animation: 'fade',
-        }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="cards/[id]" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
+        {showOnboarding === null ? (
+          <View style={{ flex: 1, backgroundColor: theme.colors.background }} />
+        ) : showOnboarding ? (
+          <OnboardingScreen onFinish={handleOnboardingFinish} />
+        ) : (
+          <>
+            <Stack screenOptions={{
+              contentStyle: { backgroundColor: theme.colors.background },
+              animation: 'fade',
+            }}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="cards/[id]" options={{ headerShown: false }} />
+            </Stack>
+            <StatusBar style="auto" />
+            {isTourActive && (
+              <Pressable 
+                style={[StyleSheet.absoluteFill, { zIndex: 9999 }]} 
+                onPress={stopTour} 
+              />
+            )}
+          </>
+        )}
       </ThemeProvider>
     </AnimatedSplashScreen>
   );

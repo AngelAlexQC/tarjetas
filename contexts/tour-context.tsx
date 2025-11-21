@@ -14,6 +14,7 @@ interface TourContextType {
   resetTour: () => Promise<void>;
   setAppReady: () => void;
   stopTour: () => void;
+  isTourActive: boolean;
 }
 
 const TourContext = createContext<TourContextType | undefined>(undefined);
@@ -117,8 +118,10 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     setAppReadyState(true);
   }, []);
 
+  const isTourActive = currentKey !== null;
+
   return (
-    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour, setAppReady, stopTour }}>
+    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour, setAppReady, stopTour, isTourActive }}>
       {children}
     </TourContext.Provider>
   );
