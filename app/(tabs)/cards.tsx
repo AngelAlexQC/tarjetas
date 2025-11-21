@@ -1,4 +1,3 @@
-import { CardActionType } from "@/constants/card-actions";
 import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { CardFinancialInfo } from "@/components/cards/card-financial-info";
 import { InstitutionSelectorHeader } from "@/components/institution-selector-header";
@@ -8,6 +7,7 @@ import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
 import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
 import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { ChipIcon } from "@/components/ui/chip-icon";
+import { CardActionType } from "@/constants/card-actions";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
@@ -16,6 +16,7 @@ import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { formatCardExpiry } from "@/utils/formatters/date";
 import { useScrollToTop } from '@react-navigation/native';
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -32,13 +33,11 @@ import Animated, {
   FadeInLeft,
   FadeInUp,
   FadeOut,
-  LinearTransition,
   SlideInLeft,
   SlideInRight,
   ZoomIn,
   ZoomOut
 } from "react-native-reanimated";
-import { useRouter } from 'expo-router';
 
 // Las dimensiones serán calculadas dinámicamente en el componente
 
@@ -384,19 +383,17 @@ export default function CardsScreen() {
         {/* Layout condicional según orientación */}
         <Animated.View 
           style={layout.isLandscape && styles.landscapeWrapper}
-          layout={LinearTransition.springify().damping(20).stiffness(100)}
+          // Eliminado layout transition global pesado
         >
         {layout.isLandscape ? (
           // Layout horizontal: tarjeta info y acciones en columnas
           <Animated.View 
             style={styles.landscapeContainer}
-            entering={FadeInLeft.duration(500).springify()}
-            layout={LinearTransition.springify().damping(20).stiffness(100)}
+            entering={FadeInLeft.duration(400)}
           >
             <Animated.View 
               style={styles.landscapeColumn}
-              entering={SlideInLeft.duration(600).springify().damping(20)}
-              layout={LinearTransition.springify().damping(18).stiffness(90)}
+              entering={SlideInLeft.duration(500)}
             >
               {activeCard && (
                 <CardFinancialInfo 
@@ -408,8 +405,7 @@ export default function CardsScreen() {
               )}
               <Animated.View 
                 style={styles.addCardContainerLandscape}
-                entering={FadeInUp.duration(700).delay(200).springify()}
-                layout={LinearTransition.springify().damping(18).stiffness(90)}
+                entering={FadeInUp.duration(500).delay(100)}
               >
                 <AddToWalletButton
                   onPress={() => {
@@ -421,14 +417,12 @@ export default function CardsScreen() {
             </Animated.View>
             <Animated.View 
               style={styles.landscapeColumn}
-              entering={SlideInRight.duration(600).springify().damping(20)}
-              layout={LinearTransition.springify().damping(18).stiffness(90)}
+              entering={SlideInRight.duration(500)}
             >
               {activeCard && (
                 <Animated.View 
-                  entering={ZoomIn.duration(600).delay(100).springify()}
-                  exiting={ZoomOut.duration(400)}
-                  layout={LinearTransition.springify().damping(20).stiffness(100)}
+                  entering={ZoomIn.duration(400).delay(50)}
+                  exiting={ZoomOut.duration(200)}
                 >
                   <CardActionsGrid
                     cardType={activeCard.cardType}
@@ -446,9 +440,8 @@ export default function CardsScreen() {
             {activeCard && (
               <Animated.View 
                 style={styles.actionsSection}
-                entering={FadeInDown.duration(600).springify().damping(18)}
-                exiting={FadeOut.duration(400)}
-                layout={LinearTransition.springify().damping(20).stiffness(100)}
+                entering={FadeInDown.duration(400)}
+                exiting={FadeOut.duration(200)}
               >
                 <CardActionsGrid
                   cardType={activeCard.cardType}
@@ -462,8 +455,7 @@ export default function CardsScreen() {
             {activeCard && (
               <Animated.View
                 style={styles.financialInfoWrapper}
-                entering={FadeInUp.duration(600).delay(100).springify()}
-                layout={LinearTransition.springify().damping(20).stiffness(100)}
+                entering={FadeInUp.duration(500).delay(50)}
               >
               <CardFinancialInfo 
                 card={activeCard}
@@ -477,8 +469,7 @@ export default function CardsScreen() {
             {/* Botón agregar a Wallet */}
             <Animated.View 
               style={styles.addCardContainer}
-              entering={FadeInUp.duration(700).delay(200).springify()}
-              layout={LinearTransition.springify().damping(20).stiffness(100)}
+              entering={FadeInUp.duration(500).delay(100)}
             >
               <AddToWalletButton
                 onPress={() => {

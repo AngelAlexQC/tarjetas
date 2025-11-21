@@ -1,11 +1,11 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { CheckCircle2, XCircle, Share2 } from 'lucide-react-native';
+import { CheckCircle2, Share2, XCircle } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInUp, ZoomIn } from 'react-native-reanimated';
-import { OperationResult } from '@/features/cards/types/card-operations';
 
 interface OperationResultScreenProps {
   result: OperationResult;
@@ -22,7 +22,7 @@ export function OperationResultScreen({ result, onClose }: OperationResultScreen
   return (
     <ThemedView style={styles.container} surface="level1">
       <View style={styles.content}>
-        <Animated.View entering={ZoomIn.springify().damping(12)}>
+        <Animated.View entering={ZoomIn.duration(500).springify().damping(15)}>
           <Icon size={80} color={color} strokeWidth={1.5} />
         </Animated.View>
 

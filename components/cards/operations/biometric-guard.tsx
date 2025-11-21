@@ -2,10 +2,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { LucideIcon, ScanFace, Fingerprint } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
+import { ActivityIndicator, Alert, Modal, StyleSheet, View } from 'react-native';
 
 interface BiometricGuardProps {
   isVisible: boolean;

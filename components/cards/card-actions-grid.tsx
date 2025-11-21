@@ -27,13 +27,13 @@ const ActionButton = ({ action, onPress, isLoading }: { action: CardAction, onPr
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.92, { damping: 15, stiffness: 200 });
-    opacity.value = withTiming(0.9, { duration: 100 });
+    scale.value = withSpring(0.95, { damping: 10, stiffness: 300 }); // Más rápido y reactivo
+    opacity.value = withTiming(0.8, { duration: 100 });
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 200 });
-    opacity.value = withTiming(1, { duration: 100 });
+    scale.value = withSpring(1, { damping: 10, stiffness: 300 });
+    opacity.value = withTiming(1, { duration: 150 });
   };
 
   const gradientColors = theme.helpers.getThemeGradient();
@@ -44,9 +44,9 @@ const ActionButton = ({ action, onPress, isLoading }: { action: CardAction, onPr
   return (
     <Animated.View 
       style={styles.actionWrapper}
-      entering={FadeIn.duration(600).springify()}
-      exiting={FadeOut.duration(400)}
-      layout={LinearTransition.springify().damping(25).stiffness(90)}
+      entering={FadeIn.duration(400).delay(50)} // Eliminado springify innecesario
+      exiting={FadeOut.duration(200)}
+      // Eliminado layout transition individual para evitar jank en la lista
     >
       <Pressable
         onPress={() => onPress(action.id)}
