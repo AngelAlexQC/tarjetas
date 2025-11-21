@@ -9,10 +9,10 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
-    FadeInDown,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -94,12 +94,6 @@ export function InstitutionSelectorHeader() {
 
       {/* Información de texto */}
       <View style={styles.textContainer}>
-        <ThemedText 
-          variant="secondary" 
-          style={[styles.label, { color: theme.isDark ? '#A1A1AA' : '#666666' }]}
-        >
-          Cuenta Principal
-        </ThemedText>
         <ThemedText 
           type="defaultSemiBold" 
           style={[styles.institutionName, { color: theme.isDark ? '#FFFFFF' : '#000000' }]} 
