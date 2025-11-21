@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * Header minimalista moderno - Fintech Design 2025
  * Diseño "Flat & Clean" optimizado para Dark Mode
  */
-export function InstitutionSelectorHeader() {
+export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: boolean }) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();
   const { currentTheme } = useTenantTheme();
@@ -117,8 +117,12 @@ export function InstitutionSelectorHeader() {
     </View>
   );
 
+  // En iOS: si hay header (transparente), no agregar insets porque el header ya lo maneja
+  // Si no hay header, sí agregar insets para el notch/Dynamic Island
+  const topPadding = isIOS ? (hasHeader ? 10 : insets.top + 10) : 10;
+
   return (
-    <View style={[styles.wrapper, { paddingTop: insets.top + 10 }]}>
+    <View style={[styles.wrapper, { paddingTop: topPadding }]}>
       <Animated.View entering={FadeInDown.delay(100).springify()}>
         <Animated.View 
           style={[styles.container, { width: containerWidth, borderRadius }, animatedStyle]}

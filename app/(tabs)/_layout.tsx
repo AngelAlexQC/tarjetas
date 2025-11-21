@@ -17,10 +17,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: theme.tenant.mainColor,
         headerShown: Platform.OS === 'ios',
-        headerLargeTitle: Platform.OS === 'ios',
         headerTransparent: Platform.OS === 'ios',
-        headerBlurEffect: Platform.OS === 'ios' ? (colorScheme === 'dark' ? 'dark' : 'light') : undefined,
-        headerLargeTitleShadowVisible: false,
         headerStyle: {
           backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.background,
         },
@@ -56,6 +53,7 @@ export default function TabLayout() {
         options={{
           title: 'Tarjetas',
           tabBarIcon: ({ color, focused }) => <CardsIcon size={26} color={color} focused={focused} />,
+          headerShown: false,
         }}
       />
     </Tabs>

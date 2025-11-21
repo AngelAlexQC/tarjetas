@@ -21,25 +21,26 @@ import { useScrollToTop } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
-    Alert,
-    FlatList,
-    Modal,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    View,
-    ViewToken
+  Alert,
+  FlatList,
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+  ViewToken
 } from "react-native";
 import Animated, {
-    FadeInDown,
-    FadeInLeft,
-    FadeInUp,
-    FadeOut,
-    SlideInLeft,
-    SlideInRight,
-    ZoomIn,
-    ZoomOut
+  FadeInDown,
+  FadeInLeft,
+  FadeInUp,
+  FadeOut,
+  SlideInLeft,
+  SlideInRight,
+  ZoomIn,
+  ZoomOut
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Las dimensiones serán calculadas dinámicamente en el componente
 
@@ -47,6 +48,7 @@ export default function CardsScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const layout = useResponsiveLayout();
+  const insets = useSafeAreaInsets();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedInsurance, setSelectedInsurance] = useState<Insurance | null>(null);
   const [isInsuranceModalVisible, setIsInsuranceModalVisible] = useState(false);
@@ -163,9 +165,12 @@ export default function CardsScreen() {
     );
   };
 
+  const isIOS = Platform.OS === 'ios';
+
   return (
     <>
     <ThemedView style={styles.container}>
+      <View style={{ paddingTop: isIOS ? 0 : insets.top }} />
       <ScrollView 
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
