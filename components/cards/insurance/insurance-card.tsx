@@ -48,13 +48,13 @@ export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps)
   const theme = useAppTheme();
   const accentColor = INSURANCE_COLORS[insurance.type] || INSURANCE_COLORS.fraude;
   
-  // Solo animar los primeros 5 items, después renderizar directamente
-  const shouldAnimate = index < 5;
+  // Solo animar los primeros 3 items en carousel horizontal
+  const shouldAnimate = index < 3;
 
   const styles = StyleSheet.create({
     container: {
-      marginHorizontal: 16,
-      marginVertical: 6,
+      width: 320,
+      marginRight: 8,
       borderRadius: 12,
       overflow: 'hidden',
       backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',

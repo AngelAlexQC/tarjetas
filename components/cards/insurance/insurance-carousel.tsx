@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, StyleSheet, View } from 'react-native';
 import { InsuranceCard } from './insurance-card';
@@ -13,12 +14,14 @@ interface InsuranceCarouselProps {
 }
 
 export function InsuranceCarousel({ onInsurancePress }: InsuranceCarouselProps) {
+  const layout = useResponsiveLayout();
+  
   // Generador de seguros
   const generator = useMemo(() => new InsuranceGenerator(20), []);
   
   // Estado inicial con primer batch
   const [insurances, setInsurances] = useState<Insurance[]>(() => 
-    generateInsurances(20, 0)
+    generateInsurances(15, 0)
   );
   
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -52,11 +55,8 @@ export function InsuranceCarousel({ onInsurancePress }: InsuranceCarouselProps) 
   // Key extractor
   const keyExtractor = useCallback((item: Insurance) => item.id, []);
 
-  // Separador entre items
-  const ItemSeparator = useCallback(
-    () => <View style={{ height: 0 }} />,
-    []
-  );
+  // Ancho de la tarjeta para horizontal
+  const CARD_WIDTH = Math.min(layout.screenWidth * 0.85, 320);
 
   const styles = StyleSheet.create({
     container: {
@@ -96,11 +96,14 @@ export function InsuranceCarousel({ onInsurancePress }: InsuranceCarouselProps) 
       lineHeight: 18,
     },
     listContent: {
-      paddingBottom: 20,
+      paddingLeft: 16,
+      paddingRight: 8,
     },
     loadingFooter: {
-      paddingVertical: 16,
+      width: 100,
+      justifyContent: 'center',
       alignItems: 'center',
+      paddingHorizontal: 16,
     },
     loadingText: {
       fontSize: 12,
@@ -124,31 +127,34 @@ export function InsuranceCarousel({ onInsurancePress }: InsuranceCarouselProps) 
         </ThemedText>
       </View>
 
-      {/* Lista de seguros */}
+      {/* Carrusel horizontal de seguros */}
       <FlatList
+        horizontal
         data={insurances}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        ItemSeparatorComponent={ItemSeparator}
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.loadingFooter}>
-              <ThemedText style={styles.loadingText}>Cargando más seguros...</ThemedText>
+              <ThemedText style={styles.loadingText}>...</ThemedText>
             </View>
           ) : null
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
-        scrollEnabled={false} // El scroll lo maneja el ScrollView padre
         contentContainerStyle={styles.listContent}
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={CARD_WIDTH + 8}
+        decelerationRate="fast"
+        pagingEnabled={false}
         removeClippedSubviews={true}
-        maxToRenderPerBatch={15}
+        maxToRenderPerBatch={5}
         updateCellsBatchingPeriod={100}
-        initialNumToRender={8}
-        windowSize={10}
+        initialNumToRender={3}
+        windowSize={5}
         getItemLayout={(data, index) => ({
-          length: 110, // Altura aproximada de cada card
-          offset: 110 * index,
+          length: CARD_WIDTH + 8,
+          offset: (CARD_WIDTH + 8) * index,
           index,
         })}
       />
