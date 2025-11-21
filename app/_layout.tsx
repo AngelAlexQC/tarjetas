@@ -1,5 +1,9 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
+import { BiometricAccessScreen } from '@/components/biometric-access-screen';
+import { BiometricEnableModal } from '@/components/biometric-enable-modal';
+import { LoginScreen } from '@/components/login-screen';
 import { OnboardingScreen } from '@/components/onboarding-screen';
+import { AuthProvider, useAuth } from '@/contexts/auth-context';
 import { TenantThemeProvider, useTenantTheme } from '@/contexts/tenant-theme-context';
 import { TourProvider, useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -9,13 +13,13 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 function ThemedLayoutContainer({ children }: { children: React.ReactNode }) {
   const theme = useAppTheme();
-  const { contentMaxWidth, horizontalPadding } = useResponsiveLayout();
+  const { contentMaxWidth } = useResponsiveLayout();
   return (
     <View style={{ flex: 1, width: '100%', height: '100%', backgroundColor: theme.colors.background }}>
       <View
@@ -38,39 +42,118 @@ export const unstable_settings = {
 
 function Navigation() {
   const theme = useAppTheme();
-  const { currentTheme, isLoading } = useTenantTheme();
+  const { currentTheme, isLoading: isTenantLoading } = useTenantTheme();
+  const { 
+    user,
+    isAuthenticated, 
+    isLoading: isAuthLoading, 
+    isBiometricEnabled, 
+    isBiometricAvailable,
+    enableBiometric 
+  } = useAuth();
   const { setAppReady, isTourActive, stopTour } = useTour();
   const router = useRouter();
   const initialCheckDone = useRef(false);
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showBiometricAccess, setShowBiometricAccess] = useState(false);
+  const [showBiometricModal, setShowBiometricModal] = useState(false);
 
+  // Cargar estado de onboarding
   useEffect(() => {
     AsyncStorage.getItem('@onboarding_completed').then(value => {
       setShowOnboarding(value !== 'true');
     });
   }, []);
 
+  // Determinar qué pantalla mostrar después del onboarding
   useEffect(() => {
-    if (!isLoading && !initialCheckDone.current && showOnboarding === false) {
+    if (showOnboarding === false && !isAuthenticated && !isAuthLoading) {
+      if (isBiometricEnabled && isBiometricAvailable) {
+        // Si tiene biométrica habilitada, mostrar pantalla de acceso biométrico
+        setShowBiometricAccess(true);
+      } else {
+        // Si no, mostrar login tradicional
+        setShowLogin(true);
+      }
+    }
+  }, [showOnboarding, isAuthenticated, isAuthLoading, isBiometricEnabled, isBiometricAvailable]);
+
+  // Navegación después de la autenticación
+  useEffect(() => {
+    if (!isTenantLoading && !initialCheckDone.current && isAuthenticated) {
       initialCheckDone.current = true;
       if (currentTheme && currentTheme.slug !== 'default') {
         router.replace('/(tabs)/cards');
-        // Esperar a que la navegación termine y el splash desaparezca (3s splash + navegación)
         setTimeout(() => {
           setAppReady();
         }, 4500);
       } else {
-        // Esperar a que el splash desaparezca completamente (3s splash + buffer)
+        // Usuario autenticado pero sin tenant, mostrar selector
+        router.replace('/(tabs)');
         setTimeout(() => {
           setAppReady();
         }, 4000);
       }
     }
-  }, [isLoading, currentTheme, router, setAppReady, showOnboarding]);
+  }, [isTenantLoading, isAuthenticated, currentTheme, router, setAppReady]);
+
+  const handleBiometricSuccess = async () => {
+    // La autenticación fue exitosa en el contexto
+    setShowBiometricAccess(false);
+    // Navegar según el estado del tenant
+    if (!currentTheme || currentTheme.slug === 'default') {
+      router.replace('/(tabs)');
+    } else {
+      router.replace('/(tabs)/cards');
+    }
+  };
+
+  const handleBiometricUsePassword = () => {
+    setShowBiometricAccess(false);
+    setShowLogin(true);
+  };
 
   const handleOnboardingFinish = async () => {
     await AsyncStorage.setItem('@onboarding_completed', 'true');
     setShowOnboarding(false);
+    setShowLogin(true);
+  };
+
+  const handleLoginSuccess = () => {
+    setShowLogin(false);
+    // Mostrar modal de biométrica si está disponible y no está habilitada
+    if (isBiometricAvailable && !isBiometricEnabled) {
+      setShowBiometricModal(true);
+    } else {
+      // Si no hay biométrica disponible, ir directo a tenant selection
+      if (!currentTheme || currentTheme.slug === 'default') {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/(tabs)/cards');
+      }
+    }
+  };
+
+  const handleEnableBiometric = async () => {
+    await enableBiometric();
+    setShowBiometricModal(false);
+    // Navegar después de habilitar biométrica
+    if (!currentTheme || currentTheme.slug === 'default') {
+      router.replace('/(tabs)');
+    } else {
+      router.replace('/(tabs)/cards');
+    }
+  };
+
+  const handleSkipBiometric = () => {
+    setShowBiometricModal(false);
+    // Navegar después de omitir biométrica
+    if (!currentTheme || currentTheme.slug === 'default') {
+      router.replace('/(tabs)');
+    } else {
+      router.replace('/(tabs)/cards');
+    }
   };
 
   const navBase = theme.isDark ? DarkTheme : DefaultTheme;
@@ -86,13 +169,33 @@ function Navigation() {
     },
   };
 
+  // Loading state mientras se cargan los datos iniciales
+  const isLoading = showOnboarding === null || isAuthLoading || isTenantLoading;
+
   return (
     <AnimatedSplashScreen>
       <ThemeProvider value={navTheme}>
-        {showOnboarding === null ? (
-          <View style={{ flex: 1, backgroundColor: theme.colors.background }} />
+        {isLoading ? (
+          <View style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={theme.tenant.mainColor} />
+          </View>
         ) : showOnboarding ? (
           <OnboardingScreen onFinish={handleOnboardingFinish} />
+        ) : showBiometricAccess ? (
+          <BiometricAccessScreen
+            onSuccess={handleBiometricSuccess}
+            onUsePassword={handleBiometricUsePassword}
+            userName={user?.name || user?.username}
+          />
+        ) : showLogin ? (
+          <>
+            <LoginScreen onLoginSuccess={handleLoginSuccess} />
+            <BiometricEnableModal
+              isVisible={showBiometricModal}
+              onEnable={handleEnableBiometric}
+              onSkip={handleSkipBiometric}
+            />
+          </>
         ) : (
           <>
             <Stack screenOptions={{
@@ -120,11 +223,13 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <TenantThemeProvider>
-        <TourProvider>
-          <ThemedLayoutContainer>
-            <Navigation />
-          </ThemedLayoutContainer>
-        </TourProvider>
+        <AuthProvider>
+          <TourProvider>
+            <ThemedLayoutContainer>
+              <Navigation />
+            </ThemedLayoutContainer>
+          </TourProvider>
+        </AuthProvider>
       </TenantThemeProvider>
     </SafeAreaProvider>
   );
