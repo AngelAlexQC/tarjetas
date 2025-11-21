@@ -5,7 +5,7 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 const ACTION_BUTTON_SIZE = 80;
 const ACTION_BUTTON_SPACING = 14;
@@ -16,33 +16,45 @@ interface CardActionsGridProps {
   onActionPress: (actionType: CardActionType) => void;
 }
 
-export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActionsGridProps) {
+const ActionButton = ({ action, onPress, isLoading }: { action: CardAction, onPress: (id: CardActionType) => void, isLoading?: boolean }) => {
   const theme = useAppTheme();
-  const layout = useResponsiveLayout();
-  const availableActions = getAvailableActions(cardType);
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
-  const renderActionButton = ({ item: action }: { item: CardAction }) => {
-    const gradientColors = theme.helpers.getThemeGradient();
-    const glassTokens = theme.helpers.getGlassTokens();
-    const shadowColor = theme.colors.shadowElevated;
-    
-    return (
-      <Animated.View 
-        style={styles.actionWrapper}
-        entering={FadeIn.duration(600).springify()}
-        exiting={FadeOut.duration(400)}
-        layout={LinearTransition.springify().damping(25).stiffness(90)}
+  const animatedInnerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.92, { damping: 15, stiffness: 200 });
+    opacity.value = withTiming(0.9, { duration: 100 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 200 });
+    opacity.value = withTiming(1, { duration: 100 });
+  };
+
+  const gradientColors = theme.helpers.getThemeGradient();
+  const shadowColor = theme.colors.shadowElevated;
+  const IconComponent = FinancialIcons[action.icon];
+  const iconColor = '#FFFFFF';
+
+  return (
+    <Animated.View 
+      style={styles.actionWrapper}
+      entering={FadeIn.duration(600).springify()}
+      exiting={FadeOut.duration(400)}
+      layout={LinearTransition.springify().damping(25).stiffness(90)}
+    >
+      <Pressable
+        onPress={() => onPress(action.id)}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={isLoading}
       >
-        <Pressable
-          style={({ pressed }) => [
-            {
-              transform: [{ scale: pressed ? 0.88 : 1 }],
-              opacity: pressed ? 0.85 : 1,
-            },
-          ]}
-          onPress={() => onActionPress(action.id)}
-          disabled={isLoading}
-        >
+        <Animated.View style={animatedInnerStyle}>
           <LinearGradient
             colors={gradientColors as any}
             start={{ x: 0, y: 0 }}
@@ -55,23 +67,21 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
               elevation: 6,
             }]}
           >
-            {(() => {
-              const IconComponent = FinancialIcons[action.icon];
-              const iconColor = '#FFFFFF';
-              return (
-                <>
-                  <IconComponent size={26} color={iconColor} />
-                  <ThemedText style={[styles.actionLabel, { color: iconColor }]} numberOfLines={2}>
-                    {action.title}
-                  </ThemedText>
-                </>
-              );
-            })()}
+            <IconComponent size={26} color={iconColor} />
+            <ThemedText style={[styles.actionLabel, { color: iconColor }]} numberOfLines={2}>
+              {action.title}
+            </ThemedText>
           </LinearGradient>
-        </Pressable>
-      </Animated.View>
-    );
-  };
+        </Animated.View>
+      </Pressable>
+    </Animated.View>
+  );
+};
+
+export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActionsGridProps) {
+  const theme = useAppTheme();
+  const layout = useResponsiveLayout();
+  const availableActions = getAvailableActions(cardType);
 
   // Determinar si usar grid o carrusel horizontal
   const useGrid = layout.isLandscape || layout.screenWidth >= 768;
@@ -93,7 +103,7 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
         <View style={styles.gridContainer}>
           {availableActions.map((action) => (
             <View key={action.id} style={styles.gridItem}>
-              {renderActionButton({ item: action })}
+              <ActionButton action={action} onPress={onActionPress} isLoading={isLoading} />
             </View>
           ))}
         </View>
@@ -101,7 +111,7 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
         // Carrusel horizontal para portrait/pantallas pequeñas
         <FlatList
           data={availableActions}
-          renderItem={renderActionButton}
+          renderItem={({ item }) => <ActionButton action={item} onPress={onActionPress} isLoading={isLoading} />}
           keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
