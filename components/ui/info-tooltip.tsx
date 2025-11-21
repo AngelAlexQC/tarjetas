@@ -9,7 +9,7 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
-import { Alert, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Modal, Platform, Pressable, StyleSheet, View, Linking } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export interface CalendarEventConfig {
@@ -143,13 +143,10 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
 
       if (Platform.OS === 'ios') {
         try {
-          // @ts-ignore - Esta función solo existe en iOS
-          const defaultCalendarSource = await Calendar.getDefaultCalendarSourceAsync();
-          const defaultCalendar = calendars.find(c => c.source.id === defaultCalendarSource.id);
-          defaultCalendarId = defaultCalendar?.id;
-        } catch (e) {
-          console.warn('Error getting iOS default calendar', e);
-          // Fallback para iOS si falla la fuente por defecto
+          const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+          defaultCalendarId = defaultCalendar.id;
+        } catch {
+          // Fallback para iOS si falla getDefaultCalendarAsync
           defaultCalendarId = calendars[0]?.id;
         }
       } else {
@@ -172,16 +169,52 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
       }
 
       const endDate = calendarEvent.endDate || new Date(calendarEvent.startDate.getTime() + 60 * 60 * 1000); // 1 hora por defecto
+      
+      // Obtener la zona horaria del dispositivo para Android
+      const timeZone = Platform.OS === 'android' 
+        ? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'GMT')
+        : undefined;
 
-      await Calendar.createEventAsync(defaultCalendarId, {
+      const eventId = await Calendar.createEventAsync(defaultCalendarId, {
         title: calendarEvent.title,
         startDate: calendarEvent.startDate,
         endDate: endDate,
         notes: calendarEvent.notes,
-        timeZone: 'GMT', // Importante para Android
+        timeZone,
       });
       
-      Alert.alert('Éxito', 'Evento añadido al calendario correctamente');
+      Alert.alert(
+        'Éxito',
+        'Evento añadido al calendario correctamente',
+        [
+          { text: 'OK' },
+          { 
+            text: 'Ver evento', 
+            onPress: async () => {
+              if (Platform.OS === 'android') {
+                try {
+                  const uri = `content://com.android.calendar/events/${eventId}`;
+                  const canOpen = await Linking.canOpenURL(uri);
+                  if (canOpen) {
+                    await Linking.openURL(uri);
+                    return;
+                  }
+                } catch (e) {
+                  console.warn('Error trying to open Android calendar via Linking', e);
+                }
+                Calendar.openEventInCalendar(eventId);
+              } else {
+                // iOS: Abrir calendario en la fecha del evento
+                // calshow: espera segundos desde 2001-01-01
+                const referenceDate = new Date('2001-01-01T00:00:00Z').getTime();
+                const secondsSinceRef = (calendarEvent.startDate.getTime() - referenceDate) / 1000;
+                const url = `calshow:${secondsSinceRef}`;
+                Linking.openURL(url);
+              }
+            } 
+          }
+        ]
+      );
       
     } catch (error) {
       console.error('Error adding to calendar:', error);
