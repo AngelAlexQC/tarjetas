@@ -17,7 +17,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
     Alert,
-    Dimensions,
     FlatList,
     Pressable,
     ScrollView,
@@ -25,7 +24,19 @@ import {
     View,
     ViewToken
 } from "react-native";
-import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import Animated, { 
+  FadeIn, 
+  FadeOut, 
+  FadeInDown,
+  FadeInUp,
+  FadeInLeft,
+  FadeInRight,
+  LinearTransition,
+  SlideInLeft,
+  SlideInRight,
+  ZoomIn,
+  ZoomOut
+} from "react-native-reanimated";
 
 // Las dimensiones serán calculadas dinámicamente en el componente
 
@@ -312,10 +323,12 @@ export default function CardsScreen() {
             renderItem={renderCard}
             keyExtractor={(item) => item.id}
             horizontal
-            pagingEnabled
             showsHorizontalScrollIndicator={false}
-            snapToAlignment="center"
-            snapToInterval={CARD_WIDTH + CARD_SPACING}
+            snapToOffsets={mockCards.map((_, index) => {
+              const padding = (SCREEN_WIDTH - CARD_WIDTH) / 2;
+              return index * (CARD_WIDTH + CARD_SPACING) + padding;
+            })}
+            snapToAlignment="start"
             decelerationRate="fast"
             contentContainerStyle={styles.carouselContent}
             onViewableItemsChanged={onViewableItemsChanged}
@@ -335,11 +348,22 @@ export default function CardsScreen() {
       </View>
 
         {/* Layout condicional según orientación */}
-        <View style={layout.isLandscape && styles.landscapeWrapper}>
+        <Animated.View 
+          style={layout.isLandscape && styles.landscapeWrapper}
+          layout={LinearTransition.springify().damping(20).stiffness(100)}
+        >
         {layout.isLandscape ? (
           // Layout horizontal: tarjeta info y acciones en columnas
-          <View style={styles.landscapeContainer}>
-            <View style={styles.landscapeColumn}>
+          <Animated.View 
+            style={styles.landscapeContainer}
+            entering={FadeInLeft.duration(500).springify()}
+            layout={LinearTransition.springify().damping(20).stiffness(100)}
+          >
+            <Animated.View 
+              style={styles.landscapeColumn}
+              entering={SlideInLeft.duration(600).springify().damping(20)}
+              layout={LinearTransition.springify().damping(18).stiffness(90)}
+            >
               {activeCard && (
                 <CardFinancialInfo 
                   card={activeCard}
@@ -348,13 +372,26 @@ export default function CardsScreen() {
                   currencySymbol={theme.tenant.currencySymbol}
                 />
               )}
-            </View>
-            <View style={styles.landscapeColumn}>
+              <Animated.View 
+                style={styles.addCardContainerLandscape}
+                entering={FadeInUp.duration(700).delay(200).springify()}
+                layout={LinearTransition.springify().damping(18).stiffness(90)}
+              >
+                <AddToWalletButton
+                  onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
+                />
+              </Animated.View>
+            </Animated.View>
+            <Animated.View 
+              style={styles.landscapeColumn}
+              entering={SlideInRight.duration(600).springify().damping(20)}
+              layout={LinearTransition.springify().damping(18).stiffness(90)}
+            >
               {activeCard && (
                 <Animated.View 
-                  entering={FadeIn.duration(600).springify()}
-                  exiting={FadeOut.duration(400)}
-                  layout={LinearTransition.springify().damping(25).stiffness(90)}
+                  entering={ZoomIn.duration(600).delay(100).springify()}
+                  exiting={ZoomOut.duration(400)}
+                  layout={LinearTransition.springify().damping(20).stiffness(100)}
                 >
                   <CardActionsGrid
                     cardType={activeCard.cardType}
@@ -365,13 +402,8 @@ export default function CardsScreen() {
                   />
                 </Animated.View>
               )}
-              <View style={styles.addCardContainerLandscape}>
-                <AddToWalletButton
-                  onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
-                />
-              </View>
-            </View>
-          </View>
+            </Animated.View>
+          </Animated.View>
         ) : (
           // Layout vertical: secuencial
           <>
@@ -379,9 +411,9 @@ export default function CardsScreen() {
             {activeCard && (
               <Animated.View 
                 style={styles.actionsSection}
-                entering={FadeIn.duration(600).springify()}
+                entering={FadeInDown.duration(600).springify().damping(18)}
                 exiting={FadeOut.duration(400)}
-                layout={LinearTransition.springify().damping(25).stiffness(90)}
+                layout={LinearTransition.springify().damping(20).stiffness(100)}
               >
                 <CardActionsGrid
                   cardType={activeCard.cardType}
@@ -395,18 +427,24 @@ export default function CardsScreen() {
 
             {/* Panel de información financiera */}
             {activeCard && (
+              <Animated.View
+                entering={FadeInUp.duration(600).delay(100).springify()}
+                layout={LinearTransition.springify().damping(20).stiffness(100)}
+              >
               <CardFinancialInfo 
                 card={activeCard}
                 locale={theme.tenant.locale}
                 currency={theme.tenant.currency}
                 currencySymbol={theme.tenant.currencySymbol}
               />
+              </Animated.View>
             )}
 
             {/* Botón agregar a Apple Wallet */}
             <Animated.View 
               style={styles.addCardContainer}
-              layout={LinearTransition.springify().damping(25).stiffness(90)}
+              entering={FadeInUp.duration(700).delay(200).springify()}
+              layout={LinearTransition.springify().damping(20).stiffness(100)}
             >
               <AddToWalletButton
                 onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
@@ -414,7 +452,7 @@ export default function CardsScreen() {
             </Animated.View>
           </>
         )}
-        </View>
+        </Animated.View>
       </ScrollView>
     </ThemedView>
   );

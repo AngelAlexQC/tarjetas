@@ -9,11 +9,11 @@ import { InfoIcon } from '@/components/ui/info-icon';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { formatCurrency } from '@/utils/formatters/currency';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { formatCurrency } from '@/utils/formatters/currency';
 import { BlurView } from 'expo-blur';
 import React from 'react';
-import { Dimensions, Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 export interface CardFinancialInfoProps {

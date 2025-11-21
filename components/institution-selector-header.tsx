@@ -5,7 +5,7 @@ import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { Dimensions, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
