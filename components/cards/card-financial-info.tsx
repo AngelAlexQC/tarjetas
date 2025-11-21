@@ -194,6 +194,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
               : 'Es el saldo total disponible en tu tarjeta virtual. Puede ser recargable o de un solo uso.'
           }
           placement="bottom"
+          tourKey={`balance-${card.id}`}
+          tourOrder={1}
         >
           <View style={{ alignItems: 'center', gap: 4 }}>
             <AnimatedNumber 
@@ -225,6 +227,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Crédito Disponible"
             content={`Tienes ${formatCurrencyWithSymbol(availableCredit, { locale, currency, currencySymbol })} disponibles de tu línea de crédito de ${formatCurrencyWithSymbol(creditLimit, { locale, currency, currencySymbol })}. Este es el monto que puedes usar sin exceder tu límite.`}
             placement="bottom"
+            tourKey="credit-available"
+            tourOrder={2}
           >
             <View style={styles.statItem}>
               <ThemedText style={[styles.statValue, { color: primaryColor }]}>
@@ -247,6 +251,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Porcentaje de Uso"
             content={`Has usado el ${usagePercentage}% de tu línea de crédito. ${usagePercentage >= 75 ? 'Se recomienda mantener el uso por debajo del 30% para un mejor score crediticio.' : 'Mantén un buen manejo de tu crédito.'}`}
             placement="bottom"
+            tourKey="credit-usage"
+            tourOrder={3}
           >
             <View style={styles.statItem}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -276,6 +282,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
               startDate: nextPaymentDate,
               notes: `Pago mínimo sugerido: ${formatCurrencyWithSymbol(minimumPayment, { locale, currency, currencySymbol })}. Saldo actual: ${formatCurrencyWithSymbol(usedCredit, { locale, currency, currencySymbol })}`,
             }}
+            tourKey="credit-payment"
+            tourOrder={4}
           >
             <View style={styles.statItem}>
               <ThemedText style={[styles.statValue, { color: primaryColor }]}>{nextPaymentDays}d</ThemedText>
@@ -313,6 +321,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                 </Pressable>
               </View>
             )}
+            tourKey="debit-daily-spent"
+            tourOrder={2}
           >
             <View style={styles.statItem}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -361,6 +371,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                 </Pressable>
               </View>
             )}
+            tourKey="debit-daily-limit"
+            tourOrder={3}
           >
             <View style={styles.statItem}>
               <ThemedText style={[styles.statValue, { color: primaryColor }]}>
@@ -405,6 +417,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                 </Pressable>
               </View>
             )}
+            tourKey="virtual-spending-limit"
+            tourOrder={2}
           >
             <View style={styles.statItem}>
               <ThemedText style={[styles.statValue, { color: primaryColor }]}>
@@ -431,6 +445,8 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                 : 'Esta es una tarjeta virtual de un solo uso. Una vez utilizada, se desactiva automáticamente. Perfecta para compras únicas con máxima seguridad.'
             }
             placement="bottom"
+            tourKey={isReloadable ? 'virtual-reloadable' : 'virtual-single-use'}
+            tourOrder={3}
           >
             <View style={styles.statItem}>
               <ThemedText style={[styles.statValue, { color: primaryColor }]}>

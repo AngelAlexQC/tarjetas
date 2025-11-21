@@ -5,6 +5,7 @@
 
 import { ThemedText } from '@/components/themed-text';
 import { CalendarIcon } from '@/components/ui/icons';
+import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
@@ -32,6 +33,10 @@ export interface InfoTooltipProps {
   children: React.ReactNode;
   /** Posición del tooltip relativo al hijo */
   placement?: 'top' | 'bottom' | 'left' | 'right';
+  /** Identificador único para el tour (opcional) */
+  tourKey?: string;
+  /** Orden en el tour (opcional) */
+  tourOrder?: number;
 }
 
 export const InfoTooltip: React.FC<InfoTooltipProps> = ({
@@ -41,11 +46,31 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   extraContent,
   children,
   placement = 'top',
+  tourKey,
+  tourOrder = 0,
 }) => {
   const theme = useAppTheme();
   const styles = useStyles();
+  const { register, unregister, onTooltipClosed } = useTour();
   const [isVisible, setIsVisible] = useState(false);
   const [triggerLayout, setTriggerLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const triggerRef = React.useRef<View>(null);
+
+  // Registrar en el tour si hay tourKey
+  React.useEffect(() => {
+    if (tourKey) {
+      register(tourKey, () => {
+        // Auto-open logic
+        if (triggerRef.current) {
+          triggerRef.current.measure((x, y, width, height, pageX, pageY) => {
+            setTriggerLayout({ x: pageX, y: pageY, width, height });
+            setIsVisible(true);
+          });
+        }
+      }, tourOrder);
+      return () => unregister(tourKey);
+    }
+  }, [tourKey, tourOrder, register, unregister]);
 
   const handlePress = (event: any) => {
     event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
@@ -56,15 +81,20 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
 
   const handleClose = () => {
     setIsVisible(false);
+    if (tourKey) {
+      onTooltipClosed(tourKey);
+    }
   };
 
   return (
     <>
       <Pressable
+        ref={triggerRef}
         onPress={handlePress}
         accessibilityRole="button"
         accessibilityLabel={title || 'Información'}
         accessibilityHint="Toca para ver más detalles"
+        collapsable={false} // Importante para measure en Android
       >
         {children}
       </Pressable>

@@ -1,5 +1,6 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
+import { TourProvider } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -67,9 +68,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <TenantThemeProvider>
-        <ThemedLayoutContainer>
-          <Navigation />
-        </ThemedLayoutContainer>
+        <TourProvider>
+          <ThemedLayoutContainer>
+            <Navigation />
+          </ThemedLayoutContainer>
+        </TourProvider>
       </TenantThemeProvider>
     </SafeAreaProvider>
   );
