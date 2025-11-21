@@ -46,6 +46,7 @@ export default function TabLayout() {
         options={{
           title: 'Instituciones',
           tabBarIcon: ({ color, focused }) => <HomeIcon size={26} color={color} focused={focused} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
