@@ -12,7 +12,7 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight, DollarSign, Info } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -156,6 +156,7 @@ export default function AdvanceScreen() {
                       returnKeyType="done"
                       value={amount}
                       onChangeText={setAmount}
+                      inputAccessoryViewID="uniqueID"
                     />
                   </View>
 
@@ -261,6 +262,7 @@ export default function AdvanceScreen() {
                       returnKeyType="next"
                       blurOnSubmit={false}
                       onSubmitEditing={() => cvvRef.current?.focus()}
+                      inputAccessoryViewID="uniqueID"
                     />
                   </View>
 
@@ -277,6 +279,7 @@ export default function AdvanceScreen() {
                       secureTextEntry
                       keyboardType="number-pad"
                       returnKeyType="done"
+                      inputAccessoryViewID="uniqueID"
                     />
                   </View>
 
@@ -309,12 +312,13 @@ export default function AdvanceScreen() {
         </KeyboardAvoidingView>
       </Animated.View>
 
-      <BiometricGuard
+        <BiometricGuard
         isVisible={showBiometrics}
         onSuccess={onBiometricSuccess}
         onCancel={() => setShowBiometrics(false)}
         reason="Confirma el avance de efectivo"
       />
+      {Platform.OS === 'ios' && <InputAccessoryView nativeID="uniqueID" />}
     </ThemedView>
   );
 }

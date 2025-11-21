@@ -10,7 +10,7 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { KeyRound, ShieldCheck } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -97,6 +97,7 @@ export default function PinScreen() {
                 secureTextEntry
                 placeholder="••••"
                 placeholderTextColor={theme.colors.textDisabled}
+                inputAccessoryViewID="uniqueID"
               />
             </View>
           </View>
@@ -116,6 +117,7 @@ export default function PinScreen() {
                 secureTextEntry
                 placeholder="••••"
                 placeholderTextColor={theme.colors.textDisabled}
+                inputAccessoryViewID="uniqueID"
               />
             </View>
             {pin.length === 4 && confirmPin.length === 4 && pin !== confirmPin && (
@@ -148,6 +150,7 @@ export default function PinScreen() {
         onCancel={() => setShowBiometrics(false)}
         reason="Confirma el cambio de PIN"
       />
+      {Platform.OS === 'ios' && <InputAccessoryView nativeID="uniqueID" />}
     </ThemedView>
   );
 }
