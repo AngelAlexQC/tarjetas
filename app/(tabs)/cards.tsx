@@ -13,6 +13,7 @@ import type { Card } from "@/features/cards/services/card-service";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { formatCardExpiry } from "@/utils/formatters/date";
+import { useScrollToTop } from '@react-navigation/native';
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -178,6 +179,9 @@ export default function CardsScreen() {
   const layout = useResponsiveLayout();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  const scrollRef = useRef(null);
+
+  useScrollToTop(scrollRef);
   
   // Dimensiones consistentes para el carrusel en todas las pantallas
   const SCREEN_WIDTH = layout.screenWidth;
@@ -303,6 +307,7 @@ export default function CardsScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScrollView 
+        ref={scrollRef}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,

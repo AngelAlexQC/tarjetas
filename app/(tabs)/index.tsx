@@ -5,9 +5,10 @@ import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Ionicons } from '@expo/vector-icons';
+import { useScrollToTop } from '@react-navigation/native';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -180,6 +181,9 @@ export default function TenantSelectorScreen() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const scrollRef = useRef(null);
+
+  useScrollToTop(scrollRef);
   
   // Usuario autenticado - esto debería venir de tu sistema de autenticación
   const authenticatedUser = {
@@ -220,6 +224,7 @@ export default function TenantSelectorScreen() {
     <ThemedView style={styles.container}>
       <View style={{ paddingTop: insets.top }} />
       <ScrollView 
+        ref={scrollRef}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
