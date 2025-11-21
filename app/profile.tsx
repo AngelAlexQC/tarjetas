@@ -1,8 +1,8 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { PoweredBy } from "@/components/ui/powered-by";
 import { ThemedButton } from "@/components/ui/themed-button";
 import { ThemedInput } from "@/components/ui/themed-input";
-import { PoweredBy } from "@/components/ui/powered-by";
 import { useAuth } from "@/contexts/auth-context";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useTour } from "@/contexts/tour-context";
@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type TabType = 'info' | 'version' | 'password';
@@ -166,11 +166,13 @@ export default function ProfileScreen() {
   return (
     <ThemedView style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+      <View style={[styles.header, { paddingTop: Platform.OS === 'ios' ? 0 : insets.top }]}>
         <View style={styles.headerTop}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+          {Platform.OS !== 'ios' && (
+            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+              <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color="#FFFFFF" />
             <ThemedText style={styles.logoutText}>Cerrar sesión</ThemedText>
@@ -195,7 +197,10 @@ export default function ProfileScreen() {
       </View>
 
       {/* Content */}
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 100 }]}>
+      <ScrollView 
+        contentContainerStyle={[styles.content, { paddingBottom: 100 }]}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         {renderTabContent()}
         
         {/* Powered By */}

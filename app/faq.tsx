@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { ThemedButton } from '@/components/ui/themed-button';
 import { PoweredBy } from '@/components/ui/powered-by';
+import { ThemedButton } from '@/components/ui/themed-button';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { Ionicons } from '@expo/vector-icons';

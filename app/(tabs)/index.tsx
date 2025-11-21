@@ -232,12 +232,13 @@ export default function TenantSelectorScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={{ paddingTop: insets.top }} />
+      <View style={{ paddingTop: isIOS ? 0 : insets.top }} />
       <ScrollView 
         ref={scrollRef}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        contentInsetAdjustmentBehavior="automatic"
       >
         <View style={styles.contentWrapper}>
         {/* Header mejorado - Adaptable */}

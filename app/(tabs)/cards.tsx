@@ -1,6 +1,9 @@
 import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { CardFinancialInfo } from "@/components/cards/card-financial-info";
 import { CreditCard } from "@/components/cards/credit-card";
+import { InsuranceCarousel } from "@/components/cards/insurance/insurance-carousel";
+import { InsuranceDetailModal } from "@/components/cards/insurance/insurance-detail-modal";
+import { Insurance } from "@/components/cards/insurance/insurance-generator";
 import { InstitutionSelectorHeader } from "@/components/institution-selector-header";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -42,6 +45,8 @@ export default function CardsScreen() {
   const router = useRouter();
   const layout = useResponsiveLayout();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
+  const [selectedInsurance, setSelectedInsurance] = useState<Insurance | null>(null);
+  const [isInsuranceModalVisible, setIsInsuranceModalVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const scrollRef = useRef(null);
 
@@ -163,6 +168,7 @@ export default function CardsScreen() {
           layout.isLandscape && styles.scrollContentLandscape
         ]}
         bounces={layout.isPortrait}
+        contentInsetAdjustmentBehavior="automatic"
       >
         {/* Header mejorado - Selector de institución */}
         <InstitutionSelectorHeader />
@@ -309,7 +315,40 @@ export default function CardsScreen() {
         
         {/* Powered By */}
         <PoweredBy />
+        
+        {/* Insurance Carousel */}
+        <InsuranceCarousel
+          onInsurancePress={(insurance) => {
+            setSelectedInsurance(insurance);
+            setIsInsuranceModalVisible(true);
+          }}
+        />
       </ScrollView>
+      
+      {/* Insurance Detail Modal */}
+      <InsuranceDetailModal
+        insurance={selectedInsurance}
+        visible={isInsuranceModalVisible}
+        onClose={() => {
+          setIsInsuranceModalVisible(false);
+          setSelectedInsurance(null);
+        }}
+        onContract={(insurance) => {
+          Alert.alert(
+            'Contratar Seguro',
+            `¿Deseas contratar el seguro "${insurance.title}"?`,
+            [
+              { text: 'Cancelar', style: 'cancel' },
+              { 
+                text: 'Confirmar', 
+                onPress: () => {
+                  Alert.alert('Éxito', 'Seguro contratado exitosamente');
+                }
+              },
+            ]
+          );
+        }}
+      />
     </ThemedView>
   );
 }

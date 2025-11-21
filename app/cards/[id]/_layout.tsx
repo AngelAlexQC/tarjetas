@@ -1,14 +1,23 @@
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 
 export default function CardOperationsLayout() {
   const theme = useAppTheme();
+  const colorScheme = useColorScheme();
 
   return (
     <Stack
       screenOptions={{
         presentation: 'modal',
         headerShown: false,
+        headerTransparent: Platform.OS === 'ios',
+        headerBlurEffect: Platform.OS === 'ios' ? (colorScheme === 'dark' ? 'dark' : 'light') : undefined,
+        headerStyle: {
+          backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.surfaceElevated,
+        },
+        headerTintColor: theme.colors.text,
         contentStyle: {
           backgroundColor: theme.colors.surfaceElevated,
         },

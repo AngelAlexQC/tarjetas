@@ -13,7 +13,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, AppState, Platform, Pressable, StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -216,11 +216,33 @@ function Navigation() {
             <Stack screenOptions={{
               contentStyle: { backgroundColor: theme.colors.background },
               animation: 'fade',
+              headerLargeTitle: Platform.OS === 'ios',
+              headerTransparent: Platform.OS === 'ios',
+              headerBlurEffect: Platform.OS === 'ios' ? (theme.isDark ? 'dark' : 'light') : undefined,
+              headerLargeTitleShadowVisible: false,
+              headerStyle: {
+                backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.background,
+              },
+              headerTintColor: theme.colors.text,
             }}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="cards/[id]" options={{ headerShown: false }} />
-              <Stack.Screen name="profile" options={{ headerShown: false }} />
-              <Stack.Screen name="faq" options={{ headerShown: false }} />
+              <Stack.Screen 
+                name="profile" 
+                options={{ 
+                  title: 'Perfil',
+                  headerShown: Platform.OS === 'ios',
+                  headerLargeTitle: Platform.OS === 'ios',
+                }} 
+              />
+              <Stack.Screen 
+                name="faq" 
+                options={{ 
+                  title: 'Preguntas Frecuentes',
+                  headerShown: Platform.OS === 'ios',
+                  headerLargeTitle: Platform.OS === 'ios',
+                }} 
+              />
             </Stack>
             <StatusBar style="auto" />
             {isTourActive && (
