@@ -4,6 +4,7 @@ import { InstitutionSelectorHeader } from "@/components/institution-selector-hea
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
+import { FaqButton } from "@/components/ui/faq-button";
 import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
 import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { ChipIcon } from "@/components/ui/chip-icon";
@@ -278,6 +279,10 @@ export default function CardsScreen() {
                     Alert.alert(`Agregar a ${walletName}`, `Esta tarjeta se agregará a tu ${walletName}`);
                   }}
                 />
+                <FaqButton 
+                  onPress={() => router.push('/faq')}
+                  style={{ marginTop: 12 }}
+                />
               </Animated.View>
             </Animated.View>
             <Animated.View 
@@ -341,6 +346,10 @@ export default function CardsScreen() {
                   const walletName = Platform.OS === 'android' ? "Google Wallet" : "Apple Wallet";
                   Alert.alert(`Agregar a ${walletName}`, `Esta tarjeta se agregará a tu ${walletName}`);
                 }}
+              />
+              <FaqButton 
+                onPress={() => router.push('/faq')}
+                style={{ marginTop: 12 }}
               />
             </Animated.View>
           </>
