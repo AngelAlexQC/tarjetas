@@ -79,7 +79,7 @@ export default function SubscriptionsScreen() {
         style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
       >
         <View style={styles.cardHeader}>
-          <View style={[styles.iconBox, { backgroundColor: isActive ? theme.colors.surfaceHigher : theme.colors.surfaceLevel2 }]}>
+          <View style={[styles.iconBox, { backgroundColor: isActive ? theme.colors.surfaceHigher : theme.colors.surface }]}>
             {item.category === 'entertainment' ? <FinancialIcons.chart size={20} color={theme.colors.text} /> :
              item.category === 'software' ? <FinancialIcons.chart size={20} color={theme.colors.text} /> :
              <FinancialIcons.wallet size={20} color={theme.colors.text} />}

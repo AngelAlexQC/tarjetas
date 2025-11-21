@@ -5,11 +5,11 @@ import { FinancialIcons } from '@/components/ui/financial-icons';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { printToFileAsync } from 'expo-print';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
 import { ArrowDownToLine, Calendar, Check, ChevronDown } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Modal, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -52,12 +52,12 @@ const DATE_RANGES = [
 export default function StatementsScreen() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const card = cardService.getCardById(id!);
   
   const [selectedRange, setSelectedRange] = useState(DATE_RANGES[0]);
   const [showRangeModal, setShowRangeModal] = useState(false);
+  const [filterType, setFilterType] = useState<'all' | 'purchase' | 'payment'>('all');
   const [isExporting, setIsExporting] = useState(false);
 
   // Filter logic
@@ -76,9 +76,17 @@ export default function StatementsScreen() {
 
     return MOCK_TRANSACTIONS.filter(t => {
       const tDate = new Date(t.date);
-      return tDate >= startDate && tDate <= now;
+      const dateMatch = tDate >= startDate && tDate <= now;
+      
+      if (!dateMatch) return false;
+      
+      if (filterType === 'all') return true;
+      if (filterType === 'payment') return t.type === 'payment';
+      if (filterType === 'purchase') return t.type !== 'payment';
+      
+      return true;
     });
-  }, [selectedRange]);
+  }, [selectedRange, filterType]);
 
   const handleExport = async () => {
     try {
@@ -135,6 +143,7 @@ export default function StatementsScreen() {
       await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
       
     } catch (error) {
+      console.error(error);
       Alert.alert('Error', 'No se pudo generar el estado de cuenta');
     } finally {
       setIsExporting(false);
@@ -147,7 +156,7 @@ export default function StatementsScreen() {
     
     return (
       <View style={[styles.txItem, { borderBottomColor: theme.colors.borderSubtle }]}>
-        <View style={[styles.iconBox, { backgroundColor: isPayment ? theme.colors.surfaceHigher : theme.colors.surfaceLevel2 }]}>
+        <View style={[styles.iconBox, { backgroundColor: isPayment ? theme.colors.surfaceHigher : theme.colors.surface }]}>
           <Icon size={20} color={isPayment ? theme.tenant.mainColor : theme.colors.textSecondary} />
         </View>
         <View style={styles.txContent}>
@@ -163,6 +172,25 @@ export default function StatementsScreen() {
       </View>
     );
   };
+
+  function FilterChip({ label, selected, onPress, theme }: any) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        style={[
+          styles.chip,
+          { 
+            backgroundColor: selected ? theme.tenant.mainColor : 'transparent',
+            borderColor: selected ? theme.tenant.mainColor : theme.colors.border,
+          }
+        ]}
+      >
+        <ThemedText style={{ color: selected ? '#FFF' : theme.colors.text, fontSize: 12, fontWeight: selected ? 'bold' : 'normal' }}>
+          {label}
+        </ThemedText>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <ThemedView style={styles.container} surface="level1">
@@ -185,18 +213,42 @@ export default function StatementsScreen() {
 
       {/* Filters */}
       <View style={styles.filterContainer}>
-        <TouchableOpacity 
-          style={[styles.filterButton, { borderColor: theme.colors.border }]}
-          onPress={() => setShowRangeModal(true)}
-        >
-          <Calendar size={16} color={theme.colors.textSecondary} />
-          <ThemedText>{selectedRange.label}</ThemedText>
-          <ChevronDown size={16} color={theme.colors.textSecondary} />
-        </TouchableOpacity>
+        <View style={styles.filterRow}>
+          <TouchableOpacity 
+            style={[styles.filterButton, { borderColor: theme.colors.border }]}
+            onPress={() => setShowRangeModal(true)}
+          >
+            <Calendar size={16} color={theme.colors.textSecondary} />
+            <ThemedText>{selectedRange.label}</ThemedText>
+            <ChevronDown size={16} color={theme.colors.textSecondary} />
+          </TouchableOpacity>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1, marginLeft: 8 }}>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <FilterChip 
+                label="Todos" 
+                selected={filterType === 'all'} 
+                onPress={() => setFilterType('all')} 
+                theme={theme}
+              />
+              <FilterChip 
+                label="Compras" 
+                selected={filterType === 'purchase'} 
+                onPress={() => setFilterType('purchase')} 
+                theme={theme}
+              />
+              <FilterChip 
+                label="Pagos" 
+                selected={filterType === 'payment'} 
+                onPress={() => setFilterType('payment')} 
+                theme={theme}
+              />
+            </View>
+          </ScrollView>
+        </View>
         
         <View style={styles.statsContainer}>
-          <ThemedText style={styles.statsLabel}>Movimientos:</ThemedText>
-          <ThemedText type="defaultSemiBold">{filteredTransactions.length}</ThemedText>
+          <ThemedText style={styles.statsLabel}>Movimientos: {filteredTransactions.length}</ThemedText>
         </View>
       </View>
 
@@ -321,10 +373,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   filterContainer: {
-    flexDirection: 'row',
     paddingHorizontal: 20,
     paddingBottom: 16,
-    justifyContent: 'space-between',
+    gap: 12,
+  },
+  filterRow: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   filterButton: {
@@ -336,10 +390,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
   },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
   statsContainer: {
     flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   statsLabel: {
     opacity: 0.6,

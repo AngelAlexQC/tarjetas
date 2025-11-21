@@ -4,7 +4,7 @@ import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { CheckCircle2, Share2, XCircle } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Share, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInUp, ZoomIn } from 'react-native-reanimated';
 
 interface OperationResultScreenProps {
@@ -18,6 +18,17 @@ export function OperationResultScreen({ result, onClose }: OperationResultScreen
   const isSuccess = result.success;
   const Icon = isSuccess ? CheckCircle2 : XCircle;
   const color = isSuccess ? '#4CAF50' : '#F44336'; // Success Green / Error Red
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `${result.title}\n\n${result.message}\n\nComprobante: ${result.receiptId || 'N/A'}`,
+        title: result.title,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <ThemedView style={styles.container} surface="level1">
@@ -45,7 +56,7 @@ export function OperationResultScreen({ result, onClose }: OperationResultScreen
 
       <View style={styles.footer}>
         {isSuccess && (
-          <TouchableOpacity style={[styles.button, { backgroundColor: theme.colors.surfaceHigher }]} onPress={() => {}}>
+          <TouchableOpacity style={[styles.button, { backgroundColor: theme.colors.surfaceHigher }]} onPress={handleShare}>
             <Share2 size={20} color={theme.colors.text} />
             <ThemedText>Compartir</ThemedText>
           </TouchableOpacity>

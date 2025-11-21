@@ -146,7 +146,7 @@ export default function AdvanceScreen() {
                   ]}
                   onPress={() => setSelectedAccount(acc.id)}
                 >
-                  <View style={[styles.iconBox, { backgroundColor: theme.colors.surfaceLevel2 }]}>
+                  <View style={[styles.iconBox, { backgroundColor: theme.colors.surfaceHigher }]}>
                     <FinancialIcons.wallet size={24} color={theme.colors.textSecondary} />
                   </View>
                   <View>
@@ -186,7 +186,7 @@ export default function AdvanceScreen() {
 
               <ThemedText type="subtitle" style={{ marginTop: 24, marginBottom: 16 }}>Tabla de Amortización (Proyección)</ThemedText>
               <View style={[styles.table, { borderColor: theme.colors.border }]}>
-                <View style={[styles.tableHeader, { backgroundColor: theme.colors.surfaceLevel2 }]}>
+                <View style={[styles.tableHeader, { backgroundColor: theme.colors.surfaceHigher }]}>
                   <ThemedText style={styles.col1}>Mes</ThemedText>
                   <ThemedText style={styles.col2}>Cuota</ThemedText>
                   <ThemedText style={styles.col3}>Saldo</ThemedText>
