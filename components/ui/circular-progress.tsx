@@ -2,10 +2,9 @@ import { ThemedText } from '@/components/themed-text';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  useAnimatedProps,
-  useSharedValue,
-  withSpring,
-  withTiming,
+    useAnimatedProps,
+    useSharedValue,
+    withSpring
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 

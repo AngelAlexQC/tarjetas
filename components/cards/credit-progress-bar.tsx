@@ -4,8 +4,8 @@
  */
 
 import { ThemedText } from '@/components/themed-text';
-import { useAppTheme } from '@/hooks/use-app-theme';
 import { useThemedColors } from '@/contexts/tenant-theme-context';
+import { useAppTheme } from '@/hooks/use-app-theme';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {

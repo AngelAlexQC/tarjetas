@@ -5,9 +5,9 @@
 
 import { ThemedText } from '@/components/themed-text';
 import { AnimatedNumber } from '@/components/ui/animated-number';
+import { CircularProgress } from '@/components/ui/circular-progress';
 import { InfoIcon } from '@/components/ui/info-icon';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
-import { CircularProgress } from '@/components/ui/circular-progress';
 import { useThemedColors } from '@/contexts/tenant-theme-context';
 import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';

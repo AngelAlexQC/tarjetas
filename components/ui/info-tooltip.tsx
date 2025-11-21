@@ -4,9 +4,10 @@
  */
 
 import { ThemedText } from '@/components/themed-text';
+import { CalendarIcon } from '@/components/ui/icons';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import * as Calendar from 'expo-calendar';
 import { BlurView } from 'expo-blur';
+import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
 import { Alert, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -132,46 +133,59 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
 
     try {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
-      if (status === 'granted') {
-        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        const defaultCalendarSource =
-          Platform.OS === 'ios'
-            ? await Calendar.getDefaultCalendarSourceAsync()
-            : { isLocalAccount: true, name: 'Expo Calendar' };
-            
-        let defaultCalendarId;
-        
-        if (Platform.OS === 'ios') {
-           const defaultCalendar = calendars.find(c => c.source.id === defaultCalendarSource.id);
-           defaultCalendarId = defaultCalendar?.id;
-        } else {
-           // En Android, buscamos un calendario editable
-           const editableCalendar = calendars.find(c => c.accessLevel === Calendar.CalendarAccessLevel.OWNER || c.accessLevel === Calendar.CalendarAccessLevel.EDITOR);
-           defaultCalendarId = editableCalendar?.id;
-        }
-
-        if (!defaultCalendarId) {
-            Alert.alert('Error', 'No se encontró un calendario disponible');
-            return;
-        }
-
-        const endDate = calendarEvent.endDate || new Date(calendarEvent.startDate.getTime() + 60 * 60 * 1000); // 1 hora por defecto
-
-        await Calendar.createEventAsync(defaultCalendarId, {
-          title: calendarEvent.title,
-          startDate: calendarEvent.startDate,
-          endDate: endDate,
-          notes: calendarEvent.notes,
-          timeZone: 'GMT',
-        });
-        
-        Alert.alert('Éxito', 'Evento añadido al calendario');
-      } else {
+      if (status !== 'granted') {
         Alert.alert('Permiso denegado', 'Se necesitan permisos de calendario para añadir el evento.');
+        return;
       }
+
+      const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+      let defaultCalendarId;
+
+      if (Platform.OS === 'ios') {
+        try {
+          // @ts-ignore - Esta función solo existe en iOS
+          const defaultCalendarSource = await Calendar.getDefaultCalendarSourceAsync();
+          const defaultCalendar = calendars.find(c => c.source.id === defaultCalendarSource.id);
+          defaultCalendarId = defaultCalendar?.id;
+        } catch (e) {
+          console.warn('Error getting iOS default calendar', e);
+          // Fallback para iOS si falla la fuente por defecto
+          defaultCalendarId = calendars[0]?.id;
+        }
+      } else {
+        // Lógica específica para Android
+        // 1. Buscar calendario primario editable
+        const primaryCalendar = calendars.find(c => c.isPrimary && (c.accessLevel === Calendar.CalendarAccessLevel.OWNER || c.accessLevel === Calendar.CalendarAccessLevel.EDITOR));
+        
+        if (primaryCalendar) {
+          defaultCalendarId = primaryCalendar.id;
+        } else {
+          // 2. Buscar cualquier calendario editable (Google Calendar, etc.)
+          const editableCalendar = calendars.find(c => c.accessLevel === Calendar.CalendarAccessLevel.OWNER || c.accessLevel === Calendar.CalendarAccessLevel.EDITOR);
+          defaultCalendarId = editableCalendar?.id;
+        }
+      }
+
+      if (!defaultCalendarId) {
+        Alert.alert('Error', 'No se encontró un calendario disponible para guardar el evento.');
+        return;
+      }
+
+      const endDate = calendarEvent.endDate || new Date(calendarEvent.startDate.getTime() + 60 * 60 * 1000); // 1 hora por defecto
+
+      await Calendar.createEventAsync(defaultCalendarId, {
+        title: calendarEvent.title,
+        startDate: calendarEvent.startDate,
+        endDate: endDate,
+        notes: calendarEvent.notes,
+        timeZone: 'GMT', // Importante para Android
+      });
+      
+      Alert.alert('Éxito', 'Evento añadido al calendario correctamente');
+      
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'No se pudo añadir el evento al calendario');
+      console.error('Error adding to calendar:', error);
+      Alert.alert('Error', 'Ocurrió un problema al intentar guardar el evento.');
     }
   };
 
@@ -186,10 +200,15 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
         <Pressable 
           style={({ pressed }) => [
             styles.calendarButton,
-            { opacity: pressed ? 0.7 : 1, backgroundColor: theme.colors.primary }
+            { 
+              backgroundColor: theme.tenant.mainColor,
+              opacity: pressed ? 0.8 : 1,
+              transform: [{ scale: pressed ? 0.98 : 1 }]
+            }
           ]}
           onPress={handleAddToCalendar}
         >
+          <CalendarIcon size={16} color="#FFFFFF" />
           <ThemedText style={styles.calendarButtonText}>Añadir al calendario</ThemedText>
         </Pressable>
       )}
@@ -296,17 +315,32 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       color: theme.colors.textSecondary,
     },
     calendarButton: {
-      marginTop: 12,
-      paddingVertical: 8,
-      paddingHorizontal: 12,
-      borderRadius: 8,
+      marginTop: 16,
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 12,
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
+      gap: 8,
+      ...Platform.select({
+        ios: {
+          shadowColor: theme.tenant.mainColor,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+        },
+        android: {
+          elevation: 4,
+          shadowColor: theme.tenant.mainColor,
+        },
+      }),
     },
     calendarButtonText: {
       color: '#FFFFFF',
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: '600',
+      letterSpacing: 0.3,
     },
   });
 
