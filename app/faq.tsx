@@ -49,9 +49,15 @@ export default function FaqScreen() {
         { 
           text: "Reiniciar", 
           onPress: async () => {
+            // Reiniciar estado del tour
             await resetTour();
-            router.dismissAll();
-            router.replace('/(tabs)/cards');
+            
+            // Navegar al inicio para asegurar una recarga completa de la vista
+            if (router.canGoBack()) {
+              router.dismissAll();
+            }
+            // Reemplazar con la ruta raíz para forzar un re-montaje
+            router.replace('/');
           }
         }
       ]

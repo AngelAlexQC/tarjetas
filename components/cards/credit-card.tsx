@@ -36,9 +36,16 @@ export function CreditCard({
   // Helper para generar keys del tour solo si la tarjeta está activa
   const getTourKey = (suffix: string) => isActive ? `tour-${card.cardType}-${suffix}` : undefined;
 
+  // Textos explicativos según tipo de tarjeta
+  const getTypeDescription = () => {
+    if (card.cardType === 'credit') return "Línea de crédito rotativa. Úsala para financiar tus compras y paga después.";
+    if (card.cardType === 'debit') return "Vinculada a tus fondos. El dinero se debita inmediatamente de tu cuenta de ahorros.";
+    return "Tarjeta virtual para compras seguras en internet. Recárgala desde tu cuenta principal.";
+  };
+
   return (
     <InfoTooltip
-      content={`Esta es tu tarjeta ${CARD_TYPE_LABELS[card.cardType]}. Mantén presionado cualquier elemento para ver más información.`}
+      content={`Esta es tu tarjeta ${CARD_TYPE_LABELS[card.cardType]} digital. Úsala para gestionar tus pagos y controlar tus movimientos desde la app.`}
       title={`Tarjeta ${CARD_TYPE_LABELS[card.cardType]}`}
       triggerMode="longPress"
       tourKey={getTourKey('general')}
@@ -65,8 +72,8 @@ export function CreditCard({
             {/* Header con tipo de tarjeta y logo */}
             <View style={styles.cardHeader}>
               <InfoTooltip
-                content={`Esta es tu tarjeta ${CARD_TYPE_LABELS[card.cardType]}. Disfruta de sus beneficios exclusivos.`}
-                title="Tipo de Tarjeta"
+                content={getTypeDescription()}
+                title="Tipo de Producto"
                 triggerMode="longPress"
                 tourKey={getTourKey('type')}
                 tourOrder={baseOrder + 1}
@@ -82,8 +89,8 @@ export function CreditCard({
               </InfoTooltip>
               
               <InfoTooltip
-                content={`Tarjeta respaldada por ${card.cardBrand.toUpperCase()}. Aceptada en millones de establecimientos.`}
-                title="Marca"
+                content={`Red de procesamiento global. Tu tarjeta es aceptada en millones de comercios físicos y digitales alrededor del mundo.`}
+                title="Red de Pagos"
                 triggerMode="longPress"
                 tourKey={getTourKey('brand')}
                 tourOrder={baseOrder + 2}
@@ -100,7 +107,7 @@ export function CreditCard({
             <View style={styles.cardMiddle}>
               {showChip && card.cardType !== 'virtual' && (
                 <InfoTooltip
-                  content="El chip EMV protege tus transacciones contra fraudes y clonación."
+                  content="Tecnología de seguridad EMV. Encripta la información de tu tarjeta al usarla en terminales físicos para prevenir la clonación."
                   title="Chip de Seguridad"
                   triggerMode="longPress"
                   tourKey={getTourKey('chip')}
@@ -130,7 +137,7 @@ export function CreditCard({
                   {card.cardHolder}
                 </ThemedText>
                 <InfoTooltip
-                  content={`Tu tarjeta vence el ${formatCardExpiry(card.expiryDate)}. Te enviaremos una nueva antes de esa fecha.`}
+                  content={`Fecha límite de validez. Necesaria para compras en línea. Tu tarjeta se renovará automáticamente antes de este mes.`}
                   title="Vencimiento"
                   triggerMode="longPress"
                   tourKey={getTourKey('expiry')}
