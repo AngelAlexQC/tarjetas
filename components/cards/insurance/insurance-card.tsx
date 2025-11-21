@@ -47,6 +47,9 @@ const BADGE_COLORS: Record<string, string> = {
 export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps) {
   const theme = useAppTheme();
   const accentColor = INSURANCE_COLORS[insurance.type] || INSURANCE_COLORS.fraude;
+  
+  // Solo animar los primeros 5 items, después renderizar directamente
+  const shouldAnimate = index < 5;
 
   const styles = StyleSheet.create({
     container: {
@@ -159,9 +162,14 @@ export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps)
     }).format(amount);
   };
 
+  const ContainerView = shouldAnimate ? Animated.View : View;
+  const animationProps = shouldAnimate
+    ? { entering: FadeInUp.delay(index * 50).duration(300) }
+    : {};
+
   return (
-    <Animated.View
-      entering={FadeInUp.delay(index * 50).springify()}
+    <ContainerView
+      {...animationProps}
       style={styles.container}
     >
       <Pressable
@@ -231,6 +239,6 @@ export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps)
           </View>
         </View>
       </Pressable>
-    </Animated.View>
+    </ContainerView>
   );
 }

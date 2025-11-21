@@ -3,9 +3,9 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, StyleSheet, View } from 'react-native';
 import { InsuranceCard } from './insurance-card';
 import {
-  generateInsurances,
-  Insurance,
-  InsuranceGenerator,
+    generateInsurances,
+    Insurance,
+    InsuranceGenerator,
 } from './insurance-generator';
 
 interface InsuranceCarouselProps {
@@ -142,10 +142,15 @@ export function InsuranceCarousel({ onInsurancePress }: InsuranceCarouselProps) 
         scrollEnabled={false} // El scroll lo maneja el ScrollView padre
         contentContainerStyle={styles.listContent}
         removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        updateCellsBatchingPeriod={50}
-        initialNumToRender={10}
-        windowSize={5}
+        maxToRenderPerBatch={15}
+        updateCellsBatchingPeriod={100}
+        initialNumToRender={8}
+        windowSize={10}
+        getItemLayout={(data, index) => ({
+          length: 110, // Altura aproximada de cada card
+          offset: 110 * index,
+          index,
+        })}
       />
     </View>
   );

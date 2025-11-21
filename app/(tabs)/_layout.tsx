@@ -1,7 +1,7 @@
+import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Platform } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { Platform, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { CardsIcon, HomeIcon } from '@/components/ui/tab-icons';
