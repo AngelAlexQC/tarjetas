@@ -179,6 +179,12 @@ export default function TenantSelectorScreen() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  
+  // Usuario autenticado - esto debería venir de tu sistema de autenticación
+  const authenticatedUser = {
+    name: "Sofía",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+  };
 
   const handleTenantSelect = async (tenant: Tenant) => {
     const tenantTheme = getTenantTheme(tenant.slug);
@@ -222,19 +228,22 @@ export default function TenantSelectorScreen() {
           entering={FadeInUp.duration(600).springify()}
           style={layout.isLandscape ? styles.headerCompact : styles.header}
         >
-          <View style={[styles.headerIcon, {
-            backgroundColor: theme.isDark ? '#2C2C2E' : '#F0F0F0',
+          <View style={[styles.userAvatarContainer, {
             shadowColor: theme.isDark ? '#000' : '#007AFF',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: theme.isDark ? 0.3 : 0.15,
             shadowRadius: 8,
             elevation: 4,
           }]}>
-            <ThemedText style={styles.headerEmoji}>🏛️</ThemedText>
+            <Image
+              source={{ uri: authenticatedUser.avatar }}
+              style={styles.userAvatar}
+              contentFit="cover"
+            />
           </View>
           <View style={layout.isLandscape ? { flex: 1 } : undefined}>
             <ThemedText type="title" style={[styles.title, layout.isLandscape && { textAlign: 'left', fontSize: 24 }]}>
-              Selecciona tu Institución
+              Hola {authenticatedUser.name}
             </ThemedText>
             {layout.isPortrait && (
               <ThemedText style={styles.subtitle}>
@@ -443,6 +452,18 @@ const styles = StyleSheet.create({
   },
   headerEmoji: {
     fontSize: 32,
+  },
+  userAvatarContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    overflow: 'hidden',
+    marginBottom: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  userAvatar: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     marginBottom: 8,
