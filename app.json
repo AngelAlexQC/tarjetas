@@ -11,8 +11,10 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Esta aplicación utiliza Face ID para verificar tu identidad antes de realizar operaciones sensibles."
-      }
+        "NSFaceIDUsageDescription": "Esta aplicación utiliza Face ID para verificar tu identidad antes de realizar operaciones sensibles.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.aquirozdev.tarjetas"
     },
     "android": {
       "adaptiveIcon": {
