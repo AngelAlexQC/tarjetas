@@ -1,12 +1,12 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
-import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
+import { TenantThemeProvider, useTenantTheme } from '@/contexts/tenant-theme-context';
 import { TourProvider } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -36,6 +36,19 @@ export const unstable_settings = {
 
 function Navigation() {
   const theme = useAppTheme();
+  const { currentTheme, isLoading } = useTenantTheme();
+  const router = useRouter();
+  const initialCheckDone = useRef(false);
+
+  useEffect(() => {
+    if (!isLoading && !initialCheckDone.current) {
+      initialCheckDone.current = true;
+      if (currentTheme && currentTheme.slug !== 'default') {
+        router.replace('/(tabs)/cards');
+      }
+    }
+  }, [isLoading, currentTheme, router]);
+
   const navBase = theme.isDark ? DarkTheme : DefaultTheme;
   const navTheme = {
     ...navBase,
