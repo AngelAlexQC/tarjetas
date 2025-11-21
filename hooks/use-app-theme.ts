@@ -30,6 +30,7 @@ export function useAppTheme() {
   
   // Colores del tenant actual
   const tenant = {
+    slug: currentTheme?.slug || 'default',
     mainColor: currentTheme?.mainColor || '#007AFF',
     secondaryColor: currentTheme?.secondaryColor || '#2196F3',
     accentColor: currentTheme?.accentColor || '#FF9800',

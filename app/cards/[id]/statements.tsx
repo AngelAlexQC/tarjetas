@@ -342,11 +342,33 @@ export default function StatementsScreen() {
         <!-- Fixed Footer -->
         <div class="page-footer">
             <p>Este documento es un comprobante oficial emitido por ${theme.tenant.name}. Para dudas o aclaraciones contacte a soporte.</p>
-            <div style="margin-top: 4px; display: flex; align-items: center; justify-content: center;">
-                <span>Powered by</span>
-                <span class="brand-text">
+            <div style="margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span style="font-size: 10px; color: var(--text-light);">Powered by</span>
+                <span style="font-size: 12px; letter-spacing: 0.5px; display: flex; align-items: baseline; color: var(--text-medium);">
                     <span style="font-weight: 300">Libélula</span><span style="font-weight: 700">Soft</span>
                 </span>
+                <svg width="16" height="16" viewBox="0 0 100 100" style="display: inline-block; vertical-align: middle;">
+                    <defs>
+                        <linearGradient id="dragonflyGradFooter" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stop-color="#10b981" stop-opacity="1" />
+                            <stop offset="1" stop-color="#0ea5e9" stop-opacity="1" />
+                        </linearGradient>
+                    </defs>
+                    <g>
+                        <circle cx="65" cy="35" r="3" fill="url(#dragonflyGradFooter)" />
+                        <path d="M65 38 L60 45" stroke="url(#dragonflyGradFooter)" stroke-width="2.5" stroke-linecap="round" />
+                        <path d="M60 45 L40 75" stroke="url(#dragonflyGradFooter)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5, 2" />
+                        <g stroke="url(#dragonflyGradFooter)" stroke-width="1.2" fill="none">
+                            <path d="M62 40 C 50 25, 25 15, 20 25 C 18 30, 40 45, 62 40" />
+                            <path d="M62 40 L 25 25" stroke-width="0.5" opacity="0.8" />
+                            <path d="M55 35 L 30 30" stroke-width="0.5" opacity="0.6" />
+                            <path d="M50 38 L 35 40" stroke-width="0.5" opacity="0.6" />
+                            <path d="M60 45 C 50 50, 30 60, 25 55 C 22 50, 45 45, 60 45" />
+                            <path d="M60 45 L 30 55" stroke-width="0.5" opacity="0.8" />
+                            <path d="M50 48 L 35 52" stroke-width="0.5" opacity="0.6" />
+                        </g>
+                    </g>
+                </svg>
             </div>
         </div>
 
@@ -365,13 +387,19 @@ export default function StatementsScreen() {
                                     <p><strong>Usuario Ejemplo</strong></p>
                                     <p>Av. Principal 123</p>
                                     <p>Ciudad, País</p>
-                                    <p>Tarjeta: ${card?.cardNumber || '•••• •••• •••• 9010'}</p>
+                                    <p style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                                        <svg viewBox="0 0 200 160" width="30" height="24" style="display: inline-block;">
+                                            <rect x="0" y="0" width="200" height="160" fill="#d4af37" rx="20" ry="20" />
+                                            <path d="M60,0 L100,30 L140,0 M100,30 V45 M70,45 H130 V115 H70 V45 M100,115 V130 M60,160 L100,130 L140,160 M130,45 L145,35 H200 M130,80 H200 M130,115 L145,125 H200 M70,45 L55,35 H0 M70,80 H0 M70,115 L60,125 H0" fill="none" stroke="#8B7023" stroke-width="3"/>
+                                        </svg>
+                                        <span>Tarjeta: ${card?.cardNumber || '•••• •••• •••• 9010'}</span>
+                                    </p>
                                 </div>
                                 <div class="address-block" style="text-align: right;">
                                     <h3>Emisor</h3>
                                     <p><strong>${theme.tenant.name} Financiera</strong></p>
                                     <p>Torre Corporativa, Piso 10</p>
-                                    <p>soporte@${theme.tenant.name.toLowerCase()}.com</p>
+                                    <p>contacto+${theme.tenant.slug}@libelulasoft.com</p>
                                     <p>Fecha de emisión: ${new Date().toLocaleDateString()}</p>
                                 </div>
                             </div>
