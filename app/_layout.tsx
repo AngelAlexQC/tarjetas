@@ -1,3 +1,7 @@
+import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
+import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
+import { useAppTheme } from '@/hooks/use-app-theme';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -5,10 +9,6 @@ import React from 'react';
 import { View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
-import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 
 function ThemedLayoutContainer({ children }: { children: React.ReactNode }) {
   const theme = useAppTheme();
@@ -55,6 +55,7 @@ function Navigation() {
           animation: 'fade',
         }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="cards/[id]" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

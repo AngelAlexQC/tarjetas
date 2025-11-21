@@ -10,7 +10,7 @@ import { ChipIcon } from "@/components/ui/chip-icon";
 import { CardActionType } from "@/constants/card-actions";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
-import type { Card } from "@/features/cards/services/card-service";
+import { Card, cardService } from "@/features/cards/services/card-service";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { formatCardExpiry } from "@/utils/formatters/date";
@@ -41,140 +41,6 @@ import Animated, {
 
 // Las dimensiones serán calculadas dinámicamente en el componente
 
-// Función para generar valores aleatorios
-const generateRandomBalance = () => Math.floor(Math.random() * 5000) + 500;
-const generateRandomCreditLimit = () => Math.floor(Math.random() * 8000) + 2000;
-
-// Datos de ejemplo - Una tarjeta de cada marca con tipo diferente
-const generateMockCards = (): Card[] => [
-  // VISA - Crédito (todas las acciones)
-  (() => {
-    const creditLimit = generateRandomCreditLimit();
-    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
-    return {
-      id: "1",
-      cardNumber: "•••• •••• •••• 9010",
-      cardHolder: "Juan Pérez",
-      expiryDate: "12/27",
-      balance: creditLimit - availableCredit,
-      cardType: "credit" as const,
-      cardBrand: "visa" as const,
-      status: "active" as const,
-      creditLimit,
-      availableCredit,
-      lastTransactionDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // hace 2 horas
-    };
-  })(),
-  // Mastercard - Débito (sin diferir ni avances)
-  {
-    id: "2",
-    cardNumber: "•••• •••• •••• 3456",
-    cardHolder: "María García",
-    expiryDate: "08/28",
-    balance: generateRandomBalance(),
-    cardType: "debit" as const,
-    cardBrand: "mastercard" as const,
-    status: "active" as const,
-    lastTransactionDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // hace 1 día
-  },
-  // American Express - Virtual (sin PIN)
-  (() => {
-    const creditLimit = generateRandomCreditLimit();
-    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
-    return {
-      id: "3",
-      cardNumber: "•••• •••••• •0005",
-      cardHolder: "Ana Martínez",
-      expiryDate: "06/29",
-      balance: creditLimit - availableCredit,
-      cardType: "virtual" as const,
-      cardBrand: "amex" as const,
-      status: "active" as const,
-      creditLimit,
-      availableCredit,
-      lastTransactionDate: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // hace 5 minutos
-    };
-  })(),
-  // Discover - Crédito (todas las acciones)
-  (() => {
-    const creditLimit = generateRandomCreditLimit();
-    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
-    return {
-      id: "4",
-      cardNumber: "•••• •••• •••• 1117",
-      cardHolder: "Pedro Sánchez",
-      expiryDate: "09/28",
-      balance: creditLimit - availableCredit,
-      cardType: "credit" as const,
-      cardBrand: "discover" as const,
-      status: "active" as const,
-      creditLimit,
-      availableCredit,
-      lastTransactionDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // hace 3 días
-    };
-  })(),
-  // Diners Club - Débito (sin diferir ni avances)
-  {
-    id: "5",
-    cardNumber: "•••• •••• •••• 9504",
-    cardHolder: "Fernando Díaz",
-    expiryDate: "04/27",
-    balance: generateRandomBalance(),
-    cardType: "debit" as const,
-    cardBrand: "diners" as const,
-    status: "active" as const,
-    lastTransactionDate: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // hace 45 minutos
-  },
-  // JCB - Virtual (sin PIN)
-  (() => {
-    const creditLimit = generateRandomCreditLimit();
-    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
-    return {
-      id: "6",
-      cardNumber: "•••• •••• •••• 0000",
-      cardHolder: "Yuki Tanaka",
-      expiryDate: "11/29",
-      balance: creditLimit - availableCredit,
-      cardType: "virtual" as const,
-      cardBrand: "jcb" as const,
-      status: "active" as const,
-      creditLimit,
-      availableCredit,
-      lastTransactionDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // hace 6 días
-    };
-  })(),
-  // Maestro - Crédito (todas las acciones)
-  (() => {
-    const creditLimit = generateRandomCreditLimit();
-    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
-    return {
-      id: "7",
-      cardNumber: "•••• •••• •••• 0000",
-      cardHolder: "Laura Fernández",
-      expiryDate: "04/28",
-      balance: creditLimit - availableCredit,
-      cardType: "credit" as const,
-      cardBrand: "maestro" as const,
-      status: "active" as const,
-      creditLimit,
-      availableCredit,
-      lastTransactionDate: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // hace 30 minutos
-    };
-  })(),
-  // UnionPay - Débito (sin diferir ni avances)
-  {
-    id: "8",
-    cardNumber: "•••• •••• •••• 0005",
-    cardHolder: "Wei Chen",
-    expiryDate: "07/29",
-    balance: generateRandomBalance(),
-    cardType: "debit" as const,
-    cardBrand: "unionpay" as const,
-    status: "active" as const,
-    lastTransactionDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // hace 2 días
-  },
-];
-
 export default function CardsScreen() {
   const theme = useAppTheme();
   const router = useRouter();
@@ -187,7 +53,6 @@ export default function CardsScreen() {
   
   // Dimensiones consistentes para el carrusel en todas las pantallas
   const SCREEN_WIDTH = layout.screenWidth;
-  const SCREEN_HEIGHT = layout.screenHeight;
   
   // Mantener proporción 85% del ancho o máximo 400px
   const CARD_WIDTH = Math.min(SCREEN_WIDTH * 0.85, 400);
@@ -197,7 +62,7 @@ export default function CardsScreen() {
   const styles = createStyles(theme, layout, CARD_WIDTH, CARD_HEIGHT, CARD_SPACING);
   
   // Generar tarjetas con valores aleatorios al inicio
-  const mockCards = useMemo(() => generateMockCards(), []);
+  const mockCards = useMemo(() => cardService.getCards(), []);
   
   // Hook de acciones de tarjetas (solo si hay tarjeta activa)
   const activeCard = mockCards[activeCardIndex];

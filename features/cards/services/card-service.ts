@@ -20,7 +20,88 @@ export interface CardActionResult {
   data?: any;
 }
 
+// Mock Data Helpers
+const generateRandomBalance = () => Math.floor(Math.random() * 5000) + 500;
+const generateRandomCreditLimit = () => Math.floor(Math.random() * 8000) + 2000;
+
+const MOCK_CARDS: Card[] = [
+  // VISA - Crédito (todas las acciones)
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
+    return {
+      id: "1",
+      cardNumber: "•••• •••• •••• 9010",
+      cardHolder: "Juan Pérez",
+      expiryDate: "12/27",
+      balance: creditLimit - availableCredit,
+      cardType: "credit" as const,
+      cardBrand: "visa" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    };
+  })(),
+  // Mastercard - Débito (sin diferir ni avances)
+  {
+    id: "2",
+    cardNumber: "•••• •••• •••• 3456",
+    cardHolder: "María García",
+    expiryDate: "08/28",
+    balance: generateRandomBalance(),
+    cardType: "debit" as const,
+    cardBrand: "mastercard" as const,
+    status: "active" as const,
+    lastTransactionDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  // American Express - Virtual (sin PIN)
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.8);
+    return {
+      id: "3",
+      cardNumber: "•••• •••••• •0005",
+      cardHolder: "Ana Martínez",
+      expiryDate: "06/29",
+      balance: creditLimit - availableCredit,
+      cardType: "virtual" as const,
+      cardBrand: "amex" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    };
+  })(),
+  // Discover - Crédito (todas las acciones)
+  (() => {
+    const creditLimit = generateRandomCreditLimit();
+    const availableCredit = Math.floor(Math.random() * creditLimit * 0.9);
+    return {
+      id: "4",
+      cardNumber: "•••• •••• •••• 6789",
+      cardHolder: "Carlos López",
+      expiryDate: "03/26",
+      balance: creditLimit - availableCredit,
+      cardType: "credit" as const,
+      cardBrand: "discover" as const,
+      status: "active" as const,
+      creditLimit,
+      availableCredit,
+      lastTransactionDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+  })(),
+];
+
 class CardService {
+  getCards(): Card[] {
+    return MOCK_CARDS;
+  }
+
+  getCardById(id: string): Card | undefined {
+    return MOCK_CARDS.find(c => c.id === id);
+  }
+
   async blockCard(cardId: string): Promise<CardActionResult> {
     await new Promise(resolve => setTimeout(resolve, 1000));
     

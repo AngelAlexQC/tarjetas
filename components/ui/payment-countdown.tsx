@@ -43,9 +43,6 @@ export const PaymentCountdown: React.FC<PaymentCountdownProps> = ({
 
   // Colores según urgencia
   const getUrgencyColor = () => {
-    if (daysRemaining === 0) return '#FF3B30'; // Rojo - vence hoy
-    if (daysRemaining <= 3) return '#FF9500'; // Naranja - urgente
-    if (daysRemaining <= 7) return '#FFCC00'; // Amarillo - próximo
     return theme.tenant.mainColor; // Color del tenant - normal
   };
 

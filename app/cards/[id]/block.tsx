@@ -1,18 +1,24 @@
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
+import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { cardService } from '@/features/cards/services/card-service';
 import { BlockType, OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AlertTriangle, Lock, PauseCircle } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function BlockCardScreen() {
   const theme = useAppTheme();
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const card = cardService.getCardById(id!);
+  const insets = useSafeAreaInsets();
   
   const [selectedType, setSelectedType] = useState<BlockType | null>(null);
   const [showBiometrics, setShowBiometrics] = useState(false);
@@ -44,6 +50,7 @@ export default function BlockCardScreen() {
 
   return (
     <ThemedView style={styles.container} surface="level1">
+      <CardOperationHeader title="Bloquear Tarjeta" card={card} />
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedText style={styles.description}>
           Selecciona el tipo de bloqueo que deseas aplicar a tu tarjeta.
@@ -81,7 +88,7 @@ export default function BlockCardScreen() {
         )}
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
         <TouchableOpacity
           style={[
             styles.button, 

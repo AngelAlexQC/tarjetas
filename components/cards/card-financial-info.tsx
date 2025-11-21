@@ -16,8 +16,8 @@ import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { formatCurrency } from '@/utils/formatters/currency';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
+import React from 'react';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 // Formatea la moneda usando el símbolo personalizado si está definido
 function formatCurrencyWithSymbol(amount: number, options: { locale: string; currency: string; currencySymbol?: string; minimumFractionDigits?: number; maximumFractionDigits?: number }) {
@@ -133,7 +133,6 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
 }) => {
   const styles = useStyles();
   const router = useRouter();
-  const [useInstitutionTheme, setUseInstitutionTheme] = useState(false);
   const isDebit = card.cardType === 'debit';
   const isVirtual = card.cardType === 'virtual';
   
@@ -166,13 +165,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
 
   // Colores semánticos mejorados para accesibilidad
   const getUsageColor = (percentage: number) => {
-    if (useInstitutionTheme) {
-      return { bg: `${primaryColor}20`, fg: primaryColor };
-    }
-    if (percentage >= 90) return { bg: 'rgba(255, 59, 48, 0.12)', fg: '#FF3B30' };
-    if (percentage >= 75) return { bg: 'rgba(255, 149, 0, 0.12)', fg: '#FF9500' };
-    if (percentage >= 50) return { bg: 'rgba(255, 204, 0, 0.12)', fg: '#FFCC00' };
-    return { bg: 'rgba(52, 199, 89, 0.12)', fg: '#34C759' };
+    return { bg: `${primaryColor}20`, fg: primaryColor };
   };
   
   const usageColors = getUsageColor(usagePercentage);
@@ -252,18 +245,6 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             title="Porcentaje de Uso"
             content={`Has usado el ${usagePercentage}% de tu línea de crédito. ${usagePercentage >= 75 ? 'Se recomienda mantener el uso por debajo del 30% para un mejor score crediticio.' : 'Mantén un buen manejo de tu crédito.'}`}
             placement="bottom"
-            extraContent={
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <ThemedText style={{ fontSize: 13 }}>Usar tema institucional</ThemedText>
-                <Switch
-                  value={useInstitutionTheme}
-                  onValueChange={setUseInstitutionTheme}
-                  trackColor={{ false: '#767577', true: primaryColor }}
-                  thumbColor={useInstitutionTheme ? '#fff' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                />
-              </View>
-            }
           >
             <View style={styles.statItem}>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -313,16 +294,6 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
             placement="bottom"
             extraContent={({ close }) => (
               <View style={{ gap: 16 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <ThemedText style={{ fontSize: 13 }}>Usar tema institucional</ThemedText>
-                  <Switch
-                    value={useInstitutionTheme}
-                    onValueChange={setUseInstitutionTheme}
-                    trackColor={{ false: '#767577', true: primaryColor }}
-                    thumbColor={useInstitutionTheme ? '#fff' : '#f4f3f4'}
-                    ios_backgroundColor="#3e3e3e"
-                  />
-                </View>
                 <Pressable 
                   onPress={() => {
                     close();
