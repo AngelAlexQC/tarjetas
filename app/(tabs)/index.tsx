@@ -4,12 +4,10 @@ import { getTenantTheme } from "@/constants/tenant-themes";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
-import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, TextInput, View, Text } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -180,6 +178,7 @@ export default function TenantSelectorScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const handleTenantSelect = async (tenant: Tenant) => {
     const tenantTheme = getTenantTheme(tenant.slug);
@@ -223,7 +222,14 @@ export default function TenantSelectorScreen() {
           entering={FadeInUp.duration(600).springify()}
           style={layout.isLandscape ? styles.headerCompact : styles.header}
         >
-          <View style={styles.headerIcon}>
+          <View style={[styles.headerIcon, {
+            backgroundColor: theme.isDark ? '#2C2C2E' : '#F0F0F0',
+            shadowColor: theme.isDark ? '#000' : '#007AFF',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: theme.isDark ? 0.3 : 0.15,
+            shadowRadius: 8,
+            elevation: 4,
+          }]}>
             <ThemedText style={styles.headerEmoji}>🏛️</ThemedText>
           </View>
           <View style={layout.isLandscape ? { flex: 1 } : undefined}>
@@ -241,7 +247,14 @@ export default function TenantSelectorScreen() {
         {/* Barra de búsqueda */}
         <Animated.View 
           entering={FadeInDown.duration(600).delay(100).springify()}
-          style={styles.searchContainer}
+          style={[styles.searchContainer, {
+            backgroundColor: theme.isDark ? '#2C2C2E' : '#FFFFFF',
+            shadowColor: theme.isDark ? '#000' : '#007AFF',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: theme.isDark ? 0.4 : 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          }]}
         >
           <View style={styles.searchIconContainer}>
             <ThemedText style={styles.searchIcon}>🔍</ThemedText>
@@ -251,9 +264,6 @@ export default function TenantSelectorScreen() {
               styles.searchInput,
               {
                 color: theme.isDark ? "#ECEDEE" : "#11181C",
-                backgroundColor: theme.isDark
-                  ? "rgba(255, 255, 255, 0.08)"
-                  : "rgba(0, 0, 0, 0.04)",
               },
             ]}
             placeholder="Buscar institución o país..."
@@ -264,7 +274,9 @@ export default function TenantSelectorScreen() {
           {searchQuery.length > 0 && (
             <Pressable
               onPress={() => setSearchQuery("")}
-              style={styles.clearButton}
+              style={[styles.clearButton, {
+                backgroundColor: theme.isDark ? '#3C3C3E' : '#F0F0F0',
+              }]}
             >
               <ThemedText style={styles.clearButtonText}>✕</ThemedText>
             </Pressable>
@@ -289,7 +301,14 @@ export default function TenantSelectorScreen() {
                   <ThemedText type="defaultSemiBold" style={styles.countryName}>
                     {country}
                   </ThemedText>
-                  <View style={styles.countryBadge}>
+                  <View style={[styles.countryBadge, {
+                    backgroundColor: theme.isDark ? '#2C2C2E' : '#F0F0F0',
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: theme.isDark ? 0.3 : 0.08,
+                    shadowRadius: 4,
+                    elevation: 2,
+                  }]}>
                     <ThemedText style={styles.countryBadgeText}>
                       {groupedTenants[country].length}
                     </ThemedText>
@@ -305,83 +324,64 @@ export default function TenantSelectorScreen() {
                       styles.tenantCard,
                       layout.isLandscape && styles.tenantCardLandscape,
                       {
-                        opacity: pressed ? 0.9 : 1,
+                        shadowColor: tenant.mainColor,
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: theme.isDark ? 0.6 : 0.35,
+                        shadowRadius: 12,
+                        elevation: 8,
+                        opacity: pressed ? 0.85 : 1,
                         transform: [{ scale: pressed ? 0.98 : 1 }],
                       },
                     ]}
                     onPress={() => handleTenantSelect(tenant)}
                   >
-                    {/* Fondo con gradiente colorido basado en el color de la institución */}
-                    <LinearGradient
-                      colors={[
-                        `${tenant.mainColor}15`,
-                        `${tenant.mainColor}25`,
-                        `${tenant.mainColor}35`,
-                      ]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={StyleSheet.absoluteFillObject}
-                    />
-                    
-                    {/* Capa de blur glassmorphism */}
-                    <BlurView
-                      intensity={20}
-                      tint={theme.isDark ? "dark" : "light"}
-                      style={styles.blurContainer}
-                    >
-                      <View style={styles.cardContent}>
-                        {/* Orbe de color animado en el fondo */}
-                        <View style={[
-                          styles.colorOrb,
-                          { backgroundColor: tenant.mainColor }
-                        ]} />
-                        
-                        <View style={styles.logoContainer}>
+                    <View style={[styles.cardContent, {
+                      backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
+                    }]}>
+                      <View style={styles.logoContainer}>
+                        {imageErrors[tenant.slug] ? (
+                          <View style={[styles.logoFallback, { backgroundColor: `${tenant.mainColor}20` }]}>
+                            <Text style={[styles.logoFallbackText, { color: tenant.mainColor }]}>
+                              {tenant.name.substring(0, 2).toUpperCase()}
+                            </Text>
+                          </View>
+                        ) : (
                           <Image
                             source={{ uri: tenant.logoUrl }}
                             style={styles.logo}
                             contentFit="contain"
+                            onError={() => setImageErrors(prev => ({ ...prev, [tenant.slug]: true }))}
                           />
-                        </View>
-                        
-                        <View style={styles.tenantInfo}>
-                          <ThemedText type="defaultSemiBold" style={styles.tenantName}>
-                            {tenant.name}
+                        )}
+                      </View>
+                      
+                      <View style={styles.tenantInfo}>
+                        <ThemedText type="defaultSemiBold" style={styles.tenantName}>
+                          {tenant.name}
+                        </ThemedText>
+                        <View style={styles.metadataRow}>
+                          <ThemedText style={styles.countryFlag}>
+                            {tenant.countryFlag}
                           </ThemedText>
-                          <View style={styles.metadataRow}>
-                            <ThemedText style={styles.countryFlag}>
-                              {tenant.countryFlag}
-                            </ThemedText>
-                            <View style={styles.separator} />
-                            <ThemedText style={styles.currency}>
-                              {tenant.currencyCode}
-                            </ThemedText>
-                          </View>
-                        </View>
-                        
-                        {/* Indicador de color con blur */}
-                        <View style={styles.colorIndicatorContainer}>
-                          <View
-                            style={[
-                              styles.colorIndicator,
-                              { backgroundColor: tenant.mainColor }
-                            ]}
-                          />
+                          <View style={[styles.separator, {
+                            backgroundColor: theme.isDark ? '#3C3C3E' : '#E0E0E0',
+                          }]} />
+                          <ThemedText style={styles.currency}>
+                            {tenant.currencyCode}
+                          </ThemedText>
                         </View>
                       </View>
-                    </BlurView>
-                    
-                    {/* Borde con gradiente sutil */}
-                    <View
-                      style={[
-                        styles.cardBorder,
-                        {
-                          borderColor: theme.isDark
-                            ? `${tenant.mainColor}60`
-                            : `${tenant.mainColor}40`,
-                        },
-                      ]}
-                    />
+                      
+                      {/* Indicador de color prominente */}
+                      <View style={styles.colorIndicatorContainer}>
+                        <View
+                          style={[
+                            styles.colorIndicator,
+                            { backgroundColor: tenant.mainColor }
+                          ]}
+                        />
+                      </View>
+                    </View>
                   </Pressable>
                 ))}
                 </View>
@@ -436,8 +436,7 @@ const styles = StyleSheet.create({
   headerIcon: {
     width: 64,
     height: 64,
-    borderRadius: 32,
-    backgroundColor: "rgba(0, 122, 255, 0.1)",
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
@@ -460,15 +459,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 28,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 4,
     gap: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
   },
   searchIconContainer: {
     width: 32,
@@ -485,6 +479,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
     borderRadius: 10,
+    backgroundColor: "transparent",
   },
   clearButton: {
     width: 28,
@@ -492,7 +487,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.08)",
   },
   clearButtonText: {
     fontSize: 14,
@@ -517,10 +511,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   countryBadge: {
-    backgroundColor: "rgba(0, 122, 255, 0.12)",
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 8,
   },
   countryBadgeText: {
     fontSize: 13,
@@ -534,37 +527,22 @@ const styles = StyleSheet.create({
     marginHorizontal: -6,
   },
   tenantCard: {
-    borderRadius: 20,
-    overflow: "hidden",
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
+    borderRadius: 16,
+    overflow: "visible",
+    marginBottom: 16,
   },
   tenantCardLandscape: {
     flex: 1,
     minWidth: 280,
     maxWidth: '48%',
   },
-  blurContainer: {
-    overflow: "hidden",
-  },
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
     padding: 18,
     position: "relative",
-  },
-  colorOrb: {
-    position: "absolute",
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    right: -30,
-    top: -20,
-    opacity: 0.15,
+    borderRadius: 16,
+    overflow: "hidden",
   },
   logoContainer: {
     width: 65,
@@ -572,18 +550,30 @@ const styles = StyleSheet.create({
     marginRight: 16,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 8,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 3,
     elevation: 2,
   },
   logo: {
     width: "100%",
     height: "100%",
+  },
+  logoFallback: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  logoFallbackText: {
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 1,
   },
   tenantInfo: {
     flex: 1,
@@ -602,8 +592,6 @@ const styles = StyleSheet.create({
   separator: {
     width: 1,
     height: 14,
-    backgroundColor: "rgba(0, 0, 0, 0.15)",
-    opacity: 0.6,
   },
   currency: {
     fontSize: 13,
@@ -615,21 +603,11 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   colorIndicator: {
-    width: 6,
+    width: 4,
     height: 50,
-    borderRadius: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
+    borderRadius: 2,
   },
-  cardBorder: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    pointerEvents: "none",
-  },
+
   emptyState: {
     alignItems: "center",
     paddingVertical: 60,

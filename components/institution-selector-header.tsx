@@ -5,7 +5,7 @@ import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, Text } from "react-native";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -14,6 +14,7 @@ import Animated, {
     withTiming
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useState, useEffect } from "react";
 
 /**
  * Header minimalista moderno - Fintech Design 2025
@@ -32,6 +33,12 @@ export function InstitutionSelectorHeader() {
   const insets = useSafeAreaInsets();
   const scaleValue = useSharedValue(1);
   const glowValue = useSharedValue(0);
+  const [imageError, setImageError] = useState(false);
+  
+  // Resetear error de imagen cuando cambia el tema
+  useEffect(() => {
+    setImageError(false);
+  }, [currentTheme?.slug]);
   
   const containerWidth = layout.isLandscape 
     ? Math.min(layout.screenWidth * 0.6, 500)
@@ -86,20 +93,37 @@ export function InstitutionSelectorHeader() {
           </Animated.View>
 
           <View style={[styles.content, {
-            backgroundColor: theme.isDark 
-              ? 'rgba(28, 28, 30, 0.6)'
-              : 'rgba(255, 255, 255, 0.7)'
+            backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
+            shadowColor: theme.tenant.mainColor,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: theme.isDark ? 0.6 : 0.35,
+            shadowRadius: 10,
+            elevation: 6,
           }]}>
             {/* Avatar de institución con logo real */}
-            <View style={styles.avatarContainer}>
-              {/* Logo de la institución */}
-              <Image
-                source={{ uri: currentTheme?.logoUrl }}
-                style={styles.institutionLogo}
-                contentFit="contain"
-                transition={200}
-                placeholder={require('@/assets/images/icon.png')}
-              />
+            <View style={[styles.avatarContainer, {
+              backgroundColor: '#FFFFFF',
+              shadowColor: theme.isDark ? '#000' : theme.tenant.mainColor,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: theme.isDark ? 0.3 : 0.2,
+              shadowRadius: 4,
+              elevation: 3,
+            }]}>
+              {imageError || !currentTheme?.logoUrl ? (
+                <View style={[styles.logoFallback, { backgroundColor: `${theme.tenant.mainColor}20` }]}>
+                  <Text style={[styles.logoFallbackText, { color: theme.tenant.mainColor }]}>
+                    {(currentTheme?.name || "??").substring(0, 2).toUpperCase()}
+                  </Text>
+                </View>
+              ) : (
+                <Image
+                  source={{ uri: currentTheme.logoUrl }}
+                  style={styles.institutionLogo}
+                  contentFit="contain"
+                  transition={200}
+                  onError={() => setImageError(true)}
+                />
+              )}
             </View>
 
             {/* Dot de estado */}
@@ -114,7 +138,9 @@ export function InstitutionSelectorHeader() {
 
             {/* Chevron minimalista */}
             <ThemedText style={[styles.chevron, {
-              color: theme.colors.textSecondary
+              color: theme.isDark 
+                ? theme.colors.textSecondary
+                : 'rgba(0, 0, 0, 0.25)'
             }]}>
               ›
             </ThemedText>
@@ -151,12 +177,6 @@ const styles = StyleSheet.create({
     paddingVertical: '2.5%',
     gap: '3%',
     borderRadius: 16,
-    // Shadow sutil y moderna
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 1,
   },
   avatarContainer: {
     width: 42,
@@ -165,18 +185,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
     padding: 6,
-    // Shadow para el avatar
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   institutionLogo: {
     width: 30,
     height: 30,
+  },
+  logoFallback: {
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 6,
+  },
+  logoFallbackText: {
+    fontSize: 14,
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
   statusDot: {
     aspectRatio: 1,
