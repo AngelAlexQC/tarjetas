@@ -24,18 +24,16 @@ import {
     View,
     ViewToken
 } from "react-native";
-import Animated, { 
-  FadeIn, 
-  FadeOut, 
-  FadeInDown,
-  FadeInUp,
-  FadeInLeft,
-  FadeInRight,
-  LinearTransition,
-  SlideInLeft,
-  SlideInRight,
-  ZoomIn,
-  ZoomOut
+import Animated, {
+    FadeInDown,
+    FadeInLeft,
+    FadeInUp,
+    FadeOut,
+    LinearTransition,
+    SlideInLeft,
+    SlideInRight,
+    ZoomIn,
+    ZoomOut
 } from "react-native-reanimated";
 
 // Las dimensiones serán calculadas dinámicamente en el componente
