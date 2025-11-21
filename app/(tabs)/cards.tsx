@@ -1,3 +1,4 @@
+import { CardActionType } from "@/constants/card-actions";
 import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { CardFinancialInfo } from "@/components/cards/card-financial-info";
 import { InstitutionSelectorHeader } from "@/components/institution-selector-header";
@@ -37,6 +38,7 @@ import Animated, {
   ZoomIn,
   ZoomOut
 } from "react-native-reanimated";
+import { useRouter } from 'expo-router';
 
 // Las dimensiones serán calculadas dinámicamente en el componente
 
@@ -176,6 +178,7 @@ const generateMockCards = (): Card[] => [
 
 export default function CardsScreen() {
   const theme = useAppTheme();
+  const router = useRouter();
   const layout = useResponsiveLayout();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
@@ -220,6 +223,36 @@ export default function CardsScreen() {
       animated: true
     });
     setActiveCardIndex(index);
+  };
+
+  const handleActionPress = (actionType: CardActionType) => {
+    if (!activeCard) return;
+    
+    switch (actionType) {
+      case 'block':
+        router.push(`/cards/${activeCard.id}/block` as any);
+        break;
+      case 'defer':
+        router.push(`/cards/${activeCard.id}/defer` as any);
+        break;
+      case 'statement':
+        router.push(`/cards/${activeCard.id}/statements` as any);
+        break;
+      case 'advances':
+        router.push(`/cards/${activeCard.id}/advance` as any);
+        break;
+      case 'limits':
+        router.push(`/cards/${activeCard.id}/limits` as any);
+        break;
+      case 'pin':
+        router.push(`/cards/${activeCard.id}/pin` as any);
+        break;
+      case 'subscriptions':
+        router.push(`/cards/${activeCard.id}/subscriptions` as any);
+        break;
+      default:
+        cardActions.executeAction(actionType);
+    }
   };
 
   const renderCard = ({ item, index }: { item: Card; index: number }) => {
@@ -400,9 +433,7 @@ export default function CardsScreen() {
                   <CardActionsGrid
                     cardType={activeCard.cardType}
                     isLoading={cardActions.isLoading}
-                    onActionPress={(actionType) => {
-                      cardActions.executeAction(actionType);
-                    }}
+                    onActionPress={handleActionPress}
                   />
                 </Animated.View>
               )}
@@ -422,9 +453,7 @@ export default function CardsScreen() {
                 <CardActionsGrid
                   cardType={activeCard.cardType}
                   isLoading={cardActions.isLoading}
-                  onActionPress={(actionType) => {
-                    cardActions.executeAction(actionType);
-                  }}
+                  onActionPress={handleActionPress}
                 />
               </Animated.View>
             )}

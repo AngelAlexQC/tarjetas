@@ -15,7 +15,7 @@ import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { formatCurrency } from '@/utils/formatters/currency';
 import { BlurView } from 'expo-blur';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, View, Switch } from 'react-native';
+import { Platform, StyleSheet, Switch, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 // Formatea la moneda usando el símbolo personalizado si está definido
 function formatCurrencyWithSymbol(amount: number, options: { locale: string; currency: string; currencySymbol?: string; minimumFractionDigits?: number; maximumFractionDigits?: number }) {
@@ -271,7 +271,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                   strokeWidth={4}
                   color={usageColors.fg}
                   backgroundColor={`${usageColors.fg}20`}
-                  textStyle={{ fontSize: 10, fontWeight: '700', color: primaryColor }}
+                  textStyle={{ fontSize: 10, fontWeight: '700', color: usageColors.fg }}
                 />
               </View>
               <View style={styles.statLabelWithIcon}>
@@ -333,7 +333,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
                   showText={false}
                 />
                 <View style={{ position: 'absolute' }}>
-                  <ThemedText style={{ fontSize: 10, fontWeight: '700', color: primaryColor }}>
+                  <ThemedText style={{ fontSize: 10, fontWeight: '700', color: dailySpentColors.fg }}>
                     {dailySpentPercentage}%
                   </ThemedText>
                 </View>

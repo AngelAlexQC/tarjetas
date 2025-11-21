@@ -8,7 +8,7 @@ export type CardActionType =
   | 'advances'
   | 'limits'
   | 'pin'
-  | 'notifications';
+  | 'subscriptions';
 
 export interface CardAction {
   id: CardActionType;
@@ -66,7 +66,7 @@ export const CARD_ACTIONS: CardAction[] = [
     requiresAuth: true,
   },
   {
-    id: 'notifications',
+    id: 'subscriptions',
     title: 'Suscripciones',
     description: 'Gestionar suscripciones',
     icon: 'creditCard',
