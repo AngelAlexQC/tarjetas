@@ -49,9 +49,9 @@ export const generateReceiptHtml = async ({ result, card, transactionDetails, th
   );
 
   const detailsHtml = transactionDetails?.map(detail => `
-    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px;">
-      <span style="color: #4b5563; font-size: 13px;">${detail.label}</span>
-      <span style="font-weight: ${detail.isAmount ? '600' : '500'}; font-size: ${detail.isAmount ? '15px' : '13px'}; color: ${detail.isAmount ? theme.tenant.mainColor : '#111827'};">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #f3f4f6; padding-bottom: 3px;">
+      <span style="color: #4b5563; font-size: 12px;">${detail.label}</span>
+      <span style="font-weight: ${detail.isAmount ? '700' : '500'}; font-size: ${detail.isAmount ? '16px' : '12px'}; color: ${detail.isAmount ? theme.tenant.mainColor : '#111827'};">
         ${detail.value}
       </span>
     </div>
@@ -83,26 +83,16 @@ export const generateReceiptHtml = async ({ result, card, transactionDetails, th
             position: relative;
           }
           .header { 
-            padding: 24px 20px 16px; 
+            padding: 16px 14px 10px; 
             text-align: center; 
             position: relative;
-          }
-          .status-icon {
-            width: 48px;
-            height: 48px;
-            background-color: ${iconBgColor};
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 12px;
           }
           .receipt-label {
             font-size: 10px;
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-top: 4px;
+            margin-top: 3px;
           }
           
           /* Dashed Divider with Cutouts */
@@ -132,50 +122,67 @@ export const generateReceiptHtml = async ({ result, card, transactionDetails, th
           .cutout-right { right: -8px; }
 
           .content { 
-            padding: 20px 20px 4px; 
+            padding: 14px 14px 4px; 
+          }
+          .title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+          }
+          .status-icon {
+            width: 44px;
+            height: 44px;
+            background-color: ${iconBgColor};
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+          }
+          .title-text-container {
+            flex: 1;
+            text-align: left;
           }
           .title { 
-            font-size: 18px; 
+            font-size: 16px; 
             font-weight: 600; 
-            margin-bottom: 4px; 
+            margin-bottom: 2px; 
             color: #111827; 
-            text-align: center;
           }
           .message { 
-            font-size: 13px; 
+            font-size: 12px; 
             color: #374151; 
-            margin-bottom: 20px; 
-            text-align: center; 
             line-height: 1.4; 
           }
           .details { 
-            margin-bottom: 16px; 
+            margin-bottom: 10px; 
           }
           .footer {
             background-color: #f9fafb;
-            padding: 16px;
+            padding: 10px 10px 8px;
             text-align: center;
             border-top: 1px solid #f3f4f6;
           }
           .receipt-id {
             font-family: monospace;
-            font-size: 11px;
-            color: #6b7280;
-            margin-bottom: 2px;
-          }
-          .date {
             font-size: 10px;
             color: #6b7280;
-            margin-bottom: 8px;
+            margin-bottom: 1px;
+          }
+          .date {
+            font-size: 9px;
+            color: #6b7280;
+            margin-bottom: 4px;
           }
           .powered-by {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            font-size: 10px;
+            gap: 4px;
+            font-size: 8px;
             color: #9ca3af;
-            margin-top: 12px;
+            margin-top: 0;
           }
           .brand-text {
             color: #4b5563;
@@ -189,11 +196,6 @@ export const generateReceiptHtml = async ({ result, card, transactionDetails, th
       <body>
         <div class="receipt">
           <div class="header">
-            <div class="status-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                ${isSuccess ? '<polyline points="20 6 9 17 4 12"></polyline>' : '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>'}
-              </svg>
-            </div>
             ${logoHtml}
             <div class="receipt-label">Comprobante de Transacción</div>
           </div>
@@ -205,8 +207,17 @@ export const generateReceiptHtml = async ({ result, card, transactionDetails, th
           </div>
           
           <div class="content">
-            <div class="title">${result.title}</div>
-            <div class="message">${result.message}</div>
+            <div class="title-row">
+              <div class="status-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  ${isSuccess ? '<polyline points="20 6 9 17 4 12"></polyline>' : '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>'}
+                </svg>
+              </div>
+              <div class="title-text-container">
+                <div class="title">${result.title}</div>
+                <div class="message">${result.message}</div>
+              </div>
+            </div>
             
             <div class="details">
               ${detailsHtml}
