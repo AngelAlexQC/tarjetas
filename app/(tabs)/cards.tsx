@@ -6,6 +6,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
 import { FaqButton } from "@/components/ui/faq-button";
+import { PoweredBy } from "@/components/ui/powered-by";
 import { CardActionType } from "@/constants/card-actions";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import { Card, cardService } from "@/features/cards/services/card-service";
@@ -305,6 +306,9 @@ export default function CardsScreen() {
           </>
         )}
         </Animated.View>
+        
+        {/* Powered By */}
+        <PoweredBy />
       </ScrollView>
     </ThemedView>
   );
@@ -322,7 +326,7 @@ const createStyles = (
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 16,
+    paddingBottom: 100,
   },
   scrollContentLandscape: {
     maxWidth: 1200,

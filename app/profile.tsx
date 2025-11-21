@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { ThemedButton } from "@/components/ui/themed-button";
 import { ThemedInput } from "@/components/ui/themed-input";
+import { PoweredBy } from "@/components/ui/powered-by";
 import { useAuth } from "@/contexts/auth-context";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useTour } from "@/contexts/tour-context";
@@ -194,8 +195,11 @@ export default function ProfileScreen() {
       </View>
 
       {/* Content */}
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 100 }]}>
         {renderTabContent()}
+        
+        {/* Powered By */}
+        <PoweredBy />
       </ScrollView>
     </ThemedView>
   );

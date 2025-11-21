@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedButton } from '@/components/ui/themed-button';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { Ionicons } from '@expo/vector-icons';
@@ -88,7 +89,7 @@ export default function FaqScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 100 }]}>
         <View style={[styles.resetSection, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.resetContent}>
             <View style={styles.resetHeader}>
@@ -118,6 +119,9 @@ export default function FaqScreen() {
                 <ThemedText style={[styles.answer, { color: theme.colors.textSecondary }]}>{item.answer}</ThemedText>
             </View>
         ))}
+        
+        {/* Powered By */}
+        <PoweredBy />
       </ScrollView>
     </ThemedView>
   );

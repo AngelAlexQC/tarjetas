@@ -399,7 +399,7 @@ export default function StatementsScreen() {
                                     <h3>Emisor</h3>
                                     <p><strong>${theme.tenant.name} Financiera</strong></p>
                                     <p>Torre Corporativa, Piso 10</p>
-                                    <p>contacto+${theme.tenant.slug}@libelulasoft.com</p>
+                                    <p>soporte+${theme.tenant.slug}@libelulasoft.com</p>
                                     <p>Fecha de emisión: ${new Date().toLocaleDateString()}</p>
                                 </div>
                             </div>
