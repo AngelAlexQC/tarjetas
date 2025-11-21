@@ -68,7 +68,7 @@ export default function CardlessAtmScreen() {
            <ThemedText style={{ color: '#F44336', fontSize: 12 }}>Expira en 30:00 minutos</ThemedText>
            
            {card && (
-            <View style={{ marginTop: 24, transform: [{ scale: 0.8 }], alignItems: 'center' }}>
+            <View style={{ transform: [{ scale: 0.8 }], alignItems: 'center' }}>
               <CreditCard card={card} />
             </View>
           )}

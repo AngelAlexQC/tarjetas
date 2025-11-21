@@ -1,9 +1,11 @@
 import { CreditCard } from '@/components/cards/credit-card';
 import { BiometricGuard } from '@/components/cards/operations/biometric-guard';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
+import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { cardService } from '@/features/cards/services/card-service';
+import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -43,6 +45,45 @@ export default function DynamicCvvScreen() {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
+  if (cvv) {
+    const resultData: OperationResult = {
+      success: true,
+      title: 'CVV Generado',
+      message: 'Utiliza este código para tu compra en línea.',
+    };
+
+    return (
+      <OperationResultScreen
+        result={resultData}
+        onClose={() => router.back()}
+        card={card}
+      >
+        <View style={{ alignItems: 'center', width: '100%' }}>
+          <View style={[styles.cvvBox, { backgroundColor: theme.colors.surfaceElevated }]}>
+            <ThemedText type="title" style={{ fontSize: 48, lineHeight: 56, letterSpacing: 8 }}>{cvv}</ThemedText>
+          </View>
+
+          <View style={styles.timerContainer}>
+            <ThemedText type="defaultSemiBold" style={{ fontSize: 24, color: timeLeft < 60 ? '#F44336' : theme.colors.text }}>
+              {formatTime(timeLeft)}
+            </ThemedText>
+            <ThemedText style={{ fontSize: 12, color: theme.colors.textSecondary }}>Tiempo restante</ThemedText>
+          </View>
+
+          <ThemedText style={[styles.infoText, { marginBottom: 24 }]}>
+            Este código es válido para una sola compra o hasta que el tiempo expire.
+          </ThemedText>
+
+          {card && (
+            <View style={{ transform: [{ scale: 0.8 }], alignItems: 'center' }}>
+              <CreditCard card={card} />
+            </View>
+          )}
+        </View>
+      </OperationResultScreen>
+    );
+  }
+
   return (
     <ThemedView style={styles.container}>
       <CardOperationHeader
@@ -61,7 +102,7 @@ export default function DynamicCvvScreen() {
             </ThemedText>
             
             <View style={[styles.cvvBox, { backgroundColor: theme.colors.surfaceElevated }]}>
-              <ThemedText type="title" style={{ fontSize: 48, letterSpacing: 8 }}>{cvv}</ThemedText>
+              <ThemedText type="title" style={{ fontSize: 48, lineHeight: 56, letterSpacing: 8 }}>{cvv}</ThemedText>
             </View>
 
             <View style={styles.timerContainer}>

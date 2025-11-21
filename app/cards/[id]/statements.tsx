@@ -92,55 +92,336 @@ export default function StatementsScreen() {
   const handleExport = async () => {
     try {
       setIsExporting(true);
-      
-      const html = `
-        <html>
-          <head>
+
+      // Calculate totals
+      const totalPayments = filteredTransactions
+        .filter(t => t.type === 'payment')
+        .reduce((sum, t) => sum + t.amount, 0);
+        
+      const totalPurchases = filteredTransactions
+        .filter(t => t.type !== 'payment')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const closingBalance = totalPurchases - totalPayments;
+
+      const logoHtml = theme.tenant.logoUrl 
+        ? `<img src="${theme.tenant.logoUrl}" style="height: 40px; object-fit: contain;" />`
+        : `<div class="brand-logo">${theme.tenant.name}</div>`;
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Estado de Cuenta</title>
             <style>
-              body { font-family: Helvetica, Arial, sans-serif; padding: 20px; }
-              h1 { color: ${theme.tenant.mainColor}; }
-              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-              th { background-color: #f2f2f2; }
-              .amount { text-align: right; }
-              .header { margin-bottom: 30px; }
+                :root {
+                    --primary-color: ${theme.tenant.mainColor};
+                    --text-dark: #000000;
+                    --text-medium: #374151;
+                    --text-light: #4B5563;
+                    --bg-zebra: #F9FAFB;
+                    --border-color: #E5E7EB;
+                    --spacing-sm: 8px;
+                    --spacing-md: 16px;
+                    --spacing-lg: 32px;
+                }
+
+                body {
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                    color: var(--text-dark);
+                    line-height: 1.5;
+                    margin: 0;
+                    padding: 0;
+                    background: #f0f0f0;
+                }
+
+                /* Fixed Header/Footer Styles */
+                .page-header, .page-header-space {
+                    height: 100px;
+                }
+                .page-footer, .page-footer-space {
+                    height: 50px;
+                }
+
+                .page-header {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    background: white;
+                    z-index: 100;
+                    border-bottom: 2px solid var(--primary-color);
+                    padding: 20px 40px 10px; /* Match page margins */
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                }
+
+                .page-footer {
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                    background: white;
+                    border-top: 1px solid var(--border-color);
+                    padding: 10px 0;
+                    text-align: center;
+                    font-size: 10px;
+                    color: var(--text-light);
+                }
+
+                /* Main Layout Table */
+                .layout-table {
+                    width: 100%;
+                    border: none;
+                    border-collapse: collapse;
+                }
+                
+                .layout-table thead {
+                    display: table-header-group;
+                }
+                
+                .layout-table tfoot {
+                    display: table-footer-group;
+                }
+
+                .page-container {
+                    background: white;
+                    width: 100%;
+                    max-width: 210mm;
+                    margin: 0 auto;
+                    padding: 0 40px; /* Horizontal padding only, vertical handled by spacers */
+                    box-sizing: border-box;
+                }
+
+                .brand-logo {
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: var(--primary-color);
+                    text-transform: uppercase;
+                    letter-spacing: -0.5px;
+                }
+
+                .statement-info {
+                    text-align: right;
+                }
+
+                .statement-info h1 {
+                    margin: 0;
+                    font-size: 24px;
+                    font-weight: 300;
+                    color: var(--text-medium);
+                }
+
+                .details-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--spacing-lg);
+                    margin-bottom: var(--spacing-lg);
+                    margin-top: 20px;
+                }
+
+                .address-block h3 {
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    color: var(--text-light);
+                    margin-bottom: var(--spacing-sm);
+                    letter-spacing: 1px;
+                }
+
+                .address-block p {
+                    margin: 0;
+                    font-size: 14px;
+                }
+
+                .summary-section {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: var(--spacing-md);
+                    background-color: var(--bg-zebra);
+                    padding: var(--spacing-md);
+                    border-radius: 8px;
+                    margin-bottom: var(--spacing-lg);
+                }
+
+                .summary-card h4 {
+                    margin: 0 0 4px 0;
+                    font-size: 12px;
+                    color: var(--text-medium);
+                    font-weight: 500;
+                }
+
+                .summary-card .amount {
+                    font-size: 18px;
+                    font-weight: 700;
+                    font-variant-numeric: tabular-nums;
+                }
+
+                .amount.positive { color: #047857; }
+                .amount.negative { color: #B91C1C; }
+
+                /* Transaction Table */
+                .tx-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: var(--spacing-lg);
+                    table-layout: fixed;
+                }
+
+                .tx-table th {
+                    text-align: left;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    color: var(--text-medium);
+                    padding: var(--spacing-sm) 8px;
+                    border-bottom: 1px solid var(--border-color);
+                    font-weight: 700;
+                    background-color: white; /* Ensure header covers content when scrolling/breaking */
+                }
+
+                .tx-table th.text-right { text-align: right; }
+
+                .tx-table td {
+                    padding: 10px 8px;
+                    font-size: 13px;
+                    border-bottom: 1px solid var(--border-color);
+                    color: var(--text-dark);
+                    word-wrap: break-word;
+                }
+
+                .tx-table tr:nth-child(even) {
+                    background-color: var(--bg-zebra);
+                }
+
+                td.amount-col {
+                    text-align: right;
+                    font-family: 'Courier New', Courier, monospace;
+                    font-variant-numeric: tabular-nums;
+                    font-weight: 500;
+                }
+                
+                .brand-text {
+                    color: #4b5563;
+                    font-size: 12px;
+                    letter-spacing: 0.5px;
+                    display: inline-flex;
+                    align-items: baseline;
+                    margin-left: 4px;
+                }
+
+                @media print {
+                    thead { display: table-header-group; } 
+                    tfoot { display: table-footer-group; }
+                    body { margin: 0; }
+                    .page-container { max-width: 100%; width: 100%; padding: 0 20px; }
+                    .page-header { padding: 20px 20px 10px; }
+                }
             </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>Estado de Cuenta</h1>
-              <p><strong>Tarjeta:</strong> •••• 9010</p>
-              <p><strong>Periodo:</strong> ${selectedRange.label}</p>
-              <p><strong>Fecha de emisión:</strong> ${new Date().toLocaleDateString()}</p>
+        </head>
+        <body>
+
+        <!-- Fixed Header -->
+        <div class="page-header">
+            <div class="brand-logo">
+                ${logoHtml}
             </div>
-            
-            <table>
-              <thead>
+            <div class="statement-info">
+                <h1>Estado de Cuenta</h1>
+                <p style="margin: 5px 0 0; color: var(--text-medium); font-size: 14px;">
+                    ${selectedRange.label}
+                </p>
+            </div>
+        </div>
+
+        <!-- Fixed Footer -->
+        <div class="page-footer">
+            <p>Este documento es un comprobante oficial emitido por ${theme.tenant.name}. Para dudas o aclaraciones contacte a soporte.</p>
+            <div style="margin-top: 4px; display: flex; align-items: center; justify-content: center;">
+                <span>Powered by</span>
+                <span class="brand-text">
+                    <span style="font-weight: 300">Libélula</span><span style="font-weight: 700">Soft</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Main Layout Table for Repeating Headers/Footers -->
+        <table class="layout-table">
+            <thead>
+                <tr><td><div class="page-header-space"></div></td></tr>
+            </thead>
+            <tbody>
                 <tr>
-                  <th>Fecha</th>
-                  <th>Descripción</th>
-                  <th>Tipo</th>
-                  <th>Monto</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${filteredTransactions.map(t => `
-                  <tr>
-                    <td>${t.date}</td>
-                    <td>${t.description}</td>
-                    <td>${t.type === 'payment' ? 'Pago' : 'Consumo'}</td>
-                    <td class="amount" style="color: ${t.type === 'payment' ? 'green' : 'black'}">
-                      ${t.type === 'payment' ? '-' : ''}$${t.amount.toFixed(2)}
+                    <td>
+                        <div class="page-container">
+                            <div class="details-grid">
+                                <div class="address-block">
+                                    <h3>Cliente</h3>
+                                    <p><strong>Usuario Ejemplo</strong></p>
+                                    <p>Av. Principal 123</p>
+                                    <p>Ciudad, País</p>
+                                    <p>Tarjeta: •••• ${card?.last4 || '9010'}</p>
+                                </div>
+                                <div class="address-block" style="text-align: right;">
+                                    <h3>Emisor</h3>
+                                    <p><strong>${theme.tenant.name} Financiera</strong></p>
+                                    <p>Torre Corporativa, Piso 10</p>
+                                    <p>soporte@${theme.tenant.name.toLowerCase()}.com</p>
+                                    <p>Fecha de emisión: ${new Date().toLocaleDateString()}</p>
+                                </div>
+                            </div>
+
+                            <div class="summary-section">
+                                <div class="summary-card">
+                                    <h4>Total Pagos</h4>
+                                    <div class="amount positive">+$${totalPayments.toFixed(2)}</div>
+                                </div>
+                                <div class="summary-card">
+                                    <h4>Total Consumos</h4>
+                                    <div class="amount negative">-$${totalPurchases.toFixed(2)}</div>
+                                </div>
+                                <div class="summary-card">
+                                    <h4>Balance del Periodo</h4>
+                                    <div class="amount" style="color: var(--primary-color);">$${closingBalance.toFixed(2)}</div>
+                                </div>
+                            </div>
+
+                            <table class="tx-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%">Fecha</th>
+                                        <th style="width: 50%">Descripción</th>
+                                        <th style="width: 15%">Tipo</th>
+                                        <th class="text-right" style="width: 15%">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${filteredTransactions.map(t => `
+                                        <tr>
+                                            <td>${t.date}</td>
+                                            <td>${t.description}</td>
+                                            <td>${t.type === 'payment' ? 'Pago' : 'Consumo'}</td>
+                                            <td class="amount-col ${t.type === 'payment' ? 'positive' : ''}">
+                                                ${t.type === 'payment' ? '+' : '-'}$${t.amount.toFixed(2)}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
                     </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </body>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr><td><div class="page-footer-space"></div></td></tr>
+            </tfoot>
+        </table>
+
+        </body>
         </html>
       `;
 
-      const { uri } = await printToFileAsync({ html });
+      const { uri } = await printToFileAsync({ html: htmlContent });
       await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
       
     } catch (error) {

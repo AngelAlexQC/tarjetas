@@ -40,7 +40,7 @@ function RewardsScreen() {
         </View>
         <ThemedView style={[styles.balanceCard, { backgroundColor: theme.tenant.mainColor }]}>
           <ThemedText style={{ color: '#FFFFFF', opacity: 0.9 }}>Puntos Disponibles</ThemedText>
-          <ThemedText type="title" style={{ color: '#FFFFFF', fontSize: 40, marginVertical: 8 }}>
+          <ThemedText type="title" style={{ color: '#FFFFFF', fontSize: 40, lineHeight: 48, marginVertical: 8 }}>
             {points.toLocaleString()}
           </ThemedText>
           <ThemedText style={{ color: '#FFFFFF', opacity: 0.9 }}>Equivalente a ${(points / 100).toFixed(2)}</ThemedText>
