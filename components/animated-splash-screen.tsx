@@ -403,12 +403,15 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
   );
 };
 
+// Variable global para controlar si el splash ya se mostró en esta sesión
+let globalSplashShown = false;
+
 export function AnimatedSplashScreen({
   children,
   onReady,
 }: AnimatedSplashScreenProps) {
   const [isAppReady, setAppReady] = useState(false);
-  const [isSplashAnimationComplete, setSplashAnimationComplete] = useState(false);
+  const [isSplashAnimationComplete, setSplashAnimationComplete] = useState(globalSplashShown);
 
   // Valores animados para transición suave
   const opacity = useSharedValue(1);
@@ -444,7 +447,7 @@ export function AnimatedSplashScreen({
   }, [onReady]);
 
   useEffect(() => {
-    if (isAppReady) {
+    if (isAppReady && !globalSplashShown) {
       // Valores para evitar warnings
       const masterProgressValue = masterProgress;
       const dragonflyYValue = dragonflyY;
@@ -521,6 +524,7 @@ export function AnimatedSplashScreen({
         });
 
         setTimeout(() => {
+          globalSplashShown = true;
           runOnJS(setSplashAnimationComplete)(true);
         }, 500);
       }, 2500);

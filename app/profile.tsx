@@ -2,6 +2,9 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { ThemedButton } from "@/components/ui/themed-button";
 import { ThemedInput } from "@/components/ui/themed-input";
+import { useAuth } from "@/contexts/auth-context";
+import { useTenantTheme } from "@/contexts/tenant-theme-context";
+import { useTour } from "@/contexts/tour-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from "expo-image";
@@ -17,6 +20,9 @@ export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabType>('info');
+  const { logout } = useAuth();
+  const { clearTenant } = useTenantTheme();
+  const { resetTour } = useTour();
 
   // Mock user data
   const user = {
@@ -33,6 +39,31 @@ export default function ProfileScreen() {
     version: "1.0.0",
     build: "145",
     date: "21 de Noviembre, 2025"
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Cerrar sesión",
+      "¿Estás seguro de que quieres cerrar sesión? Se borrarán los datos locales y la aplicación se reiniciará.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { 
+          text: "Cerrar sesión", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logout();
+              await clearTenant();
+              await resetTour();
+              router.replace('/');
+            } catch (error) {
+              console.error("Error al cerrar sesión:", error);
+              router.replace('/');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleTabPress = (tab: string) => {
@@ -139,7 +170,7 @@ export default function ProfileScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.logoutButton} onPress={() => router.replace('/')}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color="#FFFFFF" />
             <ThemedText style={styles.logoutText}>Cerrar sesión</ThemedText>
           </TouchableOpacity>
