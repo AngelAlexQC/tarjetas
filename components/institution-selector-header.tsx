@@ -3,27 +3,22 @@ import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
+    FadeInDown,
     useAnimatedStyle,
     useSharedValue,
-    withSequence,
     withSpring,
-    withTiming
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 
 /**
  * Header minimalista moderno - Fintech Design 2025
- * Siguiendo tendencias de apps como Revolut, N26, Nubank
- * - Diseño limpio sin bordes pesados
- * - Avatar de institución prominente con gradiente
- * - Tipografía clara y jerárquica
- * - Micro-animaciones sutiles
- * - Espaciado generoso
+ * Diseño "Flat & Clean" optimizado para Dark Mode
  */
 export function InstitutionSelectorHeader() {
   const theme = useAppTheme();
@@ -32,7 +27,6 @@ export function InstitutionSelectorHeader() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const scaleValue = useSharedValue(1);
-  const glowValue = useSharedValue(0);
   const [imageError, setImageError] = useState(false);
   
   // Resetear error de imagen cuando cambia el tema
@@ -40,16 +34,13 @@ export function InstitutionSelectorHeader() {
     setImageError(false);
   }, [currentTheme?.slug]);
   
+  // Ancho consistente con el resto de componentes (max 420px)
   const containerWidth = layout.isLandscape 
-    ? Math.min(layout.screenWidth * 0.6, 500)
-    : layout.screenWidth * 0.85;
+    ? Math.min(layout.screenWidth * 0.5, 420)
+    : Math.min(layout.screenWidth * 0.9, 420);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scaleValue.value }],
-  }));
-
-  const glowStyle = useAnimatedStyle(() => ({
-    opacity: glowValue.value,
   }));
 
   const handlePress = () => {
@@ -57,94 +48,115 @@ export function InstitutionSelectorHeader() {
   };
 
   const handlePressIn = () => {
-    scaleValue.value = withSpring(0.97, { damping: 20, stiffness: 300 });
-    glowValue.value = withTiming(1, { duration: 150 });
+    scaleValue.value = withSpring(0.98, { damping: 15 });
   };
 
   const handlePressOut = () => {
-    scaleValue.value = withSpring(1, { damping: 20, stiffness: 300 });
-    glowValue.value = withSequence(
-      withTiming(0.6, { duration: 100 }),
-      withTiming(0, { duration: 200 })
-    );
+    scaleValue.value = withSpring(1, { damping: 15 });
   };
 
+  // Estilos específicos por plataforma
+  const isIOS = Platform.OS === 'ios';
+  const borderRadius = isIOS ? 10 : 24; // 10px para iOS (Apple Wallet style), 24px para Android (Material You)
+  
+  // Colores dinámicos según el modo
+  const backgroundColor = theme.isDark 
+    ? (isIOS ? 'rgba(28, 28, 30, 0.6)' : '#1C1C1E') 
+    : (isIOS ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF');
+    
+  const borderColor = theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
+  const shadowColor = theme.isDark ? '#000000' : '#000000';
+  const shadowOpacity = theme.isDark ? 0.3 : 0.05;
+
+  const Content = () => (
+    <View style={styles.contentRow}>
+      {/* Logo con fondo sutil */}
+      <View style={[styles.logoContainer, { 
+        backgroundColor: theme.isDark ? 'rgba(255,255,255,0.05)' : '#F5F5F5',
+        borderRadius: isIOS ? 8 : 12
+      }]}>
+        {currentTheme?.logoUrl && !imageError ? (
+          <Image
+            source={{ uri: currentTheme.logoUrl }}
+            style={styles.logo}
+            contentFit="contain"
+            onError={() => setImageError(true)}
+            transition={300}
+          />
+        ) : (
+          <View style={[styles.logoPlaceholder, { backgroundColor: theme.tenant.mainColor }]}>
+            <ThemedText style={styles.logoInitial}>
+              {currentTheme?.name.charAt(0)}
+            </ThemedText>
+          </View>
+        )}
+      </View>
+
+      {/* Información de texto */}
+      <View style={styles.textContainer}>
+        <ThemedText 
+          variant="secondary" 
+          style={[styles.label, { color: theme.isDark ? '#A1A1AA' : '#666666' }]}
+        >
+          Cuenta Principal
+        </ThemedText>
+        <ThemedText 
+          type="defaultSemiBold" 
+          style={[styles.institutionName, { color: theme.isDark ? '#FFFFFF' : '#000000' }]} 
+          numberOfLines={1}
+        >
+          {currentTheme?.name}
+        </ThemedText>
+      </View>
+
+      {/* Indicador de acción */}
+      <View style={[styles.actionIconContainer, { 
+        backgroundColor: theme.isDark ? 'rgba(255,255,255,0.1)' : '#F0F0F0',
+        borderRadius: isIOS ? 14 : 14
+      }]}>
+        <Ionicons 
+          name="chevron-down" 
+          size={16} 
+          color={theme.isDark ? '#FFFFFF' : '#000000'} 
+        />
+      </View>
+    </View>
+  );
+
   return (
-    <View style={[styles.wrapper, { paddingTop: insets.top + 8 }]}>
-      <Animated.View style={[styles.container, { width: containerWidth }, animatedStyle]}>
+    <View style={[styles.wrapper, { paddingTop: insets.top + 10 }]}>
+      <Animated.View 
+        entering={FadeInDown.delay(100).springify()}
+        style={[styles.container, { width: containerWidth, borderRadius }, animatedStyle]}
+      >
         <Pressable
           onPress={handlePress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          style={styles.pressable}
+          style={({ pressed }) => [
+            styles.pressable, 
+            { 
+              borderRadius,
+              borderColor,
+              shadowColor,
+              shadowOpacity,
+              backgroundColor: isIOS ? 'transparent' : backgroundColor,
+              opacity: pressed ? 0.9 : 1
+            }
+          ]}
         >
-          {/* Glow effect de fondo al presionar */}
-          <Animated.View style={[styles.glowBackground, glowStyle]}>
-            <LinearGradient
-              colors={[
-                `${theme.tenant.mainColor}15`,
-                `${theme.tenant.mainColor}05`,
-                'transparent'
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={StyleSheet.absoluteFillObject}
-            />
-          </Animated.View>
-
-          <View style={[styles.content, {
-            backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
-            shadowColor: theme.tenant.mainColor,
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: theme.isDark ? 0.6 : 0.35,
-            shadowRadius: 10,
-            elevation: 6,
-          }]}>
-            {/* Avatar de institución con logo real */}
-            <View style={[styles.avatarContainer, {
-              backgroundColor: '#FFFFFF',
-              shadowColor: theme.isDark ? '#000' : theme.tenant.mainColor,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: theme.isDark ? 0.3 : 0.2,
-              shadowRadius: 4,
-              elevation: 3,
-            }]}>
-              {imageError || !currentTheme?.logoUrl ? (
-                <View style={[styles.logoFallback, { backgroundColor: `${theme.tenant.mainColor}20` }]}>
-                  <Text style={[styles.logoFallbackText, { color: theme.tenant.mainColor }]}>
-                    {(currentTheme?.name || "??").substring(0, 2).toUpperCase()}
-                  </Text>
-                </View>
-              ) : (
-                <Image
-                  source={{ uri: currentTheme.logoUrl }}
-                  style={styles.institutionLogo}
-                  contentFit="contain"
-                  transition={200}
-                  onError={() => setImageError(true)}
-                />
-              )}
-            </View>
-
-            {/* Dot de estado */}
-            <View style={[styles.statusDot, { 
-              backgroundColor: theme.tenant.mainColor 
-            }]} />
-
-            {/* Nombre de la institución */}
-            <ThemedText style={styles.institutionName} numberOfLines={1}>
-              {currentTheme?.name || "Seleccionar institución"}
-            </ThemedText>
-
-            {/* Chevron minimalista */}
-            <ThemedText style={[styles.chevron, {
-              color: theme.isDark 
-                ? theme.colors.textSecondary
-                : 'rgba(0, 0, 0, 0.25)'
-            }]}>
-              ›
-            </ThemedText>
-          </View>
+          {isIOS ? (
+            <BlurView 
+              intensity={theme.isDark ? 40 : 60} 
+              tint={theme.isDark ? 'dark' : 'light'}
+              style={[StyleSheet.absoluteFill, { borderRadius }]}
+            >
+              <View style={[StyleSheet.absoluteFill, { backgroundColor }]} />
+              <Content />
+            </BlurView>
+          ) : (
+            <Content />
+          )}
         </Pressable>
       </Animated.View>
     </View>
@@ -154,71 +166,68 @@ export function InstitutionSelectorHeader() {
 const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
-    paddingBottom: 4,
+    zIndex: 100,
+    marginBottom: 16,
   },
   container: {
-    // El ancho se aplica din\u00e1micamente en el componente
+    height: 60,
+    // borderRadius se maneja dinámicamente
   },
   pressable: {
-    borderRadius: 16,
-    overflow: "hidden",
+    flex: 1,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 12,
+    elevation: 4,
+    justifyContent: 'center',
+    overflow: 'hidden', // Importante para el BlurView
   },
-  glowBackground: {
-    position: 'absolute',
-    top: -20,
-    left: -20,
-    right: -20,
-    bottom: -20,
+  contentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    height: '100%', // Asegurar que ocupe todo el alto
   },
-  content: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: '4%',
-    paddingVertical: '2.5%',
-    gap: '3%',
-    borderRadius: 16,
+  logoContainer: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
-  avatarContainer: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-    padding: 6,
+  logo: {
+    width: 28,
+    height: 28,
   },
-  institutionLogo: {
-    width: 30,
-    height: 30,
+  logoPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  logoFallback: {
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 6,
+  logoInitial: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  logoFallbackText: {
-    fontSize: 14,
-    fontWeight: "700",
+  textContainer: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: 'center',
+  },
+  label: {
+    fontSize: 11,
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
-  },
-  statusDot: {
-    aspectRatio: 1,
-    width: '1.8%',
-    borderRadius: 100,
-    flexShrink: 0,
+    marginBottom: 2,
   },
   institutionName: {
     fontSize: 15,
-    fontWeight: "600",
-    letterSpacing: -0.3,
-    flex: 1,
   },
-  chevron: {
-    fontSize: 22,
-    fontWeight: "400",
-    opacity: 0.3,
-    flexShrink: 0,
+  actionIconContainer: {
+    width: 28,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

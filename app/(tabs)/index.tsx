@@ -7,9 +7,10 @@ import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Tenant {
   slug: string;
@@ -213,6 +214,7 @@ export default function TenantSelectorScreen() {
   }, [searchQuery]);
 
   const countries = Object.keys(groupedTenants).sort();
+  const isIOS = Platform.OS === 'ios';
 
   return (
     <ThemedView style={styles.container}>
@@ -229,11 +231,13 @@ export default function TenantSelectorScreen() {
           style={layout.isLandscape ? styles.headerCompact : styles.header}
         >
           <View style={[styles.userAvatarContainer, {
-            shadowColor: theme.isDark ? '#000' : '#007AFF',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: theme.isDark ? 0.3 : 0.15,
-            shadowRadius: 8,
-            elevation: 4,
+            shadowColor: theme.isDark ? '#000' : '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: theme.isDark ? 0.3 : 0.1,
+            shadowRadius: 12,
+            elevation: 8,
+            borderColor: theme.colors.borderSubtle,
+            borderWidth: 1,
           }]}>
             <Image
               source={{ uri: authenticatedUser.avatar }}
@@ -243,11 +247,11 @@ export default function TenantSelectorScreen() {
           </View>
           <View style={layout.isLandscape ? { flex: 1 } : undefined}>
             <ThemedText type="title" style={[styles.title, layout.isLandscape && { textAlign: 'left', fontSize: 24 }]}>
-              Hola {authenticatedUser.name}
+              Hola, {authenticatedUser.name}
             </ThemedText>
             {layout.isPortrait && (
               <ThemedText style={styles.subtitle}>
-                Elige tu entidad financiera para continuar
+                Selecciona tu entidad financiera
               </ThemedText>
             )}
           </View>
@@ -257,26 +261,25 @@ export default function TenantSelectorScreen() {
         <Animated.View 
           entering={FadeInDown.duration(600).delay(100).springify()}
           style={[styles.searchContainer, {
-            backgroundColor: theme.isDark ? '#2C2C2E' : '#FFFFFF',
-            shadowColor: theme.isDark ? '#000' : '#007AFF',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: theme.isDark ? 0.4 : 0.1,
-            shadowRadius: 8,
-            elevation: 4,
+            backgroundColor: theme.isDark ? '#2C2C2E' : '#F2F2F7', // iOS System Gray 6 equivalent
+            borderRadius: isIOS ? 10 : 24, // iOS vs Android style
+            borderWidth: isIOS ? 0 : 1,
+            borderColor: theme.colors.borderSubtle,
           }]}
         >
           <View style={styles.searchIconContainer}>
-            <ThemedText style={styles.searchIcon}>🔍</ThemedText>
+            <Ionicons name="search" size={20} color={theme.isDark ? "#8E8E93" : "#8E8E93"} />
           </View>
           <TextInput
             style={[
               styles.searchInput,
               {
-                color: theme.isDark ? "#ECEDEE" : "#11181C",
+                color: theme.colors.text,
+                fontFamily: isIOS ? 'System' : 'Roboto',
               },
             ]}
             placeholder="Buscar institución o país..."
-            placeholderTextColor={theme.isDark ? "#888" : "#999"}
+            placeholderTextColor={theme.isDark ? "#8E8E93" : "#8E8E93"}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -284,10 +287,10 @@ export default function TenantSelectorScreen() {
             <Pressable
               onPress={() => setSearchQuery("")}
               style={[styles.clearButton, {
-                backgroundColor: theme.isDark ? '#3C3C3E' : '#F0F0F0',
+                backgroundColor: theme.isDark ? '#3A3A3C' : '#C7C7CC',
               }]}
             >
-              <ThemedText style={styles.clearButtonText}>✕</ThemedText>
+              <Ionicons name="close" size={14} color={theme.isDark ? "#FFF" : "#000"} />
             </Pressable>
           )}
         </Animated.View>
@@ -311,14 +314,10 @@ export default function TenantSelectorScreen() {
                     {country}
                   </ThemedText>
                   <View style={[styles.countryBadge, {
-                    backgroundColor: theme.isDark ? '#2C2C2E' : '#F0F0F0',
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: theme.isDark ? 0.3 : 0.08,
-                    shadowRadius: 4,
-                    elevation: 2,
+                    backgroundColor: theme.isDark ? '#2C2C2E' : '#E5E5EA',
+                    borderRadius: isIOS ? 6 : 12,
                   }]}>
-                    <ThemedText style={styles.countryBadgeText}>
+                    <ThemedText style={[styles.countryBadgeText, { color: theme.colors.textSecondary }]}>
                       {groupedTenants[country].length}
                     </ThemedText>
                   </View>
@@ -333,21 +332,26 @@ export default function TenantSelectorScreen() {
                       styles.tenantCard,
                       layout.isLandscape && styles.tenantCardLandscape,
                       {
-                        shadowColor: tenant.mainColor,
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: theme.isDark ? 0.6 : 0.35,
-                        shadowRadius: 12,
-                        elevation: 8,
-                        opacity: pressed ? 0.85 : 1,
+                        backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
+                        borderRadius: isIOS ? 12 : 16,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: theme.isDark ? 0.2 : 0.05,
+                        shadowRadius: 8,
+                        elevation: 2,
+                        opacity: pressed ? 0.8 : 1,
                         transform: [{ scale: pressed ? 0.98 : 1 }],
+                        borderWidth: 1,
+                        borderColor: theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
                       },
                     ]}
                     onPress={() => handleTenantSelect(tenant)}
                   >
-                    <View style={[styles.cardContent, {
-                      backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
-                    }]}>
-                      <View style={styles.logoContainer}>
+                    <View style={styles.cardContent}>
+                      <View style={[styles.logoContainer, {
+                        backgroundColor: theme.isDark ? '#2C2C2E' : '#F2F2F7',
+                        borderRadius: isIOS ? 8 : 12,
+                      }]}>
                         {imageErrors[tenant.slug] ? (
                           <View style={[styles.logoFallback, { backgroundColor: `${tenant.mainColor}20` }]}>
                             <Text style={[styles.logoFallbackText, { color: tenant.mainColor }]}>
@@ -369,27 +373,24 @@ export default function TenantSelectorScreen() {
                           {tenant.name}
                         </ThemedText>
                         <View style={styles.metadataRow}>
-                          <ThemedText style={styles.countryFlag}>
-                            {tenant.countryFlag}
-                          </ThemedText>
-                          <View style={[styles.separator, {
-                            backgroundColor: theme.isDark ? '#3C3C3E' : '#E0E0E0',
-                          }]} />
-                          <ThemedText style={styles.currency}>
-                            {tenant.currencyCode}
-                          </ThemedText>
+                          <View style={[styles.currencyBadge, { 
+                            backgroundColor: theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                            borderRadius: 4,
+                          }]}>
+                            <ThemedText style={styles.currency}>
+                              {tenant.currencyCode}
+                            </ThemedText>
+                          </View>
                         </View>
                       </View>
                       
-                      {/* Indicador de color prominente */}
-                      <View style={styles.colorIndicatorContainer}>
-                        <View
-                          style={[
-                            styles.colorIndicator,
-                            { backgroundColor: tenant.mainColor }
-                          ]}
-                        />
-                      </View>
+                      {/* Chevron icon instead of color bar for cleaner look */}
+                      <Ionicons 
+                        name="chevron-forward" 
+                        size={20} 
+                        color={theme.colors.icon} 
+                        style={{ opacity: 0.3 }}
+                      />
                     </View>
                   </Pressable>
                 ))}
@@ -401,7 +402,7 @@ export default function TenantSelectorScreen() {
               entering={FadeInDown.duration(600).delay(300).springify()}
               style={styles.emptyState}
             >
-              <ThemedText style={styles.emptyStateIcon}>🔍</ThemedText>
+              <Ionicons name="search-outline" size={64} color={theme.colors.textSecondary} style={{ opacity: 0.3, marginBottom: 16 }} />
               <ThemedText type="defaultSemiBold" style={styles.emptyStateTitle}>
                 No se encontraron instituciones
               </ThemedText>
@@ -480,14 +481,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 28,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-    gap: 10,
+    paddingHorizontal: 12,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 2,
+    gap: 8,
   },
   searchIconContainer: {
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -497,29 +497,28 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 8,
     fontSize: 16,
-    borderRadius: 10,
     backgroundColor: "transparent",
   },
   clearButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
   clearButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     opacity: 0.6,
   },
   tenantsContainer: {
-    gap: 20,
+    gap: 24,
   },
   countryHeader: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 4,
     marginBottom: 12,
     gap: 10,
@@ -528,18 +527,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   countryName: {
-    fontSize: 18,
+    fontSize: 17,
+    fontWeight: '600',
     flex: 1,
+    letterSpacing: -0.4,
   },
   countryBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   countryBadgeText: {
     fontSize: 13,
-    fontWeight: "600",
-    opacity: 0.7,
+    fontWeight: "500",
   },
   tenantsGrid: {
     flexDirection: 'row',
@@ -548,9 +547,7 @@ const styles = StyleSheet.create({
     marginHorizontal: -6,
   },
   tenantCard: {
-    borderRadius: 16,
-    overflow: "visible",
-    marginBottom: 16,
+    marginBottom: 12,
   },
   tenantCardLandscape: {
     flex: 1,
@@ -560,25 +557,17 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 18,
+    padding: 16,
     position: "relative",
-    borderRadius: 16,
     overflow: "hidden",
   },
   logoContainer: {
-    width: 65,
-    height: 65,
+    width: 56,
+    height: 56,
     marginRight: 16,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
     padding: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
   logo: {
     width: "100%",
@@ -592,43 +581,35 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   logoFallbackText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "700",
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   tenantInfo: {
     flex: 1,
   },
   tenantName: {
-    fontSize: 17,
-    marginBottom: 8,
-    lineHeight: 22,
+    fontSize: 16,
+    marginBottom: 4,
+    lineHeight: 20,
     fontWeight: "600",
+    letterSpacing: -0.3,
   },
   metadataRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
-  separator: {
-    width: 1,
-    height: 14,
+  currencyBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
   currency: {
-    fontSize: 13,
-    fontWeight: "700",
-    letterSpacing: 0.5,
-    opacity: 0.75,
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 0.3,
+    opacity: 0.6,
   },
-  colorIndicatorContainer: {
-    marginLeft: 12,
-  },
-  colorIndicator: {
-    width: 4,
-    height: 50,
-    borderRadius: 2,
-  },
-
   emptyState: {
     alignItems: "center",
     paddingVertical: 60,

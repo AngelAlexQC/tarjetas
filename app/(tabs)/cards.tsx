@@ -18,6 +18,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
     Alert,
     FlatList,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -376,7 +377,10 @@ export default function CardsScreen() {
                 layout={LinearTransition.springify().damping(18).stiffness(90)}
               >
                 <AddToWalletButton
-                  onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
+                  onPress={() => {
+                    const walletName = Platform.OS === 'android' ? "Google Wallet" : "Apple Wallet";
+                    Alert.alert(`Agregar a ${walletName}`, `Esta tarjeta se agregará a tu ${walletName}`);
+                  }}
                 />
               </Animated.View>
             </Animated.View>
@@ -426,6 +430,7 @@ export default function CardsScreen() {
             {/* Panel de información financiera */}
             {activeCard && (
               <Animated.View
+                style={styles.financialInfoWrapper}
                 entering={FadeInUp.duration(600).delay(100).springify()}
                 layout={LinearTransition.springify().damping(20).stiffness(100)}
               >
@@ -438,14 +443,17 @@ export default function CardsScreen() {
               </Animated.View>
             )}
 
-            {/* Botón agregar a Apple Wallet */}
+            {/* Botón agregar a Wallet */}
             <Animated.View 
               style={styles.addCardContainer}
               entering={FadeInUp.duration(700).delay(200).springify()}
               layout={LinearTransition.springify().damping(20).stiffness(100)}
             >
               <AddToWalletButton
-                onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
+                onPress={() => {
+                  const walletName = Platform.OS === 'android' ? "Google Wallet" : "Apple Wallet";
+                  Alert.alert(`Agregar a ${walletName}`, `Esta tarjeta se agregará a tu ${walletName}`);
+                }}
               />
             </Animated.View>
           </>
@@ -842,6 +850,12 @@ const createStyles = (
     paddingHorizontal: 20,
     paddingBottom: 20,
     marginTop: 8,
+    maxWidth: 420,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  financialInfoWrapper: {
+    paddingHorizontal: 20,
     maxWidth: 420,
     alignSelf: 'center',
     width: '100%',

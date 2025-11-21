@@ -380,13 +380,10 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
 
 const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.create({
   container: {
-    marginHorizontal: 20,
     marginTop: 6,
     marginBottom: 4,
-    borderRadius: 16,
+    borderRadius: Platform.OS === 'ios' ? 10 : 24,
     overflow: Platform.OS === 'ios' ? 'hidden' : 'visible',
-    maxWidth: 420,
-    alignSelf: 'center',
     width: '100%',
     ...Platform.select({
       ios: {
@@ -401,14 +398,14 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
     }),
   },
   blurContainer: {
-    borderRadius: 16,
+    borderRadius: 10,
     borderWidth: 0.5,
     borderColor: theme.colors.borderSubtle,
     overflow: 'hidden',
   },
   androidContainer: {
     backgroundColor: theme.isDark ? 'rgba(28, 28, 30, 0.95)' : 'rgba(255, 255, 255, 0.98)',
-    borderRadius: 16,
+    borderRadius: 24,
     borderWidth: 0.5,
     borderColor: theme.colors.borderSubtle,
   },
@@ -500,5 +497,5 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
 // Hook para usar estilos con tema
 function useStyles() {
   const theme = useAppTheme();
-  return React.useMemo(() => createStyles(theme), [theme.mode]);
+  return React.useMemo(() => createStyles(theme), [theme]);
 }
