@@ -1,10 +1,12 @@
 import { NavigationButton } from '@/components/navigation/navigation-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ThemedButton } from '@/components/ui/themed-button';
+import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
 const FAQ_ITEMS = [
   { 
@@ -36,6 +38,25 @@ const FAQ_ITEMS = [
 export default function FaqScreen() {
   const theme = useAppTheme();
   const router = useRouter();
+  const { resetTour } = useTour();
+
+  const handleResetTour = async () => {
+    Alert.alert(
+      "Reiniciar Tour",
+      "¿Quieres volver a ver el recorrido guiado de la aplicación?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { 
+          text: "Reiniciar", 
+          onPress: async () => {
+            await resetTour();
+            router.dismissAll();
+            router.replace('/(tabs)/cards');
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -51,6 +72,18 @@ export default function FaqScreen() {
         headerTitleStyle: { color: theme.colors.text },
       }} />
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.resetSection}>
+          <ThemedText type="subtitle" style={styles.resetTitle}>¿Necesitas ayuda con la app?</ThemedText>
+          <ThemedText style={styles.resetDescription}>
+            Si quieres volver a ver las explicaciones de las funcionalidades, puedes reiniciar el tour interactivo.
+          </ThemedText>
+          <ThemedButton 
+            title="Reiniciar Tour Guiado" 
+            onPress={handleResetTour}
+            variant="secondary"
+          />
+        </View>
+
         {FAQ_ITEMS.map((item, index) => (
             <View key={index} style={[styles.item, { borderColor: theme.colors.border }]}>
                 <ThemedText type="subtitle" style={styles.question}>{item.question}</ThemedText>
@@ -65,6 +98,22 @@ export default function FaqScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16, gap: 16 },
+  resetSection: {
+    padding: 20,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.03)',
+    marginBottom: 8,
+    gap: 12,
+    alignItems: 'center',
+  },
+  resetTitle: {
+    textAlign: 'center',
+  },
+  resetDescription: {
+    textAlign: 'center',
+    opacity: 0.7,
+    marginBottom: 4,
+  },
   item: { padding: 16, borderRadius: 12, borderWidth: 1 },
   question: { marginBottom: 8, fontSize: 16, fontWeight: '600' },
   answer: { opacity: 0.8, lineHeight: 20 },

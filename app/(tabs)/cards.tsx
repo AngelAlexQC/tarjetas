@@ -1,29 +1,23 @@
 import { CardActionsGrid } from "@/components/cards/card-actions-grid";
 import { CardFinancialInfo } from "@/components/cards/card-financial-info";
+import { CreditCard } from "@/components/cards/credit-card";
 import { InstitutionSelectorHeader } from "@/components/institution-selector-header";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
-import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
-import { CardBrandIcons } from "@/components/ui/card-brand-icons";
-import { ChipIcon } from "@/components/ui/chip-icon";
 import { FaqButton } from "@/components/ui/faq-button";
 import { CardActionType } from "@/constants/card-actions";
-import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import { Card, cardService } from "@/features/cards/services/card-service";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
-import { formatCardExpiry } from "@/utils/formatters/date";
 import { useScrollToTop } from '@react-navigation/native';
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Alert,
   FlatList,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
@@ -122,83 +116,18 @@ export default function CardsScreen() {
 
   const renderCard = ({ item, index }: { item: Card; index: number }) => {
     const isActive = index === activeCardIndex;
-    const cardDesign = getCardDesign(item.cardBrand, item.cardType);
 
     return (
-      <Pressable
-        style={[
-          styles.cardContainer,
-          {
-            width: CARD_WIDTH,
-          },
-        ]}
-        onPress={() => handleCardPress(index)}
-      >
-        <LinearGradient
-          colors={cardDesign.gradientColors as any}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.card, { opacity: isActive ? 1 : 0.6 }]}
-        >
-          {/* Patrón de fondo */}
-          <CardBackgroundPattern 
-            brand={item.cardBrand} 
-            width={CARD_WIDTH} 
-            height={CARD_HEIGHT} 
-          />
-          
-          <View style={styles.cardContent}>
-            {/* Header con tipo de tarjeta y logo */}
-            <View style={styles.cardHeader}>
-              <View style={styles.cardTypeBadge}>
-                <ThemedText
-                  style={[styles.cardTypeText, { color: cardDesign.textColor }]}
-                >
-                  {CARD_TYPE_LABELS[item.cardType]}
-                </ThemedText>
-              </View>
-              <View style={styles.cardBrandLogoContainer}>
-                {CardBrandIcons[item.cardBrand] && 
-                  CardBrandIcons[item.cardBrand]({ width: 60, height: 38 })
-                }
-              </View>
-            </View>
-
-            {/* Sección media con chip */}
-            <View style={styles.cardMiddle}>
-              {item.cardType !== 'virtual' && (
-                <View style={styles.cardChipContainer}>
-                  <ChipIcon width={50} height={40} />
-                </View>
-              )}
-            </View>
-
-            {/* Sección inferior: Solo datos de tarjeta */}
-            <View style={styles.cardBottomSection}>
-              {/* Número de tarjeta */}
-              <ThemedText
-                style={[styles.cardNumber, { color: cardDesign.textColor }]}
-              >
-                {item.cardNumber}
-              </ThemedText>
-
-              {/* Nombre y fecha */}
-              <View style={styles.cardFooter}>
-                <ThemedText
-                  style={[styles.cardHolder, { color: cardDesign.textColor }]}
-                >
-                  {item.cardHolder}
-                </ThemedText>
-                <ThemedText
-                  style={[styles.cardExpiry, { color: cardDesign.textColor }]}
-                >
-                  {formatCardExpiry(item.expiryDate)}
-                </ThemedText>
-              </View>
-            </View>
-          </View>
-        </LinearGradient>
-      </Pressable>
+      <View style={[styles.cardContainer, { width: CARD_WIDTH }]}>
+        <CreditCard
+          card={item}
+          width={CARD_WIDTH}
+          height={CARD_HEIGHT}
+          style={{ opacity: isActive ? 1 : 0.6 }}
+          onPress={() => handleCardPress(index)}
+          isActive={isActive}
+        />
+      </View>
     );
   };
 

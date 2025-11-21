@@ -10,8 +10,16 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
-import { Alert, Linking, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Alert, Linking, Modal, Platform, Pressable, StyleSheet, View, Dimensions } from 'react-native';
+import Animated, { 
+  FadeIn, 
+  FadeOut, 
+  useAnimatedStyle, 
+  useSharedValue, 
+  withTiming, 
+  runOnJS, 
+  Easing 
+} from 'react-native-reanimated';
 
 export interface CalendarEventConfig {
   title: string;
@@ -39,6 +47,10 @@ export interface InfoTooltipProps {
   tourKey?: string;
   /** Orden en el tour (opcional) */
   tourOrder?: number;
+  /** Duración del tooltip en ms cuando es parte de un tour (default: 5000ms) */
+  tourDuration?: number;
+  /** Acción a ejecutar al presionar (si triggerMode es longPress o si se quiere encadenar) */
+  onPress?: () => void;
 }
 
 export const InfoTooltip: React.FC<InfoTooltipProps> = ({
@@ -51,11 +63,14 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   triggerMode = 'press',
   tourKey,
   tourOrder = 0,
+  tourDuration = 5000,
+  onPress,
 }) => {
   const theme = useAppTheme();
   const styles = useStyles();
   const { register, unregister, onTooltipClosed } = useTour();
   const [isVisible, setIsVisible] = useState(false);
+  const [openedByTour, setOpenedByTour] = useState(false);
   const [triggerLayout, setTriggerLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const triggerRef = React.useRef<View>(null);
 
@@ -67,6 +82,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
         if (triggerRef.current) {
           triggerRef.current.measure((x, y, width, height, pageX, pageY) => {
             setTriggerLayout({ x: pageX, y: pageY, width, height });
+            setOpenedByTour(true);
             setIsVisible(true);
           });
         }
@@ -79,8 +95,11 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
     if (triggerMode === 'press') {
       event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
         setTriggerLayout({ x: pageX, y: pageY, width, height });
+        setOpenedByTour(false);
         setIsVisible(true);
       });
+    } else if (onPress) {
+      onPress();
     }
   };
 
@@ -88,6 +107,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
     if (triggerMode === 'longPress') {
       event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
         setTriggerLayout({ x: pageX, y: pageY, width, height });
+        setOpenedByTour(false);
         setIsVisible(true);
       });
     }
@@ -148,6 +168,8 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                   calendarEvent={calendarEvent} 
                   extraContent={extraContent}
                   onClose={handleClose}
+                  isTour={openedByTour}
+                  duration={tourDuration}
                 />
               </BlurView>
             ) : (
@@ -169,6 +191,8 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
                   calendarEvent={calendarEvent} 
                   extraContent={extraContent}
                   onClose={handleClose}
+                  isTour={openedByTour}
+                  duration={tourDuration}
                 />
               </View>
             )}
@@ -185,11 +209,42 @@ interface TooltipContentProps {
   calendarEvent?: CalendarEventConfig;
   extraContent?: React.ReactNode | ((props: { close: () => void }) => React.ReactNode);
   onClose: () => void;
+  isTour?: boolean;
+  duration?: number;
 }
 
-const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calendarEvent, extraContent, onClose }) => {
+const TooltipContent: React.FC<TooltipContentProps> = ({ 
+  title, 
+  content, 
+  calendarEvent, 
+  extraContent, 
+  onClose,
+  isTour,
+  duration = 5000
+}) => {
   const styles = useStyles();
   const theme = useAppTheme();
+  const progress = useSharedValue(0);
+
+  React.useEffect(() => {
+    if (isTour) {
+      progress.value = 0;
+      progress.value = withTiming(1, {
+        duration: duration,
+        easing: Easing.linear,
+      }, (finished) => {
+        if (finished) {
+          runOnJS(onClose)();
+        }
+      });
+    }
+  }, [isTour, duration, onClose, progress]);
+
+  const progressStyle = useAnimatedStyle(() => {
+    return {
+      width: `${progress.value * 100}%`,
+    };
+  });
 
   const handleAddToCalendar = async () => {
     if (!calendarEvent) return;
@@ -294,34 +349,53 @@ const TooltipContent: React.FC<TooltipContentProps> = ({ title, content, calenda
       )}
       <ThemedText style={styles.tooltipText}>{content}</ThemedText>
       
-      {extraContent && (
-        <View style={styles.extraContent}>
-          {typeof extraContent === 'function' 
-            ? extraContent({ close: onClose }) 
-            : (extraContent as React.ReactNode)}
-        </View>
-      )}
-
+      {/* Botón de calendario */}
       {calendarEvent && (
         <Pressable 
+          onPress={handleAddToCalendar}
           style={({ pressed }) => [
             styles.calendarButton,
-            { 
-              backgroundColor: theme.tenant.mainColor,
-              opacity: pressed ? 0.8 : 1,
-              transform: [{ scale: pressed ? 0.98 : 1 }]
-            }
+            { opacity: pressed ? 0.7 : 1 }
           ]}
-          onPress={handleAddToCalendar}
         >
-          <CalendarIcon size={16} color="#FFFFFF" />
-          <ThemedText style={styles.calendarButtonText}>Añadir al calendario</ThemedText>
+          <CalendarIcon size={16} color={theme.tenant.mainColor} />
+          <ThemedText style={[styles.calendarButtonText, { color: theme.tenant.mainColor }]}>
+            Añadir al calendario
+          </ThemedText>
         </Pressable>
       )}
 
-      <View style={styles.dismissHint}>
-        <ThemedText style={styles.dismissText}>Toca para cerrar</ThemedText>
-      </View>
+      {/* Contenido extra */}
+      {extraContent && (
+        <View style={styles.extraContent}>
+          {typeof extraContent === 'function' 
+            ? extraContent({ close: onClose })
+            : extraContent
+          }
+        </View>
+      )}
+
+      {/* Barra de progreso para tours */}
+      {isTour && (
+        <View style={styles.progressBarContainer}>
+          <Animated.View 
+            style={[
+              styles.progressBar, 
+              { backgroundColor: theme.tenant.mainColor },
+              progressStyle
+            ]} 
+          />
+        </View>
+      )}
+
+      {/* Hint de cierre para modo manual */}
+      {!isTour && (
+        <View style={styles.dismissHint}>
+          <ThemedText style={styles.dismissText}>
+            Toca fuera para cerrar
+          </ThemedText>
+        </View>
+      )}
     </View>
   );
 };
@@ -331,32 +405,49 @@ function getTooltipPosition(
   layout: { x: number; y: number; width: number; height: number },
   placement: 'top' | 'bottom' | 'left' | 'right'
 ) {
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const offset = 8;
-  const tooltipWidth = 280;
-  const tooltipHeight = 120;
+  const tooltipWidth = 280; // Ancho máximo estimado
+  const padding = 16; // Margen de seguridad con los bordes
+
+  let style: any = {};
+
+  // Lógica horizontal común para top/bottom
+  if (placement === 'top' || placement === 'bottom') {
+    // Intentar centrar respecto al elemento
+    let left = layout.x + (layout.width / 2) - (tooltipWidth / 2);
+
+    // Clamping (ajuste a bordes)
+    if (left < padding) {
+      left = padding;
+    } else if (left + tooltipWidth > screenWidth - padding) {
+      left = screenWidth - tooltipWidth - padding;
+    }
+    style.left = left;
+  }
 
   switch (placement) {
     case 'top':
-      return {
-        left: layout.x + layout.width / 2 - tooltipWidth / 2,
-        top: layout.y - tooltipHeight - offset,
-      };
+      // Usamos bottom para posicionar desde abajo y que crezca hacia arriba
+      // evitando solapar el elemento si la altura del tooltip varía
+      style.bottom = screenHeight - layout.y + offset;
+      break;
     case 'bottom':
-      return {
-        left: layout.x + layout.width / 2 - tooltipWidth / 2,
-        top: layout.y + layout.height + offset,
-      };
+      style.top = layout.y + layout.height + offset;
+      break;
     case 'left':
-      return {
-        left: layout.x - tooltipWidth - offset,
-        top: layout.y + layout.height / 2 - tooltipHeight / 2,
-      };
+      style.right = screenWidth - layout.x + offset;
+      style.top = layout.y; // Alineación top simple para laterales
+      style.maxWidth = layout.x - padding - offset; // Limitar ancho disponible
+      break;
     case 'right':
-      return {
-        left: layout.x + layout.width + offset,
-        top: layout.y + layout.height / 2 - tooltipHeight / 2,
-      };
+      style.left = layout.x + layout.width + offset;
+      style.top = layout.y;
+      style.maxWidth = screenWidth - style.left - padding;
+      break;
   }
+
+  return style;
 }
 
 const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
@@ -409,10 +500,7 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       fontWeight: '400',
     },
     extraContent: {
-      marginTop: 8,
-      paddingTop: 8,
-      borderTopWidth: 0.5,
-      borderTopColor: theme.colors.borderSubtle,
+      marginTop: 12,
     },
     dismissHint: {
       marginTop: 8,
@@ -427,32 +515,36 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
       color: theme.colors.textSecondary,
     },
     calendarButton: {
-      marginTop: 16,
-      paddingVertical: 10,
-      paddingHorizontal: 16,
-      borderRadius: 12,
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
       gap: 8,
-      ...Platform.select({
-        ios: {
-          shadowColor: theme.tenant.mainColor,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-        },
-        android: {
-          elevation: 4,
-          shadowColor: theme.tenant.mainColor,
-        },
-      }),
+      marginTop: 12,
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      backgroundColor: theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+      borderRadius: 8,
     },
     calendarButtonText: {
-      color: '#FFFFFF',
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: '600',
-      letterSpacing: 0.3,
+    },
+    progressContainer: {
+      height: 4,
+      borderRadius: 2,
+      overflow: 'hidden',
+      marginTop: 8,
+    },
+    progressBar: {
+      height: '100%',
+      borderRadius: 1.5,
+    },
+    progressBarContainer: {
+      height: 3,
+      backgroundColor: 'rgba(0,0,0,0.05)',
+      marginTop: 12,
+      borderRadius: 1.5,
+      overflow: 'hidden',
+      width: '100%',
     },
   });
 

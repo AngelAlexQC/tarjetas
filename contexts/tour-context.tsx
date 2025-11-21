@@ -11,6 +11,7 @@ interface TourContextType {
   register: (key: string, show: () => void, order?: number) => void;
   unregister: (key: string) => void;
   onTooltipClosed: (key: string) => void;
+  resetTour: () => Promise<void>;
 }
 
 const TourContext = createContext<TourContextType | undefined>(undefined);
@@ -92,8 +93,18 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     }
   }, [currentKey]); // saveSeenKey is stable enough or we can add it if we wrap it in useCallback too, but for now this fixes the lint warning about seenKeys which wasn't used inside but was in deps
 
+  const resetTour = useCallback(async () => {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEY_SEEN_TOOLTIPS);
+      setSeenKeys(new Set());
+      setCurrentKey(null);
+    } catch (e) {
+      console.error('Error resetting tour', e);
+    }
+  }, []);
+
   return (
-    <TourContext.Provider value={{ register, unregister, onTooltipClosed }}>
+    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour }}>
       {children}
     </TourContext.Provider>
   );
