@@ -186,14 +186,18 @@ export const ComponentTokens = {
   
   glassmorphism: {
     light: {
-      background: 'rgba(255, 255, 255, 0.7)',
-      border: 'rgba(255, 255, 255, 0.8)',
-      innerGlow: 'rgba(255, 255, 255, 0.25)',
+      background: 'rgba(255, 255, 255, 0.35)',
+      border: 'rgba(0, 0, 0, 0.06)',           // Borde oscuro muy sutil
+      innerGlow: 'rgba(255, 255, 255, 0.15)',
+      iconBorder: 'rgba(0, 0, 0, 0.08)',       // Borde del ícono sutil
+      outerRing: 'rgba(255, 255, 255, 0.25)',  // Anillo exterior sutil
     },
     dark: {
-      background: 'rgba(255, 255, 255, 0.08)',
-      border: 'rgba(255, 255, 255, 0.12)',
-      innerGlow: 'rgba(255, 255, 255, 0.06)',
+      background: 'rgba(255, 255, 255, 0.05)',
+      border: 'rgba(255, 255, 255, 0.12)',     // Borde moderado
+      innerGlow: 'rgba(255, 255, 255, 0.08)',
+      iconBorder: 'rgba(255, 255, 255, 0.15)',  // Borde del ícono moderado
+      outerRing: 'rgba(255, 255, 255, 0.08)',   // Anillo exterior muy sutil
     },
   },
 };

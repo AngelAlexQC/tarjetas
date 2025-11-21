@@ -67,9 +67,9 @@ export const CARD_ACTIONS: CardAction[] = [
   },
   {
     id: 'notifications',
-    title: 'Notificaciones',
-    description: 'Configurar alertas',
-    icon: 'bell',
+    title: 'Suscripciones',
+    description: 'Gestionar suscripciones',
+    icon: 'creditCard',
     color: '#00BCD4',
   },
 ];

@@ -35,7 +35,6 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
       >
         <Pressable
           style={({ pressed }) => [
-            styles.actionButton,
             {
               transform: [{ scale: pressed ? 0.88 : 1 }],
               opacity: pressed ? 0.85 : 1,
@@ -44,39 +43,32 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
           onPress={() => onActionPress(action.id)}
           disabled={isLoading}
         >
-          <View style={[styles.outerRing, { 
-            backgroundColor: glassTokens.background,
-            shadowColor: shadowColor,
-          }]}>
-            <LinearGradient
-              colors={gradientColors as any}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.buttonGradient}
-            >
-              <View style={[styles.glassOverlay, {
-                backgroundColor: theme.helpers.getOverlay('light')
-              }]} />
-              
-              <View style={[styles.iconContainer, {
-                backgroundColor: glassTokens.innerGlow,
-                borderColor: glassTokens.border,
-              }]}>
-                {(() => {
-                  const IconComponent = FinancialIcons[action.icon];
-                  return <IconComponent size={28} color={theme.isDark ? '#E0E0E0' : '#FFFFFF'} />;
-                })()}
-              </View>
-              
-              <View style={[styles.shimmerOverlay, {
-                backgroundColor: theme.helpers.getOverlay('medium'),
-              }]} />
-            </LinearGradient>
-          </View>
+          <LinearGradient
+            colors={gradientColors as any}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.buttonGradient, { 
+              shadowColor: shadowColor,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.12,
+              shadowRadius: 8,
+              elevation: 6,
+            }]}
+          >
+            {(() => {
+              const IconComponent = FinancialIcons[action.icon];
+              const iconColor = '#FFFFFF';
+              return (
+                <>
+                  <IconComponent size={26} color={iconColor} />
+                  <ThemedText style={[styles.actionLabel, { color: iconColor }]} numberOfLines={2}>
+                    {action.title}
+                  </ThemedText>
+                </>
+              );
+            })()}
+          </LinearGradient>
         </Pressable>
-        <ThemedText style={styles.actionLabel} numberOfLines={2}>
-          {action.title}
-        </ThemedText>
       </Animated.View>
     );
   };
@@ -158,55 +150,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: ACTION_BUTTON_SIZE + 10,
   },
-  actionButton: {
-    marginBottom: 10,
-  },
-  outerRing: {
+  buttonGradient: {
     width: ACTION_BUTTON_SIZE,
     height: ACTION_BUTTON_SIZE,
     borderRadius: ACTION_BUTTON_SIZE / 2,
-    padding: 3,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 10,
-  },
-  buttonGradient: {
-    width: '100%',
-    height: '100%',
-    borderRadius: (ACTION_BUTTON_SIZE - 6) / 2,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    position: 'relative',
   },
-  glassOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: (ACTION_BUTTON_SIZE - 6) / 2,
-  },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    zIndex: 2,
-  },
-  shimmerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '35%',
-    borderTopLeftRadius: (ACTION_BUTTON_SIZE - 6) / 2,
-    borderTopRightRadius: (ACTION_BUTTON_SIZE - 6) / 2,
-    zIndex: 1,
-  },
+
   icon: {
     fontSize: 26,
     color: '#FFFFFF',
@@ -215,11 +167,14 @@ const styles = StyleSheet.create({
     textShadowRadius: 3,
   },
   actionLabel: {
-    fontSize: 11,
+    fontSize: 9.5,
     fontWeight: '700',
     textAlign: 'center',
-    lineHeight: 13,
-    letterSpacing: 0.2,
+    lineHeight: 11,
+    letterSpacing: 0,
+    marginTop: 1,
+    paddingHorizontal: 2,
+    maxWidth: ACTION_BUTTON_SIZE - 4,
   },
   loadingOverlay: {
     position: 'absolute',
@@ -227,10 +182,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
-    borderRadius: 20,
   },
 });
