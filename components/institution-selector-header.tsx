@@ -125,39 +125,40 @@ export function InstitutionSelectorHeader() {
 
   return (
     <View style={[styles.wrapper, { paddingTop: insets.top + 10 }]}>
-      <Animated.View 
-        entering={FadeInDown.delay(100).springify()}
-        style={[styles.container, { width: containerWidth, borderRadius }, animatedStyle]}
-      >
-        <Pressable
-          onPress={handlePress}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          style={({ pressed }) => [
-            styles.pressable, 
-            { 
-              borderRadius,
-              borderColor,
-              shadowColor,
-              shadowOpacity,
-              backgroundColor: isIOS ? 'transparent' : backgroundColor,
-              opacity: pressed ? 0.9 : 1
-            }
-          ]}
+      <Animated.View entering={FadeInDown.delay(100).springify()}>
+        <Animated.View 
+          style={[styles.container, { width: containerWidth, borderRadius }, animatedStyle]}
         >
-          {isIOS ? (
-            <BlurView 
-              intensity={theme.isDark ? 40 : 60} 
-              tint={theme.isDark ? 'dark' : 'light'}
-              style={[StyleSheet.absoluteFill, { borderRadius }]}
-            >
-              <View style={[StyleSheet.absoluteFill, { backgroundColor }]} />
+          <Pressable
+            onPress={handlePress}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            style={({ pressed }) => [
+              styles.pressable, 
+              { 
+                borderRadius,
+                borderColor,
+                shadowColor,
+                shadowOpacity,
+                backgroundColor: isIOS ? 'transparent' : backgroundColor,
+                opacity: pressed ? 0.9 : 1
+              }
+            ]}
+          >
+            {isIOS ? (
+              <BlurView 
+                intensity={theme.isDark ? 40 : 60} 
+                tint={theme.isDark ? 'dark' : 'light'}
+                style={[StyleSheet.absoluteFill, { borderRadius }]}
+              >
+                <View style={[StyleSheet.absoluteFill, { backgroundColor }]} />
+                <Content />
+              </BlurView>
+            ) : (
               <Content />
-            </BlurView>
-          ) : (
-            <Content />
-          )}
-        </Pressable>
+            )}
+          </Pressable>
+        </Animated.View>
       </Animated.View>
     </View>
   );
