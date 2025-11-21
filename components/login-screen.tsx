@@ -1,20 +1,22 @@
 import { ThemedText } from '@/components/themed-text';
+import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
+import { GradientText } from '@/components/ui/gradient-text';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -115,17 +117,52 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         >
           {/* Logo de Libélula */}
           <View style={styles.logoContainer}>
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.logo}
-              contentFit="contain"
-            />
-            <ThemedText type="title" style={styles.brandText}>
-              LIBÉLULA
-            </ThemedText>
-            <ThemedText type="defaultSemiBold" style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-              Agilidad Tecnológica
-            </ThemedText>
+            <LinearGradient
+              colors={['#10b981', '#0ea5e9']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{
+                padding: 2,
+                borderRadius: 32,
+                shadowColor: '#0ea5e9',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
+              <View style={{
+                backgroundColor: theme.colors.background,
+                borderRadius: 30,
+                paddingVertical: 32,
+                paddingHorizontal: 48,
+                alignItems: 'center',
+              }}>
+                <DragonflyLogo width={100} height={100} style={{ marginBottom: 16 }} />
+                <GradientText 
+                  text="LIBÉLULA" 
+                  fontSize={28} 
+                  width={200} 
+                  height={40} 
+                  style={{ marginBottom: 4 }}
+                />
+                <ThemedText 
+                  type="defaultSemiBold" 
+                  style={[
+                    styles.subtitle, 
+                    { 
+                      color: theme.colors.textSecondary,
+                      letterSpacing: 3,
+                      textTransform: 'uppercase',
+                      fontSize: 12,
+                      opacity: 0.8
+                    }
+                  ]}
+                >
+                  Agilidad Tecnológica
+                </ThemedText>
+              </View>
+            </LinearGradient>
           </View>
 
           {/* Formulario */}
