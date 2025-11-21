@@ -11,6 +11,7 @@ import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
 import { Alert, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
   FadeIn,
@@ -71,6 +72,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = useStyles();
+  const insets = useSafeAreaInsets();
   const { register, unregister, onTooltipClosed } = useTour();
   const [isVisible, setIsVisible] = useState(false);
   const [openedByTour, setOpenedByTour] = useState(false);
@@ -160,7 +162,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
           exiting={FadeOut.duration(150)}
           style={[
             styles.tooltipContainer,
-            getTooltipPosition(triggerLayout, placement),
+            getTooltipPosition(triggerLayout, placement, insets),
           ]}
         >
           {Platform.OS === 'ios' ? (
@@ -518,7 +520,8 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
 // Calcular posición del tooltip basado en el trigger
 function getTooltipPosition(
   layout: { x: number; y: number; width: number; height: number },
-  placement: 'top' | 'bottom' | 'left' | 'right'
+  placement: 'top' | 'bottom' | 'left' | 'right',
+  insets: EdgeInsets
 ) {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const offset = 8;
@@ -533,10 +536,13 @@ function getTooltipPosition(
     let left = layout.x + (layout.width / 2) - (tooltipWidth / 2);
 
     // Clamping (ajuste a bordes)
-    if (left < padding) {
-      left = padding;
-    } else if (left + tooltipWidth > screenWidth - padding) {
-      left = screenWidth - tooltipWidth - padding;
+    const minLeft = insets.left + padding;
+    const maxLeft = screenWidth - insets.right - tooltipWidth - padding;
+
+    if (left < minLeft) {
+      left = minLeft;
+    } else if (left > maxLeft) {
+      left = maxLeft;
     }
     style.left = left;
   }
@@ -544,21 +550,28 @@ function getTooltipPosition(
   switch (placement) {
     case 'top':
       // Usamos bottom para posicionar desde abajo y que crezca hacia arriba
-      // evitando solapar el elemento si la altura del tooltip varía
       style.bottom = screenHeight - layout.y + offset;
+      // Restringir top para respetar safe area
+      style.top = insets.top + padding;
+      // Alinear contenido al fondo (cerca del trigger)
+      style.justifyContent = 'flex-end';
       break;
     case 'bottom':
       style.top = layout.y + layout.height + offset;
+      // Restringir bottom para respetar safe area
+      style.bottom = insets.bottom + padding;
+      // Alinear contenido al inicio (cerca del trigger)
+      style.justifyContent = 'flex-start';
       break;
     case 'left':
       style.right = screenWidth - layout.x + offset;
       style.top = layout.y; // Alineación top simple para laterales
-      style.maxWidth = layout.x - padding - offset; // Limitar ancho disponible
+      style.maxWidth = layout.x - padding - offset - insets.left; // Limitar ancho disponible
       break;
     case 'right':
       style.left = layout.x + layout.width + offset;
       style.top = layout.y;
-      style.maxWidth = screenWidth - style.left - padding;
+      style.maxWidth = screenWidth - style.left - padding - insets.right;
       break;
   }
 

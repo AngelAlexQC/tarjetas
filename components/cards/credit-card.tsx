@@ -198,6 +198,9 @@ const styles = StyleSheet.create({
   cardBrandLogoContainer: {
     height: 38,
     justifyContent: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 8,
+    borderRadius: 4,
   },
   cardMiddle: {
     flex: 1,
