@@ -11,6 +11,7 @@ import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import type { Card } from "@/features/cards/services/card-service";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { formatCardExpiry } from "@/utils/formatters/date";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -26,10 +27,7 @@ import {
 } from "react-native";
 import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CARD_WIDTH = SCREEN_WIDTH * 0.85;
-const CARD_HEIGHT = 200;
-const CARD_SPACING = 20;
+// Las dimensiones serán calculadas dinámicamente en el componente
 
 // Función para generar valores aleatorios
 const generateRandomBalance = () => Math.floor(Math.random() * 5000) + 500;
@@ -167,9 +165,20 @@ const generateMockCards = (): Card[] => [
 
 export default function CardsScreen() {
   const theme = useAppTheme();
-  const styles = createStyles(theme);
+  const layout = useResponsiveLayout();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  
+  // Dimensiones consistentes para el carrusel en todas las pantallas
+  const SCREEN_WIDTH = layout.screenWidth;
+  const SCREEN_HEIGHT = layout.screenHeight;
+  
+  // Mantener proporción 85% del ancho o máximo 400px
+  const CARD_WIDTH = Math.min(SCREEN_WIDTH * 0.85, 400);
+  const CARD_HEIGHT = 200;
+  const CARD_SPACING = 20;
+  
+  const styles = createStyles(theme, layout, CARD_WIDTH, CARD_HEIGHT);
   
   // Generar tarjetas con valores aleatorios al inicio
   const mockCards = useMemo(() => generateMockCards(), []);
@@ -209,11 +218,6 @@ export default function CardsScreen() {
           styles.cardContainer,
           {
             width: CARD_WIDTH,
-            marginLeft: index === 0 ? (SCREEN_WIDTH - CARD_WIDTH) / 2 : 0,
-            marginRight:
-              index === mockCards.length - 1
-                ? (SCREEN_WIDTH - CARD_WIDTH) / 2
-                : CARD_SPACING,
           },
         ]}
         onPress={() => handleCardPress(item)}
@@ -290,13 +294,17 @@ export default function CardsScreen() {
     <ThemedView style={styles.container}>
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          layout.isLandscape && styles.scrollContentLandscape
+        ]}
+        bounces={layout.isPortrait}
       >
         {/* Header mejorado - Selector de institución */}
         <InstitutionSelectorHeader />
 
         {/* Carrusel de tarjetas */}
-        <View style={styles.carouselContainer}>
+        <View style={[styles.carouselContainer, { height: CARD_HEIGHT + 30 }]}>
         {mockCards.length > 0 ? (
           <FlatList
             ref={flatListRef}
@@ -304,12 +312,20 @@ export default function CardsScreen() {
             renderItem={renderCard}
             keyExtractor={(item) => item.id}
             horizontal
+            pagingEnabled
             showsHorizontalScrollIndicator={false}
+            snapToAlignment="center"
             snapToInterval={CARD_WIDTH + CARD_SPACING}
             decelerationRate="fast"
             contentContainerStyle={styles.carouselContent}
             onViewableItemsChanged={onViewableItemsChanged}
             viewabilityConfig={viewabilityConfig}
+            style={styles.carouselList}
+            getItemLayout={(data, index) => ({
+              length: CARD_WIDTH + CARD_SPACING,
+              offset: (CARD_WIDTH + CARD_SPACING) * index,
+              index,
+            })}
           />
         ) : (
           <ThemedText style={{ textAlign: 'center', padding: 20 }}>
@@ -318,51 +334,98 @@ export default function CardsScreen() {
         )}
       </View>
 
-        {/* Acciones rápidas */}
-        {activeCard && (
-          <Animated.View 
-            style={styles.actionsSection}
-            entering={FadeIn.duration(600).springify()}
-            exiting={FadeOut.duration(400)}
-            layout={LinearTransition.springify().damping(25).stiffness(90)}
-          >
-            <CardActionsGrid
-              cardType={activeCard.cardType}
-              isLoading={cardActions.isLoading}
-              onActionPress={(actionType) => {
-                cardActions.executeAction(actionType);
-              }}
-            />
-          </Animated.View>
+        {/* Layout condicional según orientación */}
+        <View style={layout.isLandscape && styles.landscapeWrapper}>
+        {layout.isLandscape ? (
+          // Layout horizontal: tarjeta info y acciones en columnas
+          <View style={styles.landscapeContainer}>
+            <View style={styles.landscapeColumn}>
+              {activeCard && (
+                <CardFinancialInfo 
+                  card={activeCard}
+                  locale={theme.tenant.locale}
+                  currency={theme.tenant.currency}
+                  currencySymbol={theme.tenant.currencySymbol}
+                />
+              )}
+            </View>
+            <View style={styles.landscapeColumn}>
+              {activeCard && (
+                <Animated.View 
+                  entering={FadeIn.duration(600).springify()}
+                  exiting={FadeOut.duration(400)}
+                  layout={LinearTransition.springify().damping(25).stiffness(90)}
+                >
+                  <CardActionsGrid
+                    cardType={activeCard.cardType}
+                    isLoading={cardActions.isLoading}
+                    onActionPress={(actionType) => {
+                      cardActions.executeAction(actionType);
+                    }}
+                  />
+                </Animated.View>
+              )}
+              <View style={styles.addCardContainerLandscape}>
+                <AddToWalletButton
+                  onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
+                />
+              </View>
+            </View>
+          </View>
+        ) : (
+          // Layout vertical: secuencial
+          <>
+            {/* Acciones rápidas */}
+            {activeCard && (
+              <Animated.View 
+                style={styles.actionsSection}
+                entering={FadeIn.duration(600).springify()}
+                exiting={FadeOut.duration(400)}
+                layout={LinearTransition.springify().damping(25).stiffness(90)}
+              >
+                <CardActionsGrid
+                  cardType={activeCard.cardType}
+                  isLoading={cardActions.isLoading}
+                  onActionPress={(actionType) => {
+                    cardActions.executeAction(actionType);
+                  }}
+                />
+              </Animated.View>
+            )}
+
+            {/* Panel de información financiera */}
+            {activeCard && (
+              <CardFinancialInfo 
+                card={activeCard}
+                locale={theme.tenant.locale}
+                currency={theme.tenant.currency}
+                currencySymbol={theme.tenant.currencySymbol}
+              />
+            )}
+
+            {/* Botón agregar a Apple Wallet */}
+            <Animated.View 
+              style={styles.addCardContainer}
+              layout={LinearTransition.springify().damping(25).stiffness(90)}
+            >
+              <AddToWalletButton
+                onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
+              />
+            </Animated.View>
+          </>
         )}
-
-        {/* Panel de información financiera - Componente actualizado con diseños específicos por tipo de tarjeta */}
-        {activeCard && (
-          <CardFinancialInfo 
-            card={activeCard}
-            locale={theme.tenant.locale}
-            currency={theme.tenant.currency}
-            currencySymbol={theme.tenant.currencySymbol}
-          />
-        )}
-
-
-
-        {/* Botón agregar a Apple Wallet */}
-        <Animated.View 
-          style={styles.addCardContainer}
-          layout={LinearTransition.springify().damping(25).stiffness(90)}
-        >
-          <AddToWalletButton
-            onPress={() => Alert.alert("Agregar a Apple Wallet", "Esta tarjeta se agregará a tu Apple Wallet")}
-          />
-        </Animated.View>
+        </View>
       </ScrollView>
     </ThemedView>
   );
 }
 
-const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.create({
+const createStyles = (
+  theme: ReturnType<typeof useAppTheme>,
+  layout: ReturnType<typeof useResponsiveLayout>,
+  cardWidth: number,
+  cardHeight: number
+) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -370,17 +433,53 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
     flexGrow: 1,
     paddingBottom: 16,
   },
+  scrollContentLandscape: {
+    maxWidth: 1200,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: layout.horizontalPadding,
+  },
+  landscapeWrapper: {
+    maxWidth: 900,
+    width: '100%',
+    alignSelf: 'center',
+  },
   carouselContainer: {
-    height: CARD_HEIGHT + 30,
     marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    overflow: 'hidden',
   },
   carouselContent: {
     paddingVertical: 15,
+    paddingHorizontal: (layout.screenWidth - cardWidth) / 2,
     alignItems: "center",
   },
+  carouselList: {
+    width: layout.screenWidth,
+  },
   cardContainer: {
-    height: CARD_HEIGHT,
+    height: cardHeight,
     justifyContent: "center",
+    marginHorizontal: 10,
+  },
+  // Layout landscape
+  landscapeContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: layout.horizontalPadding,
+    gap: 20,
+    marginTop: 8,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  landscapeColumn: {
+    flex: 1,
+    maxWidth: 420,
+    minWidth: 300,
+  },
+  addCardContainerLandscape: {
+    marginTop: 16,
   },
   card: {
     width: "100%",
@@ -683,6 +782,9 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
   actionsSection: {
     marginTop: 0,
     marginBottom: 8,
+    maxWidth: layout.isLandscape ? undefined : 420,
+    alignSelf: 'center',
+    width: '100%',
   },
   actionsSectionHeader: {
     flexDirection: 'row',
@@ -704,5 +806,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.creat
     paddingHorizontal: 20,
     paddingBottom: 20,
     marginTop: 8,
+    maxWidth: 420,
+    alignSelf: 'center',
+    width: '100%',
   },
 });

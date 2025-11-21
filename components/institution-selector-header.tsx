@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -14,8 +15,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
 /**
  * Header minimalista moderno - Fintech Design 2025
  * Siguiendo tendencias de apps como Revolut, N26, Nubank
@@ -27,11 +26,16 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
  */
 export function InstitutionSelectorHeader() {
   const theme = useAppTheme();
+  const layout = useResponsiveLayout();
   const { currentTheme } = useTenantTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const scaleValue = useSharedValue(1);
   const glowValue = useSharedValue(0);
+  
+  const containerWidth = layout.isLandscape 
+    ? Math.min(layout.screenWidth * 0.6, 500)
+    : layout.screenWidth * 0.85;
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scaleValue.value }],
@@ -60,7 +64,7 @@ export function InstitutionSelectorHeader() {
 
   return (
     <View style={[styles.wrapper, { paddingTop: insets.top + 8 }]}>
-      <Animated.View style={[styles.container, animatedStyle]}>
+      <Animated.View style={[styles.container, { width: containerWidth }, animatedStyle]}>
         <Pressable
           onPress={handlePress}
           onPressIn={handlePressIn}
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   container: {
-    width: SCREEN_WIDTH * 0.85,
+    // El ancho se aplica din\u00e1micamente en el componente
   },
   pressable: {
     borderRadius: 16,

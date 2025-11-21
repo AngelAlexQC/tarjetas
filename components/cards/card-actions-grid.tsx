@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed-text';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { CardAction, CardActionType, getAvailableActions } from '@/constants/card-actions';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -17,6 +18,7 @@ interface CardActionsGridProps {
 
 export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActionsGridProps) {
   const theme = useAppTheme();
+  const layout = useResponsiveLayout();
   const availableActions = getAvailableActions(cardType);
 
   const renderActionButton = ({ item: action }: { item: CardAction }) => {
@@ -79,9 +81,13 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
     );
   };
 
+  // Determinar si usar grid o carrusel horizontal
+  const useGrid = layout.isLandscape || layout.screenWidth >= 768;
+  const numColumns = useGrid ? (availableActions.length >= 6 ? 3 : 2) : undefined;
+
   return (
     <Animated.View 
-      style={styles.container}
+      style={[styles.container, useGrid && styles.containerGrid]}
       layout={LinearTransition.springify().damping(25).stiffness(90)}
     >
       {isLoading && (
@@ -90,15 +96,27 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
         </View>
       )}
       
-      <FlatList
-        data={availableActions}
-        renderItem={renderActionButton}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.carouselContent}
-        ItemSeparatorComponent={() => <View style={{ width: ACTION_BUTTON_SPACING }} />}
-      />
+      {useGrid ? (
+        // Grid para landscape/pantallas grandes
+        <View style={styles.gridContainer}>
+          {availableActions.map((action) => (
+            <View key={action.id} style={styles.gridItem}>
+              {renderActionButton({ item: action })}
+            </View>
+          ))}
+        </View>
+      ) : (
+        // Carrusel horizontal para portrait/pantallas pequeñas
+        <FlatList
+          data={availableActions}
+          renderItem={renderActionButton}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.carouselContent}
+          ItemSeparatorComponent={() => <View style={{ width: ACTION_BUTTON_SPACING }} />}
+        />
+      )}
     </Animated.View>
   );
 }
@@ -107,9 +125,34 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
   },
+  containerLandscape: {
+    maxWidth: 500,
+    alignSelf: 'center',
+  },
+  containerGrid: {
+    maxWidth: 420,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: ACTION_BUTTON_SPACING,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  gridItem: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   carouselContent: {
     paddingHorizontal: 20,
     paddingVertical: 4,
+  },
+  carouselContentLandscape: {
+    justifyContent: 'center',
+    flexGrow: 1,
   },
   actionWrapper: {
     alignItems: 'center',

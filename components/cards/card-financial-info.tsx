@@ -10,12 +10,11 @@ import { InfoTooltip } from '@/components/ui/info-tooltip';
 import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { formatCurrency } from '@/utils/formatters/currency';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export interface CardFinancialInfoProps {
   card: Card;
@@ -31,6 +30,7 @@ export const CardFinancialInfo: React.FC<CardFinancialInfoProps> = ({
   currencySymbol = '$',
 }) => {
   const theme = useAppTheme();
+  const layout = useResponsiveLayout();
   const styles = useStyles();
   const isCredit = card.cardType === 'credit';
   const balance = card.balance;
@@ -369,12 +369,14 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
 
 const createStyles = (theme: ReturnType<typeof useAppTheme>) => StyleSheet.create({
   container: {
-    width: SCREEN_WIDTH * 0.85,
-    alignSelf: 'center',
+    marginHorizontal: 20,
     marginTop: 6,
     marginBottom: 4,
     borderRadius: 16,
     overflow: Platform.OS === 'ios' ? 'hidden' : 'visible',
+    maxWidth: 420,
+    alignSelf: 'center',
+    width: '100%',
     ...Platform.select({
       ios: {
         shadowColor: '#000',

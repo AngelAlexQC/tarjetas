@@ -3,6 +3,7 @@ import { ThemedView } from "@/components/themed-view";
 import { getTenantTheme } from "@/constants/tenant-themes";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -174,6 +175,7 @@ const tenants: Tenant[] = [
 
 export default function TenantSelectorScreen() {
   const theme = useAppTheme();
+  const layout = useResponsiveLayout();
   const { setTenant } = useTenantTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -211,26 +213,29 @@ export default function TenantSelectorScreen() {
     <ThemedView style={styles.container}>
       <View style={{ paddingTop: insets.top }} />
       <ScrollView 
-        style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.contentWrapper}>
-        {/* Header mejorado */}
+        {/* Header mejorado - Adaptable */}
         <Animated.View 
           entering={FadeInUp.duration(600).springify()}
-          style={styles.header}
+          style={layout.isLandscape ? styles.headerCompact : styles.header}
         >
           <View style={styles.headerIcon}>
             <ThemedText style={styles.headerEmoji}>🏛️</ThemedText>
           </View>
-          <ThemedText type="title" style={styles.title}>
-            Selecciona tu Institución
-          </ThemedText>
-          <ThemedText style={styles.subtitle}>
-            Elige tu entidad financiera para continuar
-          </ThemedText>
+          <View style={layout.isLandscape ? { flex: 1 } : undefined}>
+            <ThemedText type="title" style={[styles.title, layout.isLandscape && { textAlign: 'left', fontSize: 24 }]}>
+              Selecciona tu Institución
+            </ThemedText>
+            {layout.isPortrait && (
+              <ThemedText style={styles.subtitle}>
+                Elige tu entidad financiera para continuar
+              </ThemedText>
+            )}
+          </View>
         </Animated.View>
 
         {/* Barra de búsqueda */}
@@ -292,11 +297,13 @@ export default function TenantSelectorScreen() {
                 </View>
 
                 {/* Instituciones del país */}
+                <View style={layout.isLandscape ? styles.tenantsGrid : undefined}>
                 {groupedTenants[country].map((tenant) => (
                   <Pressable
                     key={tenant.slug}
                     style={({ pressed }) => [
                       styles.tenantCard,
+                      layout.isLandscape && styles.tenantCardLandscape,
                       {
                         opacity: pressed ? 0.9 : 1,
                         transform: [{ scale: pressed ? 0.98 : 1 }],
@@ -377,6 +384,7 @@ export default function TenantSelectorScreen() {
                     />
                   </Pressable>
                 ))}
+                </View>
               </Animated.View>
             ))
           ) : (
@@ -410,11 +418,20 @@ const styles = StyleSheet.create({
   contentWrapper: {
     flex: 1,
     padding: 20,
+    maxWidth: 1200,
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
     marginBottom: 24,
     alignItems: "center",
     gap: 12,
+  },
+  headerCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 16,
   },
   headerIcon: {
     width: 64,
@@ -510,6 +527,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     opacity: 0.7,
   },
+  tenantsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginHorizontal: -6,
+  },
   tenantCard: {
     borderRadius: 20,
     overflow: "hidden",
@@ -519,6 +542,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 8,
+  },
+  tenantCardLandscape: {
+    flex: 1,
+    minWidth: 280,
+    maxWidth: '48%',
   },
   blurContainer: {
     overflow: "hidden",
