@@ -106,17 +106,20 @@ export function CreditCard({
             {/* Sección media con chip */}
             <View style={styles.cardMiddle}>
               {showChip && card.cardType !== 'virtual' && (
-                <InfoTooltip
-                  content="Tecnología de seguridad EMV. Encripta la información de tu tarjeta al usarla en terminales físicos para prevenir la clonación."
-                  title="Chip de Seguridad"
-                  triggerMode="longPress"
-                  tourKey={getTourKey('chip')}
-                  tourOrder={baseOrder + 3}
-                >
-                  <View style={styles.cardChipContainer}>
-                    <ChipIcon width={50} height={40} />
-                  </View>
-                </InfoTooltip>
+                <View style={{ alignSelf: 'flex-start' }}>
+                  <InfoTooltip
+                    content="Tecnología de seguridad EMV. Encripta la información de tu tarjeta al usarla en terminales físicos para prevenir la clonación."
+                    title="Chip de Seguridad"
+                    triggerMode="longPress"
+                    tourKey={getTourKey('chip')}
+                    tourOrder={baseOrder + 3}
+                    targetBorderRadius={8}
+                  >
+                    <View style={styles.cardChipContainer}>
+                      <ChipIcon width={50} height={40} />
+                    </View>
+                  </InfoTooltip>
+                </View>
               )}
             </View>
 

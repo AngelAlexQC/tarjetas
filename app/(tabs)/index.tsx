@@ -235,7 +235,7 @@ export default function TenantSelectorScreen() {
       <View style={{ paddingTop: insets.top }} />
       <ScrollView 
         ref={scrollRef}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
