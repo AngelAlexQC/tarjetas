@@ -4,14 +4,15 @@ import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { generateReceiptHtml } from '@/utils/receipt-html';
+import { File, Paths } from 'expo-file-system';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import { captureRef } from 'react-native-view-shot';
 import { FileImage, FileText, Share2 } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { captureRef } from 'react-native-view-shot';
 import { ReceiptView } from './receipt-view';
 
 interface OperationResultScreenProps {
@@ -42,7 +43,16 @@ export function OperationResultScreen({ result, onClose, card, transactionDetail
       });
       
       const { uri } = await printToFileAsync({ html });
-      await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+      
+      // Rename file to ensure .pdf extension for iOS sharing using new File API
+      const fileName = `Comprobante_${result.receiptId || 'Operacion'}.pdf`;
+      const sourceFile = new File(uri);
+      const destinationFile = new File(Paths.cache, fileName);
+      
+      // Move the file to the new location
+      sourceFile.move(destinationFile);
+
+      await shareAsync(destinationFile.uri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf' });
     } catch (error) {
       console.error('Error al compartir PDF:', error);
       Alert.alert('Error', 'No se pudo generar el PDF');

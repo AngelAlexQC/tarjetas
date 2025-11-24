@@ -7,7 +7,7 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
-import { cacheDirectory, moveAsync } from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import { printToFileAsync } from 'expo-print';
 import { useLocalSearchParams } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
@@ -462,16 +462,15 @@ export default function StatementsScreen() {
 
       const { uri } = await printToFileAsync({ html: htmlContent });
       
-      // Rename file logic
+      // Rename file to ensure .pdf extension for iOS sharing using new File API
       const fileName = `EstadoCuenta_${selectedRange.label.replace(/\s+/g, '')}_${new Date().toISOString().split('T')[0]}.pdf`;
-      const newUri = (cacheDirectory || '') + fileName;
+      const sourceFile = new File(uri);
+      const destinationFile = new File(Paths.cache, fileName);
       
-      await moveAsync({
-        from: uri,
-        to: newUri
-      });
+      // Move the file to the new location
+      sourceFile.move(destinationFile);
 
-      await shareAsync(newUri, { UTI: '.pdf', mimeType: 'application/pdf' });
+      await shareAsync(destinationFile.uri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf' });
       
     } catch (error) {
       console.error(error);
