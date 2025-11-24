@@ -22,6 +22,7 @@ interface TourContextType {
 const TourContext = createContext<TourContextType | undefined>(undefined);
 
 export const STORAGE_KEY_SEEN_TOOLTIPS = '@tour_seen_tooltips';
+export const STORAGE_KEY_TOUR_PAUSED = '@tour_paused';
 
 export function TourProvider({ children }: { children: React.ReactNode }) {
   const [seenKeys, setSeenKeys] = useState<Set<string>>(new Set());
@@ -42,6 +43,10 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       const stored = await AsyncStorage.getItem(STORAGE_KEY_SEEN_TOOLTIPS);
       if (stored) {
         setSeenKeys(new Set(JSON.parse(stored)));
+      }
+      const pausedState = await AsyncStorage.getItem(STORAGE_KEY_TOUR_PAUSED);
+      if (pausedState === 'true') {
+        setIsPaused(true);
       }
     } catch (e) {
       console.error('Error loading tour state', e);
@@ -106,8 +111,13 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     setCurrentKey(null);
   }, []);
 
-  const pauseTour = useCallback(() => {
+  const pauseTour = useCallback(async () => {
     setIsPaused(true);
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY_TOUR_PAUSED, 'true');
+    } catch (e) {
+      console.error('Error saving tour paused state', e);
+    }
   }, []);
 
   const resumeTour = useCallback(() => {
@@ -117,9 +127,11 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const resetTour = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEY_SEEN_TOOLTIPS);
+      await AsyncStorage.removeItem(STORAGE_KEY_TOUR_PAUSED);
       setSeenKeys(new Set());
       setCurrentKey(null);
       setIsTourStopped(false);
+      setIsPaused(false);
     } catch (e) {
       console.error('Error resetting tour', e);
     }
