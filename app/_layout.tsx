@@ -230,17 +230,13 @@ function Navigation() {
               <Stack.Screen 
                 name="profile" 
                 options={{ 
-                  title: 'Perfil',
-                  headerShown: Platform.OS === 'ios',
-                  headerLargeTitle: Platform.OS === 'ios',
+                  headerShown: false,
                 }} 
               />
               <Stack.Screen 
                 name="faq" 
                 options={{ 
-                  title: 'Preguntas Frecuentes',
-                  headerShown: Platform.OS === 'ios',
-                  headerLargeTitle: Platform.OS === 'ios',
+                  headerShown: false,
                 }} 
               />
             </Stack>

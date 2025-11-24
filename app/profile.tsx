@@ -166,13 +166,11 @@ export default function ProfileScreen() {
   return (
     <ThemedView style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'ios' ? 0 : insets.top }]}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <View style={styles.headerTop}>
-          {Platform.OS !== 'ios' && (
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-              <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color="#FFFFFF" />
             <ThemedText style={styles.logoutText}>Cerrar sesión</ThemedText>
