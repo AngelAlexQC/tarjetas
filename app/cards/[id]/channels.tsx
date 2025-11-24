@@ -8,6 +8,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PoweredBy } from '@/components/ui/powered-by';
 
 export default function ChannelsScreen() {
   const theme = useAppTheme();
@@ -35,7 +36,7 @@ export default function ChannelsScreen() {
         onBack={() => router.back()}
       />
 
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 20 }]}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 20 }]}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -107,6 +108,7 @@ export default function ChannelsScreen() {
         <ThemedText style={styles.infoText}>
           Los cambios se aplican inmediatamente. Puedes modificar estas configuraciones en cualquier momento.
         </ThemedText>
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
     </ThemedView>
   );

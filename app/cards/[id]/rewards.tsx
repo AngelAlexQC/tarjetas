@@ -9,6 +9,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PoweredBy } from '@/components/ui/powered-by';
 
 function RewardsScreen() {
   const theme = useAppTheme();
@@ -34,7 +35,7 @@ function RewardsScreen() {
         onBack={() => router.back()}
       />
 
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 20 }]}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -62,6 +63,7 @@ function RewardsScreen() {
             </View>
           ))}
         </ThemedView>
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 16, backgroundColor: theme.colors.background }]}>
@@ -80,6 +82,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   balanceCard: {
     padding: 24,

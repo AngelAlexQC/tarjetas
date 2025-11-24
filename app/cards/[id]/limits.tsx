@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PoweredBy } from '@/components/ui/powered-by';
 
 export default function LimitsScreen() {
   const theme = useAppTheme();
@@ -78,7 +79,7 @@ export default function LimitsScreen() {
     <ThemedView style={styles.container} surface="level1">
       <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
         <CardOperationHeader title="Configurar Cupos" card={card} isModal />
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -126,9 +127,10 @@ export default function LimitsScreen() {
             isTotal
           />
         </View>
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
 
-      <View style={[styles.footer, { backgroundColor: theme.colors.surface, paddingBottom: insets.bottom + 20 }]}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 20, backgroundColor: theme.colors.surface }]}>
         <TouchableOpacity
           style={[
             styles.button,
@@ -203,7 +205,8 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     gap: 24,
-    paddingBottom: 140,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   description: {
     textAlign: 'center',
@@ -237,10 +240,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     padding: 20,
     paddingBottom: 40,
     borderTopWidth: 1,

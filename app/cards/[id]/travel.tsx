@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -119,6 +120,7 @@ export default function TravelNoticeScreen() {
             {'\n'}• Los consumos en el exterior pueden estar sujetos a impuestos locales.
           </ThemedText>
         </ThemedView>
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: isKeyboardVisible ? 16 : insets.bottom + 16, backgroundColor: theme.colors.background }]}>

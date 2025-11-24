@@ -4,6 +4,7 @@ import { OperationResultScreen } from '@/components/cards/operations/operation-r
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedButton } from '@/components/ui/themed-button';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -63,7 +64,7 @@ function ReplaceCardScreen() {
         onBack={() => router.back()}
       />
 
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 20 }]}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -118,6 +119,7 @@ function ReplaceCardScreen() {
         <ThemedText style={styles.costText}>
           Costo de reposición: $5.00 + IVA
         </ThemedText>
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 16, backgroundColor: theme.colors.background }]}>
@@ -137,6 +139,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   card: {
     padding: 16,

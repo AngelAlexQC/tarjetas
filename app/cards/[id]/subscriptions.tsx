@@ -4,6 +4,7 @@ import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -148,7 +149,9 @@ export default function SubscriptionsScreen() {
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={<PoweredBy style={{ marginTop: 40 }} />}
       />
     </ThemedView>
   );
@@ -205,8 +208,9 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     paddingTop: 0,
-    paddingBottom: 140,
+    paddingBottom: 20,
     gap: 16,
+    flexGrow: 1,
   },
   card: {
     borderRadius: 16,

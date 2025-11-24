@@ -13,6 +13,7 @@ import React, { useRef, useState } from 'react';
 import { InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PoweredBy } from '@/components/ui/powered-by';
 
 export default function PinScreen() {
   const theme = useAppTheme();
@@ -138,9 +139,10 @@ export default function PinScreen() {
             )}
           </View>
         </Animated.View>
-      </ScrollView>
+        <PoweredBy style={{ marginTop: 40 }} />
+          </ScrollView>
 
-      <View style={[styles.footer, { backgroundColor: theme.colors.surface, paddingBottom: insets.bottom + 20 }]}>
+          <View style={[styles.footer, { paddingBottom: insets.bottom + 20, backgroundColor: theme.colors.surface }]}>
         <TouchableOpacity
           style={[
             styles.button,
@@ -182,7 +184,8 @@ const styles = StyleSheet.create({
   content: {
     padding: 24,
     gap: 32,
-    paddingBottom: 140,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   cardInfo: {
     flexDirection: 'row',

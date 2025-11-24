@@ -3,6 +3,7 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
@@ -12,7 +13,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
 import { Calendar, Check, ChevronDown, FileImage, FileText, Share2 } from 'lucide-react-native';
 import React, { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { captureRef } from 'react-native-view-shot';
@@ -546,67 +547,70 @@ export default function StatementsScreen() {
     <ThemedView style={styles.container} surface="level1">
       <CardOperationHeader title="Estados de Cuenta" card={card} isModal />
 
-      <View ref={viewRef} collapsable={false} style={{ flex: 1 }}>
-      <View style={{ alignItems: 'center', marginVertical: 16 }}>
-        {card && <CreditCard card={card} width={300} />}
-      </View>
-
-      {/* Filters */}
-      <View style={styles.filterContainer}>
-        <View style={styles.filterRow}>
-          <TouchableOpacity 
-            style={[styles.filterButton, { borderColor: theme.colors.border }]}
-            onPress={() => setShowRangeModal(true)}
-          >
-            <Calendar size={16} color={theme.colors.textSecondary} />
-            <ThemedText>{selectedRange.label}</ThemedText>
-            <ChevronDown size={16} color={theme.colors.textSecondary} />
-          </TouchableOpacity>
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1, marginLeft: 8 }}>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <FilterChip 
-                label="Todos" 
-                selected={filterType === 'all'} 
-                onPress={() => setFilterType('all')} 
-                theme={theme}
-              />
-              <FilterChip 
-                label="Compras" 
-                selected={filterType === 'purchase'} 
-                onPress={() => setFilterType('purchase')} 
-                theme={theme}
-              />
-              <FilterChip 
-                label="Pagos" 
-                selected={filterType === 'payment'} 
-                onPress={() => setFilterType('payment')} 
-                theme={theme}
-              />
-            </View>
-          </ScrollView>
-        </View>
-        
-        <View style={styles.statsContainer}>
-          <ThemedText style={styles.statsLabel}>Movimientos: {filteredTransactions.length}</ThemedText>
-        </View>
-      </View>
-
-      {/* List */}
-      <FlatList
-        data={filteredTransactions}
-        renderItem={renderTransaction}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <ThemedText>No hay movimientos en este periodo</ThemedText>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
+        <View ref={viewRef} collapsable={false} style={{ backgroundColor: theme.colors.background }}>
+          <View style={{ alignItems: 'center', marginVertical: 16 }}>
+            {card && <CreditCard card={card} width={300} />}
           </View>
-        }
-      />
 
-      </View>
+          {/* Filters */}
+          <View style={styles.filterContainer}>
+            <View style={styles.filterRow}>
+              <TouchableOpacity 
+                style={[styles.filterButton, { borderColor: theme.colors.border }]}
+                onPress={() => setShowRangeModal(true)}
+              >
+                <Calendar size={16} color={theme.colors.textSecondary} />
+                <ThemedText>{selectedRange.label}</ThemedText>
+                <ChevronDown size={16} color={theme.colors.textSecondary} />
+              </TouchableOpacity>
+
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1, marginLeft: 8 }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  <FilterChip 
+                    label="Todos" 
+                    selected={filterType === 'all'} 
+                    onPress={() => setFilterType('all')} 
+                    theme={theme}
+                  />
+                  <FilterChip 
+                    label="Compras" 
+                    selected={filterType === 'purchase'} 
+                    onPress={() => setFilterType('purchase')} 
+                    theme={theme}
+                  />
+                  <FilterChip 
+                    label="Pagos" 
+                    selected={filterType === 'payment'} 
+                    onPress={() => setFilterType('payment')} 
+                    theme={theme}
+                  />
+                </View>
+              </ScrollView>
+            </View>
+            
+            <View style={styles.statsContainer}>
+              <ThemedText style={styles.statsLabel}>Movimientos: {filteredTransactions.length}</ThemedText>
+            </View>
+          </View>
+
+          {/* List */}
+          <View style={styles.listContent}>
+            {filteredTransactions.length > 0 ? (
+              filteredTransactions.map(item => (
+                <View key={item.id}>
+                  {renderTransaction({ item })}
+                </View>
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                <ThemedText>No hay movimientos en este periodo</ThemedText>
+              </View>
+            )}
+            <PoweredBy style={{ marginTop: 40 }} />
+          </View>
+        </View>
+      </ScrollView>
 
       {/* Export Button */}
       <View style={[styles.footer, { backgroundColor: theme.colors.surface, paddingBottom: insets.bottom + 20 }]}>
@@ -782,7 +786,8 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 20,
-    paddingBottom: 140,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   txItem: {
     flexDirection: 'row',
@@ -810,10 +815,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     padding: 20,
     paddingBottom: 40,
     borderTopWidth: 1,

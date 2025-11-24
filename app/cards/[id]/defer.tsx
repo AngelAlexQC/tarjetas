@@ -6,6 +6,7 @@ import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult, Transaction } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -136,7 +137,7 @@ export default function DeferScreen() {
         </ThemedText>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -242,6 +243,7 @@ export default function DeferScreen() {
             </>
           )}
         </Animated.View>
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: theme.colors.surface, paddingBottom: insets.bottom + 20 }]}>
@@ -306,7 +308,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 140,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   stepContainer: {
     gap: 20,
@@ -386,10 +389,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     padding: 20,
     paddingBottom: 40,
     backgroundColor: 'transparent', // Should handle blur or solid background if needed, but simple for now

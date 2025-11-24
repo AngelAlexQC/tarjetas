@@ -6,9 +6,10 @@ import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { generateReceiptHtml } from '@/utils/receipt-html';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import { Share2 } from 'lucide-react-native';
-import React from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { captureRef } from 'react-native-view-shot';
+import { FileImage, FileText, Share2 } from 'lucide-react-native';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ReceiptView } from './receipt-view';
@@ -25,10 +26,14 @@ export function OperationResultScreen({ result, onClose, card, transactionDetail
   const theme = useAppTheme();
   const layout = useResponsiveLayout();
   const insets = useSafeAreaInsets();
-  const isSuccess = result.success;
+  const viewRef = useRef<View>(null);
+  const [showExportOptions, setShowExportOptions] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleShare = async () => {
+  const handleExportPdf = async () => {
     try {
+      setIsExporting(true);
+      setShowExportOptions(false);
       const html = await generateReceiptHtml({
         result,
         card,
@@ -39,7 +44,30 @@ export function OperationResultScreen({ result, onClose, card, transactionDetail
       const { uri } = await printToFileAsync({ html });
       await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
     } catch (error) {
-      console.error('Error al compartir:', error);
+      console.error('Error al compartir PDF:', error);
+      Alert.alert('Error', 'No se pudo generar el PDF');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportImage = async () => {
+    try {
+      setIsExporting(true);
+      setShowExportOptions(false);
+      
+      const uri = await captureRef(viewRef, {
+        format: 'jpg',
+        quality: 0.9,
+        result: 'tmpfile'
+      });
+      
+      await shareAsync(uri, { mimeType: 'image/jpeg', UTI: 'public.jpeg' });
+    } catch (error) {
+      console.error('Error al compartir Imagen:', error);
+      Alert.alert('Error', 'No se pudo generar la imagen');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -88,7 +116,46 @@ export function OperationResultScreen({ result, onClose, card, transactionDetail
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 3,
-    }
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'flex-end',
+    },
+    modalContent: {
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      padding: 24,
+      paddingBottom: 40,
+      gap: 16,
+    },
+    modalTitle: {
+      marginBottom: 8,
+      textAlign: 'center',
+    },
+    optionItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 12,
+    },
+    optionIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 16,
+    },
+    optionText: {
+      flex: 1,
+    },
+    optionSubtext: {
+      fontSize: 12,
+      opacity: 0.7,
+      marginTop: 2,
+    },
   });
 
   return (
@@ -100,42 +167,79 @@ export function OperationResultScreen({ result, onClose, card, transactionDetail
       >
         <View style={styles.content}>
           <Animated.View 
-            entering={ZoomIn.duration(600).damping(30)} 
+            entering={ZoomIn.duration(400)} 
             style={styles.receiptWrapper}
           >
-            <ReceiptView 
-              result={result} 
-              card={card} 
-              transactionDetails={transactionDetails}
-            >
-              {children}
-            </ReceiptView>
+            <View ref={viewRef} collapsable={false} style={{ backgroundColor: theme.colors.background, padding: 10 }}>
+              <ReceiptView 
+                result={result} 
+                card={card} 
+                transactionDetails={transactionDetails}
+              >
+                {children}
+              </ReceiptView>
+            </View>
           </Animated.View>
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
-        {isSuccess && (
-          <TouchableOpacity 
-            style={[styles.button, { backgroundColor: theme.colors.surfaceHigher }]} 
-            onPress={handleShare}
-            activeOpacity={0.8}
-          >
-            <Share2 size={20} color={theme.colors.text} />
-            <ThemedText>Compartir</ThemedText>
-          </TouchableOpacity>
-        )}
-        
         <TouchableOpacity 
-          style={[styles.button, { backgroundColor: theme.tenant.mainColor }]} 
-          onPress={onClose}
-          activeOpacity={0.8}
+          style={[styles.button, { backgroundColor: theme.tenant.mainColor, opacity: isExporting ? 0.7 : 1 }]}
+          onPress={() => setShowExportOptions(true)}
+          disabled={isExporting}
         >
-          <ThemedText style={{ color: theme.colors.textInverse, fontWeight: 'bold' }}>
-            {isSuccess ? 'Finalizar' : 'Intentar de nuevo'}
-          </ThemedText>
+          {isExporting ? (
+            <ActivityIndicator color="#FFF" />
+          ) : (
+            <>
+              <Share2 size={20} color="#FFF" />
+              <ThemedText style={{ color: '#FFF', fontWeight: 'bold' }}>Compartir Comprobante</ThemedText>
+            </>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.button, { backgroundColor: theme.colors.surfaceHigher }]}
+          onPress={onClose}
+        >
+          <ThemedText style={{ color: theme.colors.text }}>Cerrar</ThemedText>
         </TouchableOpacity>
       </View>
+
+      {/* Export Options Modal */}
+      <Modal
+        visible={showExportOptions}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowExportOptions(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowExportOptions(false)}>
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+            <ThemedText type="subtitle" style={styles.modalTitle}>Compartir Comprobante</ThemedText>
+            
+            <TouchableOpacity style={styles.optionItem} onPress={handleExportPdf}>
+              <View style={[styles.optionIcon, { backgroundColor: theme.colors.surfaceHigher }]}>
+                <FileText size={24} color={theme.tenant.mainColor} />
+              </View>
+              <View style={styles.optionText}>
+                <ThemedText type="defaultSemiBold">Documento PDF</ThemedText>
+                <ThemedText style={styles.optionSubtext}>Mejor para imprimir y documentos oficiales</ThemedText>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.optionItem} onPress={handleExportImage}>
+              <View style={[styles.optionIcon, { backgroundColor: theme.colors.surfaceHigher }]}>
+                <FileImage size={24} color={theme.tenant.mainColor} />
+              </View>
+              <View style={styles.optionText}>
+                <ThemedText type="defaultSemiBold">Imagen (JPG)</ThemedText>
+                <ThemedText style={styles.optionSubtext}>Mejor para compartir rápidamente</ThemedText>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }

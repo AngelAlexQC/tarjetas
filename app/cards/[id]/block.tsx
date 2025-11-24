@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { OptionCard } from '@/components/ui/option-card';
 import { ThemedButton } from '@/components/ui/themed-button';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { BlockType, OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -72,7 +73,7 @@ export default function BlockCardScreen() {
     <ThemedView style={styles.container} surface="level1">
       <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
         <CardOperationHeader title="Bloquear Tarjeta" card={card} isModal />
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {card && <CreditCard card={card} width={300} />}
         </View>
@@ -108,6 +109,7 @@ export default function BlockCardScreen() {
             </ThemedText>
           </Animated.View>
         )}
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 20, backgroundColor: theme.colors.surface }]}>
@@ -137,7 +139,8 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     gap: 24,
-    paddingBottom: 140,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   description: {
     textAlign: 'center',
@@ -159,10 +162,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     padding: 20,
     paddingBottom: 40,
     borderTopWidth: 1,

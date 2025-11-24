@@ -10,6 +10,7 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { PoweredBy } from '@/components/ui/powered-by';
 
 export default function DynamicCvvScreen() {
   const theme = useAppTheme();
@@ -121,6 +122,7 @@ export default function DynamicCvvScreen() {
             <ThemedText>Autenticación requerida para ver el CVV</ThemedText>
           </View>
         )}
+        <PoweredBy style={{ marginTop: 40 }} />
       </View>
 
       <BiometricGuard

@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -85,7 +86,7 @@ export default function PayCardScreen() {
 
         <ScrollView 
           style={{ flex: 1 }}
-          contentContainerStyle={[styles.content, { paddingBottom: 20 }]}
+          contentContainerStyle={styles.content}
         >
           <View style={{ alignItems: 'center', marginBottom: 24 }}>
             {card && <CreditCard card={card} width={300} />}
@@ -163,9 +164,10 @@ export default function PayCardScreen() {
             </View>
           </View>
         </ThemedView>
+        <PoweredBy style={{ marginTop: 40 }} />
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: isKeyboardVisible ? 16 : insets.bottom + 16, backgroundColor: theme.colors.background }]}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
         <ThemedButton 
           title="Pagar Ahora" 
           onPress={handlePay}
@@ -190,6 +192,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingBottom: 20,
+    flexGrow: 1,
   },
   card: {
     padding: 16,
