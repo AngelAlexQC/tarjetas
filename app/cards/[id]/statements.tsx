@@ -6,14 +6,16 @@ import { FinancialIcons } from '@/components/ui/financial-icons';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
+import { cacheDirectory, moveAsync } from 'expo-file-system/legacy';
 import { printToFileAsync } from 'expo-print';
 import { useLocalSearchParams } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
-import { ArrowDownToLine, Calendar, Check, ChevronDown } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import { Calendar, Check, ChevronDown, FileImage, FileText, Share2 } from 'lucide-react-native';
+import React, { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { captureRef } from 'react-native-view-shot';
 
 // Mock Data
 type TransactionType = 'purchase' | 'payment' | 'transfer' | 'fee';
@@ -61,6 +63,8 @@ export default function StatementsScreen() {
   const [showRangeModal, setShowRangeModal] = useState(false);
   const [filterType, setFilterType] = useState<'all' | 'purchase' | 'payment'>('all');
   const [isExporting, setIsExporting] = useState(false);
+  const [showExportOptions, setShowExportOptions] = useState(false);
+  const viewRef = useRef<View>(null);
 
   // Filter logic
   const filteredTransactions = useMemo(() => {
@@ -90,9 +94,10 @@ export default function StatementsScreen() {
     });
   }, [selectedRange, filterType]);
 
-  const handleExport = async () => {
+  const handleExportPdf = async () => {
     try {
       setIsExporting(true);
+      setShowExportOptions(false);
 
       // Calculate totals
       const totalPayments = filteredTransactions
@@ -455,11 +460,41 @@ export default function StatementsScreen() {
       `;
 
       const { uri } = await printToFileAsync({ html: htmlContent });
-      await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+      
+      // Rename file logic
+      const fileName = `EstadoCuenta_${selectedRange.label.replace(/\s+/g, '')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const newUri = (cacheDirectory || '') + fileName;
+      
+      await moveAsync({
+        from: uri,
+        to: newUri
+      });
+
+      await shareAsync(newUri, { UTI: '.pdf', mimeType: 'application/pdf' });
       
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'No se pudo generar el estado de cuenta');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportImage = async () => {
+    try {
+      setIsExporting(true);
+      setShowExportOptions(false);
+      
+      const uri = await captureRef(viewRef, {
+        format: 'jpg',
+        quality: 0.9,
+        result: 'tmpfile'
+      });
+      
+      await shareAsync(uri, { mimeType: 'image/jpeg', UTI: 'public.jpeg' });
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'No se pudo generar la imagen');
     } finally {
       setIsExporting(false);
     }
@@ -511,6 +546,7 @@ export default function StatementsScreen() {
     <ThemedView style={styles.container} surface="level1">
       <CardOperationHeader title="Estados de Cuenta" card={card} isModal />
 
+      <View ref={viewRef} collapsable={false} style={{ flex: 1 }}>
       <View style={{ alignItems: 'center', marginVertical: 16 }}>
         {card && <CreditCard card={card} width={300} />}
       </View>
@@ -570,19 +606,21 @@ export default function StatementsScreen() {
         }
       />
 
+      </View>
+
       {/* Export Button */}
       <View style={[styles.footer, { backgroundColor: theme.colors.surface, paddingBottom: insets.bottom + 20 }]}>
         <TouchableOpacity
           style={[styles.exportButton, { backgroundColor: theme.tenant.mainColor }]}
-          onPress={handleExport}
+          onPress={() => setShowExportOptions(true)}
           disabled={isExporting}
         >
           {isExporting ? (
             <ActivityIndicator color="#FFF" />
           ) : (
             <>
-              <ArrowDownToLine size={20} color="#FFF" />
-              <ThemedText style={styles.exportButtonText}>Exportar PDF</ThemedText>
+              <Share2 size={20} color="#FFF" />
+              <ThemedText style={styles.exportButtonText}>Compartir</ThemedText>
             </>
           )}
         </TouchableOpacity>
@@ -622,6 +660,41 @@ export default function StatementsScreen() {
                 )}
               </TouchableOpacity>
             ))}
+          </Animated.View>
+        </Pressable>
+      </Modal>
+
+      {/* Export Options Modal */}
+      <Modal
+        visible={showExportOptions}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowExportOptions(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowExportOptions(false)}>
+          <Animated.View entering={SlideInDown} exiting={SlideOutDown} style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}
+          >
+            <ThemedText type="subtitle" style={styles.modalTitle}>Exportar Estado de Cuenta</ThemedText>
+            
+            <TouchableOpacity style={styles.optionItem} onPress={handleExportPdf}>
+              <View style={[styles.optionIcon, { backgroundColor: theme.colors.surfaceHigher }]}>
+                <FileText size={24} color={theme.tenant.mainColor} />
+              </View>
+              <View style={styles.optionText}>
+                <ThemedText type="defaultSemiBold">Documento PDF</ThemedText>
+                <ThemedText style={styles.optionSubtext}>Mejor para imprimir y documentos oficiales</ThemedText>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.optionItem} onPress={handleExportImage}>
+              <View style={[styles.optionIcon, { backgroundColor: theme.colors.surfaceHigher }]}>
+                <FileImage size={24} color={theme.tenant.mainColor} />
+              </View>
+              <View style={styles.optionText}>
+                <ThemedText type="defaultSemiBold">Imagen (JPG)</ThemedText>
+                <ThemedText style={styles.optionSubtext}>Mejor para compartir rápidamente</ThemedText>
+              </View>
+            </TouchableOpacity>
           </Animated.View>
         </Pressable>
       </Modal>
@@ -786,5 +859,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderRadius: 12,
+  },
+  optionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  optionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  optionText: {
+    flex: 1,
+  },
+  optionSubtext: {
+    fontSize: 12,
+    opacity: 0.7,
+    marginTop: 2,
   },
 });
