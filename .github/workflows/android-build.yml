@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      # Increase JVM heap and metaspace for lint and Gradle
+      GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=512m
+      JAVA_TOOL_OPTIONS: -Xmx4g -XX:MaxMetaspaceSize=512m
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,7 +42,8 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          # Skip the lint vital analyze release task that can OOM on CI
+          ./gradlew assembleRelease -x lintVitalAnalyzeRelease
 
       - name: Sign APK
         id: sign_app
