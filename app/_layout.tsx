@@ -5,6 +5,7 @@ import { LoginScreen } from '@/components/login-screen';
 import { OnboardingScreen } from '@/components/onboarding-screen';
 import { STORAGE_KEYS, TIMING } from '@/constants/app';
 import { AuthProvider, useAuth } from '@/contexts/auth-context';
+import { SplashProvider } from '@/contexts/splash-context';
 import { TenantThemeProvider, useTenantTheme } from '@/contexts/tenant-theme-context';
 import { TourProvider, useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -289,15 +290,17 @@ function Navigation() {
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <TenantThemeProvider>
-        <AuthProvider>
-          <TourProvider>
-            <ThemedLayoutContainer>
-              <Navigation />
-            </ThemedLayoutContainer>
-          </TourProvider>
-        </AuthProvider>
-      </TenantThemeProvider>
+      <SplashProvider>
+        <TenantThemeProvider>
+          <AuthProvider>
+            <TourProvider>
+              <ThemedLayoutContainer>
+                <Navigation />
+              </ThemedLayoutContainer>
+            </TourProvider>
+          </AuthProvider>
+        </TenantThemeProvider>
+      </SplashProvider>
     </SafeAreaProvider>
   );
 }
