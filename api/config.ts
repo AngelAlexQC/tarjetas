@@ -24,8 +24,9 @@ export const API_CONFIG = {
       return process.env.EXPO_PUBLIC_API_URL_DEV || 'http://localhost:3000/api';
     }
     const prodUrl = process.env.EXPO_PUBLIC_API_URL;
-    if (!prodUrl) {
-      console.error('[API_CONFIG] EXPO_PUBLIC_API_URL no está configurada para producción');
+    if (!prodUrl && __DEV__) {
+      // Solo advertir en desarrollo, en producción fallar silenciosamente
+      console.warn('[API_CONFIG] EXPO_PUBLIC_API_URL no está configurada para producción');
     }
     return prodUrl || '';
   })(),

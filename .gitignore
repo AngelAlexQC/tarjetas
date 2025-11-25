@@ -32,10 +32,15 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
 *.tsbuildinfo
+
+# testing
+coverage/
+*.lcov
 
 app-example
 
