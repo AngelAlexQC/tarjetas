@@ -4,6 +4,7 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { loggers } from '@/utils/logger';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Updates from 'expo-updates';
@@ -59,8 +60,9 @@ export default function FaqScreen() {
             try {
               // Intentar recargar con expo-updates
               await Updates.reloadAsync();
-            } catch {
+            } catch (error) {
               // Fallback si falla expo-updates (común en desarrollo)
+              loggers.ui.debug('expo-updates no disponible, usando fallback:', error);
               if (__DEV__ && NativeModules.DevSettings) {
                 NativeModules.DevSettings.reload();
               } else {

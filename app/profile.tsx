@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useTour } from "@/contexts/tour-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { loggers } from "@/utils/logger";
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -58,7 +59,7 @@ export default function ProfileScreen() {
               await resetTour();
               router.replace('/');
             } catch (error) {
-              console.error("Error al cerrar sesión:", error);
+              loggers.auth.error("Error al cerrar sesión:", error);
               router.replace('/');
             }
           }
