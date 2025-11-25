@@ -36,11 +36,11 @@ export interface Card {
   lastTransactionDate?: string;
 }
 
-// Resultado de acción
-export interface CardActionResult {
+// Resultado de acción genérico
+export interface CardActionResult<T = unknown> {
   success: boolean;
   message: string;
-  data?: any;
+  data?: T;
 }
 
 // --- Block Card ---
