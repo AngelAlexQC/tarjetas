@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { ViewStyle } from 'react-native';
-import Svg, { Circle, Defs, G, LinearGradient, Path, Stop } from 'react-native-svg';
 import Animated, {
-  useAnimatedProps,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-  Easing,
-  interpolate,
+    Easing,
+    interpolate,
+    useAnimatedProps,
+    useSharedValue,
+    withRepeat,
+    withSequence,
+    withTiming,
 } from 'react-native-reanimated';
+import Svg, { Circle, Defs, G, LinearGradient, Path, Stop } from 'react-native-svg';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
 

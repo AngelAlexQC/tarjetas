@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { DragonflyLoading } from './dragonfly-loading';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { DragonflyLoading } from './dragonfly-loading';
 
 interface LoadingScreenProps {
   message?: string;
