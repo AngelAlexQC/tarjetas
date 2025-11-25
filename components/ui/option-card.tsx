@@ -46,11 +46,13 @@ export function OptionCard({
             styles.iconContainer, 
             { backgroundColor: selected ? theme.tenant.mainColor : theme.colors.surfaceHigher }
           ]}>
-            {/* We clone the icon to inject color if needed, or just render it */}
-            {React.isValidElement(icon) ? React.cloneElement(icon as any, { 
-              color: selected ? '#FFF' : (iconColor || theme.colors.textSecondary),
-              size: 24
-            }) : icon}
+            {/* Clone icon to inject color and size props */}
+            {React.isValidElement<{ color?: string; size?: number }>(icon) 
+              ? React.cloneElement(icon, { 
+                  color: selected ? '#FFF' : (iconColor || theme.colors.textSecondary),
+                  size: 24
+                }) 
+              : icon}
           </View>
         )}
         

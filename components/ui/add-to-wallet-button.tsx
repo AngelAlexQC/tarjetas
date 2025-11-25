@@ -1,11 +1,11 @@
 import { ThemedText } from "@/components/themed-text";
 import { useThemedColors } from "@/contexts/tenant-theme-context";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 
 interface AddToWalletButtonProps {
   onPress: () => void;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 const AppleWalletLogo = () => (

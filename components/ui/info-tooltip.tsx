@@ -11,15 +11,15 @@ import { loggers } from '@/utils/logger';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
-import { Alert, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { Alert, Dimensions, GestureResponderEvent, Linking, Modal, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
-  Easing,
-  FadeIn,
-  FadeOut,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming
+    Easing,
+    FadeIn,
+    FadeOut,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming
 } from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -103,9 +103,15 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
     }
   }, [tourKey, tourOrder, register, unregister]);
 
-  const handlePress = (event: any) => {
+  // Helper para medir el elemento target (React Native no tiene tipos completos para measure)
+  type MeasureCallback = (x: number, y: number, width: number, height: number, pageX: number, pageY: number) => void;
+  const measureTarget = (target: GestureResponderEvent['target'], callback: MeasureCallback) => {
+    (target as unknown as { measure: (cb: MeasureCallback) => void }).measure(callback);
+  };
+
+  const handlePress = (event: GestureResponderEvent) => {
     if (triggerMode === 'press') {
-      event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
+      measureTarget(event.target, (x, y, width, height, pageX, pageY) => {
         setTriggerLayout({ x: pageX, y: pageY, width, height });
         setOpenedByTour(false);
         setIsVisible(true);
@@ -115,9 +121,9 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
     }
   };
 
-  const handleLongPress = (event: any) => {
+  const handleLongPress = (event: GestureResponderEvent) => {
     if (triggerMode === 'longPress') {
-      event.target.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
+      measureTarget(event.target, (x, y, width, height, pageX, pageY) => {
         setTriggerLayout({ x: pageX, y: pageY, width, height });
         setOpenedByTour(false);
         setIsVisible(true);
@@ -547,7 +553,7 @@ function getTooltipPosition(
   const tooltipWidth = 280; // Ancho máximo estimado
   const padding = 16; // Margen de seguridad con los bordes
 
-  let style: any = {};
+  const style: ViewStyle & { top?: number; bottom?: number; left?: number; right?: number; justifyContent?: 'flex-end' | 'flex-start' } = {};
 
   // Lógica horizontal común para top/bottom
   if (placement === 'top' || placement === 'bottom') {

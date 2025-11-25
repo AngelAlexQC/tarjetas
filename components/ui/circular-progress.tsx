@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 import Animated, {
     useAnimatedProps,
     useSharedValue,
@@ -19,7 +19,7 @@ export interface CircularProgressProps {
   backgroundColor?: string;
   showText?: boolean;
   formatText?: (value: number, percentage: number) => string;
-  textStyle?: any;
+  textStyle?: StyleProp<TextStyle>;
   duration?: number;
 }
 

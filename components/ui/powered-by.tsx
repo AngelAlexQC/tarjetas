@@ -2,10 +2,10 @@ import { ThemedText } from '@/components/themed-text';
 import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 interface PoweredByProps {
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const PoweredBy: React.FC<PoweredByProps> = ({ style }) => {
