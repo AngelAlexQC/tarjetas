@@ -10,15 +10,17 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
 import { FaqButton } from "@/components/ui/faq-button";
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { PoweredBy } from "@/components/ui/powered-by";
 import { CardActionType } from "@/constants/card-actions";
+import { useSplash } from "@/contexts/splash-context";
 import { OperationResult } from "@/features/cards/types/card-operations";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useCards } from "@/hooks/use-cards";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Card } from "@/repositories";
 import { cardRoute } from "@/types/routes";
-import { useScrollToTop } from '@react-navigation/native';
+import { useFocusEffect, useScrollToTop } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -60,6 +62,7 @@ export default function CardsScreen() {
   const router = useRouter();
   const layout = useResponsiveLayout();
   const insets = useSafeAreaInsets();
+  const { isSplashComplete } = useSplash();
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [selectedInsurance, setSelectedInsurance] = useState<Insurance | null>(null);
   const [isInsuranceModalVisible, setIsInsuranceModalVisible] = useState(false);
@@ -80,8 +83,18 @@ export default function CardsScreen() {
   
   const styles = createStyles(theme, layout, CARD_WIDTH, CARD_HEIGHT, CARD_SPACING);
   
-  // Obtener tarjetas usando el hook (con auto-fetch)
-  const { cards, isLoading: isLoadingCards } = useCards({ autoFetch: true });
+  // Obtener tarjetas usando el hook (sin auto-fetch, lo controlamos manualmente)
+  const { cards, isLoading: isLoadingCards, fetchCards } = useCards({ autoFetch: false });
+  
+  // Fetch tarjetas cuando la pantalla es visible (focus) y el splash ya terminó
+  useFocusEffect(
+    useCallback(() => {
+      // Solo hacer fetch si el splash terminó y no hay tarjetas cargadas
+      if (isSplashComplete && cards.length === 0) {
+        fetchCards();
+      }
+    }, [cards.length, fetchCards, isSplashComplete])
+  );
   
   // Tarjeta activa
   const activeCard = cards[activeCardIndex];
@@ -175,6 +188,16 @@ export default function CardsScreen() {
 
   const isIOS = Platform.OS === 'ios';
 
+  // No renderizar nada mientras el splash esté activo
+  if (!isSplashComplete) {
+    return null;
+  }
+
+  // Mostrar loading a pantalla completa cuando carga por primera vez o cambia de institución
+  if (isLoadingCards && cards.length === 0) {
+    return <LoadingScreen message="Cargando tus tarjetas..." />;
+  }
+
   return (
     <>
     <ThemedView style={styles.container}>
@@ -215,10 +238,6 @@ export default function CardsScreen() {
               index,
             })}
           />
-        ) : isLoadingCards ? (
-          <ThemedText style={{ textAlign: 'center', padding: 20 }}>
-            Cargando tarjetas...
-          </ThemedText>
         ) : (
           <ThemedText style={{ textAlign: 'center', padding: 20 }}>
             No hay tarjetas disponibles
