@@ -3,17 +3,15 @@
 ## Resumen Ejecutivo
 
 **Objetivo**: Aplicación móvil marca blanca multi-tenant (Android & iOS)
-**Estado Actual**: Frontend 90% completado (19k+ líneas en 6 días)
-**Velocidad de Desarrollo**: 2.8x superior al estándar de la industria
+**Estado Actual**: Frontend 90% completado
 **Estimación Total**: **25 días hábiles (5 semanas)**
 
 ---
 
 ## Estado Actual del Proyecto
 
-### Métricas de Velocidad (19-25 Nov 2025)
-- **Rendimiento**: 171 commits, 111 archivos, 19,177 líneas en 6 días.
-- **Proyección**: El trabajo de 6-8 semanas se completó en 1 semana.
+### Avance del 19 al 25 de Noviembre 2025
+Se ha completado la implementación de la arquitectura base y la mayoría de los flujos de usuario en el frontend.
 
 ### Funcionalidades Completadas (Frontend 90%)
 - ✅ **Core**: Autenticación, Biometría, Multi-tenant (6 bancos).
@@ -28,7 +26,7 @@
 
 ---
 
-## Estimación de Tiempos (Ajustada a Velocidad Actual)
+## Estimación de Tiempos Restantes
 
 ### Fase 1: Backend API REST (8 días)
 
@@ -87,7 +85,7 @@
 
 ## Recomendación
 
-Dada la velocidad demostrada (casi 3x el estándar), es viable completar el proyecto en **5 semanas**. Se recomienda mantener el ritmo actual y gestionar los bloqueantes externos (Apple/Google/Banco) con máxima prioridad para no frenar el desarrollo técnico.
+Es viable completar el proyecto en **5 semanas** siguiendo el plan establecido. Se recomienda gestionar los bloqueantes externos (Apple/Google/Banco) con máxima prioridad para no frenar el desarrollo técnico.
 - Backend: 9 días
 - Integración: 2 días
 - Wallets: 6 días
