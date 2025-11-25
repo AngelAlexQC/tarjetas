@@ -1,3 +1,4 @@
+import { useSplash } from '@/contexts/splash-context';
 import { loggers } from '@/utils/logger';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -424,8 +425,16 @@ export function AnimatedSplashScreen({
   children,
   onReady,
 }: AnimatedSplashScreenProps) {
+  const { setSplashComplete } = useSplash();
   const [isAppReady, setAppReady] = useState(false);
   const [isSplashAnimationComplete, setSplashAnimationComplete] = useState(globalSplashShown);
+
+  // Si el splash ya se mostró antes, actualizar el contexto inmediatamente
+  useEffect(() => {
+    if (globalSplashShown) {
+      setSplashComplete(true);
+    }
+  }, [setSplashComplete]);
 
   // Valores animados para transición suave
   const opacity = useSharedValue(1);
@@ -540,10 +549,11 @@ export function AnimatedSplashScreen({
         setTimeout(() => {
           globalSplashShown = true;
           runOnJS(setSplashAnimationComplete)(true);
+          runOnJS(setSplashComplete)(true);
         }, 500);
       }, 2500);
     }
-  }, [isAppReady, masterProgress, dragonflyY, dragonflyRotation, dragonflyScale, glowIntensity, opacity, scale]);
+  }, [isAppReady, masterProgress, dragonflyY, dragonflyRotation, dragonflyScale, glowIntensity, opacity, scale, setSplashComplete]);
 
   const containerAnimatedStyle = useAnimatedStyle(() => {
     return {
