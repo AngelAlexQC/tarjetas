@@ -3,6 +3,7 @@ import { Card } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { loggers } from '@/utils/logger';
 import { generateReceiptHtml } from '@/utils/receipt-html';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
@@ -40,7 +41,7 @@ export function OperationResultScreen({ result, onClose, card, transactionDetail
       const { uri } = await printToFileAsync({ html });
       await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
     } catch (error) {
-      console.error('Error al compartir PDF:', error);
+      loggers.ui.error('Error al compartir PDF:', error);
       Alert.alert('Error', 'No se pudo generar el PDF');
     } finally {
       setIsExporting(false);

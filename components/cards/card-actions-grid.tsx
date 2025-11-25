@@ -4,7 +4,7 @@ import { CardAction, CardActionType, getAvailableActions } from '@/constants/car
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ColorValue, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 const ACTION_BUTTON_SIZE = 80;
@@ -56,7 +56,7 @@ const ActionButton = ({ action, onPress, isLoading }: { action: CardAction, onPr
       >
         <Animated.View style={animatedInnerStyle}>
           <LinearGradient
-            colors={gradientColors as any}
+            colors={gradientColors as unknown as readonly [ColorValue, ColorValue, ...ColorValue[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[styles.buttonGradient, { 

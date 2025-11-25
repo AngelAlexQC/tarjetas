@@ -8,7 +8,7 @@ import { Card } from "@/features/cards/services/card-service";
 import { formatCardExpiry } from "@/utils/formatters/date";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { ColorValue, StyleSheet, View, ViewStyle } from "react-native";
 
 interface CreditCardProps {
   card: Card;
@@ -56,7 +56,7 @@ export function CreditCard({
     >
       <View style={[styles.container, { width, height: cardHeight }, style]}>
         <LinearGradient
-          colors={cardDesign.gradientColors as any}
+          colors={cardDesign.gradientColors as unknown as readonly [ColorValue, ColorValue, ...ColorValue[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.card}
