@@ -49,13 +49,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CardsScreen() {
   // Log para verificar el renderizado (solo en desarrollo)
+  const isMountedRef = useRef(true);
+
   useEffect(() => {
     if (__DEV__) {
       console.log('📱 CardsScreen montado');
-      return () => {
-        console.log('📱 CardsScreen desmontado');
-      };
     }
+    
+    return () => {
+      if (__DEV__) {
+        console.log('📱 CardsScreen desmontado');
+      }
+      isMountedRef.current = false;
+    };
   }, []);
 
   const theme = useAppTheme();
@@ -70,6 +76,16 @@ export default function CardsScreen() {
   const [contractedInsurance, setContractedInsurance] = useState<Insurance | null>(null);
   const flatListRef = useRef<FlatList>(null);
   const scrollRef = useRef(null);
+
+  // Limpiar estados cuando se desmonta
+  useEffect(() => {
+    return () => {
+      setSelectedInsurance(null);
+      setIsInsuranceModalVisible(false);
+      setInsuranceResult(null);
+      setContractedInsurance(null);
+    };
+  }, []);
 
   useScrollToTop(scrollRef);
   
@@ -441,13 +457,15 @@ export default function CardsScreen() {
                   setContractedInsurance(insurance);
                   
                   setTimeout(() => {
-                    setInsuranceResult({
-                      success: true,
-                      title: 'Seguro Contratado',
-                      message: `Tu seguro "${insurance.title}" ha sido contratado exitosamente. El cargo mensual se realizará automáticamente.`,
-                      receiptId: `INS-${Date.now().toString().slice(-8)}`,
-                      date: new Date().toISOString(),
-                    });
+                    if (isMountedRef.current) {
+                      setInsuranceResult({
+                        success: true,
+                        title: 'Seguro Contratado',
+                        message: `Tu seguro "${insurance.title}" ha sido contratado exitosamente. El cargo mensual se realizará automáticamente.`,
+                        receiptId: `INS-${Date.now().toString().slice(-8)}`,
+                        date: new Date().toISOString(),
+                      });
+                    }
                   }, 300);
                 }
               },

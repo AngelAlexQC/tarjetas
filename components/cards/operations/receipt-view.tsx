@@ -3,9 +3,10 @@ import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import type { Card } from '@/repositories';
+import { Image } from 'expo-image';
 import { Check, XCircle } from 'lucide-react-native';
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 interface ReceiptViewProps {
   result: OperationResult;
@@ -39,7 +40,13 @@ export function ReceiptView({ result, card, transactionDetails, children }: Rece
       <View style={styles.header}>
         <View style={styles.institutionLogoContainer}>
           {theme.tenant.logoUrl ? (
-            <Image source={{ uri: theme.tenant.logoUrl }} style={styles.logo} resizeMode="contain" />
+            <Image 
+              source={{ uri: theme.tenant.logoUrl }} 
+              style={styles.logo} 
+              contentFit="contain"
+              recyclingKey={`tenant-logo-${theme.tenant.logoUrl}`}
+              cachePolicy="memory-disk"
+            />
           ) : (
             <ThemedText type="title" style={{ color: theme.tenant.mainColor }}>{theme.tenant.name}</ThemedText>
           )}
