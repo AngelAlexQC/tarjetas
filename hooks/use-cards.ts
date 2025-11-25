@@ -24,6 +24,7 @@ import type {
   TravelNotice,
 } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
+import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { loggers } from '@/utils/logger';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
@@ -43,15 +44,17 @@ interface UseCardsOptions {
 
 export function useCards(options: UseCardsOptions = {}) {
   const { autoFetch = false } = options;
+  const { currentTheme } = useTenantTheme();
   
   const [state, setState] = useState<UseCardsState>({
     cards: [],
-    isLoading: autoFetch, // Si autoFetch, empezamos en loading
+    isLoading: true, // Siempre empezamos en loading hasta que se carguen datos
     error: null,
   });
 
   const repository = cardRepository$();
   const hasFetched = useRef(false);
+  const previousTenantSlug = useRef<string | null>(null);
 
   const setLoading = (isLoading: boolean) => 
     setState(prev => ({ ...prev, isLoading, error: null }));
@@ -81,6 +84,21 @@ export function useCards(options: UseCardsOptions = {}) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFetch]);
+
+  // Re-fetch cuando cambia el tenant (institución)
+  useEffect(() => {
+    const currentSlug = currentTheme?.slug || null;
+    
+    // Solo refetch si el tenant cambió (no en el primer render)
+    if (previousTenantSlug.current !== null && previousTenantSlug.current !== currentSlug) {
+      log.info('Tenant changed, refreshing cards...');
+      // Reset state y hacer fetch
+      setState({ cards: [], isLoading: true, error: null });
+      fetchCards();
+    }
+    
+    previousTenantSlug.current = currentSlug;
+  }, [currentTheme?.slug, fetchCards]);
 
   // Obtener tarjeta por ID
   const getCardById = useCallback(async (id: string): Promise<Card | undefined> => {
