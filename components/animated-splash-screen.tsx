@@ -1,3 +1,4 @@
+import { loggers } from '@/utils/logger';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SplashScreen from 'expo-splash-screen';
@@ -17,7 +18,17 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 import Svg, { Defs, G, Path, RadialGradient, Stop } from 'react-native-svg';
-import { loggers } from '@/utils/logger';
+
+// Tipo para props animados de SVG (react-native-reanimated no tiene tipos completos para SVG)
+type AnimatedSvgTransformProps = {
+  transform?: string;
+  rotation?: number;
+  originX?: number;
+  originY?: number;
+  scaleX?: number;
+  scaleY?: number;
+  opacity?: number;
+};
 
 const log = loggers.ui;
 
@@ -161,7 +172,7 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
   });
   
   // Estilos animados para alas superiores - sincronizados con masterAnimation
-  const topLeftWingStyle = useAnimatedProps(() => {
+  const topLeftWingStyle = useAnimatedProps((): AnimatedSvgTransformProps => {
     const wingCycle = interpolate(masterAnimation.value, [0, 0.25, 0.5, 0.75, 1], [-1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [-8, 0, 12]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [1.05, 1, 0.95]);
@@ -169,10 +180,10 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
       const cx = 150, cy = 150;
       return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
     }
-    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
+    return { rotation, originX: 150, originY: 150, scaleX: scale };
   });
   
-  const topRightWingStyle = useAnimatedProps(() => {
+  const topRightWingStyle = useAnimatedProps((): AnimatedSvgTransformProps => {
     const wingCycle = interpolate(masterAnimation.value, [0, 0.25, 0.5, 0.75, 1], [-1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [12, 0, -8]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [0.95, 1, 1.05]);
@@ -180,10 +191,10 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
       const cx = 150, cy = 150;
       return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
     }
-    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
+    return { rotation, originX: 150, originY: 150, scaleX: scale };
   });
   
-  const bottomLeftWingStyle = useAnimatedProps(() => {
+  const bottomLeftWingStyle = useAnimatedProps((): AnimatedSvgTransformProps => {
     const wingCycle = interpolate(masterAnimation.value, [0, 0.125, 0.375, 0.625, 0.875, 1], [1, -1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [-10, 0, 15]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [1.08, 1, 0.92]);
@@ -191,10 +202,10 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
       const cx = 150, cy = 150;
       return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
     }
-    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
+    return { rotation, originX: 150, originY: 150, scaleX: scale };
   });
   
-  const bottomRightWingStyle = useAnimatedProps(() => {
+  const bottomRightWingStyle = useAnimatedProps((): AnimatedSvgTransformProps => {
     const wingCycle = interpolate(masterAnimation.value, [0, 0.125, 0.375, 0.625, 0.875, 1], [1, -1, 1, -1, 1, -1]);
     const rotation = interpolate(wingCycle, [-1, 0, 1], [15, 0, -10]);
     const scale = interpolate(wingCycle, [-1, 0, 1], [0.92, 1, 1.08]);
@@ -202,16 +213,16 @@ const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
       const cx = 150, cy = 150;
       return { transform: `translate(${cx} ${cy}) rotate(${rotation}) scale(${scale}) translate(-${cx} -${cy})` };
     }
-    return { rotation, originX: 150, originY: 150, scaleX: scale } as any;
+    return { rotation, originX: 150, originY: 150, scaleX: scale };
   });
   
   // Breathing suave del cuerpo - sincronizado con la misma animación maestra
-  const bodyStyle = useAnimatedProps(() => {
+  const bodyStyle = useAnimatedProps((): AnimatedSvgTransformProps => {
     const scale = interpolate(masterAnimation.value, [0, 0.5, 1], [0.99, 1.01, 0.99]);
     if (Platform.OS === 'web') {
       return { transform: `scale(1 ${scale})` };
     }
-    return { scaleY: scale } as any;
+    return { scaleY: scale };
   });
   
   // Shimmer e iridiscencia sincronizada

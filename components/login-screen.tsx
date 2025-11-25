@@ -12,12 +12,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -72,7 +72,8 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       } else {
         setError(result.error || 'Error al iniciar sesión');
       }
-    } catch {
+    } catch (error) {
+      log.error('Error inesperado en login:', error);
       setError('Error inesperado. Intenta de nuevo.');
     } finally {
       setIsLoading(false);

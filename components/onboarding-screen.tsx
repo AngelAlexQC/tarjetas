@@ -1,24 +1,25 @@
+import { useAppTheme } from '@/hooks/use-app-theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowRight, Check, ShieldCheck, Sparkles, Zap } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import {
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
+    Dimensions,
+    FlatList,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewToken,
 } from 'react-native';
 import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  SharedValue,
+    Extrapolation,
+    interpolate,
+    SharedValue,
+    useAnimatedStyle,
+    useSharedValue,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Sparkles, ShieldCheck, Zap, ArrowRight, Check } from 'lucide-react-native';
-import { useAppTheme } from '@/hooks/use-app-theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -167,8 +168,8 @@ export function OnboardingScreen({ onFinish }: OnboardingScreenProps) {
     scrollX.value = event.nativeEvent.contentOffset.x;
   };
 
-  const handleViewableItemsChanged = useRef(({ viewableItems }: any) => {
-    if (viewableItems.length > 0) {
+  const handleViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems.length > 0 && viewableItems[0].index !== null) {
       setCurrentIndex(viewableItems[0].index);
     }
   }).current;

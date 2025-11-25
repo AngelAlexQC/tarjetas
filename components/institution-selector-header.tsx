@@ -1,7 +1,8 @@
 import { ThemedText } from "@/components/themed-text";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
-import { useAppTheme } from "@/hooks/use-app-theme";
-import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
+import { useAppTheme } from '@/hooks/use-app-theme';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { homeRoute } from '@/types/routes';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Image } from "expo-image";
@@ -9,10 +10,10 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    FadeInDown,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -44,7 +45,7 @@ export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: bo
   }));
 
   const handlePress = () => {
-    router.push("/" as any);
+    router.push(homeRoute());
   };
 
   const handlePressIn = () => {
