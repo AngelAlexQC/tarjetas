@@ -113,18 +113,19 @@ async function someFunction() {
 }
 ```
 
-### Opción 3: Compatibilidad Legacy (cardService)
+### ~~Opción 3: Compatibilidad Legacy (cardService)~~ DEPRECADA
 
-Para código existente que ya usa `cardService`:
+> ⚠️ **DEPRECADO**: `cardService` está en proceso de eliminación. Usa `useCards()` o `cardRepository$()` en su lugar.
 
 ```typescript
+// ❌ NO USAR - Será eliminado
 import { cardService } from '@/features/cards/services/card-service';
-
-// Sigue funcionando igual
 const cards = cardService.getCards();
-```
 
-> ⚠️ **Nota**: `cardService.getCards()` es síncrono por compatibilidad. Para nuevas funcionalidades, usa `cardRepository$().getCards()` que es asíncrono.
+// ✅ USAR ESTO
+import { useCards } from '@/hooks/use-cards';
+const { cards, fetchCards } = useCards({ autoFetch: true });
+```
 
 ## Agregar Nuevos Endpoints
 
