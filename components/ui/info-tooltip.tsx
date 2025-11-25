@@ -542,21 +542,95 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
   );
 };
 
-// Calcular posición del tooltip basado en el trigger
+// Configuración de espacios para el posicionamiento
+const TOOLTIP_CONFIG = {
+  offset: 12,              // Espacio entre el tooltip y el elemento
+  tooltipWidth: 280,       // Ancho máximo estimado del tooltip
+  padding: 16,             // Margen de seguridad con los bordes de la pantalla
+  minSpaceRequired: 80,    // Espacio mínimo requerido para mostrar el tooltip
+};
+
+// Calcular el mejor placement basado en el espacio disponible
+function calculateBestPlacement(
+  layout: { x: number; y: number; width: number; height: number },
+  preferredPlacement: 'top' | 'bottom' | 'left' | 'right',
+  insets: EdgeInsets
+): 'top' | 'bottom' | 'left' | 'right' {
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  const { offset, minSpaceRequired } = TOOLTIP_CONFIG;
+
+  // Calcular espacio disponible en cada dirección
+  const spaceTop = layout.y - insets.top - offset;
+  const spaceBottom = screenHeight - layout.y - layout.height - insets.bottom - offset;
+  const spaceLeft = layout.x - insets.left - offset;
+  const spaceRight = screenWidth - layout.x - layout.width - insets.right - offset;
+
+  // Verificar si hay espacio suficiente en la dirección preferida
+  const hasEnoughSpace = {
+    top: spaceTop >= minSpaceRequired,
+    bottom: spaceBottom >= minSpaceRequired,
+    left: spaceLeft >= minSpaceRequired,
+    right: spaceRight >= minSpaceRequired,
+  };
+
+  // Si hay espacio en la dirección preferida, usarla
+  if (hasEnoughSpace[preferredPlacement]) {
+    return preferredPlacement;
+  }
+
+  // Prioridad de fallback: opuesto > vertical > horizontal
+  const fallbackOrder: Record<typeof preferredPlacement, ('top' | 'bottom' | 'left' | 'right')[]> = {
+    top: ['bottom', 'left', 'right'],
+    bottom: ['top', 'left', 'right'],
+    left: ['right', 'top', 'bottom'],
+    right: ['left', 'top', 'bottom'],
+  };
+
+  // Buscar la primera alternativa con espacio suficiente
+  for (const fallback of fallbackOrder[preferredPlacement]) {
+    if (hasEnoughSpace[fallback]) {
+      return fallback;
+    }
+  }
+
+  // Si no hay suficiente espacio en ninguna dirección, elegir la que tenga más espacio
+  const spaces = { top: spaceTop, bottom: spaceBottom, left: spaceLeft, right: spaceRight };
+  let bestPlacement = preferredPlacement;
+  let maxSpace = spaces[preferredPlacement];
+
+  for (const [placement, space] of Object.entries(spaces) as [typeof preferredPlacement, number][]) {
+    if (space > maxSpace) {
+      maxSpace = space;
+      bestPlacement = placement;
+    }
+  }
+
+  return bestPlacement;
+}
+
+// Calcular posición del tooltip basado en el trigger con auto-ajuste
 function getTooltipPosition(
   layout: { x: number; y: number; width: number; height: number },
-  placement: 'top' | 'bottom' | 'left' | 'right',
+  preferredPlacement: 'top' | 'bottom' | 'left' | 'right',
   insets: EdgeInsets
 ) {
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-  const offset = 8;
-  const tooltipWidth = 280; // Ancho máximo estimado
-  const padding = 16; // Margen de seguridad con los bordes
+  const { offset, tooltipWidth, padding } = TOOLTIP_CONFIG;
 
-  const style: ViewStyle & { top?: number; bottom?: number; left?: number; right?: number; justifyContent?: 'flex-end' | 'flex-start' } = {};
+  // Calcular el mejor placement basado en el espacio disponible
+  const actualPlacement = calculateBestPlacement(layout, preferredPlacement, insets);
 
-  // Lógica horizontal común para top/bottom
-  if (placement === 'top' || placement === 'bottom') {
+  const style: ViewStyle & { 
+    top?: number; 
+    bottom?: number; 
+    left?: number; 
+    right?: number; 
+    justifyContent?: 'flex-end' | 'flex-start';
+    maxHeight?: number;
+  } = {};
+
+  // Calcular posición horizontal para placements verticales (top/bottom)
+  const calculateHorizontalPosition = () => {
     // Intentar centrar respecto al elemento
     let left = layout.x + (layout.width / 2) - (tooltipWidth / 2);
 
@@ -567,36 +641,60 @@ function getTooltipPosition(
     if (left < minLeft) {
       left = minLeft;
     } else if (left > maxLeft) {
-      left = maxLeft;
+      left = Math.max(minLeft, maxLeft);
     }
-    style.left = left;
-  }
+    
+    return left;
+  };
 
-  switch (placement) {
+  // Calcular posición vertical para placements horizontales (left/right)
+  const calculateVerticalPosition = () => {
+    const tooltipEstimatedHeight = 120; // Altura estimada
+    let top = layout.y + (layout.height / 2) - (tooltipEstimatedHeight / 2);
+
+    // Clamping vertical
+    const minTop = insets.top + padding;
+    const maxTop = screenHeight - insets.bottom - tooltipEstimatedHeight - padding;
+
+    if (top < minTop) {
+      top = minTop;
+    } else if (top > maxTop) {
+      top = Math.max(minTop, maxTop);
+    }
+
+    return top;
+  };
+
+  switch (actualPlacement) {
     case 'top':
-      // Usamos bottom para posicionar desde abajo y que crezca hacia arriba
+      style.left = calculateHorizontalPosition();
+      // Posicionar desde abajo para que crezca hacia arriba
       style.bottom = screenHeight - layout.y + offset;
-      // Restringir top para respetar safe area
-      style.top = insets.top + padding;
-      // Alinear contenido al fondo (cerca del trigger)
+      // Limitar el espacio disponible arriba
+      style.maxHeight = layout.y - insets.top - offset - padding;
       style.justifyContent = 'flex-end';
       break;
+
     case 'bottom':
+      style.left = calculateHorizontalPosition();
       style.top = layout.y + layout.height + offset;
-      // Restringir bottom para respetar safe area
-      style.bottom = insets.bottom + padding;
-      // Alinear contenido al inicio (cerca del trigger)
+      // Limitar el espacio disponible abajo
+      style.maxHeight = screenHeight - layout.y - layout.height - insets.bottom - offset - padding;
       style.justifyContent = 'flex-start';
       break;
+
     case 'left':
       style.right = screenWidth - layout.x + offset;
-      style.top = layout.y; // Alineación top simple para laterales
-      style.maxWidth = layout.x - padding - offset - insets.left; // Limitar ancho disponible
+      style.top = calculateVerticalPosition();
+      // Limitar ancho al espacio disponible a la izquierda
+      style.maxWidth = Math.max(100, layout.x - padding - offset - insets.left);
       break;
+
     case 'right':
       style.left = layout.x + layout.width + offset;
-      style.top = layout.y;
-      style.maxWidth = screenWidth - style.left - padding - insets.right;
+      style.top = calculateVerticalPosition();
+      // Limitar ancho al espacio disponible a la derecha
+      style.maxWidth = Math.max(100, screenWidth - layout.x - layout.width - padding - offset - insets.right);
       break;
   }
 
