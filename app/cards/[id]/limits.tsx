@@ -4,6 +4,7 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
@@ -66,6 +67,10 @@ export default function LimitsScreen() {
     setLimits(prev => ({ ...prev, [key]: value }));
     setHasChanges(true);
   };
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando tarjeta..." />;
+  }
 
   if (result) {
     return (

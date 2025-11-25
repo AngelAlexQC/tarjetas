@@ -3,6 +3,7 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
@@ -535,6 +536,10 @@ export default function StatementsScreen() {
         </ThemedText>
       </TouchableOpacity>
     );
+  }
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando estados de cuenta..." />;
   }
 
   return (

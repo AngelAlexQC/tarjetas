@@ -4,6 +4,7 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
@@ -52,6 +53,10 @@ export default function CardlessAtmScreen() {
       setGeneratedCode(Math.floor(100000 + Math.random() * 900000).toString());
     }, 500);
   };
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando tarjeta..." />;
+  }
 
   if (generatedCode) {
     const resultData: OperationResult = {

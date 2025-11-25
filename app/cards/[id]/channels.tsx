@@ -2,6 +2,7 @@ import { CreditCard } from '@/components/cards/credit-card';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
@@ -39,6 +40,10 @@ export default function ChannelsScreen() {
   const toggleSwitch = (key: keyof typeof channels) => {
     setChannels(prev => ({ ...prev, [key]: !prev[key] }));
   };
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando configuración..." />;
+  }
 
   return (
     <ThemedView style={styles.container}>

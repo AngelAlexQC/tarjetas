@@ -6,6 +6,7 @@ import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult, Transaction } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -107,6 +108,10 @@ export default function DeferScreen() {
       });
     }, 1000);
   };
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando tarjeta..." />;
+  }
 
   if (result) {
     return (

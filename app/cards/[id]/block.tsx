@@ -4,6 +4,7 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { OptionCard } from '@/components/ui/option-card';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
@@ -70,6 +71,10 @@ export default function BlockCardScreen() {
       });
     }
   };
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando tarjeta..." />;
+  }
 
   if (result) {
     return (

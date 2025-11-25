@@ -2,6 +2,7 @@ import { CreditCard } from '@/components/cards/credit-card';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -38,6 +39,10 @@ function RewardsScreen() {
     { id: 3, description: 'Netflix', points: 12, date: '15 Nov' },
     { id: 4, description: 'Bono Bienvenida', points: 5000, date: '01 Nov' },
   ];
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando puntos..." />;
+  }
 
   return (
     <ThemedView style={styles.container}>

@@ -4,6 +4,7 @@ import { SummaryPanel } from '@/components/cards/summary-panel';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
@@ -134,6 +135,10 @@ export default function SubscriptionsScreen() {
       </Animated.View>
     );
   };
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando suscripciones..." />;
+  }
 
   return (
     <ThemedView style={styles.container} surface="level1">
