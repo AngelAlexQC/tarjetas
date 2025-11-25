@@ -5,8 +5,13 @@
  * Maneja autenticación, errores, y configuración común.
  */
 
+import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { API_CONFIG } from './config';
+
+const log = loggers.api;
 
 // Tipos para las respuestas de la API
 export interface ApiResponse<T = any> {
@@ -46,11 +51,16 @@ class HttpClient {
 
   /**
    * Obtiene el token de autenticación almacenado
+   * Usa SecureStore en nativo para mayor seguridad, AsyncStorage en web
    */
   private async getAuthToken(): Promise<string | null> {
     try {
-      return await AsyncStorage.getItem('auth_token');
-    } catch {
+      if (Platform.OS === 'web') {
+        return await AsyncStorage.getItem('auth_token');
+      }
+      return await SecureStore.getItemAsync('auth_token');
+    } catch (error) {
+      log.error('Error obteniendo token de autenticación:', error);
       return null;
     }
   }
@@ -135,10 +145,10 @@ class HttpClient {
   /**
    * Método base para realizar peticiones HTTP
    */
-  private async request<T>(
+  private async request<T, B = unknown>(
     method: HttpMethod,
     endpoint: string,
-    body?: any,
+    body?: B,
     options?: RequestOptions
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
@@ -186,16 +196,16 @@ class HttpClient {
     return this.request<T>('GET', endpoint, undefined, options);
   }
 
-  async post<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
-    return this.request<T>('POST', endpoint, body, options);
+  async post<T, B = unknown>(endpoint: string, body?: B, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.request<T, B>('POST', endpoint, body, options);
   }
 
-  async put<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
-    return this.request<T>('PUT', endpoint, body, options);
+  async put<T, B = unknown>(endpoint: string, body?: B, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.request<T, B>('PUT', endpoint, body, options);
   }
 
-  async patch<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
-    return this.request<T>('PATCH', endpoint, body, options);
+  async patch<T, B = unknown>(endpoint: string, body?: B, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.request<T, B>('PATCH', endpoint, body, options);
   }
 
   async delete<T>(endpoint: string, options?: RequestOptions): Promise<ApiResponse<T>> {
@@ -229,3 +239,4 @@ export const httpClient = new HttpClient();
 
 // Exportar la clase para testing o instancias personalizadas
 export { HttpClient };
+

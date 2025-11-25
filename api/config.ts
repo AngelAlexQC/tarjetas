@@ -3,6 +3,9 @@
  * 
  * Este archivo centraliza la configuración de la API.
  * Cambia USE_MOCK_API a false cuando quieras usar el backend real.
+ * 
+ * Variables de entorno requeridas para producción:
+ * - EXPO_PUBLIC_API_URL: URL base del backend
  */
 
 export const API_CONFIG = {
@@ -14,10 +17,11 @@ export const API_CONFIG = {
 
   /**
    * URL base del backend
+   * En desarrollo usa localhost, en producción usa variable de entorno
    */
   BASE_URL: __DEV__ 
-    ? 'http://localhost:3000/api' 
-    : 'https://api.production.com/api',
+    ? (process.env.EXPO_PUBLIC_API_URL_DEV || 'http://localhost:3000/api')
+    : (process.env.EXPO_PUBLIC_API_URL || ''),
 
   /**
    * Timeout para las peticiones HTTP (en milisegundos)
