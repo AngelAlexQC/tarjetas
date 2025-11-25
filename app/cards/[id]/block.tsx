@@ -5,8 +5,8 @@ import { OperationResultScreen } from '@/components/cards/operations/operation-r
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { OptionCard } from '@/components/ui/option-card';
-import { ThemedButton } from '@/components/ui/themed-button';
 import { PoweredBy } from '@/components/ui/powered-by';
+import { ThemedButton } from '@/components/ui/themed-button';
 import { cardService } from '@/features/cards/services/card-service';
 import { BlockType, OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -15,7 +15,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AlertTriangle, Lock, PauseCircle } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function BlockCardScreen() {

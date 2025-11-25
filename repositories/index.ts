@@ -20,10 +20,10 @@
  */
 
 // Container y accesos directos
-export { RepositoryContainer, cardRepository$, authRepository$ } from './container';
+export { RepositoryContainer, authRepository$, cardRepository$ } from './container';
 
 // Interfaces (para typing)
-export type { ICardRepository, IAuthRepository } from './interfaces';
+export type { IAuthRepository, ICardRepository } from './interfaces';
 
 // Tipos
 export * from './types';

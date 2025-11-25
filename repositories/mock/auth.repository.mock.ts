@@ -6,7 +6,7 @@
 
 import { API_CONFIG } from '@/api/config';
 import { IAuthRepository } from '../interfaces';
-import { User, LoginRequest, LoginResponse } from '../types';
+import { LoginRequest, LoginResponse, User } from '../types';
 
 // Simula delay de red
 const delay = (ms: number = API_CONFIG.MOCK_DELAY) => 

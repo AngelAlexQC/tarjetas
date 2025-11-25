@@ -10,7 +10,7 @@
  */
 
 import { CardActionType } from '@/constants/card-actions';
-import { cardRepository$, Card, CardActionResult } from '@/repositories';
+import { Card, CardActionResult, cardRepository$ } from '@/repositories';
 
 // Re-exportar tipos para compatibilidad
 export type { Card, CardActionResult } from '@/repositories';

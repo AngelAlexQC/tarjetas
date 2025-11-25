@@ -7,9 +7,9 @@
  */
 
 import { API_CONFIG } from '@/api/config';
-import { ICardRepository, IAuthRepository } from './interfaces';
-import { MockCardRepository, MockAuthRepository } from './mock';
-import { RealCardRepository, RealAuthRepository } from './real';
+import { IAuthRepository, ICardRepository } from './interfaces';
+import { MockAuthRepository, MockCardRepository } from './mock';
+import { RealAuthRepository, RealCardRepository } from './real';
 
 // Instancias singleton de los repositorios
 let cardRepository: ICardRepository | null = null;

@@ -5,5 +5,6 @@
  */
 
 export { API_CONFIG, API_ENDPOINTS } from './config';
-export { httpClient, HttpClient } from './http-client';
-export type { ApiResponse, ApiError, RequestOptions } from './http-client';
+export { HttpClient, httpClient } from './http-client';
+export type { ApiError, ApiResponse, RequestOptions } from './http-client';
+

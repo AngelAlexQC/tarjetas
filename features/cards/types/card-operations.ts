@@ -9,18 +9,8 @@
 
 // Re-exportar todos los tipos desde repositories
 export {
-  type BlockReason,
-  type BlockType,
-  type BlockCardRequest,
-  type Transaction,
-  type DeferSimulation,
-  type DeferRequest,
-  type Account,
-  type CashAdvanceRequest,
-  type CardLimits,
-  type ChangePinRequest,
-  type Subscription,
-  type CardActionResult,
+    type Account, type BlockCardRequest, type BlockReason,
+    type BlockType, type CardActionResult, type CardLimits, type CashAdvanceRequest, type ChangePinRequest, type DeferRequest, type DeferSimulation, type Subscription, type Transaction
 } from '@/repositories';
 
 // Tipos específicos de UI que no están en el repositorio

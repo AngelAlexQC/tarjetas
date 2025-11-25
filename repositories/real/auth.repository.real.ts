@@ -4,9 +4,9 @@
  * Implementación del repositorio de autenticación con llamadas HTTP reales.
  */
 
-import { httpClient, API_ENDPOINTS } from '@/api';
+import { API_ENDPOINTS, httpClient } from '@/api';
 import { IAuthRepository } from '../interfaces';
-import { User, LoginRequest, LoginResponse } from '../types';
+import { LoginRequest, LoginResponse, User } from '../types';
 
 export class RealAuthRepository implements IAuthRepository {
 

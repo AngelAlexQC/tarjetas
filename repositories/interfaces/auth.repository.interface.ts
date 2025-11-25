@@ -5,9 +5,9 @@
  */
 
 import {
-  User,
-  LoginRequest,
-  LoginResponse,
+    LoginRequest,
+    LoginResponse,
+    User,
 } from '../types';
 
 export interface IAuthRepository {

@@ -1,9 +1,9 @@
+import { authRepository$ } from '@/repositories';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { authRepository$ } from '@/repositories';
 
 // Storage Keys
 const STORAGE_KEYS = {

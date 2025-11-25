@@ -8,9 +8,9 @@
  */
 
 import { CardActionType } from '@/constants/card-actions';
+import { CardActionResult, cardRepository$ } from '@/repositories';
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import { cardRepository$, CardActionResult } from '@/repositories';
 
 // Tipo extendido para incluir acciones adicionales no definidas en CardActionType
 type ExtendedActionType = CardActionType | 'notifications';

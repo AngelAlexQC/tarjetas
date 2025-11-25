@@ -4,26 +4,26 @@
  * Implementación del repositorio de tarjetas que hace llamadas HTTP reales al backend.
  */
 
-import { httpClient, API_ENDPOINTS } from '@/api';
+import { API_ENDPOINTS, httpClient } from '@/api';
 import { ICardRepository } from '../interfaces';
 import {
-  Card,
-  CardActionResult,
-  BlockCardRequest,
-  DeferRequest,
-  DeferSimulation,
-  CashAdvanceRequest,
-  CardLimits,
-  ChangePinRequest,
-  Statement,
-  TravelNotice,
-  ReplaceCardRequest,
-  Subscription,
-  Rewards,
-  DynamicCvv,
-  NotificationSettings,
-  Transaction,
-  Account,
+    Account,
+    BlockCardRequest,
+    Card,
+    CardActionResult,
+    CardLimits,
+    CashAdvanceRequest,
+    ChangePinRequest,
+    DeferRequest,
+    DeferSimulation,
+    DynamicCvv,
+    NotificationSettings,
+    ReplaceCardRequest,
+    Rewards,
+    Statement,
+    Subscription,
+    Transaction,
+    TravelNotice,
 } from '../types';
 
 export class RealCardRepository implements ICardRepository {
