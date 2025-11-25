@@ -4,13 +4,13 @@
  */
 
 import {
-    ComponentTokens,
-    getButtonGradient,
-    getGlassOverlay,
-    getSurfaceColor,
-    getTextColor,
-    PrimitiveColors,
-    SemanticColors,
+  ComponentTokens,
+  getButtonGradient,
+  getGlassOverlay,
+  getSurfaceColor,
+  getTextColor,
+  PrimitiveColors,
+  SemanticColors,
 } from '@/constants/design-tokens';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -19,6 +19,12 @@ export type ColorMode = 'light' | 'dark';
 export type GlassIntensity = 'light' | 'medium' | 'heavy';
 export type SurfaceLevel = 0 | 1 | 2 | 3;
 export type TextVariant = 'primary' | 'secondary' | 'tertiary' | 'disabled' | 'inverse';
+
+/**
+ * Tipo que representa el tema completo de la aplicación
+ * Útil para tipar props que reciben el resultado de useAppTheme()
+ */
+export type AppTheme = ReturnType<typeof useAppTheme>;
 
 /**
  * Hook principal para acceder al tema completo de la app
