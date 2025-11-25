@@ -406,7 +406,7 @@ export default function TenantSelectorScreen() {
                       <Ionicons 
                         name="chevron-forward" 
                         size={20} 
-                        color={theme.colors.icon} 
+                        color={theme.colors.textSecondary} 
                         style={{ opacity: 0.3 }}
                       />
                     </View>

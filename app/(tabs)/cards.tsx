@@ -17,28 +17,29 @@ import { Card, cardService } from "@/features/cards/services/card-service";
 import { OperationResult } from "@/features/cards/types/card-operations";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
+import { cardRoute } from "@/types/routes";
 import { useScrollToTop } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
-  Alert,
-  FlatList,
-  Modal,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-  ViewToken
+    Alert,
+    FlatList,
+    Modal,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View,
+    ViewToken
 } from "react-native";
 import Animated, {
-  FadeInDown,
-  FadeInLeft,
-  FadeInUp,
-  FadeOut,
-  SlideInLeft,
-  SlideInRight,
-  ZoomIn,
-  ZoomOut
+    FadeInDown,
+    FadeInLeft,
+    FadeInUp,
+    FadeOut,
+    SlideInLeft,
+    SlideInRight,
+    ZoomIn,
+    ZoomOut
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -102,46 +103,46 @@ export default function CardsScreen() {
     
     switch (actionType) {
       case 'block':
-        router.push(`/cards/${activeCard.id}/block` as any);
+        router.push(cardRoute(activeCard.id, 'block'));
         break;
       case 'defer':
-        router.push(`/cards/${activeCard.id}/defer` as any);
+        router.push(cardRoute(activeCard.id, 'defer'));
         break;
       case 'statement':
-        router.push(`/cards/${activeCard.id}/statements` as any);
+        router.push(cardRoute(activeCard.id, 'statements'));
         break;
       case 'advances':
-        router.push(`/cards/${activeCard.id}/advance` as any);
+        router.push(cardRoute(activeCard.id, 'advance'));
         break;
       case 'limits':
-        router.push(`/cards/${activeCard.id}/limits` as any);
+        router.push(cardRoute(activeCard.id, 'limits'));
         break;
       case 'pin':
-        router.push(`/cards/${activeCard.id}/pin` as any);
+        router.push(cardRoute(activeCard.id, 'pin'));
         break;
       case 'subscriptions':
-        router.push(`/cards/${activeCard.id}/subscriptions` as any);
+        router.push(cardRoute(activeCard.id, 'subscriptions'));
         break;
       case 'pay':
-        router.push(`/cards/${activeCard.id}/pay` as any);
+        router.push(cardRoute(activeCard.id, 'pay'));
         break;
       case 'cardless_atm':
-        router.push(`/cards/${activeCard.id}/cardless-atm` as any);
+        router.push(cardRoute(activeCard.id, 'cardless-atm'));
         break;
       case 'travel':
-        router.push(`/cards/${activeCard.id}/travel` as any);
+        router.push(cardRoute(activeCard.id, 'travel'));
         break;
       case 'channels':
-        router.push(`/cards/${activeCard.id}/channels` as any);
+        router.push(cardRoute(activeCard.id, 'channels'));
         break;
       case 'cvv':
-        router.push(`/cards/${activeCard.id}/cvv` as any);
+        router.push(cardRoute(activeCard.id, 'cvv'));
         break;
       case 'replace':
-        router.push(`/cards/${activeCard.id}/replace` as any);
+        router.push(cardRoute(activeCard.id, 'replace'));
         break;
       case 'rewards':
-        router.push(`/cards/${activeCard.id}/rewards` as any);
+        router.push(cardRoute(activeCard.id, 'rewards'));
         break;
       default:
         cardActions.executeAction(actionType);
