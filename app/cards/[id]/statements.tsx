@@ -5,8 +5,9 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
 import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
+import { loggers } from '@/utils/logger';
 import { cacheDirectory, moveAsync } from 'expo-file-system/legacy';
 import { printToFileAsync } from 'expo-print';
 import { useLocalSearchParams } from 'expo-router';
@@ -470,7 +471,7 @@ export default function StatementsScreen() {
       await shareAsync(newUri, { UTI: '.pdf', mimeType: 'application/pdf' });
       
     } catch (error) {
-      console.error(error);
+      loggers.cards.error('Error generando estado de cuenta:', error);
       Alert.alert('Error', 'No se pudo generar el estado de cuenta');
     } finally {
       setIsExporting(false);
@@ -500,7 +501,12 @@ export default function StatementsScreen() {
     );
   };
 
-  function FilterChip({ label, selected, onPress, theme }: any) {
+  function FilterChip({ label, selected, onPress, theme }: {
+    label: string;
+    selected: boolean;
+    onPress: () => void;
+    theme: AppTheme;
+  }) {
     return (
       <TouchableOpacity
         onPress={onPress}

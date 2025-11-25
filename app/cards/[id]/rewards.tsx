@@ -2,6 +2,7 @@ import { CreditCard } from '@/components/cards/credit-card';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
@@ -9,7 +10,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { PoweredBy } from '@/components/ui/powered-by';
 
 function RewardsScreen() {
   const theme = useAppTheme();
@@ -59,7 +59,7 @@ function RewardsScreen() {
                 <ThemedText type="defaultSemiBold">{item.description}</ThemedText>
                 <ThemedText style={{ color: theme.colors.textSecondary, fontSize: 12 }}>{item.date}</ThemedText>
               </View>
-              <ThemedText type="defaultSemiBold" style={{ color: theme.tenant.successColor }}>+{item.points}</ThemedText>
+              <ThemedText type="defaultSemiBold" style={{ color: theme.tenant.mainColor }}>+{item.points}</ThemedText>
             </View>
           ))}
         </ThemedView>

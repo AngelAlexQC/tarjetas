@@ -4,16 +4,16 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
 import Slider from '@react-native-community/slider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { PoweredBy } from '@/components/ui/powered-by';
 
 export default function LimitsScreen() {
   const theme = useAppTheme();
@@ -162,7 +162,7 @@ interface LimitSliderProps {
   max: number;
   onChange: (value: number) => void;
   currency: string;
-  theme: any;
+  theme: AppTheme;
   isTotal?: boolean;
 }
 

@@ -34,11 +34,14 @@ function ReplaceCardScreen() {
         reason,
       });
       
+      // Extraer receiptId del data si existe
+      const receiptData = response.data as { receiptId?: string } | undefined;
+      
       setResult({
         success: response.success,
         title: response.success ? 'Solicitud Recibida' : 'Error',
         message: response.message,
-        receiptId: response.data?.receiptId,
+        receiptId: receiptData?.receiptId,
       });
     } catch (error) {
       setResult({

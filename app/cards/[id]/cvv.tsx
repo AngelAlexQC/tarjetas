@@ -4,13 +4,13 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { PoweredBy } from '@/components/ui/powered-by';
 
 export default function DynamicCvvScreen() {
   const theme = useAppTheme();
@@ -23,7 +23,7 @@ export default function DynamicCvvScreen() {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
 
   useEffect(() => {
-    let timer: any;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (cvv && timeLeft > 0) {
       timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
