@@ -13,14 +13,15 @@ import { FaqButton } from "@/components/ui/faq-button";
 import { PoweredBy } from "@/components/ui/powered-by";
 import { CardActionType } from "@/constants/card-actions";
 import { useCardActions } from "@/features/cards/hooks/use-card-actions";
-import { Card, cardService } from "@/features/cards/services/card-service";
 import { OperationResult } from "@/features/cards/types/card-operations";
 import { useAppTheme } from "@/hooks/use-app-theme";
+import { useCards } from "@/hooks/use-cards";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
+import { Card } from "@/repositories";
 import { cardRoute } from "@/types/routes";
 import { useScrollToTop } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
     Alert,
     FlatList,
@@ -70,11 +71,11 @@ export default function CardsScreen() {
   
   const styles = createStyles(theme, layout, CARD_WIDTH, CARD_HEIGHT, CARD_SPACING);
   
-  // Generar tarjetas con valores aleatorios al inicio
-  const mockCards = useMemo(() => cardService.getCards(), []);
+  // Obtener tarjetas usando el hook (con auto-fetch)
+  const { cards, isLoading: isLoadingCards } = useCards({ autoFetch: true });
   
   // Hook de acciones de tarjetas (solo si hay tarjeta activa)
-  const activeCard = mockCards[activeCardIndex];
+  const activeCard = cards[activeCardIndex];
   const cardActions = useCardActions(activeCard?.id || '');
 
   const onViewableItemsChanged = useCallback(
@@ -187,10 +188,10 @@ export default function CardsScreen() {
 
         {/* Carrusel de tarjetas */}
         <View style={[styles.carouselContainer, { height: CARD_HEIGHT + 30 }]}>
-        {mockCards.length > 0 ? (
+        {cards.length > 0 ? (
           <FlatList
             ref={flatListRef}
-            data={mockCards}
+            data={cards}
             renderItem={renderCard}
             keyExtractor={(item) => item.id}
             horizontal
@@ -208,6 +209,10 @@ export default function CardsScreen() {
               index,
             })}
           />
+        ) : isLoadingCards ? (
+          <ThemedText style={{ textAlign: 'center', padding: 20 }}>
+            Cargando tarjetas...
+          </ThemedText>
         ) : (
           <ThemedText style={{ textAlign: 'center', padding: 20 }}>
             No hay tarjetas disponibles

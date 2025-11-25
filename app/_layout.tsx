@@ -3,6 +3,7 @@ import { BiometricAccessScreen } from '@/components/biometric-access-screen';
 import { BiometricEnableModal } from '@/components/biometric-enable-modal';
 import { LoginScreen } from '@/components/login-screen';
 import { OnboardingScreen } from '@/components/onboarding-screen';
+import { STORAGE_KEYS, TIMING } from '@/constants/app';
 import { AuthProvider, useAuth } from '@/contexts/auth-context';
 import { TenantThemeProvider, useTenantTheme } from '@/contexts/tenant-theme-context';
 import { TourProvider, useTour } from '@/contexts/tour-context';
@@ -69,9 +70,9 @@ function Navigation() {
         nextAppState === 'active'
       ) {
         const timeSinceLastSuccess = Date.now() - lastBiometricSuccess.current;
-        // Ignorar si la autenticación fue exitosa hace menos de 2 segundos
+        // Ignorar si la autenticación fue exitosa dentro del periodo de gracia
         // Esto evita el bucle causado por el cierre del diálogo biométrico del sistema
-        if (isAuthenticated && isBiometricEnabled && timeSinceLastSuccess > 2000) {
+        if (isAuthenticated && isBiometricEnabled && timeSinceLastSuccess > TIMING.BIOMETRIC_GRACE_PERIOD) {
           pauseTour();
           setShowBiometricAccess(true);
         }
@@ -94,7 +95,7 @@ function Navigation() {
 
   // Cargar estado de onboarding
   useEffect(() => {
-    AsyncStorage.getItem('@onboarding_completed').then(value => {
+    AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED).then(value => {
       setShowOnboarding(value !== 'true');
     });
   }, []);
@@ -120,13 +121,13 @@ function Navigation() {
         router.replace('/(tabs)/cards');
         setTimeout(() => {
           setAppReady();
-        }, 4500);
+        }, TIMING.APP_READY_DELAY_WITH_TENANT);
       } else {
         // Usuario autenticado pero sin tenant, mostrar selector
         router.replace('/(tabs)');
         setTimeout(() => {
           setAppReady();
-        }, 4000);
+        }, TIMING.APP_READY_DELAY_WITHOUT_TENANT);
       }
     }
   }, [isTenantLoading, isAuthenticated, currentTheme, router, setAppReady]);
@@ -146,7 +147,7 @@ function Navigation() {
   }, []);
 
   const handleOnboardingFinish = async () => {
-    await AsyncStorage.setItem('@onboarding_completed', 'true');
+    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
     setShowOnboarding(false);
     setShowLogin(true);
   };
