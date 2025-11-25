@@ -4,7 +4,7 @@ import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { ChipIcon } from "@/components/ui/chip-icon";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
-import { Card } from "@/features/cards/services/card-service";
+import { Card } from "@/repositories";
 import { formatCardExpiry } from "@/utils/formatters/date";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
