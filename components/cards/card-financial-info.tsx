@@ -12,7 +12,6 @@ import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { useThemedColors } from '@/contexts/tenant-theme-context';
 import type { Card } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { formatCurrency } from '@/utils/formatters/currency';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
@@ -41,7 +40,6 @@ export const CardFinancialInfo: React.FC<CardFinancialInfoProps> = ({
 }) => {
   const theme = useAppTheme();
   const themedColors = useThemedColors();
-  const layout = useResponsiveLayout();
   const styles = useStyles();
   const isCredit = card.cardType === 'credit';
   const balance = card.balance;
@@ -175,7 +173,6 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   // El usuario prefiere que el valor principal tenga siempre el tema de la institución
   const heroColor = primaryColor;
 
-  const balanceColor = heroColor;
   const baseOrder = card.cardType === 'credit' ? 100 : card.cardType === 'debit' ? 200 : 300;
 
   return (

@@ -6,6 +6,7 @@ import { ThemedInput } from '@/components/ui/themed-input';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { loggers } from '@/utils/logger';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
@@ -20,6 +21,8 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const log = loggers.auth;
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
@@ -78,17 +81,17 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
   const handleForgotPassword = () => {
     // TODO: Implementar pantalla de recuperación
-    console.log('Forgot password');
+    log.debug('Forgot password');
   };
 
   const handleRegister = () => {
     // TODO: Implementar pantalla de registro
-    console.log('Register');
+    log.debug('Register');
   };
 
   const handleEmailLogin = () => {
     // TODO: Implementar login con email directo
-    console.log('Email login');
+    log.debug('Email login');
   };
 
   // Estilos específicos por plataforma

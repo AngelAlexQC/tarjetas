@@ -3,6 +3,10 @@
  * Usa Intl.NumberFormat nativo para soporte internacional
  */
 
+import { loggers } from '@/utils/logger';
+
+const log = loggers.formatter;
+
 export interface CurrencyFormatOptions {
   locale?: string;
   currency?: string;
@@ -38,7 +42,7 @@ export const formatCurrency = (
     return formatter.format(amount);
   } catch (error) {
     // Fallback en caso de error
-    console.warn('Error formateando moneda:', error);
+    log.warn('Error formateando moneda:', error);
     return `${currency} ${amount.toFixed(2)}`;
   }
 };
@@ -67,7 +71,7 @@ export const formatAmount = (
 
     return formatter.format(amount);
   } catch (error) {
-    console.warn('Error formateando cantidad:', error);
+    log.warn('Error formateando cantidad:', error);
     return amount.toFixed(2);
   }
 };
@@ -139,7 +143,7 @@ export const formatCompactCurrency = (
 
     return `${sign}${formattedValue}${suffix}`;
   } catch (error) {
-    console.warn('Error formateando moneda compacta:', error);
+    log.warn('Error formateando moneda compacta:', error);
     
     // Fallback simple
     const absAmount = Math.abs(amount);
@@ -175,7 +179,7 @@ export const getCurrencySymbol = (
       .replace(/\d/g, '')
       .trim();
   } catch (error) {
-    console.warn('Error obteniendo símbolo de moneda:', error);
+    log.warn('Error obteniendo símbolo de moneda:', error);
     return currency;
   }
 };

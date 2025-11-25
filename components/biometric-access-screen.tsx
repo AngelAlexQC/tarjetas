@@ -2,11 +2,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { loggers } from '@/utils/logger';
 import { Fingerprint, ShieldCheck } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const log = loggers.biometric;
 
 interface BiometricAccessScreenProps {
   onSuccess: () => void;
@@ -44,7 +47,7 @@ export function BiometricAccessScreen({ onSuccess, onUsePassword, userName }: Bi
         setError(result.error || 'Error en la autenticación');
       }
     } catch (err) {
-      console.error('Biometric error:', err);
+      log.error('Biometric error:', err);
       isAuthenticatingRef.current = false;
       setIsAuthenticating(false);
       setError('Error inesperado');

@@ -82,7 +82,7 @@ function Navigation() {
     return () => {
       subscription.remove();
     };
-  }, [isAuthenticated, isBiometricEnabled]);
+  }, [isAuthenticated, isBiometricEnabled, pauseTour]);
 
   // Verificar biométrica al inicio si hay sesión guardada
   useEffect(() => {
@@ -90,7 +90,7 @@ function Navigation() {
       pauseTour();
       setShowBiometricAccess(true);
     }
-  }, [isAuthLoading, isAuthenticated, isBiometricEnabled]);
+  }, [isAuthLoading, isAuthenticated, isBiometricEnabled, pauseTour]);
 
   // Cargar estado de onboarding
   useEffect(() => {
@@ -138,7 +138,7 @@ function Navigation() {
     resumeTour();
     // No navegamos aquí para preservar el estado de navegación actual
     // Si es el inicio de la app, el useEffect de navegación inicial se encargará (o ya se encargó)
-  }, []);
+  }, [resumeTour]);
 
   const handleBiometricUsePassword = useCallback(() => {
     setShowBiometricAccess(false);

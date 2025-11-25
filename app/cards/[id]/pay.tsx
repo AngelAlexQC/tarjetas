@@ -22,7 +22,7 @@ export default function PayCardScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const card = cardService.getCardById(id!);
   const insets = useSafeAreaInsets();
-  const { isKeyboardVisible } = useKeyboard();
+  useKeyboard(); // Solo para efectos secundarios del hook
 
   const [amount, setAmount] = useState('');
   const [selectedOption, setSelectedOption] = useState<'total' | 'minimum' | 'other'>('total');

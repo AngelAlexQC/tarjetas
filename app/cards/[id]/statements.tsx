@@ -13,7 +13,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
 import { ArrowDownToLine, Calendar, Check, ChevronDown } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

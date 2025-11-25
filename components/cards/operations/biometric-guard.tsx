@@ -1,9 +1,12 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { loggers } from '@/utils/logger';
 import * as LocalAuthentication from 'expo-local-authentication';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, StyleSheet, View } from 'react-native';
+
+const log = loggers.biometric;
 
 interface BiometricGuardProps {
   isVisible: boolean;
@@ -14,10 +17,11 @@ interface BiometricGuardProps {
 
 export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confirma tu identidad para continuar' }: BiometricGuardProps) {
   const theme = useAppTheme();
+  // Estado interno para evitar múltiples autenticaciones simultáneas
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
-    if (isVisible) {
+    if (isVisible && !isAuthenticating) {
       authenticate();
     }
   }, [isVisible]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -32,7 +36,7 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
       // Si no hay hardware o no está enrolado, simulamos éxito en desarrollo
       // En producción, aquí deberías pedir PIN de la app o contraseña
       if (!hasHardware || !isEnrolled) {
-        console.log('Biometría no disponible, simulando éxito en desarrollo');
+        log.debug('Biometría no disponible, simulando éxito en desarrollo');
         setTimeout(() => {
           setIsAuthenticating(false);
           onSuccess();
@@ -61,7 +65,7 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
         onCancel();
       }
     } catch (error) {
-      console.error('Biometric error:', error);
+      log.error('Biometric error:', error);
       setIsAuthenticating(false);
       onCancel();
     }

@@ -7,7 +7,7 @@ import { FinancialIcons } from '@/components/ui/financial-icons';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { PauseCircle, PlayCircle } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -35,7 +35,6 @@ const MOCK_SUBSCRIPTIONS: Subscription[] = [
 
 export default function SubscriptionsScreen() {
   const theme = useAppTheme();
-  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const card = cardService.getCardById(id!);
   

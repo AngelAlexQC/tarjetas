@@ -11,7 +11,7 @@ import Slider from '@react-native-community/slider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PoweredBy } from '@/components/ui/powered-by';
 

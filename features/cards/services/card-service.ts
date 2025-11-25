@@ -11,6 +11,9 @@
 
 import { CardActionType } from '@/constants/card-actions';
 import { Card, CardActionResult, cardRepository$ } from '@/repositories';
+import { loggers } from '@/utils/logger';
+
+const log = loggers.cards;
 
 // Re-exportar tipos para compatibilidad
 export type { Card, CardActionResult } from '@/repositories';
@@ -20,14 +23,19 @@ class CardService {
     return cardRepository$();
   }
 
+  private static _warnedGetCards = false;
+
   getCards(): Card[] {
     // Nota: Este método es síncrono por compatibilidad legacy
     // Internamente el repositorio usa datos cacheados en modo mock
     // Para modo real, usar el hook useCards o cardRepository$().getCards()
-    console.warn(
-      '[CardService] getCards() is synchronous and may not reflect latest data. ' +
-      'Consider using cardRepository$().getCards() for async access.'
-    );
+    if (!CardService._warnedGetCards) {
+      CardService._warnedGetCards = true;
+      log.warn(
+        'getCards() is synchronous and may not reflect latest data. ' +
+        'Consider using cardRepository$().getCards() for async access.'
+      );
+    }
     
     // Retornar datos mock directamente para compatibilidad
     const mockCards: Card[] = [

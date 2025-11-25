@@ -4,8 +4,11 @@
  */
 
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { loggers } from '@/utils/logger';
 import React, { useMemo } from 'react';
 import { Text, TextStyle } from 'react-native';
+
+const log = loggers.ui;
 
 export interface AnimatedNumberProps {
   value: number;
@@ -51,7 +54,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
         maximumFractionDigits: decimals,
       })}${suffix}`;
     } catch (error) {
-      console.warn('Error formateando número:', error);
+      log.warn('Error formateando número:', error);
       return `${prefix}${value.toFixed(decimals)}${suffix}`;
     }
   }, [value, currency, currencySymbol, locale, decimals, prefix, suffix]);

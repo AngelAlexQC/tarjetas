@@ -24,8 +24,11 @@ import type {
     TravelNotice,
 } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
+import { loggers } from '@/utils/logger';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
+
+const log = loggers.cards;
 
 interface UseCardsState {
   cards: Card[];
@@ -67,7 +70,7 @@ export function useCards() {
     try {
       return await repository.getCardById(id);
     } catch (error) {
-      console.error('Error getting card:', error);
+      log.error('Error getting card:', error);
       return undefined;
     }
   }, [repository]);
@@ -113,7 +116,7 @@ export function useCards() {
     try {
       return await repository.getLimits(cardId);
     } catch (error) {
-      console.error('Error getting limits:', error);
+      log.error('Error getting limits:', error);
       return null;
     }
   }, [repository]);
@@ -137,7 +140,7 @@ export function useCards() {
     try {
       return await repository.getDeferrableTransactions(cardId);
     } catch (error) {
-      console.error('Error getting transactions:', error);
+      log.error('Error getting transactions:', error);
       return [];
     }
   }, [repository]);
@@ -147,7 +150,7 @@ export function useCards() {
     try {
       return await repository.simulateDefer(cardId, amount, months);
     } catch (error) {
-      console.error('Error simulating defer:', error);
+      log.error('Error simulating defer:', error);
       return null;
     }
   }, [repository]);
@@ -171,7 +174,7 @@ export function useCards() {
     try {
       return await repository.getAccounts();
     } catch (error) {
-      console.error('Error getting accounts:', error);
+      log.error('Error getting accounts:', error);
       return [];
     }
   }, [repository]);
@@ -209,7 +212,7 @@ export function useCards() {
     try {
       return await repository.getStatement(cardId, month, year);
     } catch (error) {
-      console.error('Error getting statement:', error);
+      log.error('Error getting statement:', error);
       return null;
     }
   }, [repository]);
@@ -247,7 +250,7 @@ export function useCards() {
     try {
       return await repository.getSubscriptions(cardId);
     } catch (error) {
-      console.error('Error getting subscriptions:', error);
+      log.error('Error getting subscriptions:', error);
       return [];
     }
   }, [repository]);
@@ -267,7 +270,7 @@ export function useCards() {
     try {
       return await repository.getRewards(cardId);
     } catch (error) {
-      console.error('Error getting rewards:', error);
+      log.error('Error getting rewards:', error);
       return null;
     }
   }, [repository]);
@@ -277,7 +280,7 @@ export function useCards() {
     try {
       return await repository.generateDynamicCvv(cardId);
     } catch (error) {
-      console.error('Error generating CVV:', error);
+      log.error('Error generating CVV:', error);
       return null;
     }
   }, [repository]);

@@ -1,9 +1,12 @@
 import { authRepository$ } from '@/repositories';
+import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+
+const log = loggers.auth;
 
 // Storage Keys
 const STORAGE_KEYS = {
@@ -56,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
       setIsBiometricAvailable(hasHardware && isEnrolled);
     } catch (error) {
-      console.error('Error checking biometric availability:', error);
+      log.error('Error checking biometric availability:', error);
       setIsBiometricAvailable(false);
     }
   };
@@ -75,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setIsBiometricEnabled(biometricEnabledStr === 'true');
     } catch (error) {
-      console.error('Error loading session:', error);
+      log.error('Error loading session:', error);
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userData);
       return { success: true };
     } catch (error) {
-      console.error('Login error:', error);
+      log.error('Login error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al iniciar sesión. Intenta de nuevo.';
       return { success: false, error: errorMessage };
     }
@@ -135,21 +138,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setIsBiometricEnabled(false);
     } catch (error) {
-      console.error('Logout error:', error);
+      log.error('Logout error:', error);
     }
   }, []);
 
   const enableBiometric = useCallback(async () => {
     try {
       if (!isBiometricAvailable) {
-        console.warn('Biometric authentication not available');
+        log.warn('Biometric authentication not available');
         return;
       }
 
       await AsyncStorage.setItem(STORAGE_KEYS.BIOMETRIC_ENABLED, 'true');
       setIsBiometricEnabled(true);
     } catch (error) {
-      console.error('Error enabling biometric:', error);
+      log.error('Error enabling biometric:', error);
     }
   }, [isBiometricAvailable]);
 
@@ -158,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem(STORAGE_KEYS.BIOMETRIC_ENABLED, 'false');
       setIsBiometricEnabled(false);
     } catch (error) {
-      console.error('Error disabling biometric:', error);
+      log.error('Error disabling biometric:', error);
     }
   }, []);
 
@@ -192,7 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
     } catch (error) {
-      console.error('Biometric authentication error:', error);
+      log.error('Biometric authentication error:', error);
       return { success: false, error: 'Error en la autenticación biométrica' };
     }
   }, [isBiometricAvailable]);
@@ -201,7 +204,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.USERNAME_REMEMBERED, username);
     } catch (error) {
-      console.error('Error saving username:', error);
+      log.error('Error saving username:', error);
     }
   }, []);
 
@@ -209,7 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       return await AsyncStorage.getItem(STORAGE_KEYS.USERNAME_REMEMBERED);
     } catch (error) {
-      console.error('Error loading username:', error);
+      log.error('Error loading username:', error);
       return null;
     }
   }, []);
@@ -218,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.USERNAME_REMEMBERED);
     } catch (error) {
-      console.error('Error clearing username:', error);
+      log.error('Error clearing username:', error);
     }
   }, []);
 

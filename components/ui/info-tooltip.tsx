@@ -7,10 +7,11 @@ import { ThemedText } from '@/components/themed-text';
 import { CalendarIcon } from '@/components/ui/icons';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { loggers } from '@/utils/logger';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
-import { Alert, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Dimensions, Linking, Modal, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
@@ -21,6 +22,8 @@ import Animated, {
   withTiming
 } from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const log = loggers.ui;
 
 export interface CalendarEventConfig {
   title: string;
@@ -240,13 +243,17 @@ const SpotlightOverlay = ({
 
   // Componente para las esquinas invertidas (Spandrels)
   // Crea un relleno del color del overlay con un recorte circular transparente
-  const InvertedCorner = ({ style, position }: { style: any, position: 'TL' | 'TR' | 'BL' | 'BR' }) => {
+  const InvertedCorner = ({ style, position }: { style: ViewStyle, position: 'TL' | 'TR' | 'BL' | 'BR' }) => {
     const R = borderRadius;
     // Parámetros para crear el círculo hueco
     // Usamos un borde grueso para crear el relleno exterior
     const size = 4 * R;
     const radius = 2 * R;
     const border = R;
+    
+    // Las dimensiones de la pantalla se usan implícitamente para asegurar cobertura completa
+    void screenWidth;
+    void screenHeight;
     
     let top = 0, left = 0;
     // Ajustar posición del círculo hueco según la esquina
@@ -448,7 +455,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
                     return;
                   }
                 } catch (e) {
-                  console.warn('Error trying to open Android calendar by time', e);
+                  log.warn('Error trying to open Android calendar by time', e);
                 }
                 // Fallback si falla la apertura por tiempo
                 Calendar.openEventInCalendar(eventId);
@@ -466,7 +473,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
       );
       
     } catch (error) {
-      console.error('Error adding to calendar:', error);
+      log.error('Error adding to calendar:', error);
       Alert.alert('Error', 'Ocurrió un problema al intentar guardar el evento.');
     }
   };

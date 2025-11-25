@@ -17,6 +17,9 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 import Svg, { Defs, G, Path, RadialGradient, Stop } from 'react-native-svg';
+import { loggers } from '@/utils/logger';
+
+const log = loggers.ui;
 
 // Crear versiones animadas de los componentes SVG
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -437,7 +440,7 @@ export function AnimatedSplashScreen({
         // Llamar callback opcional
         onReady?.();
       } catch (e) {
-        console.warn('Error preparando la app:', e);
+        log.warn('Error preparando la app:', e);
       } finally {
         setAppReady(true);
       }

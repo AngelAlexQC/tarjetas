@@ -3,6 +3,10 @@
  * This is necessary because expo-print has limitations with external image URLs on iOS
  */
 
+import { loggers } from '@/utils/logger';
+
+const log = loggers.ui;
+
 export async function convertImageToBase64(imageUrl: string): Promise<string | null> {
   try {
     const response = await fetch(imageUrl);
@@ -18,7 +22,7 @@ export async function convertImageToBase64(imageUrl: string): Promise<string | n
       reader.readAsDataURL(blob);
     });
   } catch (error) {
-    console.error('Error converting image to base64:', error);
+    log.error('Error converting image to base64:', error);
     return null;
   }
 }
@@ -36,7 +40,7 @@ export async function getLogoHtmlForPdf(
         return `<img src="${base64Image}" style="height: ${height}px; object-fit: contain;" />`;
       }
     } catch (error) {
-      console.error('Failed to load logo image:', error);
+      log.error('Failed to load logo image:', error);
     }
   }
   

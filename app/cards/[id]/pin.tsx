@@ -11,7 +11,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { KeyRound, ShieldCheck } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import { InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeInDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
+import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PoweredBy } from '@/components/ui/powered-by';
 

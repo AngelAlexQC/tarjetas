@@ -1,7 +1,10 @@
 import { defaultTheme, TenantTheme } from '@/constants/tenant-themes';
+import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
+
+const log = loggers.theme;
 
 interface TenantThemeContextType {
   currentTheme: TenantTheme | null;
@@ -32,7 +35,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
         setCurrentTheme(JSON.parse(savedTheme));
       }
     } catch (error) {
-      console.error('Error loading saved theme:', error);
+      log.error('Error loading saved theme:', error);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +46,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tenant));
       setCurrentTheme(tenant);
     } catch (error) {
-      console.error('Error saving theme:', error);
+      log.error('Error saving theme:', error);
     }
   };
 
@@ -52,7 +55,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.removeItem(STORAGE_KEY);
       setCurrentTheme(null);
     } catch (error) {
-      console.error('Error clearing theme:', error);
+      log.error('Error clearing theme:', error);
     }
   };
 

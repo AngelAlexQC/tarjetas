@@ -3,6 +3,10 @@
  * Usa Intl.DateTimeFormat y Intl.RelativeTimeFormat nativos
  */
 
+import { loggers } from '@/utils/logger';
+
+const log = loggers.formatter;
+
 export interface DateFormatOptions {
   locale?: string;
   dateStyle?: 'full' | 'long' | 'medium' | 'short';
@@ -35,7 +39,7 @@ export const formatDate = (
 
     return formatter.format(dateObj);
   } catch (error) {
-    console.warn('Error formateando fecha:', error);
+    log.warn('Error formateando fecha:', error);
     return 'Fecha inválida';
   }
 };
@@ -72,7 +76,7 @@ export const formatCardExpiry = (
     
     // Verificar si la fecha es válida
     if (isNaN(dateObj.getTime())) {
-      console.warn('Fecha inválida recibida:', date);
+      log.warn('Fecha inválida recibida:', date);
       return '--/--';
     }
     
@@ -80,7 +84,7 @@ export const formatCardExpiry = (
     const year = String(dateObj.getFullYear()).slice(-2);
     return `${month}/${year}`;
   } catch (error) {
-    console.warn('Error formateando fecha de vencimiento:', error);
+    log.warn('Error formateando fecha de vencimiento:', error);
     return '--/--';
   }
 };
@@ -126,7 +130,7 @@ export const formatPaymentDueDate = (
 
     return { relative, absolute };
   } catch (error) {
-    console.warn('Error formateando fecha de pago:', error);
+    log.warn('Error formateando fecha de pago:', error);
     return { relative: 'Fecha inválida', absolute: 'Fecha inválida' };
   }
 };
@@ -159,7 +163,7 @@ export const formatDateTime = (
 
     return formatter.format(dateObj);
   } catch (error) {
-    console.warn('Error formateando fecha y hora:', error);
+    log.warn('Error formateando fecha y hora:', error);
     return 'Fecha inválida';
   }
 };
@@ -218,7 +222,7 @@ export const formatRelativeDate = (
       return isSpanish ? 'ahora' : 'now';
     }
   } catch (error) {
-    console.warn('Error formateando fecha relativa:', error);
+    log.warn('Error formateando fecha relativa:', error);
     return 'Fecha inválida';
   }
 };
@@ -253,7 +257,7 @@ export const formatDueDate = (
       return `Venció ${formatRelativeDate(dateObj, locale)}`.replace('hace ', 'hace ');
     }
   } catch (error) {
-    console.warn('Error formateando fecha de vencimiento:', error);
+    log.warn('Error formateando fecha de vencimiento:', error);
     return 'Fecha inválida';
   }
 };
@@ -273,7 +277,7 @@ export const daysUntil = (date: Date | string | number): number => {
     const diffInMs = dateObj.getTime() - now.getTime();
     return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
   } catch (error) {
-    console.warn('Error calculando días hasta fecha:', error);
+    log.warn('Error calculando días hasta fecha:', error);
     return 0;
   }
 };

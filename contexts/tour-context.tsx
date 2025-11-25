@@ -1,5 +1,8 @@
+import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+
+const log = loggers.tour;
 
 interface TourItem {
   key: string;
@@ -49,7 +52,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
         setIsPaused(true);
       }
     } catch (e) {
-      console.error('Error loading tour state', e);
+      log.error('Error loading tour state', e);
     } finally {
       setIsReady(true);
     }
@@ -62,7 +65,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       setSeenKeys(newSet);
       await AsyncStorage.setItem(STORAGE_KEY_SEEN_TOOLTIPS, JSON.stringify(Array.from(newSet)));
     } catch (e) {
-      console.error('Error saving tour state', e);
+      log.error('Error saving tour state', e);
     }
   };
 
@@ -116,7 +119,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     try {
       await AsyncStorage.setItem(STORAGE_KEY_TOUR_PAUSED, 'true');
     } catch (e) {
-      console.error('Error saving tour paused state', e);
+      log.error('Error saving tour paused state', e);
     }
   }, []);
 
@@ -133,7 +136,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       setIsTourStopped(false);
       setIsPaused(false);
     } catch (e) {
-      console.error('Error resetting tour', e);
+      log.error('Error resetting tour', e);
     }
   }, []);
 

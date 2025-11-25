@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type TabType = 'info' | 'version' | 'password';

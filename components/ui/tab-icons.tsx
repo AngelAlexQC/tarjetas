@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
   withSpring, 
-  withTiming,
-  interpolate,
-  Extrapolation
+  withTiming
 } from 'react-native-reanimated';
 import { 
   Home, 
@@ -42,7 +39,7 @@ const AnimatedIcon = ({
     opacity.value = withTiming(focused ? 1 : 0.8, {
       duration: 200,
     });
-  }, [focused]);
+  }, [focused, scale, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

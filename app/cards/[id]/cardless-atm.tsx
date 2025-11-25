@@ -15,7 +15,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// import QRCode from 'react-native-qrcode-svg'; // Removed as not installed
 
 export default function CardlessAtmScreen() {
   const theme = useAppTheme();
@@ -23,7 +22,7 @@ export default function CardlessAtmScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const card = cardService.getCardById(id!);
   const insets = useSafeAreaInsets();
-  const { isKeyboardVisible } = useKeyboard();
+  useKeyboard(); // Solo para efectos secundarios del hook
 
   const [amount, setAmount] = useState('');
   const [showBiometrics, setShowBiometrics] = useState(false);

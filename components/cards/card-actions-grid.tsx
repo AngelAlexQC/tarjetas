@@ -85,7 +85,6 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
 
   // Determinar si usar grid o carrusel horizontal
   const useGrid = layout.isLandscape || layout.screenWidth >= 768;
-  const numColumns = useGrid ? (availableActions.length >= 6 ? 3 : 2) : undefined;
 
   return (
     <Animated.View 
