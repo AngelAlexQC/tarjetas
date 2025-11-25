@@ -25,7 +25,7 @@ import type {
 } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
 import { loggers } from '@/utils/logger';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
 const log = loggers.cards;
@@ -36,10 +36,17 @@ interface UseCardsState {
   error: string | null;
 }
 
-export function useCards() {
+interface UseCardsOptions {
+  /** Si es true, carga las tarjetas automáticamente al montar */
+  autoFetch?: boolean;
+}
+
+export function useCards(options: UseCardsOptions = {}) {
+  const { autoFetch = false } = options;
+  
   const [state, setState] = useState<UseCardsState>({
     cards: [],
-    isLoading: false,
+    isLoading: autoFetch, // Si autoFetch, empezamos en loading
     error: null,
   });
 
@@ -64,6 +71,13 @@ export function useCards() {
       return [];
     }
   }, [repository]);
+
+  // Auto-fetch al montar si está habilitado
+  useEffect(() => {
+    if (autoFetch) {
+      fetchCards();
+    }
+  }, [autoFetch, fetchCards]);
 
   // Obtener tarjeta por ID
   const getCardById = useCallback(async (id: string): Promise<Card | undefined> => {

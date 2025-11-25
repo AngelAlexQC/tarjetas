@@ -29,84 +29,76 @@ const log = loggers.cards;
 // Re-exportar tipos para compatibilidad
 export type { Card, CardActionResult } from '@/repositories';
 
+/**
+ * Caché sincrónico de tarjetas.
+ * Se inicializa una vez y se usa para métodos síncronos legacy.
+ */
+let cachedCards: Card[] | null = null;
+
+/**
+ * Inicializa el caché de tarjetas.
+ * Llamar antes de usar getCards() sincrónico si se necesitan datos frescos.
+ */
+export async function initializeCardCache(): Promise<Card[]> {
+  const cards = await cardRepository$().getCards();
+  cachedCards = cards;
+  return cards;
+}
+
 class CardService {
   private get repository() {
     return cardRepository$();
   }
 
   private static _warnedGetCards = false;
+  private static _isInitializing = false;
 
+  /**
+   * Obtiene las tarjetas de forma síncrona.
+   * Usa caché local para compatibilidad con código legacy.
+   * @deprecated Usar cardRepository$().getCards() para acceso async
+   */
   getCards(): Card[] {
-    // Nota: Este método es síncrono por compatibilidad legacy
-    // Internamente el repositorio usa datos cacheados en modo mock
-    // Para modo real, usar el hook useCards o cardRepository$().getCards()
-    if (!CardService._warnedGetCards) {
-      CardService._warnedGetCards = true;
-      log.warn(
-        'getCards() is synchronous and may not reflect latest data. ' +
-        'Consider using cardRepository$().getCards() for async access.'
-      );
+    // Inicializar caché en background si no existe
+    if (!cachedCards && !CardService._isInitializing) {
+      CardService._isInitializing = true;
+      initializeCardCache()
+        .then(() => { CardService._isInitializing = false; })
+        .catch((err) => { 
+          log.error('Error initializing card cache:', err);
+          CardService._isInitializing = false;
+        });
+      
+      // Retornar array vacío mientras carga
+      if (!CardService._warnedGetCards) {
+        CardService._warnedGetCards = true;
+        log.warn(
+          'getCards() es síncrono y puede no reflejar los datos más recientes. ' +
+          'Usa cardRepository$().getCards() para acceso async.'
+        );
+      }
+      return [];
     }
     
-    // Retornar datos mock directamente para compatibilidad
-    const mockCards: Card[] = [
-      {
-        id: "1",
-        cardNumber: "•••• •••• •••• 9010",
-        cardHolder: "Juan Pérez",
-        expiryDate: "12/27",
-        balance: Math.floor(Math.random() * 5000) + 500,
-        cardType: "credit",
-        cardBrand: "visa",
-        status: "active",
-        creditLimit: 8000,
-        availableCredit: 5000,
-        lastTransactionDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "2",
-        cardNumber: "•••• •••• •••• 3456",
-        cardHolder: "María García",
-        expiryDate: "08/28",
-        balance: Math.floor(Math.random() * 5000) + 500,
-        cardType: "debit",
-        cardBrand: "mastercard",
-        status: "active",
-        lastTransactionDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "3",
-        cardNumber: "•••• •••••• •0005",
-        cardHolder: "Ana Martínez",
-        expiryDate: "06/29",
-        balance: Math.floor(Math.random() * 5000) + 500,
-        cardType: "virtual",
-        cardBrand: "amex",
-        status: "active",
-        creditLimit: 6000,
-        availableCredit: 4000,
-        lastTransactionDate: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "4",
-        cardNumber: "•••• •••• •••• 6789",
-        cardHolder: "Carlos López",
-        expiryDate: "03/26",
-        balance: Math.floor(Math.random() * 5000) + 500,
-        cardType: "credit",
-        cardBrand: "discover",
-        status: "active",
-        creditLimit: 7000,
-        availableCredit: 5500,
-        lastTransactionDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
-    
-    return mockCards;
+    return cachedCards || [];
+  }
+
+  /**
+   * Obtiene las tarjetas de forma asíncrona.
+   * Preferir este método sobre getCards() síncrono.
+   */
+  async getCardsAsync(): Promise<Card[]> {
+    const cards = await this.repository.getCards();
+    cachedCards = cards;
+    return cards;
   }
 
   getCardById(id: string): Card | undefined {
     return this.getCards().find(c => c.id === id);
+  }
+
+  async getCardByIdAsync(id: string): Promise<Card | undefined> {
+    return this.repository.getCardById(id);
   }
 
   async blockCard(cardId: string): Promise<CardActionResult> {
