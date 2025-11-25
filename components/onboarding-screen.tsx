@@ -7,9 +7,10 @@ import {
     FlatList,
     NativeScrollEvent,
     NativeSyntheticEvent,
+    Platform,
+    Pressable,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
     ViewToken,
 } from 'react-native';
@@ -176,18 +177,35 @@ export function OnboardingScreen({ onFinish }: OnboardingScreenProps) {
 
   const handleNext = () => {
     if (currentIndex < SLIDES.length - 1) {
-      flatListRef.current?.scrollToIndex({
-        index: currentIndex + 1,
-        animated: true,
-      });
+      // Usar setTimeout para web para asegurar que scrollToIndex funcione
+      if (Platform.OS === 'web') {
+        setTimeout(() => {
+          flatListRef.current?.scrollToIndex({
+            index: currentIndex + 1,
+            animated: true,
+          });
+        }, 10);
+      } else {
+        flatListRef.current?.scrollToIndex({
+          index: currentIndex + 1,
+          animated: true,
+        });
+      }
     } else {
       onFinish();
     }
   };
 
+  // getItemLayout es necesario para que scrollToIndex funcione en web
+  const getItemLayout = (_: unknown, index: number) => ({
+    length: SCREEN_WIDTH,
+    offset: SCREEN_WIDTH * index,
+    index,
+  });
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={{ flex: 3 }}>
+      <View style={{ flex: 3, width: SCREEN_WIDTH }}>
         <Animated.FlatList
           ref={flatListRef}
           data={SLIDES}
@@ -201,16 +219,20 @@ export function OnboardingScreen({ onFinish }: OnboardingScreenProps) {
           onViewableItemsChanged={handleViewableItemsChanged}
           viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
           scrollEventThrottle={32}
+          getItemLayout={getItemLayout}
         />
       </View>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
         <Paginator data={SLIDES} scrollX={scrollX} />
         
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: theme.tenant.mainColor }]}
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            { backgroundColor: theme.tenant.mainColor },
+            pressed && { opacity: 0.8 },
+          ]}
           onPress={handleNext}
-          activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>
             {currentIndex === SLIDES.length - 1 ? 'Comencemos' : 'Siguiente'}
@@ -220,7 +242,7 @@ export function OnboardingScreen({ onFinish }: OnboardingScreenProps) {
           ) : (
             <ArrowRight size={20} color="#FFF" style={{ marginLeft: 8 }} />
           )}
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
