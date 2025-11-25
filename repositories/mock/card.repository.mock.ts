@@ -136,12 +136,12 @@ export class MockCardRepository implements ICardRepository {
   }
 
   async getCardById(id: string): Promise<Card | undefined> {
-    await delay(300);
+    await delay(1500); // Más delay para ver el loading
     return MOCK_CARDS.find(c => c.id === id);
   }
 
   async blockCard(request: BlockCardRequest): Promise<CardActionResult> {
-    await delay(1000);
+    await delay();
     return {
       success: true,
       message: request.type === 'temporary' 
