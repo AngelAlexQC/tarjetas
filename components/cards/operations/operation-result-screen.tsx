@@ -1,8 +1,8 @@
 import { ThemedText } from '@/components/themed-text';
-import type { Card } from '@/repositories';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import type { Card } from '@/repositories';
 import { loggers } from '@/utils/logger';
 import { generateReceiptHtml } from '@/utils/receipt-html';
 import { printToFileAsync } from 'expo-print';

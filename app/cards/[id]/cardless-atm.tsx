@@ -4,17 +4,16 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
-import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
 import { useKeyboard } from '@/hooks/use-keyboard';
+import type { Card } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import type { Card } from '@/repositories';
-import { ActivityIndicator } from 'react-native';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

@@ -10,13 +10,13 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult, Transaction } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
+import type { Card } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight, Check } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { Card } from '@/repositories';
 
 // Mock Data
 const MOCK_TRANSACTIONS: Transaction[] = [

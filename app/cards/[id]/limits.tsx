@@ -8,11 +8,11 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
+import type { Card } from '@/repositories';
 import Slider from '@react-native-community/slider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import type { Card } from '@/repositories';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

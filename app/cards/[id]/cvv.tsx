@@ -8,11 +8,11 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
+import type { Card } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import type { Card } from '@/repositories';
-import { ActivityIndicator } from 'react-native';
 import { StyleSheet, View } from 'react-native';
+
 
 export default function DynamicCvvScreen() {
   const theme = useAppTheme();

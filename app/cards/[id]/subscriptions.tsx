@@ -7,10 +7,10 @@ import { FinancialIcons } from '@/components/ui/financial-icons';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
+import type { Card } from '@/repositories';
 import { useLocalSearchParams } from 'expo-router';
 import { PauseCircle, PlayCircle } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import type { Card } from '@/repositories';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 

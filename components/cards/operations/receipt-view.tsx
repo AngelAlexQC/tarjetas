@@ -1,8 +1,8 @@
 import { ThemedText } from '@/components/themed-text';
 import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
-import type { Card } from '@/repositories';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import type { Card } from '@/repositories';
 import { Check, XCircle } from 'lucide-react-native';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';

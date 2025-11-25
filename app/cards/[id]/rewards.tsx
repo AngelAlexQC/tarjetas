@@ -6,10 +6,10 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
+import type { Card } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
-import type { Card } from '@/repositories';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function RewardsScreen() {

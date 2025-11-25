@@ -4,17 +4,17 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
+import type { Card } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { KeyRound, ShieldCheck } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { PoweredBy } from '@/components/ui/powered-by';
-import type { Card } from '@/repositories';
 
 export default function PinScreen() {
   const theme = useAppTheme();
