@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
-import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
+import { DragonflyLoading } from '@/components/ui/dragonfly-loading';
 import { GradientText } from '@/components/ui/gradient-text';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
@@ -142,7 +142,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 paddingHorizontal: 48,
                 alignItems: 'center',
               }}>
-                <DragonflyLogo width={100} height={100} style={{ marginBottom: 16 }} />
+                <DragonflyLoading width={100} height={100} style={{ marginBottom: 16 }} />
                 <GradientText 
                   text="LIBÉLULA" 
                   fontSize={28} 
