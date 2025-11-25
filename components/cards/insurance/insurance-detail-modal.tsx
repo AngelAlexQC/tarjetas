@@ -6,14 +6,19 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
+    Dimensions,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
     View,
 } from 'react-native';
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Insurance } from './insurance-generator';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface InsuranceDetailModalProps {
   insurance: Insurance | null;
@@ -43,8 +48,15 @@ export function InsuranceDetailModal({
   activeCard,
 }: InsuranceDetailModalProps) {
   const theme = useAppTheme();
+  const insets = useSafeAreaInsets();
 
   if (!insurance) return null;
+
+  // Calcular dimensiones responsivas
+  const isWeb = Platform.OS === 'web';
+  const isLargeScreen = SCREEN_WIDTH > 768;
+  const modalMaxWidth = isLargeScreen ? 480 : SCREEN_WIDTH;
+  const modalMaxHeight = isLargeScreen ? SCREEN_HEIGHT * 0.85 : SCREEN_HEIGHT * 0.85;
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-US', {
@@ -59,14 +71,23 @@ export function InsuranceDetailModal({
     overlay: {
       flex: 1,
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'flex-end',
+      justifyContent: isLargeScreen ? 'center' : 'flex-end',
+      alignItems: isLargeScreen ? 'center' : 'stretch',
     },
     modalContainer: {
       backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      maxHeight: '85%',
+      borderBottomLeftRadius: isLargeScreen ? 20 : 0,
+      borderBottomRightRadius: isLargeScreen ? 20 : 0,
+      maxHeight: modalMaxHeight,
+      maxWidth: modalMaxWidth,
+      width: isLargeScreen ? modalMaxWidth : '100%',
       overflow: 'hidden',
+      ...(isWeb && {
+        // Mejoras específicas para web
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      }),
     },
     dragIndicator: {
       width: 32,
@@ -179,6 +200,7 @@ export function InsuranceDetailModal({
     footer: {
       padding: 16,
       paddingTop: 14,
+      paddingBottom: isLargeScreen ? 16 : Math.max(16, insets.bottom),
       borderTopWidth: 1,
       borderTopColor: theme.isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)',
       backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
@@ -252,20 +274,33 @@ export function InsuranceDetailModal({
     },
   });
 
+  // Handler para cerrar al tocar el overlay
+  const handleOverlayPress = () => {
+    onClose();
+  };
+
+  // Handler para evitar que el contenido cierre el modal
+  const handleContentPress = () => {
+    // No hacer nada, solo evitar que el evento se propague
+  };
+
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="none"
+      animationType={isWeb ? 'fade' : 'none'}
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <Pressable style={styles.overlay} onPress={handleOverlayPress}>
         <Animated.View
-          entering={SlideInDown.springify()}
+          entering={isWeb ? undefined : SlideInDown.springify()}
           style={styles.modalContainer}
         >
-          <Pressable onPress={(e) => e.stopPropagation()}>
+          <Pressable 
+            onPress={handleContentPress}
+            style={{ flex: 1, maxHeight: modalMaxHeight }}
+          >
             {/* Drag indicator */}
             <View style={styles.dragIndicator} />
 

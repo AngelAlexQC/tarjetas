@@ -3,23 +3,23 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, Check, ShieldCheck, Sparkles, Zap } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import {
-    Dimensions,
-    FlatList,
-    NativeScrollEvent,
-    NativeSyntheticEvent,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
-    ViewToken,
+  Dimensions,
+  FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  ViewToken,
 } from 'react-native';
 import Animated, {
-    Extrapolation,
-    interpolate,
-    SharedValue,
-    useAnimatedStyle,
-    useSharedValue,
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
