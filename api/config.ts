@@ -19,9 +19,16 @@ export const API_CONFIG = {
    * URL base del backend
    * En desarrollo usa localhost, en producción usa variable de entorno
    */
-  BASE_URL: __DEV__ 
-    ? (process.env.EXPO_PUBLIC_API_URL_DEV || 'http://localhost:3000/api')
-    : (process.env.EXPO_PUBLIC_API_URL || ''),
+  BASE_URL: (() => {
+    if (__DEV__) {
+      return process.env.EXPO_PUBLIC_API_URL_DEV || 'http://localhost:3000/api';
+    }
+    const prodUrl = process.env.EXPO_PUBLIC_API_URL;
+    if (!prodUrl) {
+      console.error('[API_CONFIG] EXPO_PUBLIC_API_URL no está configurada para producción');
+    }
+    return prodUrl || '';
+  })(),
 
   /**
    * Timeout para las peticiones HTTP (en milisegundos)

@@ -14,7 +14,7 @@ import { API_CONFIG } from './config';
 const log = loggers.api;
 
 // Tipos para las respuestas de la API
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
