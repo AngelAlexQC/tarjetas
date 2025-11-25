@@ -3,6 +3,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { authRepository$ } from '@/repositories';
 
 // Storage Keys
 const STORAGE_KEYS = {
@@ -82,50 +83,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      // TODO: Reemplazar con llamada real a tu API
-      // Por ahora, validación simple para desarrollo
-      if (!username || !password) {
-        return { success: false, error: 'Por favor completa todos los campos' };
-      }
-
-      if (password.length < 4) {
-        return { success: false, error: 'La contraseña debe tener al menos 4 caracteres' };
-      }
-
-      // Simulación de autenticación
-      // En producción, aquí harías la llamada a tu backend
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simular latencia de red
-
-      // Usuario de ejemplo (reemplazar con respuesta del servidor)
-      const userData: User = {
-        id: '1',
-        username: username.toLowerCase(),
-        email: `${username.toLowerCase()}@example.com`,
-        name: username,
-      };
+      // Usar el repositorio de autenticación
+      const authRepo = authRepository$();
+      const response = await authRepo.login({ username, password });
 
       // Guardar credenciales de manera segura
       if (Platform.OS === 'web') {
         // En web, SecureStore no está disponible, usar AsyncStorage
-        await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, `token_${username}_${Date.now()}`);
+        await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.token);
       } else {
         // En nativo, usar SecureStore para mayor seguridad
-        await SecureStore.setItemAsync(STORAGE_KEYS.AUTH_TOKEN, `token_${username}_${Date.now()}`);
+        await SecureStore.setItemAsync(STORAGE_KEYS.AUTH_TOKEN, response.token);
       }
 
       // Guardar datos del usuario
+      const userData: User = {
+        id: response.user.id,
+        username: response.user.username,
+        email: response.user.email,
+        name: response.user.name,
+      };
       await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
       
       setUser(userData);
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'Error al iniciar sesión. Intenta de nuevo.' };
+      const errorMessage = error instanceof Error ? error.message : 'Error al iniciar sesión. Intenta de nuevo.';
+      return { success: false, error: errorMessage };
     }
   }, []);
 
   const logout = useCallback(async () => {
     try {
+      // Llamar al repositorio para logout (si el backend lo necesita)
+      const authRepo = authRepository$();
+      await authRepo.logout();
+      
       // Limpiar todos los datos excepto el tenant y onboarding
       if (Platform.OS === 'web') {
         await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
