@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/themed-view';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { loggers } from '@/utils/logger';
 import * as LocalAuthentication from 'expo-local-authentication';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, StyleSheet, View } from 'react-native';
 
 const log = loggers.biometric;
@@ -19,14 +19,17 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
   const theme = useAppTheme();
   // Estado interno para evitar múltiples autenticaciones simultáneas
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-
+  // Refs para callbacks estables (evitar re-renders innecesarios)
+  const onSuccessRef = useRef(onSuccess);
+  const onCancelRef = useRef(onCancel);
+  
+  // Actualizar refs cuando cambien los callbacks
   useEffect(() => {
-    if (isVisible && !isAuthenticating) {
-      authenticate();
-    }
-  }, [isVisible]); // eslint-disable-line react-hooks/exhaustive-deps
+    onSuccessRef.current = onSuccess;
+    onCancelRef.current = onCancel;
+  }, [onSuccess, onCancel]);
 
-  const authenticate = async () => {
+  const authenticate = useCallback(async () => {
     setIsAuthenticating(true);
     try {
       // Verificamos hardware primero
@@ -39,7 +42,7 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
         log.debug('Biometría no disponible, simulando éxito en desarrollo');
         setTimeout(() => {
           setIsAuthenticating(false);
-          onSuccess();
+          onSuccessRef.current();
         }, 1000);
         return;
       }
@@ -54,7 +57,7 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
       if (result.success) {
         setTimeout(() => {
           setIsAuthenticating(false);
-          onSuccess();
+          onSuccessRef.current();
         }, 500);
       } else {
         setIsAuthenticating(false);
@@ -62,14 +65,20 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
           // Si falla por error técnico (no cancelación), damos feedback
           Alert.alert('Error', 'No pudimos verificar tu identidad.');
         }
-        onCancel();
+        onCancelRef.current();
       }
     } catch (error) {
       log.error('Biometric error:', error);
       setIsAuthenticating(false);
-      onCancel();
+      onCancelRef.current();
     }
-  };
+  }, [reason]);
+
+  useEffect(() => {
+    if (isVisible && !isAuthenticating) {
+      authenticate();
+    }
+  }, [isVisible, isAuthenticating, authenticate]);
 
   if (!isVisible) return null;
 

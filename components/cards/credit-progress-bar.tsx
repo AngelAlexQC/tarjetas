@@ -45,6 +45,8 @@ export const CreditProgressBar: React.FC<CreditProgressBarProps> = ({
     } else {
       progressWidth.value = percentage;
     }
+    // progressWidth es un SharedValue de Reanimated que mantiene referencia estable.
+    // No necesita estar en dependencias porque .value es mutable y no cambia la referencia.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [percentage, animated]);
 
