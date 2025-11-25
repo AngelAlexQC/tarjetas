@@ -572,18 +572,14 @@ export function AnimatedSplashScreen({
     };
   });
 
-  // No mostrar nada hasta que el splash esté completo
-  if (isSplashAnimationComplete) {
-    return <>{children}</>;
-  }
-
   return (
     <View style={styles.container}>
-      {/* Renderizar contenido de la app en el fondo */}
-      {isAppReady && children}
+      {/* Renderizar contenido de la app (siempre, pero oculto por el splash) */}
+      {children}
 
-      {/* Overlay del splash screen animado */}
-      <Animated.View style={[styles.splashContainer, containerAnimatedStyle]}>
+      {/* Overlay del splash screen animado - solo visible si la animación no ha terminado */}
+      {!isSplashAnimationComplete && (
+        <Animated.View style={[styles.splashContainer, containerAnimatedStyle]}>
         {/* Fondo premium con gradiente sofisticado */}
         <LinearGradient
           colors={['#0D1117', '#161B22', '#1C2128', '#21262D', '#0D1117']}
@@ -648,6 +644,7 @@ export function AnimatedSplashScreen({
           <Animated.Text style={styles.subText}>AGILIDAD TECNOLÓGICA</Animated.Text>
         </Animated.View>
       </Animated.View>
+      )}
     </View>
   );
 }

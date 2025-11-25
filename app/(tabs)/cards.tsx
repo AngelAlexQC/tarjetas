@@ -21,7 +21,7 @@ import { Card } from "@/repositories";
 import { cardRoute } from "@/types/routes";
 import { useScrollToTop } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
     Alert,
     FlatList,
@@ -47,6 +47,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Las dimensiones serán calculadas dinámicamente en el componente
 
 export default function CardsScreen() {
+  // Log para verificar el renderizado (solo en desarrollo)
+  useEffect(() => {
+    if (__DEV__) {
+      console.log('📱 CardsScreen montado');
+      return () => {
+        console.log('📱 CardsScreen desmontado');
+      };
+    }
+  }, []);
+
   const theme = useAppTheme();
   const router = useRouter();
   const layout = useResponsiveLayout();
