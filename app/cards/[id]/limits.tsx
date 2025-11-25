@@ -44,6 +44,7 @@ export default function LimitsScreen() {
   });
 
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -53,14 +54,16 @@ export default function LimitsScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
+    setIsProcessing(true);
     setTimeout(() => {
+      setIsProcessing(false);
       setResult({
         success: true,
         title: 'Cupos Actualizados',
         message: 'Los límites de tu tarjeta han sido actualizados correctamente.',
         receiptId: `LIM-${Math.floor(Math.random() * 10000)}`,
       });
-    }, 1000);
+    }, 2000);
   };
 
   const updateLimit = (key: keyof typeof limits, value: number) => {
@@ -70,6 +73,10 @@ export default function LimitsScreen() {
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Actualizando cupos..." />;
   }
 
   if (result) {

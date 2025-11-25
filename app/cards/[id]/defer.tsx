@@ -55,6 +55,7 @@ export default function DeferScreen() {
   const [selectedTxIds, setSelectedTxIds] = useState<Set<string>>(new Set());
   const [selectedMonths, setSelectedMonths] = useState<number>(3);
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
 
   // Derived state
@@ -99,18 +100,24 @@ export default function DeferScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
+    setIsProcessing(true);
     setTimeout(() => {
+      setIsProcessing(false);
       setResult({
         success: true,
         title: 'Diferido Exitoso',
         message: `Has diferido $${totalAmount.toFixed(2)} a ${selectedMonths} meses.`,
         receiptId: `DEF-${Math.floor(Math.random() * 10000)}`,
       });
-    }, 1000);
+    }, 2000);
   };
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Procesando diferido..." />;
   }
 
   if (result) {

@@ -40,6 +40,7 @@ export default function PayCardScreen() {
   const [amount, setAmount] = useState('');
   const [selectedOption, setSelectedOption] = useState<'total' | 'minimum' | 'other'>('total');
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
 
   // Mock data
@@ -52,18 +53,24 @@ export default function PayCardScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
+    setIsProcessing(true);
     setTimeout(() => {
+      setIsProcessing(false);
       setResult({
         success: true,
         title: 'Pago Exitoso',
         message: `Has pagado $${amount || totalDebt} a tu tarjeta.`,
         receiptId: `PAY-${Math.floor(Math.random() * 10000)}`,
       });
-    }, 1000);
+    }, 2000);
   };
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Procesando pago..." />;
   }
 
   if (result) {

@@ -40,6 +40,7 @@ export default function BlockCardScreen() {
   
   const [selectedType, setSelectedType] = useState<BlockType | null>(null);
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
 
   const handleBlock = () => {
@@ -49,6 +50,7 @@ export default function BlockCardScreen() {
 
   const onBiometricSuccess = async () => {
     setShowBiometrics(false);
+    setIsProcessing(true);
     
     try {
       const repo = cardRepository$();
@@ -57,6 +59,7 @@ export default function BlockCardScreen() {
         type: selectedType! 
       });
       
+      setIsProcessing(false);
       setResult({
         success: response.success,
         title: selectedType === 'temporary' ? 'Tarjeta Pausada' : 'Tarjeta Bloqueada',
@@ -64,6 +67,7 @@ export default function BlockCardScreen() {
         receiptId: `BLK-${Math.floor(Math.random() * 10000)}`,
       });
     } catch (error) {
+      setIsProcessing(false);
       setResult({
         success: false,
         title: 'Error',
@@ -74,6 +78,10 @@ export default function BlockCardScreen() {
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Bloqueando tarjeta..." />;
   }
 
   if (result) {

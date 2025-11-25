@@ -33,6 +33,7 @@ export default function DynamicCvvScreen() {
   }, [id, getCardById]);
 
   const [showBiometrics, setShowBiometrics] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [cvv, setCvv] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
 
@@ -50,8 +51,12 @@ export default function DynamicCvvScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
-    setCvv(Math.floor(100 + Math.random() * 900).toString());
-    setTimeLeft(300);
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setCvv(Math.floor(100 + Math.random() * 900).toString());
+      setTimeLeft(300);
+    }, 2000);
   };
 
   const formatTime = (seconds: number) => {
@@ -62,6 +67,10 @@ export default function DynamicCvvScreen() {
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Generando CVV dinámico..." />;
   }
 
   if (cvv) {

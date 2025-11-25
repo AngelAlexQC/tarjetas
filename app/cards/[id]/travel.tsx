@@ -40,9 +40,11 @@ export default function TravelNoticeScreen() {
   const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
 
   const handleSave = async () => {
+    setIsProcessing(true);
     try {
       const repo = cardRepository$();
       const response = await repo.createTravelNotice({
@@ -55,6 +57,7 @@ export default function TravelNoticeScreen() {
       // Extraer receiptId del data si existe
       const receiptData = response.data as { receiptId?: string } | undefined;
       
+      setIsProcessing(false);
       setResult({
         success: response.success,
         title: response.success ? 'Aviso Registrado' : 'Error',
@@ -62,6 +65,7 @@ export default function TravelNoticeScreen() {
         receiptId: receiptData?.receiptId,
       });
     } catch (error) {
+      setIsProcessing(false);
       setResult({
         success: false,
         title: 'Error',
@@ -72,6 +76,10 @@ export default function TravelNoticeScreen() {
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Registrando aviso de viaje..." />;
   }
 
   if (result) {

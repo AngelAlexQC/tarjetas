@@ -39,6 +39,7 @@ export default function PinScreen() {
   const [confirmPin, setConfirmPin] = useState('');
   const confirmPinRef = useRef<TextInput>(null);
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
 
   const handleSave = () => {
@@ -52,15 +53,25 @@ export default function PinScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
+    setIsProcessing(true);
     setTimeout(() => {
+      setIsProcessing(false);
       setResult({
         success: true,
         title: 'PIN Actualizado',
         message: 'Tu clave de cajero ha sido modificada exitosamente. Ya puedes usarla en cajeros automáticos.',
         receiptId: `PIN-${Math.floor(Math.random() * 10000)}`,
       });
-    }, 1000);
+    }, 2000);
   };
+
+  if (isLoadingCard) {
+    return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Actualizando PIN..." />;
+  }
 
   if (result) {
     return (
@@ -84,10 +95,6 @@ export default function PinScreen() {
   }
 
   const isValid = pin.length === 4 && confirmPin.length === 4 && pin === confirmPin;
-
-  if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
-  }
 
   return (
     <ThemedView style={styles.container} surface="level1">

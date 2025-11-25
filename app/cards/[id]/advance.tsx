@@ -59,6 +59,7 @@ export default function AdvanceScreen() {
   const cvvRef = useRef<TextInput>(null);
   
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
 
   // Calculations
@@ -112,18 +113,24 @@ export default function AdvanceScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
+    setIsProcessing(true);
     setTimeout(() => {
+      setIsProcessing(false);
       setResult({
         success: true,
         title: 'Avance Exitoso',
         message: `Se han acreditado $${parseFloat(amount).toFixed(2)} en tu cuenta.`,
         receiptId: `ADV-${Math.floor(Math.random() * 10000)}`,
       });
-    }, 1000);
+    }, 2000);
   };
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Procesando avance de efectivo..." />;
   }
 
   if (result) {

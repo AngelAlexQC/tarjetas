@@ -39,6 +39,7 @@ export default function CardlessAtmScreen() {
 
   const [amount, setAmount] = useState('');
   const [showBiometrics, setShowBiometrics] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
 
   const handleGenerate = () => {
@@ -48,14 +49,20 @@ export default function CardlessAtmScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
+    setIsProcessing(true);
     // Simulate code generation
     setTimeout(() => {
+      setIsProcessing(false);
       setGeneratedCode(Math.floor(100000 + Math.random() * 900000).toString());
-    }, 500);
+    }, 2000);
   };
 
   if (isLoadingCard) {
     return <LoadingScreen message="Cargando tarjeta..." />;
+  }
+
+  if (isProcessing) {
+    return <LoadingScreen message="Generando código de retiro..." />;
   }
 
   if (generatedCode) {
