@@ -58,7 +58,7 @@ export default function CardlessAtmScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando retiro sin tarjeta..." />;
   }
 
   if (isProcessing) {

@@ -113,7 +113,7 @@ export default function DeferScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando opciones de diferidos..." />;
   }
 
   if (isProcessing) {

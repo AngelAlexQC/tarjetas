@@ -66,7 +66,7 @@ export default function PinScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando cambio de PIN..." />;
   }
 
   if (isProcessing) {

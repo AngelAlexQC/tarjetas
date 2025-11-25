@@ -66,7 +66,7 @@ export default function PayCardScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando datos de pago..." />;
   }
 
   if (isProcessing) {

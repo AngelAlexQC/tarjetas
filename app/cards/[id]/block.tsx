@@ -77,7 +77,7 @@ export default function BlockCardScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando opciones de bloqueo..." />;
   }
 
   if (isProcessing) {

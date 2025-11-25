@@ -70,7 +70,7 @@ function ReplaceCardScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando opciones de reemplazo..." />;
   }
 
   if (isProcessing) {

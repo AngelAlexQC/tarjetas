@@ -75,7 +75,7 @@ export default function TravelNoticeScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando aviso de viaje..." />;
   }
 
   if (isProcessing) {

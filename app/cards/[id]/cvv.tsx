@@ -66,7 +66,7 @@ export default function DynamicCvvScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando código de seguridad..." />;
   }
 
   if (isProcessing) {

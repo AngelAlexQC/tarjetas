@@ -72,7 +72,7 @@ export default function LimitsScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando límites..." />;
   }
 
   if (isProcessing) {

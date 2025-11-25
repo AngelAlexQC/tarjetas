@@ -126,7 +126,7 @@ export default function AdvanceScreen() {
   };
 
   if (isLoadingCard) {
-    return <LoadingScreen message="Cargando tarjeta..." />;
+    return <LoadingScreen message="Cargando opciones de avances..." />;
   }
 
   if (isProcessing) {
