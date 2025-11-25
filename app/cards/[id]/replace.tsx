@@ -8,6 +8,7 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { cardRepository$, ReplaceReason } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -20,19 +21,32 @@ function ReplaceCardScreen() {
   const card = cardService.getCardById(id!);
   const insets = useSafeAreaInsets();
 
-  const [reason, setReason] = useState<'damaged' | 'lost' | 'stolen' | null>(null);
+  const [reason, setReason] = useState<ReplaceReason | null>(null);
   const [result, setResult] = useState<OperationResult | null>(null);
 
-  const handleReplace = () => {
-    // Simulate API call
-    setTimeout(() => {
-      setResult({
-        success: true,
-        title: 'Solicitud Recibida',
-        message: 'Tu nueva tarjeta será enviada a tu dirección registrada en 3-5 días hábiles.',
-        receiptId: `REP-${Math.floor(Math.random() * 10000)}`,
+  const handleReplace = async () => {
+    if (!reason) return;
+    
+    try {
+      const repo = cardRepository$();
+      const response = await repo.requestReplacement({
+        cardId: id!,
+        reason,
       });
-    }, 1000);
+      
+      setResult({
+        success: response.success,
+        title: response.success ? 'Solicitud Recibida' : 'Error',
+        message: response.message,
+        receiptId: response.data?.receiptId,
+      });
+    } catch (error) {
+      setResult({
+        success: false,
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Error al solicitar reemplazo',
+      });
+    }
   };
 
   if (result) {

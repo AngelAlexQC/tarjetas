@@ -10,6 +10,7 @@ import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useKeyboard } from '@/hooks/use-keyboard';
+import { cardRepository$ } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -28,16 +29,29 @@ export default function TravelNoticeScreen() {
   const [endDate, setEndDate] = useState('');
   const [result, setResult] = useState<OperationResult | null>(null);
 
-  const handleSave = () => {
-    // Simulate API call
-    setTimeout(() => {
-      setResult({
-        success: true,
-        title: 'Aviso Registrado',
-        message: 'Tu aviso de viaje ha sido registrado correctamente. ¡Buen viaje!',
-        receiptId: `TRV-${Math.floor(Math.random() * 10000)}`,
+  const handleSave = async () => {
+    try {
+      const repo = cardRepository$();
+      const response = await repo.createTravelNotice({
+        cardId: id!,
+        destination,
+        startDate,
+        endDate,
       });
-    }, 1000);
+      
+      setResult({
+        success: response.success,
+        title: response.success ? 'Aviso Registrado' : 'Error',
+        message: response.message,
+        receiptId: response.data?.receiptId,
+      });
+    } catch (error) {
+      setResult({
+        success: false,
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Error al registrar aviso de viaje',
+      });
+    }
   };
 
   if (result) {

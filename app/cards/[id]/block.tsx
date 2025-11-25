@@ -10,6 +10,7 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { cardService } from '@/features/cards/services/card-service';
 import { BlockType, OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { cardRepository$ } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AlertTriangle, Lock, PauseCircle } from 'lucide-react-native';
 import React, { useState } from 'react';
@@ -33,19 +34,29 @@ export default function BlockCardScreen() {
     setShowBiometrics(true);
   };
 
-  const onBiometricSuccess = () => {
+  const onBiometricSuccess = async () => {
     setShowBiometrics(false);
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      const repo = cardRepository$();
+      const response = await repo.blockCard({ 
+        cardId: id!, 
+        type: selectedType! 
+      });
+      
       setResult({
-        success: true,
+        success: response.success,
         title: selectedType === 'temporary' ? 'Tarjeta Pausada' : 'Tarjeta Bloqueada',
-        message: selectedType === 'temporary' 
-          ? 'Tu tarjeta ha sido pausada temporalmente. Puedes reactivarla en cualquier momento.'
-          : 'Tu tarjeta ha sido bloqueada definitivamente. Se ha generado una solicitud de reposición.',
+        message: response.message,
         receiptId: `BLK-${Math.floor(Math.random() * 10000)}`,
       });
-    }, 1000);
+    } catch (error) {
+      setResult({
+        success: false,
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Error al bloquear la tarjeta',
+      });
+    }
   };
 
   if (result) {
