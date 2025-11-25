@@ -1,12 +1,13 @@
 import { Card } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
+import { AppTheme } from '@/hooks/use-app-theme';
 import { getLogoHtmlForPdf } from './image-to-base64';
 
 interface ReceiptData {
   result: OperationResult;
   card?: Card;
   transactionDetails?: { label: string; value: string; isAmount?: boolean }[];
-  theme: any; // Using any for theme to avoid complex type imports, but should be AppTheme
+  theme: AppTheme;
 }
 
 export const generateReceiptHtml = async ({ result, card, transactionDetails, theme }: ReceiptData) => {
