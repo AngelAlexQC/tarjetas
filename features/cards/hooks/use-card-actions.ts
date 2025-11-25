@@ -8,12 +8,26 @@
  */
 
 import { CardActionType } from '@/constants/card-actions';
-import { CardActionResult, cardRepository$ } from '@/repositories';
+import { CardActionResult, cardRepository$, NotificationSettings } from '@/repositories';
+import { loggers } from '@/utils/logger';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 
+const log = loggers.cards;
+
 // Tipo extendido para incluir acciones adicionales no definidas en CardActionType
 type ExtendedActionType = CardActionType | 'notifications';
+
+// Parámetros tipados para las diferentes acciones
+interface ActionParams {
+  month?: number;
+  year?: number;
+  months?: number;
+  amount?: number;
+  oldPin?: string;
+  newPin?: string;
+  settings?: NotificationSettings;
+}
 
 export function useCardActions(cardId: string) {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +37,7 @@ export function useCardActions(cardId: string) {
 
   const executeAction = async (
     actionType: ExtendedActionType,
-    params?: any
+    params?: ActionParams
   ): Promise<CardActionResult | null> => {
     setIsLoading(true);
     setError(null);
@@ -50,13 +64,17 @@ export function useCardActions(cardId: string) {
           result = await repository.deferPayment({ cardId, transactionIds: [], months: params?.months || 3 });
           break;
         case 'advances':
-          result = await repository.requestAdvance({ cardId, amount: params?.amount, months: 1, destinationAccountId: '' });
+          result = await repository.requestAdvance({ cardId, amount: params?.amount ?? 0, months: 1, destinationAccountId: '' });
           break;
         case 'pin':
-          result = await repository.changePin({ cardId, newPin: params?.newPin, currentPin: params?.oldPin });
+          result = await repository.changePin({ cardId, newPin: params?.newPin ?? '', currentPin: params?.oldPin });
           break;
         case 'notifications':
-          result = await repository.updateNotifications(cardId, params?.settings);
+          if (params?.settings) {
+            result = await repository.updateNotifications(cardId, params.settings);
+          } else {
+            result = { success: false, message: 'Configuración de notificaciones requerida' };
+          }
           break;
         default:
           result = { success: false, message: 'Acción no soportada' };
@@ -70,7 +88,8 @@ export function useCardActions(cardId: string) {
       }
       
       return result;
-    } catch {
+    } catch (error) {
+      log.error(`Error ejecutando acción ${actionType}:`, error);
       const errorMessage = 'Error al ejecutar la acción';
       setError(errorMessage);
       Alert.alert('Error', errorMessage);
@@ -94,7 +113,7 @@ export function useCardActions(cardId: string) {
   const changePin = (oldPin: string, newPin: string) =>
     executeAction('pin', { oldPin, newPin });
 
-  const updateNotifications = (settings: any) =>
+  const updateNotifications = (settings: NotificationSettings) =>
     executeAction('notifications', { settings });
 
   return {

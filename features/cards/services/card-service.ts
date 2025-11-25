@@ -10,8 +10,19 @@
  */
 
 import { CardActionType } from '@/constants/card-actions';
-import { Card, CardActionResult, cardRepository$ } from '@/repositories';
+import { Card, CardActionResult, cardRepository$, NotificationSettings } from '@/repositories';
 import { loggers } from '@/utils/logger';
+
+// Parámetros tipados para executeAction
+interface ExecuteActionParams {
+  amount?: number;
+  months?: number;
+  month?: number;
+  year?: number;
+  oldPin?: string;
+  newPin?: string;
+  settings?: NotificationSettings;
+}
 
 const log = loggers.cards;
 
@@ -165,7 +176,7 @@ class CardService {
   async executeAction(
     cardId: string,
     actionType: CardActionType | 'notifications',
-    params?: any
+    params?: ExecuteActionParams
   ): Promise<CardActionResult> {
     switch (actionType) {
       case 'block':
@@ -173,17 +184,20 @@ class CardService {
       case 'unblock':
         return this.unblockCard(cardId);
       case 'defer':
-        return this.deferPayment(cardId, params?.amount, params?.months);
+        return this.deferPayment(cardId, params?.amount ?? 0, params?.months ?? 3);
       case 'statement':
         return this.getStatement(cardId, params?.month, params?.year);
       case 'advances':
-        return this.requestAdvance(cardId, params?.amount);
+        return this.requestAdvance(cardId, params?.amount ?? 0);
       case 'limits':
         return this.getLimits(cardId);
       case 'pin':
-        return this.changePin(cardId, params?.oldPin, params?.newPin);
+        return this.changePin(cardId, params?.oldPin ?? '', params?.newPin ?? '');
       case 'notifications':
-        return this.updateNotifications(cardId, params?.settings);
+        if (!params?.settings) {
+          return { success: false, message: 'Configuración de notificaciones requerida' };
+        }
+        return this.updateNotifications(cardId, params.settings);
       default:
         return {
           success: false,
