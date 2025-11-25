@@ -1,6 +1,6 @@
-import { Card } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { AppTheme } from '@/hooks/use-app-theme';
+import type { Card } from '@/repositories';
 import { getLogoHtmlForPdf } from './image-to-base64';
 
 interface ReceiptData {

@@ -4,23 +4,35 @@ import { CardOperationHeader } from '@/components/cards/operations/card-operatio
 import { OperationResultScreen } from '@/components/cards/operations/operation-result-screen';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCards } from '@/hooks/use-cards';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { KeyRound, ShieldCheck } from 'lucide-react-native';
-import React, { useRef, useState } from 'react';
-import { InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PoweredBy } from '@/components/ui/powered-by';
+import type { Card } from '@/repositories';
 
 export default function PinScreen() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const card = cardService.getCardById(id!);
+  const { getCardById } = useCards();
+  const [card, setCard] = useState<Card | undefined>();
+  const [isLoadingCard, setIsLoadingCard] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      getCardById(id).then((fetchedCard) => {
+        setCard(fetchedCard);
+        setIsLoadingCard(false);
+      });
+    }
+  }, [id, getCardById]);
   
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -71,6 +83,14 @@ export default function PinScreen() {
   }
 
   const isValid = pin.length === 4 && confirmPin.length === 4 && pin === confirmPin;
+
+  if (isLoadingCard) {
+    return (
+      <ThemedView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]} surface="level1">
+        <ActivityIndicator size="large" color={theme.tenant.mainColor} />
+      </ThemedView>
+    );
+  }
 
   return (
     <ThemedView style={styles.container} surface="level1">

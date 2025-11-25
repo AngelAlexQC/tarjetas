@@ -5,21 +5,33 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
-import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCards } from '@/hooks/use-cards';
 import { cardRepository$, ReplaceReason } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import type { Card } from '@/repositories';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ReplaceCardScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const card = cardService.getCardById(id!);
+  const { getCardById } = useCards();
+  const [card, setCard] = useState<Card | undefined>();
+  const [isLoadingCard, setIsLoadingCard] = useState(true);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (id) {
+      getCardById(id).then((fetchedCard) => {
+        setCard(fetchedCard);
+        setIsLoadingCard(false);
+      });
+    }
+  }, [id, getCardById]);
 
   const [reason, setReason] = useState<ReplaceReason | null>(null);
   const [result, setResult] = useState<OperationResult | null>(null);

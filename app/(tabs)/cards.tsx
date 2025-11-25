@@ -12,7 +12,6 @@ import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
 import { FaqButton } from "@/components/ui/faq-button";
 import { PoweredBy } from "@/components/ui/powered-by";
 import { CardActionType } from "@/constants/card-actions";
-import { useCardActions } from "@/features/cards/hooks/use-card-actions";
 import { OperationResult } from "@/features/cards/types/card-operations";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useCards } from "@/hooks/use-cards";
@@ -23,24 +22,24 @@ import { useScrollToTop } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-    Alert,
-    FlatList,
-    Modal,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    View,
-    ViewToken
+  Alert,
+  FlatList,
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+  ViewToken
 } from "react-native";
 import Animated, {
-    FadeInDown,
-    FadeInLeft,
-    FadeInUp,
-    FadeOut,
-    SlideInLeft,
-    SlideInRight,
-    ZoomIn,
-    ZoomOut
+  FadeInDown,
+  FadeInLeft,
+  FadeInUp,
+  FadeOut,
+  SlideInLeft,
+  SlideInRight,
+  ZoomIn,
+  ZoomOut
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -84,9 +83,8 @@ export default function CardsScreen() {
   // Obtener tarjetas usando el hook (con auto-fetch)
   const { cards, isLoading: isLoadingCards } = useCards({ autoFetch: true });
   
-  // Hook de acciones de tarjetas (solo si hay tarjeta activa)
+  // Tarjeta activa
   const activeCard = cards[activeCardIndex];
-  const cardActions = useCardActions(activeCard?.id || '');
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -155,8 +153,6 @@ export default function CardsScreen() {
       case 'rewards':
         router.push(cardRoute(activeCard.id, 'rewards'));
         break;
-      default:
-        cardActions.executeAction(actionType);
     }
   };
 
@@ -280,7 +276,7 @@ export default function CardsScreen() {
                 >
                   <CardActionsGrid
                     cardType={activeCard.cardType}
-                    isLoading={cardActions.isLoading}
+                    isLoading={isLoadingCards}
                     onActionPress={handleActionPress}
                   />
                 </Animated.View>
@@ -299,7 +295,7 @@ export default function CardsScreen() {
               >
                 <CardActionsGrid
                   cardType={activeCard.cardType}
-                  isLoading={cardActions.isLoading}
+                  isLoading={isLoadingCards}
                   onActionPress={handleActionPress}
                 />
               </Animated.View>

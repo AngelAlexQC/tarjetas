@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { CardBrandIcons } from '@/components/ui/card-brand-icons';
 import { ThemedButton } from '@/components/ui/themed-button';
-import { Card } from '@/features/cards/services/card-service';
+import type { Card } from '@/repositories';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';

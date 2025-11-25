@@ -5,11 +5,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { cardService } from '@/features/cards/services/card-service';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCards } from '@/hooks/use-cards';
 import { useLocalSearchParams } from 'expo-router';
 import { PauseCircle, PlayCircle } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import type { Card } from '@/repositories';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 
@@ -36,7 +37,18 @@ const MOCK_SUBSCRIPTIONS: Subscription[] = [
 export default function SubscriptionsScreen() {
   const theme = useAppTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const card = cardService.getCardById(id!);
+  const { getCardById } = useCards();
+  const [card, setCard] = useState<Card | undefined>();
+  const [isLoadingCard, setIsLoadingCard] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      getCardById(id).then((fetchedCard) => {
+        setCard(fetchedCard);
+        setIsLoadingCard(false);
+      });
+    }
+  }, [id, getCardById]);
   
   const [subscriptions, setSubscriptions] = useState(MOCK_SUBSCRIPTIONS);
 

@@ -7,15 +7,16 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { cardService } from '@/features/cards/services/card-service';
 import { OperationResult, Transaction } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCards } from '@/hooks/use-cards';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight, Check } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { Card } from '@/repositories';
 
 // Mock Data
 const MOCK_TRANSACTIONS: Transaction[] = [
@@ -34,8 +35,19 @@ export default function DeferScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const card = cardService.getCardById(id!);
+  const { getCardById } = useCards();
+  const [card, setCard] = useState<Card | undefined>();
+  const [isLoadingCard, setIsLoadingCard] = useState(true);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (id) {
+      getCardById(id).then((fetchedCard) => {
+        setCard(fetchedCard);
+        setIsLoadingCard(false);
+      });
+    }
+  }, [id, getCardById]);
   
   const [step, setStep] = useState<Step>('select');
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');

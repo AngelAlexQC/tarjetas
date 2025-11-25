@@ -4,7 +4,7 @@
  */
 
 import { ThemedText } from '@/components/themed-text';
-import type { Card } from '@/features/cards/services/card-service';
+import type { Card } from '@/repositories';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';

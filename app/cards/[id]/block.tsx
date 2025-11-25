@@ -7,13 +7,15 @@ import { ThemedView } from '@/components/themed-view';
 import { OptionCard } from '@/components/ui/option-card';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
-import { cardService } from '@/features/cards/services/card-service';
 import { BlockType, OperationResult } from '@/features/cards/types/card-operations';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCards } from '@/hooks/use-cards';
 import { cardRepository$ } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AlertTriangle, Lock, PauseCircle } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import type { Card } from '@/repositories';
+import { ActivityIndicator } from 'react-native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,8 +24,19 @@ export default function BlockCardScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const card = cardService.getCardById(id!);
+  const { getCardById } = useCards();
+  const [card, setCard] = useState<Card | undefined>();
+  const [isLoadingCard, setIsLoadingCard] = useState(true);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (id) {
+      getCardById(id).then((fetchedCard) => {
+        setCard(fetchedCard);
+        setIsLoadingCard(false);
+      });
+    }
+  }, [id, getCardById]);
   
   const [selectedType, setSelectedType] = useState<BlockType | null>(null);
   const [showBiometrics, setShowBiometrics] = useState(false);

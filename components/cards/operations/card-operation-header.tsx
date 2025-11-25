@@ -2,7 +2,7 @@ import { NavigationButton } from '@/components/navigation/navigation-button';
 import { ThemedText } from '@/components/themed-text';
 import { CardBrandIcons } from '@/components/ui/card-brand-icons';
 import { FinancialIcons } from '@/components/ui/financial-icons';
-import { Card } from '@/features/cards/services/card-service';
+import type { Card } from '@/repositories';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
