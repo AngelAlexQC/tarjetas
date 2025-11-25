@@ -749,9 +749,16 @@ const styles = StyleSheet.create({
     fontWeight: '200',
     letterSpacing: SCREEN_WIDTH < 350 ? 4 : 6,
     color: '#FFFFFF',
-    textShadowColor: '#00E5FF',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 25,
+    ...Platform.select({
+      web: {
+        textShadow: '0px 0px 25px #00E5FF',
+      },
+      default: {
+        textShadowColor: '#00E5FF',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 25,
+      },
+    }),
     textAlign: 'center',
     includeFontPadding: false,
   },
@@ -767,8 +774,15 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textTransform: 'uppercase',
     opacity: 0.85,
-    textShadowColor: '#00E5FF',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    ...Platform.select({
+      web: {
+        textShadow: '0px 0px 10px #00E5FF',
+      },
+      default: {
+        textShadowColor: '#00E5FF',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 10,
+      },
+    }),
   },
 });

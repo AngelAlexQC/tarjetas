@@ -4,7 +4,7 @@ import { CardAction, CardActionType, getAvailableActions } from '@/constants/car
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ActivityIndicator, ColorValue, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ColorValue, FlatList, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 const ACTION_BUTTON_SIZE = 80;
@@ -171,9 +171,16 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 26,
     color: '#FFFFFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    ...Platform.select({
+      web: {
+        textShadow: '0px 1px 3px rgba(0, 0, 0, 0.3)',
+      },
+      default: {
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 3,
+      },
+    }),
   },
   actionLabel: {
     fontSize: 9.5,

@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { searchTenants, TenantInfo } from "@/constants/tenants";
 import { getTenantTheme } from "@/constants/tenant-themes";
+import { searchTenants, TenantInfo } from "@/constants/tenants";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";

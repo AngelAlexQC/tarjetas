@@ -12,6 +12,7 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
+    TouchableWithoutFeedback,
     View,
 } from 'react-native';
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
@@ -279,11 +280,6 @@ export function InsuranceDetailModal({
     onClose();
   };
 
-  // Handler para evitar que el contenido cierre el modal
-  const handleContentPress = () => {
-    // No hacer nada, solo evitar que el evento se propague
-  };
-
   return (
     <Modal
       visible={visible}
@@ -292,15 +288,13 @@ export function InsuranceDetailModal({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Pressable style={styles.overlay} onPress={handleOverlayPress}>
-        <Animated.View
-          entering={isWeb ? undefined : SlideInDown.springify()}
-          style={styles.modalContainer}
-        >
-          <Pressable 
-            onPress={handleContentPress}
-            style={{ flex: 1, maxHeight: modalMaxHeight }}
-          >
+      <TouchableWithoutFeedback onPress={handleOverlayPress}>
+        <View style={styles.overlay}>
+          <TouchableWithoutFeedback>
+            <Animated.View
+              entering={isWeb ? undefined : SlideInDown.springify()}
+              style={[styles.modalContainer, { maxHeight: modalMaxHeight }]}
+            >
             {/* Drag indicator */}
             <View style={styles.dragIndicator} />
 
@@ -425,9 +419,10 @@ export function InsuranceDetailModal({
                 Consulta la póliza completa para más detalles.
               </ThemedText>
             </View>
-          </Pressable>
-        </Animated.View>
-      </Pressable>
+            </Animated.View>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 }
