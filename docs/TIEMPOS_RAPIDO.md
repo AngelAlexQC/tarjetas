@@ -99,13 +99,18 @@ Se ha completado la implementación de la arquitectura base y la mayoría de los
 
 ## Resumen Ejecutivo
 
-### Estimación Oficial: 25 días hábiles (5 semanas)
+### Estimación Base: 23-25 días hábiles (5 semanas)
 
 **Desglose:**
-- Desarrollo Técnico: 13 días (Backend + Integración + Deploy)
-- Procesos Externos: 10-12 días (Wallets + Stores)
+- Backend API: 8 días
+- Integración Frontend: 2 días
+- Wallets (Apple Pay + Google Pay): 10 días
+- Deploy e Infraestructura: 3 días
+
+### Estimación con Contingencias: 30-35 días hábiles (6-7 semanas)
+- Incluye buffer de 30% para posibles retrasos en certificados y aprobaciones externas.
 
 **Conclusión**:
-El proyecto puede completarse en **5 semanas** siguiendo el plan establecido, asumiendo que los procesos externos (Apple/Google/Banco) se gestionen en paralelo sin bloquear el desarrollo.
+El proyecto puede completarse en **5 semanas** (escenario base) o **6-7 semanas** (con contingencias), asumiendo que los procesos externos (Apple/Google/Banco) se gestionen en paralelo sin bloquear el desarrollo.
 
-*Basado en el avance del 19 al 25 de noviembre de 2025*
+*Última actualización: 26 de noviembre de 2025*

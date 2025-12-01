@@ -86,11 +86,13 @@ Se ha completado la implementación de la arquitectura base y la mayoría de los
 ## Recomendación
 
 Es viable completar el proyecto en **5 semanas** siguiendo el plan establecido. Se recomienda gestionar los bloqueantes externos (Apple/Google/Banco) con máxima prioridad para no frenar el desarrollo técnico.
-- Backend: 9 días
+
+**Desglose de tiempos:**
+- Backend: 8 días
 - Integración: 2 días
-- Wallets: 6 días
+- Wallets: 10 días
 - Deploy: 3 días
-- **Duración total**: 20 días (~4 semanas)
+- **Duración total**: 23-25 días (~5 semanas)
 
 ---
 
@@ -180,26 +182,26 @@ Es viable completar el proyecto en **5 semanas** siguiendo el plan establecido. 
 
 ## Entregables por Fase
 
-### Fase 1: Backend (Semanas 1-5)
+### Fase 1: Backend (Semanas 1-2)
 ✅ API REST completamente funcional  
 ✅ Documentación OpenAPI/Swagger  
 ✅ Suite de tests unitarios e integración  
 ✅ Integración con SDK CONTRATANTE  
 ✅ Base de datos con migraciones  
 
-### Fase 2: Integración (Semana 5-6)
+### Fase 2: Integración (Semana 2)
 ✅ Frontend conectado a API real  
 ✅ Manejo robusto de errores  
 ✅ Loading states y feedback UX  
 ✅ Validaciones end-to-end  
 
-### Fase 3: Wallets (Semanas 6-9)
+### Fase 3: Wallets (Semanas 3-4)
 ✅ Apple Pay completamente funcional  
 ✅ Google Pay completamente funcional  
 ✅ Ciclo de vida de tokens implementado  
 ✅ Notificaciones de estados  
 
-### Fase 4: Producción (Semanas 9-10)
+### Fase 4: Producción (Semana 5)
 ✅ Aplicación deployada en App Store  
 ✅ Aplicación deployada en Google Play  
 ✅ Backend en producción con HA  
@@ -210,22 +212,18 @@ Es viable completar el proyecto en **5 semanas** siguiendo el plan establecido. 
 
 ## Conclusiones y Recomendaciones Finales
 
-### Estimación Conservadora (Con Contingencias)
-**Tiempo total: 60 días hábiles (12 semanas / 3 meses)**
-- Desarrollo: 46 días
-- Buffer de contingencia: 14 días (30%)
+### Estimación Base
+**Tiempo total: 23-25 días hábiles (5 semanas)**
+- Backend: 8 días
+- Integración: 2 días
+- Wallets: 10 días
+- Deploy: 3 días
 
-### Estimación Optimista (Ritmo Actual Sostenido)
-**Tiempo total: 46 días hábiles (9-10 semanas / 2.5 meses)**
-- Basado en velocidad demostrada de 3x
-- Requiere equipo experimentado
-- Sin bloqueos externos significativos
-
-### Estimación Realista Recomendada
-**Tiempo total: 50-55 días hábiles (10-11 semanas / 2.7 meses)**
-- Desarrollo core: 46 días
-- Contingencia reducida: 4-9 días
-- Margen para aprobaciones externas
+### Estimación con Contingencias (Recomendada)
+**Tiempo total: 30-35 días hábiles (6-7 semanas)**
+- Desarrollo base: 23-25 días
+- Buffer de contingencia: 7-10 días (30%)
+- Incluye posibles retrasos en certificados Apple y aprobaciones
 
 ### Factores Críticos de Éxito
 
@@ -284,20 +282,7 @@ El desarrollo frontend completado (6 días, 19,177 líneas) representa:
 - **Total**: 36 endpoints
 
 Ver documento `ENDPOINTS_SUMMARY.md` para detalles completos.
-- **Timeline: 10-12 semanas**
-
-**Opción 2 (Realista):**
-- 1 Fullstack dev (tú)
-- 1 DevOps part-time
-- **Timeline: 14-16 semanas**
-
-**Opción 3 (Team completo):**
-- 2 Backend devs
-- 1 Frontend dev
-- 1 DevOps
-- 1 QA
-- **Timeline: 8-10 semanas**
 
 ---
 
-*Última actualización: 25 nov 2025*
+*Última actualización: 26 nov 2025*
