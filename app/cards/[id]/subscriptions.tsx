@@ -16,11 +16,11 @@ import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 
 // Datos mock de suscripciones
 const MOCK_SUBSCRIPTIONS: Subscription[] = [
-  { id: '1', name: 'Netflix', plan: 'Premium 4K', amount: 15.99, currency: 'USD', nextBilling: '2025-11-25', status: 'active', category: 'entertainment' },
-  { id: '2', name: 'Spotify', plan: 'Duo Plan', amount: 12.99, currency: 'USD', nextBilling: '2025-11-28', status: 'active', category: 'entertainment' },
-  { id: '3', name: 'Adobe Creative Cloud', plan: 'Photography', amount: 19.99, currency: 'USD', nextBilling: '2025-12-01', status: 'active', category: 'software' },
-  { id: '4', name: 'Amazon Prime', plan: 'Annual', amount: 8.99, currency: 'USD', nextBilling: '2025-12-05', status: 'paused', category: 'shopping' },
-  { id: '5', name: 'Microsoft 365', plan: 'Personal', amount: 6.99, currency: 'USD', nextBilling: '2025-12-10', status: 'active', category: 'software' },
+  { id: '1', name: 'Netflix', plan: 'Premium 4K', amount: 15.99, currency: 'USD', nextBillingDate: '2025-11-25', status: 'active', category: 'entertainment' },
+  { id: '2', name: 'Spotify', plan: 'Duo Plan', amount: 12.99, currency: 'USD', nextBillingDate: '2025-11-28', status: 'active', category: 'entertainment' },
+  { id: '3', name: 'Adobe Creative Cloud', plan: 'Photography', amount: 19.99, currency: 'USD', nextBillingDate: '2025-12-01', status: 'active', category: 'software' },
+  { id: '4', name: 'Amazon Prime', plan: 'Annual', amount: 8.99, currency: 'USD', nextBillingDate: '2025-12-05', status: 'paused', category: 'shopping' },
+  { id: '5', name: 'Microsoft 365', plan: 'Personal', amount: 6.99, currency: 'USD', nextBillingDate: '2025-12-10', status: 'active', category: 'software' },
 ];
 
 export default function SubscriptionsScreen() {
@@ -95,7 +95,7 @@ export default function SubscriptionsScreen() {
             </ThemedText>
           </View>
           
-          <ThemedText style={styles.dateText}>Próx. cobro: {item.nextBilling}</ThemedText>
+          <ThemedText style={styles.dateText}>Próx. cobro: {item.nextBillingDate}</ThemedText>
 
           <TouchableOpacity 
             onPress={() => handleToggleStatus(item.id)}

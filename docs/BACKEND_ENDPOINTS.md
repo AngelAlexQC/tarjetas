@@ -398,8 +398,8 @@ Este documento detalla todos los endpoints que el backend debe implementar para 
       description: string;
       amount: number;
     }>;
-    totalSpent: number;
-    minPayment: number;
+    totalPayment: number;
+    minimumPayment: number;
     dueDate: string;
     periodStart: string;
     periodEnd: string;
@@ -469,10 +469,10 @@ Este documento detalla todos los endpoints que el backend debe implementar para 
     plan: string;
     amount: number;
     currency: string;
-    nextBilling: string;
+    nextBillingDate: string;
     status: 'active' | 'paused';
     category: 'entertainment' | 'software' | 'shopping';
-    merchantLogo?: string;
+    logoUrl?: string;
   }>;
 }
 ```

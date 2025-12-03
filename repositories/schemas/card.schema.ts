@@ -190,9 +190,7 @@ export const StatementSchema = z.object({
   periodEnd: z.string().optional(),
   dueDate: z.string(),
   minimumPayment: z.number().min(0).optional(),
-  minPayment: z.number().min(0).optional(),
   totalPayment: z.number().min(0).optional(),
-  totalSpent: z.number().optional(),
   previousBalance: z.number().optional(),
   payments: z.number().optional(),
   purchases: z.number().optional(),
@@ -248,12 +246,9 @@ export const SubscriptionSchema = z.object({
   currency: z.string(),
   frequency: z.enum(['weekly', 'monthly', 'yearly']).optional(),
   nextBillingDate: z.string().optional(),
-  nextBilling: z.string().optional(),
-  isActive: z.boolean().optional(),
   status: SubscriptionStatusSchema.optional(),
   category: SubscriptionCategorySchema,
   logoUrl: z.string().url().optional(),
-  merchantLogo: z.string().optional(),
 });
 
 export const SubscriptionArraySchema = z.array(SubscriptionSchema);

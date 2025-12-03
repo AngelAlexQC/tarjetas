@@ -107,11 +107,11 @@ const MOCK_CARDS: Card[] = [
 
 // Transacciones mock
 const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: '1', date: '2025-11-18', description: 'Supermaxi', amount: 156.50, currency: '$', category: 'shopping', canDefer: true },
-  { id: '2', date: '2025-11-17', description: 'Uber Trip', amount: 12.25, currency: '$', category: 'transport', canDefer: true },
-  { id: '3', date: '2025-11-15', description: 'Netflix', amount: 14.99, currency: '$', category: 'entertainment', canDefer: false },
-  { id: '4', date: '2025-11-14', description: 'Amazon', amount: 89.99, currency: '$', category: 'shopping', canDefer: true },
-  { id: '5', date: '2025-11-12', description: 'Restaurante El Buen Sabor', amount: 45.00, currency: '$', category: 'food', canDefer: true },
+  { id: '1', date: '2025-11-18', description: 'Supermaxi', amount: 156.50, currency: 'USD', category: 'shopping', canDefer: true },
+  { id: '2', date: '2025-11-17', description: 'Uber Trip', amount: 12.25, currency: 'USD', category: 'transport', canDefer: true },
+  { id: '3', date: '2025-11-15', description: 'Netflix', amount: 14.99, currency: 'USD', category: 'entertainment', canDefer: false },
+  { id: '4', date: '2025-11-14', description: 'Amazon', amount: 89.99, currency: 'USD', category: 'shopping', canDefer: true },
+  { id: '5', date: '2025-11-12', description: 'Restaurante El Buen Sabor', amount: 45.00, currency: 'USD', category: 'food', canDefer: true },
 ];
 
 // Cuentas mock
@@ -122,10 +122,10 @@ const MOCK_ACCOUNTS: Account[] = [
 
 // Suscripciones mock
 const MOCK_SUBSCRIPTIONS: Subscription[] = [
-  { id: '1', name: 'Netflix', plan: 'Premium', amount: 17.99, currency: 'USD', nextBilling: '2025-12-01', status: 'active', category: 'entertainment' },
-  { id: '2', name: 'Spotify', plan: 'Family', amount: 14.99, currency: 'USD', nextBilling: '2025-12-05', status: 'active', category: 'entertainment' },
-  { id: '3', name: 'Adobe CC', plan: 'All Apps', amount: 54.99, currency: 'USD', nextBilling: '2025-12-10', status: 'active', category: 'software' },
-  { id: '4', name: 'Amazon Prime', plan: 'Anual', amount: 12.99, currency: 'USD', nextBilling: '2025-12-15', status: 'paused', category: 'shopping' },
+  { id: '1', name: 'Netflix', plan: 'Premium', amount: 17.99, currency: 'USD', nextBillingDate: '2025-12-01', status: 'active', category: 'entertainment' },
+  { id: '2', name: 'Spotify', plan: 'Family', amount: 14.99, currency: 'USD', nextBillingDate: '2025-12-05', status: 'active', category: 'entertainment' },
+  { id: '3', name: 'Adobe CC', plan: 'All Apps', amount: 54.99, currency: 'USD', nextBillingDate: '2025-12-10', status: 'active', category: 'software' },
+  { id: '4', name: 'Amazon Prime', plan: 'Anual', amount: 12.99, currency: 'USD', nextBillingDate: '2025-12-15', status: 'paused', category: 'shopping' },
 ];
 
 export class MockCardRepository implements ICardRepository {
@@ -270,14 +270,14 @@ export class MockCardRepository implements ICardRepository {
       };
     });
     
-    const totalSpent = transactions
+    const totalPayment = transactions
       .filter(t => t.amount < 0)
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
     
     return {
       transactions,
-      totalSpent,
-      minPayment: totalSpent * 0.1,
+      totalPayment,
+      minimumPayment: totalPayment * 0.1,
       dueDate: '2025-12-05',
       periodStart: '2025-11-01',
       periodEnd: '2025-11-30',

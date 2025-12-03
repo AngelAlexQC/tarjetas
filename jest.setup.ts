@@ -63,38 +63,22 @@ jest.mock('expo-router', () => ({
   },
 }));
 
-// Silenciar warnings de console en tests
+// Silenciar solo warnings específicos de librerías que no podemos controlar
 const originalWarn = console.warn;
-const originalError = console.error;
 
 beforeAll(() => {
   console.warn = (...args) => {
     const message = args[0]?.toString?.() ?? '';
-    if (
-      message.includes('React Native Reanimated') ||
-      message.includes('Animated:')
-    ) {
+    // Solo silenciar warnings de Reanimated que son conocidos y no afectan tests
+    if (message.includes('React Native Reanimated')) {
       return;
     }
     originalWarn.call(console, ...args);
-  };
-  
-  console.error = (...args) => {
-    const message = args[0]?.toString?.() ?? '';
-    if (
-      message.includes('Warning:') ||
-      message.includes('act(') ||
-      message.includes('not wrapped in act')
-    ) {
-      return;
-    }
-    originalError.call(console, ...args);
   };
 });
 
 afterAll(() => {
   console.warn = originalWarn;
-  console.error = originalError;
 });
 
 // Fake timers para animaciones

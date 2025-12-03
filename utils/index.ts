@@ -4,21 +4,29 @@
  * Punto de entrada para todas las utilidades de la aplicación.
  */
 
-// Result Pattern & Error Handling (nuevo sistema)
+// Result Pattern & Error Handling
 export {
-    // App Error
     AppError,
     ErrorCode,
-    // neverthrow re-exports
     Result,
-    ResultAsync, err, errAsync,
+    ResultAsync,
+    err,
+    errAsync,
     fromPromise,
     fromSafePromise,
-    fromThrowable, isAppError, ok, okAsync
+    fromThrowable,
+    isAppError,
+    ok,
+    okAsync
 } from './result';
 
 // API Validation
-export { parseApiData, validateApiData } from './api-validation';
+export {
+    createApiValidator,
+    parseApiData,
+    validateApiData,
+    validateOptionalApiData
+} from './api-validation';
 
 // Auth Storage
 export { authStorage } from './auth-storage';
