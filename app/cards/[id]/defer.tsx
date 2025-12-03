@@ -8,24 +8,23 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { OperationResult, Transaction } from '@/repositories';
+import { useCardOperation } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
-import type { Card } from '@/repositories';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import type { OperationResult, Transaction } from '@/repositories';
+import { useRouter } from 'expo-router';
 import { ArrowRight, Check } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Mock Data
+// Mock Data - TODO: Mover a repositorio cuando el backend esté listo
 const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: '1', date: '2025-11-18', description: 'Supermaxi', amount: 156.50, currency: '$', category: 'shopping', canDefer: true },
-  { id: '2', date: '2025-11-17', description: 'Uber Trip', amount: 12.25, currency: '$', category: 'transport', canDefer: true },
-  { id: '3', date: '2025-11-15', description: 'Netflix', amount: 14.99, currency: '$', category: 'entertainment', canDefer: false }, // Too small/subscription
-  { id: '4', date: '2025-11-14', description: 'Zara Fashion', amount: 89.90, currency: '$', category: 'shopping', canDefer: true },
-  { id: '5', date: '2025-11-10', description: 'Restaurante El Cielo', amount: 45.00, currency: '$', category: 'food', canDefer: true },
+  { id: '1', date: '2025-11-18', description: 'Supermaxi', amount: 156.50, currency: 'USD', category: 'shopping', canDefer: true },
+  { id: '2', date: '2025-11-17', description: 'Uber Trip', amount: 12.25, currency: 'USD', category: 'transport', canDefer: true },
+  { id: '3', date: '2025-11-15', description: 'Netflix', amount: 14.99, currency: 'USD', category: 'entertainment', canDefer: false },
+  { id: '4', date: '2025-11-14', description: 'Zara Fashion', amount: 89.90, currency: 'USD', category: 'shopping', canDefer: true },
+  { id: '5', date: '2025-11-10', description: 'Restaurante El Cielo', amount: 45.00, currency: 'USD', category: 'food', canDefer: true },
 ];
 
 const DEFER_MONTHS = [3, 6, 9, 12, 24];
@@ -35,20 +34,8 @@ type Step = 'select' | 'term' | 'summary';
 export default function DeferScreen() {
   const theme = useAppTheme();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
+  const { card, isLoadingCard } = useCardOperation();
   const insets = useSafeAreaInsets();
-
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
   
   const [step, setStep] = useState<Step>('select');
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');

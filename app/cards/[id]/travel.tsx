@@ -7,33 +7,21 @@ import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
-import { Card, cardRepository$, OperationResult } from '@/repositories';
+import { useCardOperation } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
 import { useKeyboard } from '@/hooks/use-keyboard';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { cardRepository$, OperationResult } from '@/repositories';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TravelNoticeScreen() {
   const theme = useAppTheme();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
+  const { card, cardId, isLoadingCard } = useCardOperation();
   const insets = useSafeAreaInsets();
   const { isKeyboardVisible } = useKeyboard();
-
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
 
   const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -46,7 +34,7 @@ export default function TravelNoticeScreen() {
     try {
       const repo = cardRepository$();
       const response = await repo.createTravelNotice({
-        cardId: id!,
+        cardId: cardId!,
         destination,
         startDate,
         endDate,

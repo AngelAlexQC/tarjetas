@@ -6,11 +6,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { OperationResult } from '@/repositories';
+import { useCardOperation } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
-import type { Card } from '@/repositories';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import type { OperationResult } from '@/repositories';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -18,19 +17,7 @@ import { StyleSheet, View } from 'react-native';
 export default function DynamicCvvScreen() {
   const theme = useAppTheme();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
-
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
+  const { card, isLoadingCard } = useCardOperation();
 
   const [showBiometrics, setShowBiometrics] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);

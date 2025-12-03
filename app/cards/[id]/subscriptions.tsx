@@ -6,52 +6,28 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
+import { useCardOperation } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
-import type { Card } from '@/repositories';
-import { useLocalSearchParams } from 'expo-router';
+import type { Subscription } from '@/repositories';
 import { PauseCircle, PlayCircle } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 
-// Mock Data
-interface Subscription {
-  id: string;
-  name: string;
-  plan: string;
-  amount: number;
-  currency: string;
-  nextBilling: string;
-  status: 'active' | 'paused';
-  category: 'entertainment' | 'software' | 'shopping';
-}
-
+// Datos mock de suscripciones
 const MOCK_SUBSCRIPTIONS: Subscription[] = [
-  { id: '1', name: 'Netflix', plan: 'Premium 4K', amount: 15.99, currency: '$', nextBilling: '2025-11-25', status: 'active', category: 'entertainment' },
-  { id: '2', name: 'Spotify', plan: 'Duo Plan', amount: 12.99, currency: '$', nextBilling: '2025-11-28', status: 'active', category: 'entertainment' },
-  { id: '3', name: 'Adobe Creative Cloud', plan: 'Photography', amount: 19.99, currency: '$', nextBilling: '2025-12-01', status: 'active', category: 'software' },
-  { id: '4', name: 'Amazon Prime', plan: 'Annual', amount: 8.99, currency: '$', nextBilling: '2025-12-05', status: 'paused', category: 'shopping' },
-  { id: '5', name: 'Microsoft 365', plan: 'Personal', amount: 6.99, currency: '$', nextBilling: '2025-12-10', status: 'active', category: 'software' },
+  { id: '1', name: 'Netflix', plan: 'Premium 4K', amount: 15.99, currency: 'USD', nextBilling: '2025-11-25', status: 'active', category: 'entertainment' },
+  { id: '2', name: 'Spotify', plan: 'Duo Plan', amount: 12.99, currency: 'USD', nextBilling: '2025-11-28', status: 'active', category: 'entertainment' },
+  { id: '3', name: 'Adobe Creative Cloud', plan: 'Photography', amount: 19.99, currency: 'USD', nextBilling: '2025-12-01', status: 'active', category: 'software' },
+  { id: '4', name: 'Amazon Prime', plan: 'Annual', amount: 8.99, currency: 'USD', nextBilling: '2025-12-05', status: 'paused', category: 'shopping' },
+  { id: '5', name: 'Microsoft 365', plan: 'Personal', amount: 6.99, currency: 'USD', nextBilling: '2025-12-10', status: 'active', category: 'software' },
 ];
 
 export default function SubscriptionsScreen() {
   const theme = useAppTheme();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
-
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
+  const { card, isLoadingCard } = useCardOperation();
   
-  const [subscriptions, setSubscriptions] = useState(MOCK_SUBSCRIPTIONS);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(MOCK_SUBSCRIPTIONS);
 
   const totalMonthly = useMemo(() => 
     subscriptions

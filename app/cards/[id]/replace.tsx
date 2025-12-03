@@ -6,31 +6,19 @@ import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
-import { Card, cardRepository$, OperationResult, ReplaceReason } from '@/repositories';
+import { useCardOperation } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { cardRepository$, type OperationResult, type ReplaceReason } from '@/repositories';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ReplaceCardScreen() {
   const theme = useAppTheme();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
+  const { card, cardId, isLoadingCard } = useCardOperation();
   const insets = useSafeAreaInsets();
-
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
 
   const [reason, setReason] = useState<ReplaceReason | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -43,7 +31,7 @@ function ReplaceCardScreen() {
     try {
       const repo = cardRepository$();
       const response = await repo.requestReplacement({
-        cardId: id!,
+        cardId: cardId!,
         reason,
       });
       

@@ -10,7 +10,7 @@ import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { OperationResult } from '@/repositories';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
+import { useCards } from '@/hooks';
 import type { Card } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight, DollarSign, Info } from 'lucide-react-native';

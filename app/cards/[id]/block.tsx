@@ -10,7 +10,7 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCardMutations, useCardOperation } from '@/hooks/cards';
-import type { BlockType } from '@/repositories/types/card.types';
+import type { BlockType } from '@/repositories/schemas/card.schema';
 import { useRouter } from 'expo-router';
 import { AlertTriangle, Lock, PauseCircle } from 'lucide-react-native';
 import React, { useState } from 'react';

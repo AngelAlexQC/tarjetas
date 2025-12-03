@@ -5,22 +5,20 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
+import { useCardOperation } from '@/hooks/cards';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
-import type { Card } from '@/repositories';
 import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
 import { loggers } from '@/utils/logger';
 import { cacheDirectory, moveAsync } from 'expo-file-system/legacy';
 import { printToFileAsync } from 'expo-print';
-import { useLocalSearchParams } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
 import { ArrowDownToLine, Calendar, Check, ChevronDown } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Mock Data
+// Mock Data - TODO: Mover a repositorio cuando el backend esté listo
 type TransactionType = 'purchase' | 'payment' | 'transfer' | 'fee';
 
 interface Transaction {
@@ -59,19 +57,7 @@ const DATE_RANGES = [
 export default function StatementsScreen() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
-
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
+  const { card, isLoadingCard } = useCardOperation();
   
   const [selectedRange, setSelectedRange] = useState(DATE_RANGES[0]);
   const [showRangeModal, setShowRangeModal] = useState(false);

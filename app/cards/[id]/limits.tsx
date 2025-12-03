@@ -25,9 +25,9 @@ export default function LimitsScreen() {
   // Estado de límites
   const [limits, setLimits] = useState({
     dailyAtm: 500,
-    dailyPos: 2000,
+    dailyPurchase: 2000,
     dailyOnline: 1000,
-    monthlyTotal: 5000,
+    monthlyPurchase: 5000,
   });
   const [showBiometrics, setShowBiometrics] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -42,8 +42,8 @@ export default function LimitsScreen() {
       () => updateLimits(cardId, {
         dailyAtm: limits.dailyAtm,
         dailyOnline: limits.dailyOnline,
-        dailyPos: limits.dailyPos,
-        monthlyTotal: limits.monthlyTotal,
+        dailyPurchase: limits.dailyPurchase,
+        monthlyPurchase: limits.monthlyPurchase,
       }),
       'Cupos Actualizados',
       {
@@ -110,9 +110,9 @@ export default function LimitsScreen() {
 
           <LimitSlider
             label="Compras en Locales (Diario)"
-            value={limits.dailyPos}
+            value={limits.dailyPurchase}
             max={5000}
-            onChange={(v) => updateLimit('dailyPos', v)}
+            onChange={(v) => updateLimit('dailyPurchase', v)}
             currency={theme.tenant.currencySymbol}
             theme={theme}
           />
@@ -130,9 +130,9 @@ export default function LimitsScreen() {
 
           <LimitSlider
             label="Límite Mensual Total"
-            value={limits.monthlyTotal}
+            value={limits.monthlyPurchase}
             max={10000}
-            onChange={(v) => updateLimit('monthlyTotal', v)}
+            onChange={(v) => updateLimit('monthlyPurchase', v)}
             currency={theme.tenant.currencySymbol}
             theme={theme}
             isTotal
