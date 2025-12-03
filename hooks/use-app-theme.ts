@@ -4,13 +4,13 @@
  */
 
 import {
-  ComponentTokens,
-  getButtonGradient,
-  getGlassOverlay,
-  getSurfaceColor,
-  getTextColor,
-  PrimitiveColors,
-  SemanticColors,
+    ComponentTokens,
+    getButtonGradient,
+    getGlassOverlay,
+    getSurfaceColor,
+    getTextColor,
+    PrimitiveColors,
+    SemanticColors,
 } from '@/constants/design-tokens';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -154,23 +154,4 @@ export function useAppTheme() {
     // Helper functions
     helpers,
   };
-}
-
-/**
- * Hook simplificado para solo obtener colores del tema del tenant
- */
-export function useTenantColors() {
-  const { tenant, helpers } = useAppTheme();
-  return {
-    ...tenant,
-    gradient: helpers.getThemeGradient(),
-  };
-}
-
-/**
- * Hook para obtener colores semánticos rápidamente
- */
-export function useSemanticColors() {
-  const { colors } = useAppTheme();
-  return colors;
 }
