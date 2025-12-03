@@ -8,6 +8,10 @@
  * - EXPO_PUBLIC_API_URL: URL base del backend
  */
 
+import { loggers } from '@/utils/logger';
+
+const log = loggers.api;
+
 export const API_CONFIG = {
   /**
    * Cuando es true, la app usa datos mock locales.
@@ -24,9 +28,10 @@ export const API_CONFIG = {
       return process.env.EXPO_PUBLIC_API_URL_DEV || 'http://localhost:3000/api';
     }
     const prodUrl = process.env.EXPO_PUBLIC_API_URL;
-    if (!prodUrl && __DEV__) {
-      // Solo advertir en desarrollo, en producción fallar silenciosamente
-      console.warn('[API_CONFIG] EXPO_PUBLIC_API_URL no está configurada para producción');
+    if (!prodUrl) {
+      if (__DEV__) {
+        log.warn('EXPO_PUBLIC_API_URL no está configurada para producción');
+      }
     }
     return prodUrl || '';
   })(),

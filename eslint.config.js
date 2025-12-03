@@ -1,9 +1,9 @@
 // https://docs.expo.dev/guides/using-eslint/
-const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 
-module.exports = defineConfig([
-  expoConfig,
+module.exports = [
+  // Spread the expo config array
+  ...expoConfig,
   {
     ignores: ['dist/*', '.expo/*', 'node_modules/*', 'coverage/*'],
   },
@@ -28,9 +28,10 @@ module.exports = defineConfig([
       'no-var': 'error',
       
       // Complexity (ayuda a mantener código limpio)
-      'max-lines-per-function': ['warn', { max: 150, skipBlankLines: true, skipComments: true }],
+      // Límites relajados para screens y componentes complejos de UI
+      'max-lines-per-function': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
       'max-depth': ['warn', 4],
-      'complexity': ['warn', 15],
+      'complexity': ['warn', 20],
     },
   },
   {
@@ -41,4 +42,4 @@ module.exports = defineConfig([
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
-]);
+];

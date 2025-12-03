@@ -25,10 +25,7 @@ export default function TenantSelectorScreen() {
   const scrollRef = useRef(null);
   
   // Usar hook de tenants dinámico
-  const { tenants, isLoading, error, searchTenants } = useTenants();
-
-  // Debug: ver cuántos tenants se cargaron
-  console.log('[TenantSelector] Tenants loaded:', tenants.length, 'isLoading:', isLoading, 'error:', error);
+  const { isLoading, error, searchTenants } = useTenants();
 
   useScrollToTop(scrollRef);
   
