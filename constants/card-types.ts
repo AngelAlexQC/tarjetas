@@ -2,6 +2,8 @@
  * Definición de tipos y constantes para tarjetas financieras
  */
 
+import cardValidator from 'card-validator';
+
 export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'discover' | 'diners' | 'jcb' | 'maestro' | 'unionpay';
 export type CardType = 'credit' | 'debit' | 'virtual';
 export type CardStatus = 'active' | 'blocked' | 'expired' | 'pending';
@@ -103,8 +105,6 @@ export function getCardDesign(brand: CardBrand, type: CardType): CardDesign {
   };
 }
 
-import cardValidator from 'card-validator';
-
 // Detectar marca de tarjeta por número usando card-validator
 export function detectCardBrand(cardNumber: string): CardBrand {
   const cleanNumber = cardNumber.replace(/\s/g, '');
@@ -133,6 +133,4 @@ export function detectCardBrand(cardNumber: string): CardBrand {
   };
   
   return brandMap[validation.card.type] || 'visa';
-  
-  return 'visa'; // default
 }
