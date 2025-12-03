@@ -3,6 +3,9 @@
  * 
  * Esquemas de validación para datos de tarjetas.
  * Proveen validación en runtime y tipos TypeScript inferidos.
+ * 
+ * IMPORTANTE: Este es el único lugar donde se definen los tipos de tarjetas.
+ * NO crear tipos duplicados en otro lugar.
  */
 
 import { z } from 'zod';
@@ -27,6 +30,10 @@ export const BlockTypeSchema = z.enum(['temporary', 'permanent']);
 export const BlockReasonSchema = z.enum(['lost', 'stolen', 'damaged', 'fraud', 'temporary']);
 export const TransactionTypeSchema = z.enum(['purchase', 'payment', 'transfer', 'fee']);
 export const AccountTypeSchema = z.enum(['savings', 'checking']);
+export const SubscriptionStatusSchema = z.enum(['active', 'paused', 'cancelled']);
+export const SubscriptionCategorySchema = z.enum(['entertainment', 'software', 'shopping', 'utilities', 'other']);
+export const RewardTierSchema = z.enum(['bronze', 'silver', 'gold', 'platinum']);
+export const ReplaceReasonSchema = z.enum(['damaged', 'lost', 'stolen', 'expired']);
 
 // ============================================
 // CARD SCHEMA
@@ -133,14 +140,23 @@ export const CashAdvanceRequestSchema = z.object({
 export const CardLimitsSchema = z.object({
   dailyPurchase: z.number().min(0),
   dailyAtm: z.number().min(0),
+  dailyOnline: z.number().min(0),
   monthlyPurchase: z.number().min(0),
   onlinePurchase: z.number().min(0),
   internationalPurchase: z.number().min(0),
+  perTransaction: z.number().min(0).optional(),
+  // Max limits (for UI sliders)
   maxDailyPurchase: z.number().positive().optional(),
   maxDailyAtm: z.number().positive().optional(),
+  maxDailyOnline: z.number().positive().optional(),
   maxMonthlyPurchase: z.number().positive().optional(),
   maxOnlinePurchase: z.number().positive().optional(),
   maxInternationalPurchase: z.number().positive().optional(),
+  // Credit specific
+  creditLimit: z.number().positive().optional(),
+  availableCredit: z.number().optional(),
+  cashAdvanceLimit: z.number().positive().optional(),
+  availableCashAdvance: z.number().optional(),
 });
 
 // ============================================
@@ -149,10 +165,10 @@ export const CardLimitsSchema = z.object({
 
 export const ChangePinRequestSchema = z.object({
   cardId: z.string().min(1),
-  currentPin: z.string().length(4).regex(/^\d{4}$/, 'PIN must be 4 digits'),
+  currentPin: z.string().length(4).regex(/^\d{4}$/, 'PIN must be 4 digits').optional(),
   newPin: z.string().length(4).regex(/^\d{4}$/, 'PIN must be 4 digits'),
-  confirmPin: z.string().length(4).regex(/^\d{4}$/, 'PIN must be 4 digits'),
-}).refine((data) => data.newPin === data.confirmPin, {
+  confirmPin: z.string().length(4).regex(/^\d{4}$/, 'PIN must be 4 digits').optional(),
+}).refine((data) => !data.confirmPin || data.newPin === data.confirmPin, {
   message: "PINs don't match",
   path: ['confirmPin'],
 });
@@ -161,19 +177,29 @@ export const ChangePinRequestSchema = z.object({
 // STATEMENT
 // ============================================
 
+export const StatementTransactionSchema = z.object({
+  date: z.string(),
+  description: z.string(),
+  amount: z.number(),
+});
+
 export const StatementSchema = z.object({
-  id: z.string().min(1),
-  period: z.string(),
+  id: z.string().min(1).optional(),
+  period: z.string().optional(),
+  periodStart: z.string().optional(),
+  periodEnd: z.string().optional(),
   dueDate: z.string(),
-  minimumPayment: z.number().min(0),
-  totalPayment: z.number().min(0),
-  previousBalance: z.number(),
-  payments: z.number(),
-  purchases: z.number(),
-  fees: z.number(),
-  interest: z.number(),
-  newBalance: z.number(),
-  transactions: TransactionArraySchema,
+  minimumPayment: z.number().min(0).optional(),
+  minPayment: z.number().min(0).optional(),
+  totalPayment: z.number().min(0).optional(),
+  totalSpent: z.number().optional(),
+  previousBalance: z.number().optional(),
+  payments: z.number().optional(),
+  purchases: z.number().optional(),
+  fees: z.number().optional(),
+  interest: z.number().optional(),
+  newBalance: z.number().optional(),
+  transactions: z.array(StatementTransactionSchema).or(TransactionArraySchema),
   pdfUrl: z.string().url().optional(),
 });
 
@@ -183,7 +209,8 @@ export const StatementSchema = z.object({
 
 export const TravelNoticeSchema = z.object({
   cardId: z.string().min(1),
-  destinations: z.array(z.string().min(1)).min(1),
+  destination: z.string().min(1).optional(),
+  destinations: z.array(z.string().min(1)).min(1).optional(),
   startDate: z.string(),
   endDate: z.string(),
   contactPhone: z.string().optional(),
@@ -195,14 +222,17 @@ export const TravelNoticeSchema = z.object({
 
 export const ReplaceCardRequestSchema = z.object({
   cardId: z.string().min(1),
-  reason: z.enum(['damaged', 'lost', 'stolen', 'expired']),
-  deliveryAddress: z.object({
-    street: z.string().min(1),
-    city: z.string().min(1),
-    state: z.string().min(1),
-    zipCode: z.string().min(1),
-    country: z.string().min(1),
-  }).optional(),
+  reason: ReplaceReasonSchema,
+  deliveryAddress: z.union([
+    z.string(),
+    z.object({
+      street: z.string().min(1),
+      city: z.string().min(1),
+      state: z.string().min(1),
+      zipCode: z.string().min(1),
+      country: z.string().min(1),
+    }),
+  ]).optional(),
 });
 
 // ============================================
@@ -212,14 +242,18 @@ export const ReplaceCardRequestSchema = z.object({
 export const SubscriptionSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
-  merchant: z.string().min(1),
+  merchant: z.string().min(1).optional(),
+  plan: z.string().optional(),
   amount: z.number().positive(),
-  currency: z.string().length(3),
-  frequency: z.enum(['weekly', 'monthly', 'yearly']),
-  nextBillingDate: z.string(),
-  isActive: z.boolean(),
-  category: z.string(),
+  currency: z.string(),
+  frequency: z.enum(['weekly', 'monthly', 'yearly']).optional(),
+  nextBillingDate: z.string().optional(),
+  nextBilling: z.string().optional(),
+  isActive: z.boolean().optional(),
+  status: SubscriptionStatusSchema.optional(),
+  category: SubscriptionCategorySchema,
   logoUrl: z.string().url().optional(),
+  merchantLogo: z.string().optional(),
 });
 
 export const SubscriptionArraySchema = z.array(SubscriptionSchema);
@@ -228,14 +262,22 @@ export const SubscriptionArraySchema = z.array(SubscriptionSchema);
 // REWARDS
 // ============================================
 
+export const RewardHistorySchema = z.object({
+  id: z.union([z.string(), z.number()]),
+  description: z.string(),
+  points: z.number(),
+  date: z.string(),
+});
+
 export const RewardsSchema = z.object({
   totalPoints: z.number().min(0),
-  pendingPoints: z.number().min(0),
-  redeemedPoints: z.number().min(0),
-  expiringPoints: z.number().min(0),
+  pendingPoints: z.number().min(0).optional(),
+  redeemedPoints: z.number().min(0).optional(),
+  expiringPoints: z.number().min(0).optional(),
   expirationDate: z.string().optional(),
-  tier: z.enum(['bronze', 'silver', 'gold', 'platinum']).optional(),
+  tier: RewardTierSchema.optional(),
   nextTierPoints: z.number().positive().optional(),
+  history: z.array(RewardHistorySchema).optional(),
 });
 
 // ============================================
@@ -244,8 +286,9 @@ export const RewardsSchema = z.object({
 
 export const DynamicCvvSchema = z.object({
   cvv: z.string().regex(/^\d{3,4}$/, 'CVV must be 3-4 digits'),
-  expiresAt: z.string().datetime(),
-  remainingSeconds: z.number().int().positive(),
+  expiresAt: z.string().datetime().optional(),
+  expiresIn: z.number().int().positive().optional(),
+  remainingSeconds: z.number().int().positive().optional(),
 });
 
 // ============================================
@@ -253,11 +296,14 @@ export const DynamicCvvSchema = z.object({
 // ============================================
 
 export const NotificationSettingsSchema = z.object({
-  purchases: z.boolean(),
-  payments: z.boolean(),
-  lowBalance: z.boolean(),
-  security: z.boolean(),
-  marketing: z.boolean(),
+  purchases: z.boolean().optional(),
+  payments: z.boolean().optional(),
+  lowBalance: z.boolean().optional(),
+  security: z.boolean().optional(),
+  marketing: z.boolean().optional(),
+  transactionAlerts: z.boolean().optional(),
+  paymentReminders: z.boolean().optional(),
+  securityAlerts: z.boolean().optional(),
   threshold: z.number().min(0).optional(),
 });
 
@@ -283,6 +329,10 @@ export type BlockType = z.infer<typeof BlockTypeSchema>;
 export type BlockReason = z.infer<typeof BlockReasonSchema>;
 export type TransactionType = z.infer<typeof TransactionTypeSchema>;
 export type AccountType = z.infer<typeof AccountTypeSchema>;
+export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
+export type SubscriptionCategory = z.infer<typeof SubscriptionCategorySchema>;
+export type RewardTier = z.infer<typeof RewardTierSchema>;
+export type ReplaceReason = z.infer<typeof ReplaceReasonSchema>;
 
 export type Card = z.infer<typeof CardSchema>;
 export type CardActionResult<T = unknown> = z.infer<typeof CardActionResultSchema> & { data?: T };
@@ -294,11 +344,42 @@ export type Account = z.infer<typeof AccountSchema>;
 export type CashAdvanceRequest = z.infer<typeof CashAdvanceRequestSchema>;
 export type CardLimits = z.infer<typeof CardLimitsSchema>;
 export type ChangePinRequest = z.infer<typeof ChangePinRequestSchema>;
+export type StatementTransaction = z.infer<typeof StatementTransactionSchema>;
 export type Statement = z.infer<typeof StatementSchema>;
 export type TravelNotice = z.infer<typeof TravelNoticeSchema>;
 export type ReplaceCardRequest = z.infer<typeof ReplaceCardRequestSchema>;
 export type Subscription = z.infer<typeof SubscriptionSchema>;
+export type RewardHistory = z.infer<typeof RewardHistorySchema>;
 export type Rewards = z.infer<typeof RewardsSchema>;
 export type DynamicCvv = z.infer<typeof DynamicCvvSchema>;
 export type NotificationSettings = z.infer<typeof NotificationSettingsSchema>;
 export type OperationResult = z.infer<typeof OperationResultSchema>;
+
+// ============================================
+// CASH ADVANCE RESULT (response specific)
+// ============================================
+
+export const CashAdvanceResultSchema = z.object({
+  fee: z.string(),
+  total: z.string(),
+  transactionId: z.string(),
+});
+
+export type CashAdvanceResult = z.infer<typeof CashAdvanceResultSchema>;
+
+// ============================================
+// UPDATE LIMITS REQUEST
+// ============================================
+
+export const UpdateLimitsRequestSchema = z.object({
+  cardId: z.string().min(1),
+  limits: CardLimitsSchema.partial(),
+});
+
+export type UpdateLimitsRequest = z.infer<typeof UpdateLimitsRequestSchema>;
+
+// ============================================
+// OPERATION STATUS (UI helpers)
+// ============================================
+
+export type OperationStatus = 'idle' | 'loading' | 'success' | 'error';
