@@ -13,9 +13,9 @@ Este proyecto implementa el **patrón Repository** con **inyección de dependenc
 │   └── index.ts           # Exportaciones del módulo API
 │
 ├── repositories/
-│   ├── types/             # Tipos TypeScript compartidos
-│   │   ├── card.types.ts
-│   │   ├── auth.types.ts
+│   ├── schemas/           # Esquemas Zod (fuente única de tipos)
+│   │   ├── card.schema.ts
+│   │   ├── auth.schema.ts
 │   │   └── index.ts
 │   │
 │   ├── interfaces/        # Contratos/Interfaces de repositorios
@@ -37,7 +37,11 @@ Este proyecto implementa el **patrón Repository** con **inyección de dependenc
 │   └── index.ts           # Exportaciones principales
 │
 └── hooks/
-    └── use-cards.ts       # Hook React para operaciones de tarjetas
+    ├── cards/             # Hooks especializados de tarjetas
+    │   ├── use-card-queries.ts    # Lectura de datos
+    │   ├── use-card-mutations.ts  # Escritura de datos
+    │   └── index.ts
+    └── index.ts           # Exporta useCards (alias de useCardQueries)
 ```
 
 ## Configuración
@@ -66,7 +70,9 @@ export const API_CONFIG = {
 ### Opción 1: Usar el Hook (Recomendado para componentes React)
 
 ```typescript
-import { useCards } from '@/hooks/use-cards';
+import { useCards } from '@/hooks';
+// o usar los hooks especializados:
+import { useCardQueries, useCardMutations } from '@/hooks/cards';
 
 function MyComponent() {
   const { 
@@ -74,10 +80,12 @@ function MyComponent() {
     isLoading, 
     error,
     fetchCards,
-    blockCard,
+    getCardById,
     getLimits,
-    // ... más funciones
-  } = useCards();
+    // ... más funciones de consulta
+  } = useCards(); // o useCardQueries()
+  
+  const { blockCard, updateLimits } = useCardMutations();
 
   useEffect(() => {
     fetchCards();
