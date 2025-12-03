@@ -123,7 +123,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   creditLimit,
   usedCredit,
   nextPaymentDays,
-  lastPaymentDays,
+  lastPaymentDays: _lastPaymentDays,
   locale,
   currency,
   currencySymbol,
@@ -162,7 +162,7 @@ const CardFinancialInfoContent: React.FC<CardFinancialInfoContentProps> = ({
   nextPaymentDate.setHours(9, 0, 0, 0); // 9:00 AM
 
   // Colores semánticos mejorados para accesibilidad
-  const getUsageColor = (percentage: number) => {
+  const getUsageColor = (_percentage: number) => {
     return { bg: `${primaryColor}20`, fg: primaryColor };
   };
   

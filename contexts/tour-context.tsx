@@ -58,16 +58,18 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const saveSeenKey = async (key: string) => {
+  const saveSeenKey = useCallback(async (key: string) => {
     try {
-      const newSet = new Set(seenKeys);
-      newSet.add(key);
-      setSeenKeys(newSet);
-      await AsyncStorage.setItem(STORAGE_KEY_SEEN_TOOLTIPS, JSON.stringify(Array.from(newSet)));
+      setSeenKeys(prev => {
+        const newSet = new Set(prev);
+        newSet.add(key);
+        AsyncStorage.setItem(STORAGE_KEY_SEEN_TOOLTIPS, JSON.stringify(Array.from(newSet)));
+        return newSet;
+      });
     } catch (e) {
       log.error('Error saving tour state', e);
     }
-  };
+  }, []);
 
   // Gestionar la cola de tooltips
   useEffect(() => {
@@ -107,7 +109,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       saveSeenKey(key);
       setCurrentKey(null);
     }
-  }, [currentKey]); // saveSeenKey is stable enough or we can add it if we wrap it in useCallback too, but for now this fixes the lint warning about seenKeys which wasn't used inside but was in deps
+  }, [currentKey, saveSeenKey]);
 
   const stopTour = useCallback(() => {
     setIsTourStopped(true);

@@ -15,7 +15,7 @@ interface ReceiptViewProps {
   children?: React.ReactNode;
 }
 
-export function ReceiptView({ result, card, transactionDetails, children }: ReceiptViewProps) {
+export function ReceiptView({ result, card: _card, transactionDetails, children }: ReceiptViewProps) {
   const theme = useAppTheme();
   const isSuccess = result.success;
   const Icon = isSuccess ? Check : XCircle;

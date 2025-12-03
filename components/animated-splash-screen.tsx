@@ -151,7 +151,7 @@ interface DragonflyProps {
   screenWidth: number;
 }
 
-const DragonflyComponent = ({ progress, screenWidth }: DragonflyProps) => {
+const DragonflyComponent = ({ progress, screenWidth: _screenWidth }: DragonflyProps) => {
   // Usar una única animación maestra para sincronizar todo
   const masterAnimation = useSharedValue(0);
   

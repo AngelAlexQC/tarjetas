@@ -33,7 +33,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   showText = true,
   formatText,
   textStyle,
-  duration = 1000,
+  duration: _duration = 1000,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;

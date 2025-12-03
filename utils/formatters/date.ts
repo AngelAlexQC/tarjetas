@@ -47,12 +47,12 @@ export const formatDate = (
 /**
  * Formatea una fecha de vencimiento para tarjeta (MM/AA)
  * @param date - Fecha a formatear (puede ser Date, string ISO, o formato "MM/YY")
- * @param locale - Locale para el formateo
+ * @param _locale - Locale para el formateo (reservado para uso futuro)
  * @returns String formateado (ej: "12/25")
  */
 export const formatCardExpiry = (
   date: Date | string,
-  locale: string = 'es-ES'
+  _locale: string = 'es-ES'
 ): string => {
   try {
     // Si ya está en formato MM/YY o MM/YYYY, devolverlo tal cual
@@ -193,7 +193,6 @@ export const formatRelativeDate = (
     const absDays = Math.abs(diffInDays);
     const absHours = Math.abs(diffInHours);
     const absMinutes = Math.abs(diffInMinutes);
-    const absSeconds = Math.abs(diffInSeconds);
 
     const isSpanish = locale.startsWith('es');
 

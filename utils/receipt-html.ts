@@ -10,7 +10,7 @@ interface ReceiptData {
   theme: AppTheme;
 }
 
-export const generateReceiptHtml = async ({ result, card, transactionDetails, theme }: ReceiptData) => {
+export const generateReceiptHtml = async ({ result, card: _card, transactionDetails, theme }: ReceiptData) => {
   const isSuccess = result.success;
   const color = isSuccess ? '#4CAF50' : '#F44336';
   const iconBgColor = isSuccess ? '#E8F5E9' : '#FFEBEE';
