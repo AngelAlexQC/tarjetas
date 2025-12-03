@@ -34,20 +34,37 @@ export function useAppTheme() {
   const colorScheme = useColorScheme();
   const mode: ColorMode = colorScheme === 'dark' ? 'dark' : 'light';
   
-  // Colores del tenant actual
+  // Determinar si es formato nuevo (con branding) o antiguo
+  const isNewFormat = currentTheme && 'branding' in currentTheme;
+  
+  // Colores del tenant actual - soportar ambos formatos
   const tenant = {
     slug: currentTheme?.slug || 'default',
-    mainColor: currentTheme?.mainColor || '#007AFF',
-    secondaryColor: currentTheme?.secondaryColor || '#2196F3',
-    accentColor: currentTheme?.accentColor || '#FF9800',
+    mainColor: isNewFormat 
+      ? (currentTheme as any).branding.primaryColor 
+      : (currentTheme as any)?.mainColor || '#007AFF',
+    secondaryColor: isNewFormat 
+      ? (currentTheme as any).branding.secondaryColor 
+      : (currentTheme as any)?.secondaryColor || '#2196F3',
+    accentColor: isNewFormat 
+      ? (currentTheme as any).branding.accentColor 
+      : (currentTheme as any)?.accentColor || '#FF9800',
     name: currentTheme?.name || 'App',
-    logoUrl: currentTheme?.logoUrl || '',
-    textOnPrimary: currentTheme?.textOnPrimary || '#FFFFFF',
-    textOnSecondary: currentTheme?.textOnSecondary || '#FFFFFF',
+    logoUrl: isNewFormat 
+      ? (currentTheme as any).branding.logoUrl 
+      : (currentTheme as any)?.logoUrl || '',
+    textOnPrimary: isNewFormat 
+      ? (currentTheme as any).branding.textOnPrimary 
+      : (currentTheme as any)?.textOnPrimary || '#FFFFFF',
+    textOnSecondary: isNewFormat 
+      ? (currentTheme as any).branding.textOnSecondary 
+      : (currentTheme as any)?.textOnSecondary || '#FFFFFF',
     locale: currentTheme?.locale || 'en-US',
     currency: currentTheme?.currency || 'USD',
     currencySymbol: currentTheme?.currencySymbol || '$',
-    gradientColors: currentTheme?.gradientColors || [currentTheme?.mainColor || '#007AFF', currentTheme?.secondaryColor || '#2196F3'],
+    gradientColors: isNewFormat 
+      ? (currentTheme as any).branding.gradientColors 
+      : (currentTheme as any)?.gradientColors || ['#007AFF', '#2196F3'],
   };
 
   // Tokens semánticos según el modo
