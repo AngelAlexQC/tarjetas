@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from '@/constants/app';
 import { authRepository$ } from '@/repositories';
 import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,14 +8,6 @@ import React, { createContext, ReactNode, useCallback, useContext, useEffect, us
 import { Platform } from 'react-native';
 
 const log = loggers.auth;
-
-// Storage Keys
-const STORAGE_KEYS = {
-  AUTH_TOKEN: 'auth_token',
-  USER_DATA: 'user_data',
-  BIOMETRIC_ENABLED: 'biometric_enabled',
-  USERNAME_REMEMBERED: 'username_remembered',
-};
 
 export interface User {
   id: string;
