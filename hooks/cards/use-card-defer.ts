@@ -4,8 +4,8 @@
  * Hook especializado para operaciones de diferimiento de pagos.
  */
 
+import type { CardActionResult, DeferRequest, DeferSimulation } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
-import type { CardActionResult, DeferRequest, DeferSimulation } from '@/repositories/types/card.types';
 import { loggers } from '@/utils/logger';
 import { useCallback, useState } from 'react';
 

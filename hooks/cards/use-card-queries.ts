@@ -6,17 +6,17 @@
  */
 
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
+import type {
+    Account,
+    Card,
+    CardLimits,
+    DynamicCvv,
+    Rewards,
+    Statement,
+    Subscription,
+    Transaction
+} from '@/repositories';
 import { cardRepository$ } from '@/repositories';
-import type { 
-  Card, 
-  CardLimits, 
-  Statement, 
-  Subscription, 
-  Rewards, 
-  DynamicCvv, 
-  Transaction, 
-  Account 
-} from '@/repositories/types/card.types';
 import { loggers } from '@/utils/logger';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

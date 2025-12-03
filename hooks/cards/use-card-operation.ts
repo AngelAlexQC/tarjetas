@@ -5,8 +5,8 @@
  * Elimina código duplicado de carga de tarjeta y manejo de estados.
  */
 
+import type { Card, OperationResult } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
-import type { Card, OperationResult } from '@/repositories/types/card.types';
 import { loggers } from '@/utils/logger';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

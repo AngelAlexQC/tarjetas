@@ -4,8 +4,8 @@
  * Hook especializado para operaciones de avance de efectivo.
  */
 
+import type { Account, CardActionResult, CashAdvanceRequest } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
-import type { Account, CardActionResult, CashAdvanceRequest } from '@/repositories/types/card.types';
 import { loggers } from '@/utils/logger';
 import { useCallback, useState } from 'react';
 

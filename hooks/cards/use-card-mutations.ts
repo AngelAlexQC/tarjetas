@@ -5,16 +5,16 @@
  * Maneja bloqueo, desbloqueo, actualización de límites, etc.
  */
 
-import { cardRepository$ } from '@/repositories';
 import type {
-  BlockCardRequest,
-  CardActionResult,
-  CardLimits,
-  ChangePinRequest,
-  NotificationSettings,
-  ReplaceCardRequest,
-  TravelNotice,
-} from '@/repositories/types/card.types';
+    BlockCardRequest,
+    CardActionResult,
+    CardLimits,
+    ChangePinRequest,
+    NotificationSettings,
+    ReplaceCardRequest,
+    TravelNotice,
+} from '@/repositories';
+import { cardRepository$ } from '@/repositories';
 import { loggers } from '@/utils/logger';
 import { useCallback, useState } from 'react';
 
