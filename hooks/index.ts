@@ -13,3 +13,7 @@ export { useAppTheme } from './use-app-theme';
 export { usePasswordRecovery, useRegister } from './use-auth-operations';
 export { useResponsiveLayout } from './use-responsive-layout';
 
+// Tenant hooks
+export { useTenants } from './use-tenants';
+export { useFeatures } from './use-features';
+
