@@ -9,14 +9,18 @@
 import { API_CONFIG } from '@/api/config';
 import { IAuthRepository } from './interfaces/auth.repository.interface';
 import { ICardRepository } from './interfaces/card.repository.interface';
+import { ITenantRepository } from './interfaces/tenant.repository.interface';
 import { MockAuthRepository } from './mock/auth.repository.mock';
 import { MockCardRepository } from './mock/card.repository.mock';
+import { MockTenantRepository } from './mock/tenant.repository.mock';
 import { RealAuthRepository } from './real/auth.repository.real';
 import { RealCardRepository } from './real/card.repository.real';
+import { RealTenantRepository } from './real/tenant.repository.real';
 
 // Instancias singleton de los repositorios
 let cardRepository: ICardRepository | null = null;
 let authRepository: IAuthRepository | null = null;
+let tenantRepository: ITenantRepository | null = null;
 
 /**
  * Container de repositorios
@@ -51,12 +55,25 @@ export const RepositoryContainer = {
   },
 
   /**
+   * Obtiene el repositorio de tenants
+   */
+  getTenantRepository(): ITenantRepository {
+    if (!tenantRepository) {
+      tenantRepository = API_CONFIG.USE_MOCK_API
+        ? new MockTenantRepository()
+        : new RealTenantRepository();
+    }
+    return tenantRepository;
+  },
+
+  /**
    * Limpia todas las instancias de repositorios.
    * Útil para testing o cuando se cambia la configuración en runtime.
    */
   reset(): void {
     cardRepository = null;
     authRepository = null;
+    tenantRepository = null;
   },
 
   /**

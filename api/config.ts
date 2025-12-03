@@ -82,6 +82,16 @@ export const API_ENDPOINTS = {
     LIST: '/accounts',
   },
 
+  // Tenants
+  TENANTS: {
+    LIST: '/tenants',
+    GET: (id: string) => `/tenants/${id}`,
+    GET_BY_SLUG: (slug: string) => `/tenants/slug/${slug}`,
+    SEARCH: '/tenants/search',
+    CONFIG: (id: string) => `/tenants/${id}/config`,
+    FEATURES: (id: string) => `/tenants/${id}/features`,
+  },
+
   // Cards
   CARDS: {
     LIST: '/cards',
