@@ -2,8 +2,6 @@
  * Definición de tipos y constantes para tarjetas financieras
  */
 
-import cardValidator from 'card-validator';
-
 export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'discover' | 'diners' | 'jcb' | 'maestro' | 'unionpay';
 export type CardType = 'credit' | 'debit' | 'virtual';
 export type CardStatus = 'active' | 'blocked' | 'expired' | 'pending';
@@ -103,34 +101,4 @@ export function getCardDesign(brand: CardBrand, type: CardType): CardDesign {
     chipColor: brandDesign.chipColor,
     logoUrl: brandDesign.logoUrl,
   };
-}
-
-// Detectar marca de tarjeta por número usando card-validator
-export function detectCardBrand(cardNumber: string): CardBrand {
-  const cleanNumber = cardNumber.replace(/\s/g, '');
-  const validation = cardValidator.number(cleanNumber);
-  
-  if (!validation.card) {
-    // Fallback a detección básica
-    if (/^4/.test(cleanNumber)) return 'visa';
-    if (/^5[1-5]/.test(cleanNumber)) return 'mastercard';
-    if (/^3[47]/.test(cleanNumber)) return 'amex';
-    if (/^6(?:011|5)/.test(cleanNumber)) return 'discover';
-    if (/^3(?:0[0-5]|[68])/.test(cleanNumber)) return 'diners';
-    return 'visa'; // default
-  }
-  
-  // Mapear tipos de card-validator a nuestros tipos
-  const brandMap: Record<string, CardBrand> = {
-    'visa': 'visa',
-    'mastercard': 'mastercard',
-    'american-express': 'amex',
-    'discover': 'discover',
-    'diners-club': 'diners',
-    'jcb': 'jcb',
-    'maestro': 'maestro',
-    'unionpay': 'unionpay',
-  };
-  
-  return brandMap[validation.card.type] || 'visa';
 }
