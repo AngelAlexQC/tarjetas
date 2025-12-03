@@ -3,25 +3,25 @@ import { StyleSheet, Text, type TextProps } from 'react-native';
 import { useAppTheme } from '@/hooks/use-app-theme';
 
 export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
   variant?: 'primary' | 'secondary' | 'tertiary' | 'disabled' | 'inverse';
 };
 
+/**
+ * Text con soporte de tema automático.
+ * Soporta diferentes tipos (title, subtitle, link, etc.) y variantes de color.
+ */
 export function ThemedText({
   style,
-  lightColor,
-  darkColor,
   type = 'default',
   variant = 'primary',
   ...rest
 }: ThemedTextProps) {
   const theme = useAppTheme();
   
-  // Prioridad: custom colors > variant > default
-  const color = lightColor || darkColor 
-    ? (theme.isDark ? darkColor : lightColor) || theme.helpers.getText(variant)
+  // Para links, usar el color primario del tenant
+  const color = type === 'link' 
+    ? theme.tenant.mainColor 
     : theme.helpers.getText(variant);
 
   return (
@@ -62,6 +62,6 @@ const styles = StyleSheet.create({
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
+    // Color se aplica dinámicamente en el componente
   },
 });
