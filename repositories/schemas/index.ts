@@ -6,3 +6,4 @@
 
 export * from './card.schema';
 export * from './auth.schema';
+export * from './tenant.schema';

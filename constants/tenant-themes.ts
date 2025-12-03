@@ -1,13 +1,18 @@
 /**
- * Tenant Themes & Configuration
+ * Tenant Themes & Configuration - LibelulaSoft
  * 
- * Fuente única de verdad para toda la información de tenants:
- * - Información de display (nombre, logo, país)
- * - Configuración de tema (colores, gradientes)
- * - Localización (locale, moneda)
+ * ⚠️ NOTA: Los tenants ahora se cargan dinámicamente desde el backend.
+ * Este archivo solo mantiene tipos legacy y el defaultTheme para fallback.
+ * 
+ * Para nuevas implementaciones, usar:
+ * - Tenant type de @/repositories/schemas/tenant.schema
+ * - useTenants() hook para cargar tenants desde API
  */
 
-// Interfaz central para temas de tenant
+/**
+ * @deprecated Usar Tenant de @/repositories/schemas/tenant.schema
+ * Mantenido solo para compatibilidad con código legacy
+ */
 export interface TenantTheme {
   slug: string;
   name: string;
@@ -21,12 +26,13 @@ export interface TenantTheme {
   locale: string;
   currency: string;
   currencySymbol: string;
-  // Campos para el selector de instituciones
   country: string;
   countryFlag: string;
 }
 
-// Tipo simplificado para el selector de instituciones
+/**
+ * @deprecated Usar TenantInfo de @/repositories/schemas/tenant.schema
+ */
 export type TenantInfo = Pick<TenantTheme, 'slug' | 'name' | 'logoUrl' | 'mainColor' | 'country' | 'countryFlag'> & {
   currencyCode: string;
 };
