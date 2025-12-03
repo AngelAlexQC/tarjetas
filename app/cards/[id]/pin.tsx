@@ -6,13 +6,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { OperationResult } from '@/repositories';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
-import type { Card } from '@/repositories';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useCardOperation, useCardMutations } from '@/hooks/cards';
 import { KeyRound, ShieldCheck } from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,49 +17,33 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function PinScreen() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
-
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
   
+  // Hooks especializados
+  const { card, cardId, isLoadingCard, isProcessing, result, router, executeOperation } = useCardOperation();
+  const { changePin } = useCardMutations();
+  
+  // Estado del formulario
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const confirmPinRef = useRef<TextInput>(null);
   const [showBiometrics, setShowBiometrics] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [result, setResult] = useState<OperationResult | null>(null);
 
   const handleSave = () => {
     if (pin.length !== 4 || confirmPin.length !== 4) return;
-    if (pin !== confirmPin) {
-      // Show error (simple alert for now or toast)
-      return;
-    }
+    if (pin !== confirmPin) return;
     setShowBiometrics(true);
   };
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setResult({
-        success: true,
-        title: 'PIN Actualizado',
-        message: 'Tu clave de cajero ha sido modificada exitosamente. Ya puedes usarla en cajeros automáticos.',
-        receiptId: `PIN-${Math.floor(Math.random() * 10000)}`,
-      });
-    }, 2000);
+    executeOperation(
+      () => changePin({ cardId, newPin: pin, currentPin: '' }),
+      'PIN Actualizado',
+      { 
+        receiptPrefix: 'PIN',
+        successMessage: 'Tu clave de cajero ha sido modificada exitosamente. Ya puedes usarla en cajeros automáticos.',
+      }
+    );
   };
 
   if (isLoadingCard) {

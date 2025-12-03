@@ -6,46 +6,30 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { OperationResult } from '@/repositories';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks/use-cards';
-import type { Card } from '@/repositories';
+import { useCardOperation, useCardMutations } from '@/hooks/cards';
 import Slider from '@react-native-community/slider';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LimitsScreen() {
   const theme = useAppTheme();
-  const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
-  const [card, setCard] = useState<Card | undefined>();
-  const [isLoadingCard, setIsLoadingCard] = useState(true);
   const insets = useSafeAreaInsets();
+  
+  // Hooks especializados
+  const { card, cardId, isLoadingCard, isProcessing, result, router, executeOperation } = useCardOperation();
+  const { updateLimits } = useCardMutations();
 
-  useEffect(() => {
-    if (id) {
-      getCardById(id).then((fetchedCard) => {
-        setCard(fetchedCard);
-        setIsLoadingCard(false);
-      });
-    }
-  }, [id, getCardById]);
-
-  // Mock initial limits
+  // Estado de límites
   const [limits, setLimits] = useState({
     dailyAtm: 500,
     dailyPos: 2000,
     dailyOnline: 1000,
     monthlyTotal: 5000,
   });
-
   const [showBiometrics, setShowBiometrics] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [result, setResult] = useState<OperationResult | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleSave = () => {
@@ -54,16 +38,19 @@ export default function LimitsScreen() {
 
   const onBiometricSuccess = () => {
     setShowBiometrics(false);
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setResult({
-        success: true,
-        title: 'Cupos Actualizados',
-        message: 'Los límites de tu tarjeta han sido actualizados correctamente.',
-        receiptId: `LIM-${Math.floor(Math.random() * 10000)}`,
-      });
-    }, 2000);
+    executeOperation(
+      () => updateLimits(cardId, {
+        dailyAtm: limits.dailyAtm,
+        dailyOnline: limits.dailyOnline,
+        dailyPos: limits.dailyPos,
+        monthlyTotal: limits.monthlyTotal,
+      }),
+      'Cupos Actualizados',
+      {
+        receiptPrefix: 'LIM',
+        successMessage: 'Los límites de tu tarjeta han sido actualizados correctamente.',
+      }
+    );
   };
 
   const updateLimit = (key: keyof typeof limits, value: number) => {
