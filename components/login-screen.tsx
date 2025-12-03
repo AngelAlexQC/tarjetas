@@ -12,12 +12,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -81,18 +82,27 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   };
 
   const handleForgotPassword = () => {
-    // TODO: Implementar pantalla de recuperación
-    log.debug('Forgot password');
+    Alert.alert(
+      'Recuperar Contraseña',
+      'Por favor contacta a tu institución financiera para recuperar tu contraseña.',
+      [{ text: 'Entendido' }]
+    );
   };
 
   const handleRegister = () => {
-    // TODO: Implementar pantalla de registro
-    log.debug('Register');
+    Alert.alert(
+      'Registro',
+      'Para crear una cuenta, visita la sucursal más cercana de tu institución financiera o descarga la app de registro.',
+      [{ text: 'Entendido' }]
+    );
   };
 
   const handleEmailLogin = () => {
-    // TODO: Implementar login con email directo
-    log.debug('Email login');
+    Alert.alert(
+      'Próximamente',
+      'El inicio de sesión con email estará disponible pronto.',
+      [{ text: 'Entendido' }]
+    );
   };
 
   // Estilos específicos por plataforma
