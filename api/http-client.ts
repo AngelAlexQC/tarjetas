@@ -5,11 +5,8 @@
  * Maneja autenticación, errores, y configuración común.
  */
 
-import { loggers } from '@/utils/logger';
 import { authStorage } from '@/utils/auth-storage';
 import { API_CONFIG } from './config';
-
-const log = loggers.api;
 
 // Tipos para las respuestas de la API
 export interface ApiResponse<T = unknown> {
