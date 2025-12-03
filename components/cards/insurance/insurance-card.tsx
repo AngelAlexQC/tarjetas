@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { formatCurrency } from '@/utils/formatters/currency';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -153,13 +154,13 @@ export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps)
   });
 
   // Formatear monto con separadores de miles
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
+  const formatAmount = (amount: number): string => {
+    return formatCurrency(amount, {
+      locale: 'en-US',
       currency: insurance.currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount);
+    });
   };
 
   const ContainerView = shouldAnimate ? Animated.View : View;
@@ -216,7 +217,7 @@ export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps)
             <View style={styles.stat}>
               <ThemedText style={styles.statLabel}>Cobertura</ThemedText>
               <ThemedText style={styles.statValue}>
-                {formatCurrency(insurance.coverageAmount)}
+                {formatAmount(insurance.coverageAmount)}
               </ThemedText>
             </View>
 
@@ -225,7 +226,7 @@ export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps)
             <View style={styles.stat}>
               <ThemedText style={styles.statLabel}>Desde</ThemedText>
               <ThemedText style={styles.statValue}>
-                {formatCurrency(insurance.monthlyPrice)}
+                {formatAmount(insurance.monthlyPrice)}
               </ThemedText>
             </View>
 

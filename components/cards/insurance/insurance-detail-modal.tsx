@@ -3,6 +3,7 @@ import { CardBrandIcons } from '@/components/ui/card-brand-icons';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import type { Card } from '@/repositories';
+import { formatCurrency } from '@/utils/formatters/currency';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -59,13 +60,13 @@ export function InsuranceDetailModal({
   const modalMaxWidth = isLargeScreen ? 480 : SCREEN_WIDTH;
   const modalMaxHeight = isLargeScreen ? SCREEN_HEIGHT * 0.85 : SCREEN_HEIGHT * 0.85;
 
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
+  const formatAmount = (amount: number): string => {
+    return formatCurrency(amount, {
+      locale: 'en-US',
       currency: insurance.currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount);
+    });
   };
 
   const styles = StyleSheet.create({
@@ -340,7 +341,7 @@ export function InsuranceDetailModal({
                       Cobertura máxima
                     </ThemedText>
                     <ThemedText style={styles.coverageValue}>
-                      {formatCurrency(insurance.coverageAmount)}
+                      {formatAmount(insurance.coverageAmount)}
                     </ThemedText>
                   </View>
                 </View>
@@ -402,7 +403,7 @@ export function InsuranceDetailModal({
               <View style={styles.priceRow}>
                 <ThemedText style={styles.priceLabel}>Desde</ThemedText>
                 <ThemedText style={styles.priceValue}>
-                  {formatCurrency(insurance.monthlyPrice)}/mes
+                  {formatAmount(insurance.monthlyPrice)}/mes
                 </ThemedText>
               </View>
 
