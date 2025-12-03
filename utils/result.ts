@@ -33,19 +33,15 @@
 
 // Re-exportar todo de neverthrow para uso centralizado
 export {
-  Result,
-  ResultAsync,
-  ok,
-  err,
-  okAsync,
-  errAsync,
-  fromPromise,
-  fromSafePromise,
-  fromThrowable,
+    err, errAsync,
+    fromPromise,
+    fromSafePromise,
+    fromThrowable, ok, okAsync, Result,
+    ResultAsync
 } from 'neverthrow';
 
 // Re-exportar tipos útiles
-export type { Ok, Err } from 'neverthrow';
+export type { Err, Ok } from 'neverthrow';
 
 // ============================================
 // APP ERROR - Error tipado de la aplicación

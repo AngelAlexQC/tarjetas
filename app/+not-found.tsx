@@ -6,10 +6,10 @@
  */
 
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { Link } from 'expo-router';
 import { FileQuestion, Home } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Link } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function NotFoundScreen() {

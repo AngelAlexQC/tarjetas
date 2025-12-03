@@ -6,20 +6,15 @@
 
 // Result Pattern & Error Handling (nuevo sistema)
 export {
-  // neverthrow re-exports
-  Result,
-  ResultAsync,
-  ok,
-  err,
-  okAsync,
-  errAsync,
-  fromPromise,
-  fromSafePromise,
-  fromThrowable,
-  // App Error
-  AppError,
-  ErrorCode,
-  isAppError,
+    // App Error
+    AppError,
+    ErrorCode,
+    // neverthrow re-exports
+    Result,
+    ResultAsync, err, errAsync,
+    fromPromise,
+    fromSafePromise,
+    fromThrowable, isAppError, ok, okAsync
 } from './result';
 
 // API Validation

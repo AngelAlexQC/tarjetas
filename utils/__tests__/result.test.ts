@@ -4,7 +4,7 @@
  * Tests para el sistema de errores tipados con neverthrow.
  */
 
-import { AppError, ErrorCode, err, isAppError, ok, Result } from '../result';
+import { AppError, err, ErrorCode, isAppError, ok, Result } from '../result';
 
 describe('AppError', () => {
   describe('factory methods', () => {

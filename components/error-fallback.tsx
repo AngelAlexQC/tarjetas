@@ -13,7 +13,7 @@
 
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { loggers } from '@/utils/logger';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react-native';
+import { AlertTriangle, Home, RefreshCw } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

@@ -2,7 +2,7 @@
  * ErrorFallback Component Tests
  */
 
-import { render, fireEvent } from '@test-utils';
+import { fireEvent, render } from '@test-utils';
 import React from 'react';
 import { ErrorFallback } from '../error-fallback';
 
