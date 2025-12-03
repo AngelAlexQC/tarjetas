@@ -200,3 +200,14 @@ export interface NotificationSettings {
   paymentReminders?: boolean;
   securityAlerts?: boolean;
 }
+
+// --- UI Operation Types ---
+export type OperationStatus = 'idle' | 'loading' | 'success' | 'error';
+
+export interface OperationResult {
+  success: boolean;
+  title: string;
+  message: string;
+  receiptId?: string;
+  date?: string;
+}
