@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
-import { OperationResult } from '@/features/cards/types/card-operations';
+import { OperationResult } from '@/repositories';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import type { Card } from '@/repositories';
 import { Image } from 'expo-image';

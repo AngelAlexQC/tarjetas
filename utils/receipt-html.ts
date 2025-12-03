@@ -1,4 +1,4 @@
-import { OperationResult } from '@/features/cards/types/card-operations';
+import { OperationResult } from '@/repositories';
 import { AppTheme } from '@/hooks/use-app-theme';
 import type { Card } from '@/repositories';
 import { getLogoHtmlForPdf } from './image-to-base64';

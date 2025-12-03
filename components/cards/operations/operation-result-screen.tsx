@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
-import { OperationResult } from '@/features/cards/types/card-operations';
+import { OperationResult } from '@/repositories';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import type { Card } from '@/repositories';

@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { OperationResult } from '@/features/cards/types/card-operations';
+import { OperationResult } from '@/repositories';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
 import { useCards } from '@/hooks/use-cards';
 import type { Card } from '@/repositories';

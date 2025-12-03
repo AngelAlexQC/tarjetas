@@ -13,7 +13,6 @@ import Animated, {
 import Svg, { Circle, Defs, G, LinearGradient, Path, Stop } from 'react-native-svg';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
-const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 interface DragonflyLoadingProps {
   width?: number;
