@@ -18,7 +18,7 @@ export { DragonflyLoading } from './dragonfly-loading';
 export { DragonflyLogo } from './dragonfly-logo';
 export { FinancialIcons, type FinancialIconType } from './financial-icons';
 export { InfoIcon } from './info-icon';
-export { TabIcons } from './tab-icons';
+export { CardsIcon, HomeIcon, SettingsIcon } from './tab-icons';
 
 // Visual elements
 export { AnimatedNumber } from './animated-number';

@@ -7,12 +7,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { 
   Home, 
-  CreditCard, 
-  Activity, 
-  User, 
-  Settings, 
-  Bell, 
-  MoreVertical,
+  CreditCard,
+  Settings,
   LucideIcon 
 } from 'lucide-react-native';
 
@@ -69,40 +65,8 @@ export const CardsIcon = (props: TabIconProps) => (
   <AnimatedIcon icon={CreditCard} {...props} />
 );
 
-// Ícono de Transacciones/Actividad
-export const TransactionsIcon = (props: TabIconProps) => (
-  <AnimatedIcon icon={Activity} {...props} />
-);
-
-// Ícono de Perfil/Usuario
-export const ProfileIcon = (props: TabIconProps) => (
-  <AnimatedIcon icon={User} {...props} />
-);
-
 // Ícono de Configuración
 export const SettingsIcon = (props: TabIconProps) => (
   <AnimatedIcon icon={Settings} {...props} />
 );
-
-// Ícono de Notificaciones
-export const NotificationsIcon = (props: TabIconProps) => (
-  <AnimatedIcon icon={Bell} {...props} />
-);
-
-// Ícono de Más/Menu
-export const MoreIcon = (props: TabIconProps) => (
-  <AnimatedIcon icon={MoreVertical} {...props} />
-);
-
-export const TabIcons = {
-  home: HomeIcon,
-  cards: CardsIcon,
-  transactions: TransactionsIcon,
-  profile: ProfileIcon,
-  settings: SettingsIcon,
-  notifications: NotificationsIcon,
-  more: MoreIcon,
-};
-
-export type TabIconType = keyof typeof TabIcons;
 
