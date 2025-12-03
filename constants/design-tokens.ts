@@ -5,6 +5,35 @@
  */
 
 // ============================================
+// BRAND COLORS - Colores de marca Libélula
+// ============================================
+
+export const BrandColors = {
+  // Gradiente principal del logo
+  gradient: {
+    start: '#10b981',  // Emerald/Green
+    end: '#0ea5e9',    // Sky blue
+  },
+  // Colores como array para LinearGradient
+  gradientColors: ['#10b981', '#0ea5e9'] as const,
+};
+
+// ============================================
+// FEEDBACK COLORS - Estados y feedback del sistema
+// ============================================
+
+export const FeedbackColors = {
+  error: '#F44336',     // Material Red 500
+  errorDark: '#D32F2F', // Material Red 700
+  success: '#10b981',   // Emerald 500
+  successDark: '#059669', // Emerald 600
+  warning: '#F59E0B',   // Amber 500
+  warningDark: '#D97706', // Amber 600
+  info: '#3B82F6',      // Blue 500
+  infoDark: '#2563EB',  // Blue 600
+};
+
+// ============================================
 // PRIMITIVE TOKENS - Base Colors
 // ============================================
 

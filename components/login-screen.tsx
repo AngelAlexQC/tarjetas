@@ -1,14 +1,12 @@
 import { ThemedText } from '@/components/themed-text';
-import { DragonflyLoading } from '@/components/ui/dragonfly-loading';
-import { GradientText } from '@/components/ui/gradient-text';
+import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
 import { ThemedButton } from '@/components/ui/themed-button';
 import { ThemedInput } from '@/components/ui/themed-input';
+import { FeedbackColors } from '@/constants';
 import { useAuth } from '@/contexts/auth-context';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
-import { loggers } from '@/utils/logger';
+import { useAppTheme, useResponsiveLayout } from '@/hooks';
+import { loggers } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -27,12 +25,13 @@ const log = loggers.auth;
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
+  onForgotPassword?: () => void;
+  onRegister?: () => void;
+  onEmailLogin?: () => void;
 }
 
-export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
-  const theme = useAppTheme();
-  const layout = useResponsiveLayout();
-  const insets = useSafeAreaInsets();
+// Hook personalizado para la lógica de login
+function useLoginLogic(onLoginSuccess: () => void) {
   const { login, getRememberedUsername, rememberUsername, clearRememberedUsername } = useAuth();
 
   const [username, setUsername] = useState('');
@@ -40,22 +39,20 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   const [rememberUser, setRememberUser] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   // Cargar usuario recordado al montar
-  const loadRememberedUsername = useCallback(async () => {
-    const remembered = await getRememberedUsername();
-    if (remembered) {
-      setUsername(remembered);
-      setRememberUser(true);
-    }
+  useEffect(() => {
+    const loadRemembered = async () => {
+      const remembered = await getRememberedUsername();
+      if (remembered) {
+        setUsername(remembered);
+        setRememberUser(true);
+      }
+    };
+    loadRemembered();
   }, [getRememberedUsername]);
 
-  useEffect(() => {
-    loadRememberedUsername();
-  }, [loadRememberedUsername]);
-
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     setError('');
     setIsLoading(true);
 
@@ -63,51 +60,88 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       const result = await login(username.trim(), password);
 
       if (result.success) {
-        // Guardar o limpiar usuario recordado
         if (rememberUser) {
           await rememberUsername(username.trim());
         } else {
           await clearRememberedUsername();
         }
-
-        // Llamar al callback de éxito
         onLoginSuccess();
       } else {
         setError(result.error || 'Error al iniciar sesión');
       }
-    } catch (error) {
-      log.error('Error inesperado en login:', error);
+    } catch (err) {
+      log.error('Error inesperado en login:', err);
       setError('Error inesperado. Intenta de nuevo.');
     } finally {
       setIsLoading(false);
     }
+  }, [username, password, rememberUser, login, rememberUsername, clearRememberedUsername, onLoginSuccess]);
+
+  return {
+    username, setUsername,
+    password, setPassword,
+    rememberUser, setRememberUser,
+    isLoading, error, setError,
+    handleLogin,
   };
+}
+
+export function LoginScreen({ 
+  onLoginSuccess, 
+  onForgotPassword, 
+  onRegister, 
+  onEmailLogin 
+}: LoginScreenProps) {
+  const theme = useAppTheme();
+  const layout = useResponsiveLayout();
+  const insets = useSafeAreaInsets();
+
+  const {
+    username, setUsername,
+    password, setPassword,
+    rememberUser, setRememberUser,
+    isLoading, error, setError,
+    handleLogin,
+  } = useLoginLogic(onLoginSuccess);
+
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   const handleForgotPassword = () => {
-    Alert.alert(
-      'Recuperar Contraseña',
-      'Por favor contacta a tu institución financiera para recuperar tu contraseña.',
-      [{ text: 'Entendido' }]
-    );
+    if (onForgotPassword) {
+      onForgotPassword();
+    } else {
+      Alert.alert(
+        'Recuperar Contraseña',
+        'Por favor contacta a tu institución financiera para recuperar tu contraseña.',
+        [{ text: 'Entendido' }]
+      );
+    }
   };
 
   const handleRegister = () => {
-    Alert.alert(
-      'Registro',
-      'Para crear una cuenta, visita la sucursal más cercana de tu institución financiera o descarga la app de registro.',
-      [{ text: 'Entendido' }]
-    );
+    if (onRegister) {
+      onRegister();
+    } else {
+      Alert.alert(
+        'Registro',
+        'Para crear una cuenta, visita la sucursal más cercana de tu institución financiera o descarga la app de registro.',
+        [{ text: 'Entendido' }]
+      );
+    }
   };
 
   const handleEmailLogin = () => {
-    Alert.alert(
-      'Próximamente',
-      'El inicio de sesión con email estará disponible pronto.',
-      [{ text: 'Entendido' }]
-    );
+    if (onEmailLogin) {
+      onEmailLogin();
+    } else {
+      Alert.alert(
+        'Próximamente',
+        'El inicio de sesión con email estará disponible pronto.',
+        [{ text: 'Entendido' }]
+      );
+    }
   };
 
-  // Estilos específicos por plataforma
   const containerMaxWidth = Math.min(layout.screenWidth * 0.9, 420);
 
   return (
@@ -118,169 +152,125 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          {
-            paddingTop: insets.top + 40,
-            paddingBottom: insets.bottom + 20,
-            paddingHorizontal: layout.horizontalPadding,
-          },
+          { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 20, paddingHorizontal: layout.horizontalPadding },
         ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Animated.View
-          entering={FadeInUp.duration(600)}
-          style={[styles.content, { maxWidth: containerMaxWidth }]}
-        >
-          {/* Logo de Libélula */}
-          <View style={styles.logoContainer}>
-            <LinearGradient
-              colors={['#10b981', '#0ea5e9']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                padding: 2,
-                borderRadius: 32,
-                shadowColor: '#0ea5e9',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.2,
-                shadowRadius: 8,
-                elevation: 4,
-              }}
-            >
-              <View style={{
-                backgroundColor: theme.colors.background,
-                borderRadius: 30,
-                paddingVertical: 32,
-                paddingHorizontal: 48,
-                alignItems: 'center',
-              }}>
-                <DragonflyLoading width={100} height={100} style={{ marginBottom: 16 }} />
-                <GradientText 
-                  text="LIBÉLULA" 
-                  fontSize={28} 
-                  width={200} 
-                  height={40} 
-                  style={{ marginBottom: 4 }}
-                />
-                <ThemedText 
-                  type="defaultSemiBold" 
-                  style={[
-                    styles.subtitle, 
-                    { 
-                      color: theme.colors.textSecondary,
-                      letterSpacing: 3,
-                      textTransform: 'uppercase',
-                      fontSize: 12,
-                      opacity: 0.8
-                    }
-                  ]}
-                >
-                  Agilidad Tecnológica
-                </ThemedText>
-              </View>
-            </LinearGradient>
-          </View>
-
-          {/* Formulario */}
-          <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.form}>
-            {/* Campo Usuario */}
-            <ThemedInput
-              label="Nombre de usuario"
-              placeholder="Sofi"
-              value={username}
-              onChangeText={(text) => {
-                setUsername(text);
-                setError('');
-              }}
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon={<User size={20} color={theme.colors.textSecondary} />}
-              error={error && !username ? 'Campo requerido' : undefined}
-            />
-
-            {/* Campo Contraseña */}
-            <ThemedInput
-              label="Contraseña"
-              placeholder="••••••••••••"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                setError('');
-              }}
-              secureTextEntry={secureTextEntry}
-              autoCapitalize="none"
-              icon={<LockKeyhole size={20} color={theme.colors.textSecondary} />}
-              error={error && !password ? 'Campo requerido' : undefined}
-            />
-
-            {/* Toggle de visibilidad de contraseña */}
-            <Pressable
-              onPress={() => setSecureTextEntry(!secureTextEntry)}
-              style={styles.togglePassword}
-            >
-              <Ionicons
-                name={secureTextEntry ? 'eye-off-outline' : 'eye-outline'}
-                size={20}
-                color={theme.colors.textSecondary}
-              />
-            </Pressable>
-
-            {/* Error general */}
-            {error && (
-              <Animated.View entering={FadeInDown.duration(300)}>
-                <ThemedText style={styles.errorText}>{error}</ThemedText>
-              </Animated.View>
-            )}
-
-            {/* Links auxiliares */}
-            <View style={styles.linksRow}>
-              <Pressable onPress={handleForgotPassword}>
-                <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>
-                  Olvidé mi contraseña
-                </ThemedText>
-              </Pressable>
-            </View>
-
-            <Pressable 
-              onPress={() => setRememberUser(!rememberUser)}
-              style={styles.rememberRow}
-            >
-              <Ionicons
-                name={rememberUser ? 'checkbox' : 'square-outline'}
-                size={24}
-                color={theme.tenant.mainColor}
-              />
-              <ThemedText style={styles.rememberText}>Recordar mi usuario</ThemedText>
-            </Pressable>
-
-            <Pressable onPress={handleRegister}>
-              <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>
-                Registro
-              </ThemedText>
-            </Pressable>
-
-            {/* Botón Email (opcional) */}
-            <ThemedButton
-              title="Ingrese con tu email"
-              onPress={handleEmailLogin}
-              variant="outline"
-              icon={<Mail size={20} color={theme.tenant.mainColor} />}
-              style={styles.emailButton}
-            />
-
-            {/* Botón Continuar */}
-            <ThemedButton
-              title="Continuar"
-              onPress={handleLogin}
-              variant="primary"
-              loading={isLoading}
-              disabled={isLoading || !username || !password}
-              style={styles.loginButton}
-            />
-          </Animated.View>
+        <Animated.View entering={FadeInUp.duration(600)} style={[styles.content, { maxWidth: containerMaxWidth }]}>
+          <AuthLogoHeader size="large" showSubtitle />
+          <LoginForm
+            username={username}
+            setUsername={(text) => { setUsername(text); setError(''); }}
+            password={password}
+            setPassword={(text) => { setPassword(text); setError(''); }}
+            rememberUser={rememberUser}
+            setRememberUser={setRememberUser}
+            secureTextEntry={secureTextEntry}
+            setSecureTextEntry={setSecureTextEntry}
+            isLoading={isLoading}
+            error={error}
+            onLogin={handleLogin}
+            onForgotPassword={handleForgotPassword}
+            onRegister={handleRegister}
+            onEmailLogin={handleEmailLogin}
+          />
         </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
+  );
+}
+
+// Componente del formulario de login
+interface LoginFormProps {
+  username: string;
+  setUsername: (text: string) => void;
+  password: string;
+  setPassword: (text: string) => void;
+  rememberUser: boolean;
+  setRememberUser: (value: boolean) => void;
+  secureTextEntry: boolean;
+  setSecureTextEntry: (value: boolean) => void;
+  isLoading: boolean;
+  error: string;
+  onLogin: () => void;
+  onForgotPassword: () => void;
+  onRegister: () => void;
+  onEmailLogin: () => void;
+}
+
+function LoginForm({
+  username, setUsername, password, setPassword, rememberUser, setRememberUser,
+  secureTextEntry, setSecureTextEntry, isLoading, error, onLogin, onForgotPassword, onRegister, onEmailLogin,
+}: LoginFormProps) {
+  const theme = useAppTheme();
+
+  return (
+    <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.form}>
+      <ThemedInput
+        label="Nombre de usuario"
+        placeholder="Sofi"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+        autoCorrect={false}
+        icon={<User size={20} color={theme.colors.textSecondary} />}
+        error={error && !username ? 'Campo requerido' : undefined}
+      />
+
+      <ThemedInput
+        label="Contraseña"
+        placeholder="••••••••••••"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={secureTextEntry}
+        autoCapitalize="none"
+        icon={<LockKeyhole size={20} color={theme.colors.textSecondary} />}
+        error={error && !password ? 'Campo requerido' : undefined}
+      />
+
+      <Pressable onPress={() => setSecureTextEntry(!secureTextEntry)} style={styles.togglePassword}>
+        <Ionicons name={secureTextEntry ? 'eye-off-outline' : 'eye-outline'} size={20} color={theme.colors.textSecondary} />
+      </Pressable>
+
+      {error && (
+        <Animated.View entering={FadeInDown.duration(300)}>
+          <ThemedText style={styles.errorText}>{error}</ThemedText>
+        </Animated.View>
+      )}
+
+      <View style={styles.linksRow}>
+        <Pressable onPress={onForgotPassword}>
+          <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>Olvidé mi contraseña</ThemedText>
+        </Pressable>
+      </View>
+
+      <Pressable onPress={() => setRememberUser(!rememberUser)} style={styles.rememberRow}>
+        <Ionicons name={rememberUser ? 'checkbox' : 'square-outline'} size={24} color={theme.tenant.mainColor} />
+        <ThemedText style={styles.rememberText}>Recordar mi usuario</ThemedText>
+      </Pressable>
+
+      <Pressable onPress={onRegister}>
+        <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>Registro</ThemedText>
+      </Pressable>
+
+      <ThemedButton
+        title="Ingrese con tu email"
+        onPress={onEmailLogin}
+        variant="outline"
+        icon={<Mail size={20} color={theme.tenant.mainColor} />}
+        style={styles.emailButton}
+      />
+
+      <ThemedButton
+        title="Continuar"
+        onPress={onLogin}
+        variant="primary"
+        loading={isLoading}
+        disabled={isLoading || !username || !password}
+        style={styles.loginButton}
+      />
+    </Animated.View>
   );
 }
 
@@ -297,25 +287,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 16,
-  },
-  brandText: {
-    fontSize: 24,
-    fontWeight: '700',
-    letterSpacing: 2,
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
   form: {
     width: '100%',
     gap: 16,
@@ -326,7 +297,7 @@ const styles = StyleSheet.create({
     top: 105,
   },
   errorText: {
-    color: '#F44336',
+    color: FeedbackColors.error,
     fontSize: 14,
     textAlign: 'center',
     marginTop: -8,

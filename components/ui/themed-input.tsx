@@ -1,7 +1,8 @@
+import { ThemedText } from '@/components/themed-text';
+import { FeedbackColors } from '@/constants';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import React from 'react';
 import { StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
 
 interface ThemedInputProps extends TextInputProps {
   label?: string;
@@ -28,7 +29,7 @@ export function ThemedInput({
         styles.inputContainer, 
         { 
           backgroundColor: theme.colors.surface,
-          borderColor: error ? '#F44336' : theme.colors.border,
+          borderColor: error ? FeedbackColors.error : theme.colors.border,
         }
       ]}>
         {icon && <View style={styles.iconContainer}>{icon}</View>}
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   error: {
-    color: '#F44336',
+    color: FeedbackColors.error,
     fontSize: 12,
     marginTop: 4,
   },

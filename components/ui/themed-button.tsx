@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
+import { FeedbackColors } from '@/constants';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
@@ -34,7 +35,7 @@ export function ThemedButton({
       case 'secondary':
         return pressed ? theme.colors.surfaceHigher : theme.colors.surface;
       case 'danger':
-        return '#F44336';
+        return FeedbackColors.error;
       case 'outline':
         return 'transparent';
       default:
