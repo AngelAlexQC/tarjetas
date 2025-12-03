@@ -1,15 +1,16 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { getTenantTheme, searchTenants, TenantInfo } from "@/constants/tenant-themes";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
+import { useTenants } from "@/hooks/use-tenants";
+import type { Tenant } from "@/repositories/schemas/tenant.schema";
 import { Ionicons } from '@expo/vector-icons';
 import { useScrollToTop } from '@react-navigation/native';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useMemo, useRef, useState } from "react";
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -22,6 +23,9 @@ export default function TenantSelectorScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const scrollRef = useRef(null);
+  
+  // Usar hook de tenants dinámico
+  const { tenants, isLoading, error, searchTenants } = useTenants();
 
   useScrollToTop(scrollRef);
   
@@ -31,9 +35,8 @@ export default function TenantSelectorScreen() {
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   };
 
-  const handleTenantSelect = async (tenant: TenantInfo) => {
-    const tenantTheme = getTenantTheme(tenant.slug);
-    await setTenant(tenantTheme);
+  const handleTenantSelect = async (tenant: Tenant) => {
+    await setTenant(tenant);
     
     // Navegar automáticamente a la pantalla de tarjetas
     router.push("/(tabs)/cards");
@@ -49,7 +52,7 @@ export default function TenantSelectorScreen() {
       }
       acc[tenant.country].push(tenant);
       return acc;
-    }, {} as Record<string, TenantInfo[]>);
+    }, {} as Record<string, Tenant[]>);
 
     return grouped;
   }, [searchQuery]);
@@ -66,6 +69,42 @@ export default function TenantSelectorScreen() {
     return a.localeCompare(b);
   });
   const isIOS = Platform.OS === 'ios';
+
+  // Mostrar loading
+  if (isLoading) {
+    return (
+      <ThemedView style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={theme.tenant.mainColor} />
+        <ThemedText style={{ marginTop: 16 }}>Cargando instituciones...</ThemedText>
+      </ThemedView>
+    );
+  }
+
+  // Mostrar error
+  if (error) {
+    return (
+      <ThemedView style={[styles.container, styles.centerContent]}>
+        <Ionicons name="warning-outline" size={48} color={theme.colors.textSecondary} />
+        <ThemedText style={{ marginTop: 16, textAlign: 'center' }}>
+          {error}
+        </ThemedText>
+        <Pressable
+          onPress={() => window.location.reload()}
+          style={{
+            marginTop: 24,
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            backgroundColor: theme.tenant.mainColor,
+            borderRadius: 8,
+          }}
+        >
+          <ThemedText style={{ color: theme.tenant.textOnPrimary }}>
+            Reintentar
+          </ThemedText>
+        </Pressable>
+      </ThemedView>
+    );
+  }
 
   return (
     <ThemedView style={styles.container}>
@@ -208,14 +247,14 @@ export default function TenantSelectorScreen() {
                         borderRadius: isIOS ? 8 : 12,
                       }]}>
                         {imageErrors[tenant.slug] ? (
-                          <View style={[styles.logoFallback, { backgroundColor: `${tenant.mainColor}20` }]}>
-                            <Text style={[styles.logoFallbackText, { color: tenant.mainColor }]}>
+                          <View style={[styles.logoFallback, { backgroundColor: `${tenant.branding.primaryColor}20` }]}>
+                            <Text style={[styles.logoFallbackText, { color: tenant.branding.primaryColor }]}>
                               {tenant.name.substring(0, 2).toUpperCase()}
                             </Text>
                           </View>
                         ) : (
                           <Image
-                            source={{ uri: tenant.logoUrl }}
+                            source={{ uri: tenant.branding.logoUrl }}
                             style={styles.logo}
                             contentFit="contain"
                             onError={() => setImageErrors(prev => ({ ...prev, [tenant.slug]: true }))}
@@ -233,7 +272,7 @@ export default function TenantSelectorScreen() {
                             borderRadius: 4,
                           }]}>
                             <ThemedText style={styles.currency}>
-                              {tenant.currencyCode}
+                              {tenant.currencySymbol}
                             </ThemedText>
                           </View>
                         </View>
@@ -484,5 +523,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     opacity: 0.6,
     textAlign: "center",
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
   },
 });
