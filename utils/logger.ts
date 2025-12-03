@@ -34,13 +34,15 @@ class Logger {
 
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog()) {
+      // eslint-disable-next-line no-console
       console.log(this.formatMessage('debug', message), ...args);
     }
   }
 
   info(message: string, ...args: unknown[]): void {
     if (this.shouldLog()) {
-      console.info(this.formatMessage('info', message), ...args);
+      // eslint-disable-next-line no-console
+      console.log(this.formatMessage('info', message), ...args);
     }
   }
 

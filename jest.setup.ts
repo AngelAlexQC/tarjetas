@@ -69,9 +69,10 @@ const originalError = console.error;
 
 beforeAll(() => {
   console.warn = (...args) => {
+    const message = args[0]?.toString?.() ?? '';
     if (
-      args[0]?.includes?.('React Native Reanimated') ||
-      args[0]?.includes?.('Animated:')
+      message.includes('React Native Reanimated') ||
+      message.includes('Animated:')
     ) {
       return;
     }
@@ -79,9 +80,11 @@ beforeAll(() => {
   };
   
   console.error = (...args) => {
+    const message = args[0]?.toString?.() ?? '';
     if (
-      args[0]?.includes?.('Warning:') ||
-      args[0]?.includes?.('act()')
+      message.includes('Warning:') ||
+      message.includes('act(') ||
+      message.includes('not wrapped in act')
     ) {
       return;
     }
