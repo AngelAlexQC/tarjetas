@@ -63,6 +63,17 @@ export const API_ENDPOINTS = {
     ME: '/auth/me',
   },
 
+  // User
+  USER: {
+    PROFILE: '/user/profile',
+    NOTIFICATIONS: '/user/notifications',
+  },
+
+  // Accounts
+  ACCOUNTS: {
+    LIST: '/accounts',
+  },
+
   // Cards
   CARDS: {
     LIST: '/cards',
@@ -79,11 +90,6 @@ export const API_ENDPOINTS = {
     REPLACE: (id: string) => `/cards/${id}/replace`,
     SUBSCRIPTIONS: (id: string) => `/cards/${id}/subscriptions`,
     REWARDS: (id: string) => `/cards/${id}/rewards`,
-  },
-
-  // User
-  USER: {
-    PROFILE: '/user/profile',
-    NOTIFICATIONS: '/user/notifications',
+    NOTIFICATIONS: (id: string) => `/cards/${id}/notifications`,
   },
 };
