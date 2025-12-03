@@ -117,7 +117,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const pauseTour = useCallback(async () => {
     setIsPaused(true);
     try {
-      await AsyncStorage.setItem(STORAGE_KEY_TOUR_PAUSED, 'true');
+      await AsyncStorage.setItem(STORAGE_KEYS.TOUR_PAUSED, 'true');
     } catch (e) {
       log.error('Error saving tour paused state', e);
     }
@@ -129,8 +129,8 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   const resetTour = useCallback(async () => {
     try {
-      await AsyncStorage.removeItem(STORAGE_KEY_SEEN_TOOLTIPS);
-      await AsyncStorage.removeItem(STORAGE_KEY_TOUR_PAUSED);
+      await AsyncStorage.removeItem(STORAGE_KEYS.TOUR_SEEN_TOOLTIPS);
+      await AsyncStorage.removeItem(STORAGE_KEYS.TOUR_PAUSED);
       setSeenKeys(new Set());
       setCurrentKey(null);
       setIsTourStopped(false);
