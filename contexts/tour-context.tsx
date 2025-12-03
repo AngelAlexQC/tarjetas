@@ -1,4 +1,5 @@
 import { loggers } from '@/utils/logger';
+import { STORAGE_KEYS } from '@/constants/app';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
@@ -24,9 +25,6 @@ interface TourContextType {
 
 const TourContext = createContext<TourContextType | undefined>(undefined);
 
-export const STORAGE_KEY_SEEN_TOOLTIPS = '@tour_seen_tooltips';
-export const STORAGE_KEY_TOUR_PAUSED = '@tour_paused';
-
 export function TourProvider({ children }: { children: React.ReactNode }) {
   const [seenKeys, setSeenKeys] = useState<Set<string>>(new Set());
   const [registeredItems, setRegisteredItems] = useState<TourItem[]>([]);
@@ -43,11 +41,11 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   const loadSeenKeys = async () => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY_SEEN_TOOLTIPS);
+      const stored = await AsyncStorage.getItem(STORAGE_KEYS.TOUR_SEEN_TOOLTIPS);
       if (stored) {
         setSeenKeys(new Set(JSON.parse(stored)));
       }
-      const pausedState = await AsyncStorage.getItem(STORAGE_KEY_TOUR_PAUSED);
+      const pausedState = await AsyncStorage.getItem(STORAGE_KEYS.TOUR_PAUSED);
       if (pausedState === 'true') {
         setIsPaused(true);
       }
@@ -63,7 +61,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       setSeenKeys(prev => {
         const newSet = new Set(prev);
         newSet.add(key);
-        AsyncStorage.setItem(STORAGE_KEY_SEEN_TOOLTIPS, JSON.stringify(Array.from(newSet)));
+        AsyncStorage.setItem(STORAGE_KEYS.TOUR_SEEN_TOOLTIPS, JSON.stringify(Array.from(newSet)));
         return newSet;
       });
     } catch (e) {

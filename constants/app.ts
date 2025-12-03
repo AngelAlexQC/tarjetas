@@ -60,4 +60,6 @@ export const STORAGE_KEYS = {
   USER_DATA: 'user_data',
   BIOMETRIC_ENABLED: 'biometric_enabled',
   USERNAME_REMEMBERED: 'username_remembered',
+  TOUR_SEEN_TOOLTIPS: '@tour_seen_tooltips',
+  TOUR_PAUSED: '@tour_paused',
 } as const;

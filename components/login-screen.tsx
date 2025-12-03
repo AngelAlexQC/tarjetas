@@ -33,7 +33,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();
   const insets = useSafeAreaInsets();
-  const { login, getRememberedUsername, rememberUsername } = useAuth();
+  const { login, getRememberedUsername, rememberUsername, clearRememberedUsername } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -66,6 +66,8 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         // Guardar o limpiar usuario recordado
         if (rememberUser) {
           await rememberUsername(username.trim());
+        } else {
+          await clearRememberedUsername();
         }
 
         // Llamar al callback de éxito

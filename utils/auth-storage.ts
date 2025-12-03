@@ -47,6 +47,21 @@ export const authStorage = {
   },
 
   /**
+   * Obtiene el token de autenticación
+   */
+  async getToken(): Promise<string | null> {
+    try {
+      if (Platform.OS === 'web') {
+        return await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+      }
+      return await SecureStore.getItemAsync(STORAGE_KEYS.AUTH_TOKEN);
+    } catch (error) {
+      log.error('Error getting token:', error);
+      return null;
+    }
+  },
+
+  /**
    * Guarda el token de autenticación
    */
   async saveToken(token: string): Promise<void> {
@@ -84,6 +99,21 @@ export const authStorage = {
       STORAGE_KEYS.USER_DATA,
       STORAGE_KEYS.BIOMETRIC_ENABLED,
     ]);
+  },
+
+  /**
+   * Verifica si el onboarding ha sido completado
+   */
+  async getOnboardingStatus(): Promise<boolean> {
+    const value = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+    return value === 'true';
+  },
+
+  /**
+   * Marca el onboarding como completado
+   */
+  async setOnboardingCompleted(): Promise<void> {
+    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
   },
 
   /**

@@ -9,11 +9,11 @@
  * - Bloqueo de app al volver del background
  */
 
-import { STORAGE_KEYS, TIMING } from '@/constants/app';
+import { TIMING } from '@/constants/app';
 import { useAuth } from '@/contexts/auth-context';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useTour } from '@/contexts/tour-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authStorage } from '@/utils/auth-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
@@ -65,8 +65,8 @@ export function useAuthFlow(): UseAuthFlowReturn {
 
   // Cargar estado de onboarding al inicio
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED).then(value => {
-      setShowOnboarding(value !== 'true');
+    authStorage.getOnboardingStatus().then(isCompleted => {
+      setShowOnboarding(!isCompleted);
     });
   }, []);
 
@@ -134,7 +134,7 @@ export function useAuthFlow(): UseAuthFlowReturn {
 
   // Handlers
   const handleOnboardingFinish = useCallback(async () => {
-    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+    await authStorage.setOnboardingCompleted();
     setShowOnboarding(false);
     setShowLogin(true);
   }, []);

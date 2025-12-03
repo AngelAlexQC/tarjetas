@@ -6,9 +6,7 @@
  */
 
 import { loggers } from '@/utils/logger';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
+import { authStorage } from '@/utils/auth-storage';
 import { API_CONFIG } from './config';
 
 const log = loggers.api;
@@ -51,18 +49,10 @@ class HttpClient {
 
   /**
    * Obtiene el token de autenticación almacenado
-   * Usa SecureStore en nativo para mayor seguridad, AsyncStorage en web
+   * Delega a authStorage para manejo centralizado
    */
   private async getAuthToken(): Promise<string | null> {
-    try {
-      if (Platform.OS === 'web') {
-        return await AsyncStorage.getItem('auth_token');
-      }
-      return await SecureStore.getItemAsync('auth_token');
-    } catch (error) {
-      log.error('Error obteniendo token de autenticación:', error);
-      return null;
-    }
+    return await authStorage.getToken();
   }
 
   /**
