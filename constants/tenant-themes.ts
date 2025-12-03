@@ -1,3 +1,12 @@
+/**
+ * Tenant Themes & Configuration
+ * 
+ * Fuente única de verdad para toda la información de tenants:
+ * - Información de display (nombre, logo, país)
+ * - Configuración de tema (colores, gradientes)
+ * - Localización (locale, moneda)
+ */
+
 // Interfaz central para temas de tenant
 export interface TenantTheme {
   slug: string;
@@ -12,7 +21,15 @@ export interface TenantTheme {
   locale: string;
   currency: string;
   currencySymbol: string;
+  // Campos para el selector de instituciones
+  country: string;
+  countryFlag: string;
 }
+
+// Tipo simplificado para el selector de instituciones
+export type TenantInfo = Pick<TenantTheme, 'slug' | 'name' | 'logoUrl' | 'mainColor' | 'country' | 'countryFlag'> & {
+  currencyCode: string;
+};
 
 // Mapeo de tenants a sus temas personalizados
 export const tenantThemes: Record<string, TenantTheme> = {
@@ -30,6 +47,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'es-EC',
     currency: 'USD',
     currencySymbol: 'US$',
+    country: 'Ecuador',
+    countryFlag: '🇪🇨',
   },
   'coopchone': {
     slug: 'coopchone',
@@ -44,6 +63,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'es-EC',
     currency: 'USD',
     currencySymbol: 'US$',
+    country: 'Ecuador',
+    countryFlag: '🇪🇨',
   },
   'dinersclub-ec': {
     slug: 'dinersclub-ec',
@@ -58,6 +79,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'es-EC',
     currency: 'USD',
     currencySymbol: 'US$',
+    country: 'Ecuador',
+    countryFlag: '🇪🇨',
   },
   
   // Bancos Colombia
@@ -74,6 +97,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'es-CO',
     currency: 'COP',
     currencySymbol: 'COP$',
+    country: 'Colombia',
+    countryFlag: '🇨🇴',
   },
   'davivienda-co': {
     slug: 'davivienda-co',
@@ -88,6 +113,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'es-CO',
     currency: 'COP',
     currencySymbol: 'COP$',
+    country: 'Colombia',
+    countryFlag: '🇨🇴',
   },
   
   // Bancos México
@@ -104,6 +131,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'es-MX',
     currency: 'MXN',
     currencySymbol: 'MX$',
+    country: 'México',
+    countryFlag: '🇲🇽',
   },
   
   // Bancos Internacionales
@@ -120,6 +149,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'en-US',
     currency: 'USD',
     currencySymbol: 'US$',
+    country: 'United States',
+    countryFlag: '🇺🇸',
   },
   'hsbc': {
     slug: 'hsbc',
@@ -134,6 +165,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'en-GB',
     currency: 'GBP',
     currencySymbol: '£',
+    country: 'United Kingdom',
+    countryFlag: '🇬🇧',
   },
   'santander': {
     slug: 'santander',
@@ -148,6 +181,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'es-ES',
     currency: 'EUR',
     currencySymbol: '€',
+    country: 'España',
+    countryFlag: '🇪🇸',
   },
   'deutsche-bank': {
     slug: 'deutsche-bank',
@@ -162,6 +197,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'de-DE',
     currency: 'EUR',
     currencySymbol: '€',
+    country: 'Deutschland',
+    countryFlag: '🇩🇪',
   },
   'bnp-paribas': {
     slug: 'bnp-paribas',
@@ -176,6 +213,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'fr-FR',
     currency: 'EUR',
     currencySymbol: '€',
+    country: 'France',
+    countryFlag: '🇫🇷',
   },
   'icbc': {
     slug: 'icbc',
@@ -190,6 +229,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'zh-CN',
     currency: 'CNY',
     currencySymbol: '¥',
+    country: 'China',
+    countryFlag: '🇨🇳',
   },
   'commonwealth': {
     slug: 'commonwealth',
@@ -204,6 +245,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'en-AU',
     currency: 'AUD',
     currencySymbol: 'A$',
+    country: 'Australia',
+    countryFlag: '🇦🇺',
   },
   'itau': {
     slug: 'itau',
@@ -218,6 +261,8 @@ export const tenantThemes: Record<string, TenantTheme> = {
     locale: 'pt-BR',
     currency: 'BRL',
     currencySymbol: 'R$',
+    country: 'Brasil',
+    countryFlag: '🇧🇷',
   },
 };
 
@@ -235,9 +280,58 @@ export const defaultTheme: TenantTheme = {
   locale: 'en-US',
   currency: 'USD',
   currencySymbol: 'US$',
+  country: 'Global',
+  countryFlag: '🌐',
 };
 
-// Función helper para obtener el tema de un tenant
+// ============================================
+// Funciones Helper
+// ============================================
+
+/**
+ * Obtiene el tema completo de un tenant por su slug
+ */
 export function getTenantTheme(slug: string): TenantTheme {
   return tenantThemes[slug] || defaultTheme;
+}
+
+/**
+ * Lista de todos los tenants disponibles (para el selector de instituciones)
+ */
+export const AVAILABLE_TENANTS: TenantInfo[] = Object.values(tenantThemes).map(theme => ({
+  slug: theme.slug,
+  name: theme.name,
+  logoUrl: theme.logoUrl,
+  mainColor: theme.mainColor,
+  currencyCode: theme.currencySymbol,
+  country: theme.country,
+  countryFlag: theme.countryFlag,
+}));
+
+/**
+ * Obtiene los países únicos de los tenants disponibles
+ */
+export function getAvailableCountries(): string[] {
+  const countries = new Set(AVAILABLE_TENANTS.map(t => t.country));
+  return Array.from(countries).sort();
+}
+
+/**
+ * Filtra tenants por país
+ */
+export function getTenantsByCountry(country: string): TenantInfo[] {
+  return AVAILABLE_TENANTS.filter(t => t.country === country);
+}
+
+/**
+ * Busca tenants por nombre o país
+ */
+export function searchTenants(query: string): TenantInfo[] {
+  const normalizedQuery = query.toLowerCase().trim();
+  if (!normalizedQuery) return AVAILABLE_TENANTS;
+  
+  return AVAILABLE_TENANTS.filter(t => 
+    t.name.toLowerCase().includes(normalizedQuery) ||
+    t.country.toLowerCase().includes(normalizedQuery)
+  );
 }
