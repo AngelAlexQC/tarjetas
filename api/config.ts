@@ -46,8 +46,9 @@ export const API_CONFIG = {
 
   /**
    * Retraso simulado para mock (ms) - útil para simular latencia de red
+   * Valor bajo para desarrollo rápido, aumentar para probar estados de carga
    */
-  MOCK_DELAY: 2000,
+  MOCK_DELAY: 500,
 };
 
 /**
