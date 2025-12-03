@@ -61,6 +61,14 @@ export const API_ENDPOINTS = {
     LOGOUT: '/auth/logout',
     REFRESH_TOKEN: '/auth/refresh',
     ME: '/auth/me',
+    // Registro
+    REGISTER: '/auth/register',
+    VERIFY_EMAIL: '/auth/verify-email',
+    RESEND_VERIFICATION: '/auth/resend-verification',
+    // Recuperación de contraseña
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    VERIFY_RECOVERY_CODE: '/auth/verify-recovery-code',
+    RESET_PASSWORD: '/auth/reset-password',
   },
 
   // User

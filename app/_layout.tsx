@@ -1,8 +1,8 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
+import { AuthScreensContainer } from '@/components/auth-screens-container';
 import { BiometricAccessScreen } from '@/components/biometric-access-screen';
 import { BiometricEnableModal } from '@/components/biometric-enable-modal';
 import { ErrorFallback } from '@/components/error-fallback';
-import { LoginScreen } from '@/components/login-screen';
 import { OnboardingScreen } from '@/components/onboarding-screen';
 import { AuthProvider, useAuth } from '@/contexts/auth-context';
 import { SplashProvider } from '@/contexts/splash-context';
@@ -135,10 +135,10 @@ function Navigation() {
           </View>
         )}
 
-        {/* Login Screen */}
+        {/* Login Screen - Ahora con navegación completa de autenticación */}
         {currentScreen === 'login' && (
           <>
-            <LoginScreen onLoginSuccess={handleLoginSuccess} />
+            <AuthScreensContainer onLoginSuccess={handleLoginSuccess} />
             <BiometricEnableModal
               isVisible={showBiometricModal}
               onEnable={handleEnableBiometric}
