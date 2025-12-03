@@ -129,7 +129,7 @@ export class RealCardRepository implements ICardRepository {
   }
 
   async getAccounts(): Promise<Account[]> {
-    const response = await httpClient.get<unknown>('/accounts');
+    const response = await httpClient.get<unknown>(API_ENDPOINTS.ACCOUNTS.LIST);
     if (!response.success) {
       throw new Error(response.error || 'Error al obtener cuentas');
     }
@@ -239,7 +239,7 @@ export class RealCardRepository implements ICardRepository {
 
   async updateNotifications(cardId: string, settings: NotificationSettings): Promise<CardActionResult> {
     const response = await httpClient.put<unknown>(
-      `${API_ENDPOINTS.CARDS.GET(cardId)}/notifications`,
+      API_ENDPOINTS.CARDS.NOTIFICATIONS(cardId),
       settings
     );
     return processActionResponse(response, 'Error al actualizar notificaciones');
