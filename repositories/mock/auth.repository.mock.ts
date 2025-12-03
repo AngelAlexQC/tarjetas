@@ -6,7 +6,21 @@
 
 import { API_CONFIG } from '@/api/config';
 import { IAuthRepository } from '../interfaces/auth.repository.interface';
-import type { LoginRequest, LoginResponse, User } from '../schemas/auth.schema';
+import type { 
+  ForgotPasswordRequest, 
+  ForgotPasswordResponse, 
+  LoginRequest, 
+  LoginResponse, 
+  RegisterRequest, 
+  RegisterResponse, 
+  ResetPasswordRequest, 
+  ResetPasswordResponse, 
+  User,
+  VerifyEmailRequest,
+  VerifyEmailResponse,
+  VerifyRecoveryCodeRequest,
+  VerifyRecoveryCodeResponse,
+} from '../schemas/auth.schema';
 
 // Simula delay de red
 const delay = (ms: number = API_CONFIG.MOCK_DELAY) => 
@@ -25,8 +39,12 @@ const MOCK_USER: User = {
   documentId: '0105168991',
 };
 
+// Código de verificación simulado (para desarrollo)
+const MOCK_VERIFICATION_CODE = '123456';
+
 export class MockAuthRepository implements IAuthRepository {
   private currentUser: User | null = null;
+  private pendingRegistrations: Map<string, RegisterRequest> = new Map();
 
   async login(request: LoginRequest): Promise<LoginResponse> {
     await delay();
@@ -78,5 +96,132 @@ export class MockAuthRepository implements IAuthRepository {
     }
     
     return { ...MOCK_USER, ...data };
+  }
+
+  // ============================================
+  // REGISTRO
+  // ============================================
+
+  async register(request: RegisterRequest): Promise<RegisterResponse> {
+    await delay();
+
+    // Validaciones básicas
+    if (!request.email || !request.username || !request.password) {
+      throw new Error('Por favor completa todos los campos obligatorios');
+    }
+
+    if (request.password.length < 8) {
+      throw new Error('La contraseña debe tener al menos 8 caracteres');
+    }
+
+    // Simular que el email ya está registrado (para testing)
+    if (request.email === 'existing@example.com') {
+      throw new Error('Este correo electrónico ya está registrado');
+    }
+
+    // Guardar registro pendiente
+    this.pendingRegistrations.set(request.email, request);
+
+    return {
+      success: true,
+      message: 'Código de verificación enviado',
+      userId: `user_${Date.now()}`,
+      requiresVerification: true,
+    };
+  }
+
+  async verifyEmail(request: VerifyEmailRequest): Promise<VerifyEmailResponse> {
+    await delay();
+
+    // Verificar código (en mock siempre es 123456)
+    if (request.code !== MOCK_VERIFICATION_CODE) {
+      throw new Error('Código de verificación incorrecto');
+    }
+
+    const pendingUser = this.pendingRegistrations.get(request.email);
+    if (!pendingUser) {
+      throw new Error('No hay registro pendiente para este email');
+    }
+
+    // Crear usuario verificado
+    const newUser: User = {
+      id: `user_${Date.now()}`,
+      username: pendingUser.username,
+      email: pendingUser.email,
+      name: pendingUser.fullName.split(' ')[0],
+      fullName: pendingUser.fullName,
+      phone: pendingUser.phone,
+    };
+
+    this.currentUser = newUser;
+    this.pendingRegistrations.delete(request.email);
+
+    return {
+      success: true,
+      message: 'Cuenta verificada exitosamente',
+      token: `mock_token_${newUser.username}_${Date.now()}`,
+      user: newUser,
+    };
+  }
+
+  async resendVerificationCode(email: string): Promise<{ success: boolean }> {
+    await delay();
+    
+    if (!this.pendingRegistrations.has(email)) {
+      throw new Error('No hay registro pendiente para este email');
+    }
+
+    return { success: true };
+  }
+
+  // ============================================
+  // RECUPERACIÓN DE CONTRASEÑA
+  // ============================================
+
+  async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+    await delay();
+
+    if (!request.email) {
+      throw new Error('Por favor ingresa tu correo electrónico');
+    }
+
+    // En mock siempre retornamos éxito
+    return {
+      success: true,
+      message: 'Código de recuperación enviado',
+    };
+  }
+
+  async verifyRecoveryCode(request: VerifyRecoveryCodeRequest): Promise<VerifyRecoveryCodeResponse> {
+    await delay();
+
+    // Verificar código (en mock siempre es 123456)
+    if (request.code !== MOCK_VERIFICATION_CODE) {
+      throw new Error('Código de verificación incorrecto');
+    }
+
+    return {
+      success: true,
+      resetToken: `reset_token_${Date.now()}`,
+      message: 'Código verificado',
+    };
+  }
+
+  async resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    await delay();
+
+    if (!request.newPassword || request.newPassword.length < 8) {
+      throw new Error('La contraseña debe tener al menos 8 caracteres');
+    }
+
+    // Verificar código (en mock siempre es 123456)
+    if (request.code !== MOCK_VERIFICATION_CODE) {
+      throw new Error('Código de verificación incorrecto');
+    }
+
+    return {
+      success: true,
+      message: 'Contraseña actualizada exitosamente',
+    };
   }
 }

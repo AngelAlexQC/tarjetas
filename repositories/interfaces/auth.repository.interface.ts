@@ -5,9 +5,19 @@
  */
 
 import type {
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
     LoginRequest,
     LoginResponse,
+    RegisterRequest,
+    RegisterResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
     User,
+    VerifyEmailRequest,
+    VerifyEmailResponse,
+    VerifyRecoveryCodeRequest,
+    VerifyRecoveryCodeResponse,
 } from '../schemas/auth.schema';
 
 export interface IAuthRepository {
@@ -21,4 +31,14 @@ export interface IAuthRepository {
   // Usuario
   getCurrentUser(): Promise<User | null>;
   updateProfile(data: Partial<User>): Promise<User>;
+  
+  // Registro
+  register(request: RegisterRequest): Promise<RegisterResponse>;
+  verifyEmail(request: VerifyEmailRequest): Promise<VerifyEmailResponse>;
+  resendVerificationCode(email: string): Promise<{ success: boolean }>;
+  
+  // Recuperación de contraseña
+  forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse>;
+  verifyRecoveryCode(request: VerifyRecoveryCodeRequest): Promise<VerifyRecoveryCodeResponse>;
+  resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse>;
 }
