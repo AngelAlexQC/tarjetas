@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withSpring, 
-  withTiming
-} from 'react-native-reanimated';
-import { 
-  Home, 
-  CreditCard,
-  Settings,
-  LucideIcon 
+import {
+    CreditCard,
+    Home,
+    LucideIcon,
+    Settings
 } from 'lucide-react-native';
+import React, { useEffect } from 'react';
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming
+} from 'react-native-reanimated';
 
 interface TabIconProps {
   size?: number;

@@ -15,12 +15,11 @@ export {
 
 // Design system
 export {
-    ComponentTokens,
-    getButtonGradient,
+    ComponentTokens, PrimitiveColors,
+    SemanticColors, getButtonGradient,
     getGlassOverlay,
     getSurfaceColor,
-    getTextColor, PrimitiveColors,
-    SemanticColors
+    getTextColor
 } from './design-tokens';
 
 // Tenant/Multi-tenant
