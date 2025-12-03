@@ -1,6 +1,7 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { BiometricAccessScreen } from '@/components/biometric-access-screen';
 import { BiometricEnableModal } from '@/components/biometric-enable-modal';
+import { ErrorFallback } from '@/components/error-fallback';
 import { LoginScreen } from '@/components/login-screen';
 import { OnboardingScreen } from '@/components/onboarding-screen';
 import { AuthProvider, useAuth } from '@/contexts/auth-context';
@@ -11,12 +12,20 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import { useAuthFlow } from '@/hooks/use-auth-flow';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+/**
+ * ErrorBoundary global para la app.
+ * Expo Router envuelve automáticamente las rutas con este componente.
+ */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <ErrorFallback error={error} retry={retry} />;
+}
 
 function ThemedLayoutContainer({ children }: { children: React.ReactNode }) {
   const theme = useAppTheme();

@@ -1,7 +1,26 @@
+import { ErrorFallback } from '@/components/error-fallback';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Stack } from 'expo-router';
+import { Stack, type ErrorBoundaryProps, useRouter } from 'expo-router';
 import { Platform } from 'react-native';
+
+/**
+ * ErrorBoundary para las operaciones de tarjeta.
+ * Permite volver a la pantalla de tarjetas si hay un error.
+ */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  const router = useRouter();
+
+  return (
+    <ErrorFallback
+      error={error}
+      retry={retry}
+      title="Error en la operación"
+      showHomeButton
+      onGoHome={() => router.replace('/(tabs)/cards')}
+    />
+  );
+}
 
 export default function CardOperationsLayout() {
   const theme = useAppTheme();

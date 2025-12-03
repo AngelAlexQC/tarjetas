@@ -1,12 +1,20 @@
-import { BlurView } from 'expo-blur';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
-
+import { ErrorFallback } from '@/components/error-fallback';
 import { HapticTab } from '@/components/haptic-tab';
 import { CardsIcon, HomeIcon } from '@/components/ui/tab-icons';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { BlurView } from 'expo-blur';
+import { Tabs, type ErrorBoundaryProps } from 'expo-router';
+import React from 'react';
+import { Platform, StyleSheet } from 'react-native';
+
+/**
+ * ErrorBoundary para las pantallas de tabs.
+ * Captura errores específicos de las tabs sin afectar el resto de la app.
+ */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <ErrorFallback error={error} retry={retry} title="Error en la pantalla" />;
+}
 
 export default function TabLayout() {
   const theme = useAppTheme();

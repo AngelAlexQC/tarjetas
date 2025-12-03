@@ -1,12 +1,15 @@
 /**
  * Components Index
- * 
+ *
  * Barrel exports para todos los componentes de la aplicación.
  */
 
 // Core themed components
 export { ThemedText, type ThemedTextProps } from './themed-text';
 export { ThemedView, type ThemedViewProps } from './themed-view';
+
+// Error handling
+export { ErrorFallback, type ErrorFallbackProps } from './error-fallback';
 
 // Screen components
 export { AnimatedSplashScreen } from './animated-splash-screen';
