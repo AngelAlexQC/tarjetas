@@ -26,6 +26,6 @@ export { RepositoryContainer, authRepository$, cardRepository$ } from './contain
 export type { IAuthRepository } from './interfaces/auth.repository.interface';
 export type { ICardRepository } from './interfaces/card.repository.interface';
 
-// Tipos
-export * from './types/auth.types';
+// Tipos legacy (del código existente - se mantienen por compatibilidad)
 export * from './types/card.types';
+export * from './types/auth.types';
