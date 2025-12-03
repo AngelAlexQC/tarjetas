@@ -15,7 +15,7 @@ import { PoweredBy } from "@/components/ui/powered-by";
 import { CardActionType } from "@/constants/card-actions";
 import { useSplash } from "@/contexts/splash-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
-import { useCards } from "@/hooks/use-cards";
+import { useCards } from "@/hooks";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { Card, OperationResult } from "@/repositories";
 import { cardRoute } from "@/types/routes";
@@ -454,7 +454,6 @@ export default function CardsScreen() {
                         title: 'Seguro Contratado',
                         message: `Tu seguro "${insurance.title}" ha sido contratado exitosamente. El cargo mensual se realizará automáticamente.`,
                         receiptId: `INS-${Date.now().toString().slice(-8)}`,
-                        date: new Date().toISOString(),
                       });
                     }
                   }, 300);
