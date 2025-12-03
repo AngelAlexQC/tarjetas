@@ -4,7 +4,7 @@
  */
 
 import { ThemedText } from '@/components/themed-text';
-import { CalendarIcon } from '@/components/ui/icons';
+import { CalendarIcon } from '@/components/ui/financial-icons';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { loggers } from '@/utils/logger';

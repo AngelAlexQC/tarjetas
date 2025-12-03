@@ -6,7 +6,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { AnimatedNumber } from '@/components/ui/animated-number';
 import { CircularProgress } from '@/components/ui/circular-progress';
-import { SettingsIcon } from '@/components/ui/icons';
+import { SettingsIcon } from '@/components/ui/tab-icons';
 import { InfoIcon } from '@/components/ui/info-icon';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { useThemedColors } from '@/contexts/tenant-theme-context';
