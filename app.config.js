@@ -2,31 +2,28 @@ module.exports = ({ config }) => {
   // Detectar si estamos en desarrollo local o en CI/producción
   const isProduction = process.env.EAS_BUILD === 'true' || process.env.CI === 'true';
   
+  // Configuración dinámica desde variables de entorno
+  const appName = process.env.APP_NAME || (isProduction ? 'Tarjetas' : 'Tarjetas Dev');
+  const appSlug = process.env.APP_SLUG || (isProduction ? 'tarjetas' : 'tarjetas-dev');
+  const bundleIdIOS = process.env.APP_BUNDLE_ID_IOS || (isProduction ? 'com.libelulasoft.tarjetas' : 'com.libelulasoft.tarjetas.dev');
+  const bundleIdAndroid = process.env.APP_BUNDLE_ID_ANDROID || (isProduction ? 'com.libelulasoft.tarjetas' : 'com.libelulasoft.tarjetas.dev');
+  const scheme = process.env.APP_SCHEME || (isProduction ? 'tarjetas' : 'tarjetas-dev');
+  
   // Configuración para desarrollo local
   const devConfig = {
-    name: 'Financiero Dev',
-    slug: 'financiero-dev',
+    name: appName,
+    slug: appSlug,
     ios: {
-      bundleIdentifier: 'com.aquirozdev.tarjetas.dev',
+      bundleIdentifier: bundleIdIOS,
     },
     android: {
-      package: 'com.aquirozdev.tarjetas.dev',
+      package: bundleIdAndroid,
     },
-    scheme: 'financiero-dev',
+    scheme: scheme,
   };
   
-  // Configuración para producción
-  const prodConfig = {
-    name: 'financiero',
-    slug: 'financiero',
-    ios: {
-      bundleIdentifier: 'com.aquirozdev.tarjetas',
-    },
-    android: {
-      package: 'com.aquirozdev.tarjetas',
-    },
-    scheme: 'financiero',
-  };
+  // Configuración para producción (usa las mismas variables)
+  const prodConfig = devConfig;
   
   const envConfig = isProduction ? prodConfig : devConfig;
   
@@ -107,6 +104,7 @@ module.exports = ({ config }) => {
           projectId: '6dff682f-fc0a-45df-8a6d-969cd90f1fa1',
         },
         isProduction,
+        tenantId: process.env.TENANT_ID || null,
       },
     },
   };
