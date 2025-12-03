@@ -5,13 +5,10 @@ Aplicación móvil desarrollada en **React Native + Expo** diseñada para operar
 ## 📊 Estado del Proyecto
 
 **Avance Actual (Frontend): 90%**
-*Período de desarrollo: 19 - 25 Noviembre 2025*
 
 La aplicación cuenta con la arquitectura base completa y la mayoría de los flujos de usuario implementados en el frontend, listos para integración con backend.
 
-Para detalles sobre la planificación y tiempos de finalización, consultar:
-- [Estimación Detallada y Cronograma](docs/ESTIMACION_TIEMPOS.md)
-- [Resumen de Avance y Proyección](docs/TIEMPOS_RAPIDO.md)
+Para detalles sobre la planificación, consultar [Estimación Detallada](docs/ESTIMACION_TIEMPOS.md).
 
 ## 🚀 Funcionalidades Implementadas
 
@@ -44,22 +41,26 @@ Para detalles sobre la planificación y tiempos de finalización, consultar:
 
 ## 🛠️ Stack Tecnológico
 
-- **Core**: React Native, Expo SDK 52.
-- **Lenguaje**: TypeScript.
-- **Navegación**: Expo Router.
-- **UI/UX**: Reanimated 3, Skia (Gráficos), SVG nativos.
-- **Arquitectura**: Repositorios (Clean Architecture), Context API.
+- **Core**: React Native 0.81, Expo SDK 54
+- **Lenguaje**: TypeScript 5.9
+- **Navegación**: Expo Router 6
+- **UI/UX**: Reanimated 4, SVG nativos
+- **Validación**: Zod
+- **Arquitectura**: Repository Pattern, Context API
 
 ## 📂 Estructura del Proyecto
 
 ```
 app/              # Rutas y Pantallas (Expo Router)
+api/              # Configuración HTTP y endpoints
 components/       # Componentes UI reutilizables
-constants/        # Configuración de temas y tenants
-contexts/         # Gestión de estado global
-features/         # Lógica de negocio modular
+constants/        # Configuración de temas y tokens
+contexts/         # Gestión de estado global (React Context)
 hooks/            # Custom Hooks
-repositories/     # Capa de datos (Interfaces y Mock)
+repositories/     # Capa de datos (Interfaces, Mock y Real)
+utils/            # Utilidades y helpers
+types/            # Tipos TypeScript compartidos
+test-utils/       # Helpers para testing
 docs/             # Documentación del proyecto
 ```
 

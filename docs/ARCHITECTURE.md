@@ -1,11 +1,14 @@
 # Arquitectura y Mejores Prácticas
 
-Este documento describe la arquitectura y patrones utilizados en el proyecto después de la refactorización.
+Este documento describe la arquitectura y patrones utilizados en el proyecto.
 
 ## Estructura del Proyecto
 
 ```
 financiero/
+├── api/                        # Cliente HTTP y configuración de endpoints
+│   ├── config.ts               # Configuración de API (URLs, mock toggle)
+│   └── http-client.ts          # Cliente HTTP centralizado
 ├── app/                        # Expo Router - Pantallas y navegación
 │   ├── (tabs)/                 # Tab navigation
 │   │   ├── index.tsx           # Selector de instituciones
@@ -28,18 +31,14 @@ financiero/
 │   │   └── use-card-operation.ts   # Hook reutilizable para pantallas
 │   └── index.ts
 ├── repositories/               # Capa de datos
-│   ├── interfaces/             # Contratos
-│   ├── mock/                   # Implementaciones mock
-│   ├── real/                   # Implementaciones HTTP
-│   ├── schemas/                # Validación con Zod
-│   │   ├── card.schema.ts
-│   │   └── auth.schema.ts
-│   └── types/                  # Tipos TypeScript
-├── contexts/                   # React Contexts
-├── constants/                  # Constantes y configuración
-├── utils/                      # Utilidades
-│   ├── errors.ts               # Sistema de errores tipado
-│   └── logger.ts               # Logger centralizado
+│   ├── interfaces/             # Contratos (ICardRepository, IAuthRepository)
+│   ├── mock/                   # Implementaciones mock para desarrollo
+│   ├── real/                   # Implementaciones HTTP para producción
+│   └── schemas/                # Validación con Zod (fuente única de tipos)
+├── contexts/                   # React Contexts (Auth, Theme, Tour, Splash)
+├── constants/                  # Constantes, tokens de diseño y configuración
+├── types/                      # Tipos TypeScript compartidos
+├── utils/                      # Utilidades (logger, formatters, result pattern)
 └── test-utils/                 # Utilidades de testing
 ```
 
@@ -85,7 +84,7 @@ if (!result.success) {
 ### 3. Sistema de Errores Tipado
 
 ```typescript
-// utils/errors.ts
+// utils/result.ts - AppError class
 export class AppError extends Error {
   readonly code: ErrorCode;
   readonly originalError?: unknown;
@@ -95,12 +94,14 @@ export class AppError extends Error {
   static fromHttpStatus(status: number, message?: string): AppError;
 }
 
-// Uso
-try {
-  await repository.blockCard(request);
-} catch (error) {
-  throw AppError.from(error);
-}
+// Uso con Result Pattern
+import { ok, err, AppError } from '@/utils/result';
+
+const result = await getCard(id);
+result.match(
+  card => handleSuccess(card),
+  error => handleError(error)
+);
 ```
 
 ### 4. Hook de Operación Reutilizable

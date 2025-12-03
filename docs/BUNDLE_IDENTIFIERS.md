@@ -56,6 +56,5 @@ eas build --profile production --platform android
 
 ## Notas
 
-- El archivo `app.json` ya no se usa (reemplazado por `app.config.js`)
-- No borres `app.json` si tienes procesos que aún lo requieran
+- La configuración de Expo está en `app.config.js` (configuración dinámica)
 - Las variables de entorno se pueden ver en `extra.isProduction` dentro de la app
