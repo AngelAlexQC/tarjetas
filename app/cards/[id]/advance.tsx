@@ -8,10 +8,10 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { OperationResult } from '@/repositories';
+import { useCardQueries } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCards } from '@/hooks';
 import type { Card } from '@/repositories';
+import { OperationResult } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight, DollarSign, Info } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -33,7 +33,7 @@ export default function AdvanceScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getCardById } = useCards();
+  const { getCardById } = useCardQueries();
   const [card, setCard] = useState<Card | undefined>();
   const [isLoadingCard, setIsLoadingCard] = useState(true);
   const insets = useSafeAreaInsets();
@@ -155,7 +155,7 @@ export default function AdvanceScreen() {
   }
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={styles.container} surface={1}>
       <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
         <KeyboardAvoidingView 
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

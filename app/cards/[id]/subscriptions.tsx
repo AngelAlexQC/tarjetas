@@ -117,7 +117,7 @@ export default function SubscriptionsScreen() {
   }
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={styles.container} surface={1}>
       <CardOperationHeader title="Suscripciones" card={card} isModal />
 
       <View style={{ alignItems: 'center', marginVertical: 16 }}>

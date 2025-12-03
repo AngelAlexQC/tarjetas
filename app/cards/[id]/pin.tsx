@@ -6,8 +6,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
+import { useCardMutations, useCardOperation } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCardOperation, useCardMutations } from '@/hooks/cards';
 import { KeyRound, ShieldCheck } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import { InputAccessoryView, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
@@ -78,7 +78,7 @@ export default function PinScreen() {
   const isValid = pin.length === 4 && confirmPin.length === 4 && pin === confirmPin;
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={styles.container} surface={1}>
       <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
         <KeyboardAvoidingView 
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

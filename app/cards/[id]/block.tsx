@@ -8,8 +8,8 @@ import { LoadingScreen } from '@/components/ui/loading-screen';
 import { OptionCard } from '@/components/ui/option-card';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
-import { useAppTheme } from '@/hooks/use-app-theme';
 import { useCardMutations, useCardOperation } from '@/hooks/cards';
+import { useAppTheme } from '@/hooks/use-app-theme';
 import type { BlockType } from '@/repositories/schemas/card.schema';
 import { useRouter } from 'expo-router';
 import { AlertTriangle, Lock, PauseCircle } from 'lucide-react-native';
@@ -76,7 +76,7 @@ export default function BlockCardScreen() {
   }
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={styles.container} surface={1}>
       <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
         <CardOperationHeader title="Bloquear Tarjeta" card={card} isModal />
         <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>

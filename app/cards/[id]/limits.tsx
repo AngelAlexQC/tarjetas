@@ -6,8 +6,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
+import { useCardMutations, useCardOperation } from '@/hooks/cards';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
-import { useCardOperation, useCardMutations } from '@/hooks/cards';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -87,7 +87,7 @@ export default function LimitsScreen() {
   }
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={styles.container} surface={1}>
       <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
         <CardOperationHeader title="Configurar Cupos" card={card} isModal />
         <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
