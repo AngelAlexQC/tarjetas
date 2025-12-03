@@ -7,7 +7,7 @@
 import { API_ENDPOINTS } from '@/api/config';
 import { httpClient } from '@/api/http-client';
 import { IAuthRepository } from '../interfaces/auth.repository.interface';
-import { LoginRequest, LoginResponse, User } from '../types/auth.types';
+import type { LoginRequest, LoginResponse, User } from '../schemas/auth.schema';
 
 export class RealAuthRepository implements IAuthRepository {
 

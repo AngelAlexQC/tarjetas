@@ -4,11 +4,11 @@
  * Contrato que define todas las operaciones de autenticación.
  */
 
-import {
+import type {
     LoginRequest,
     LoginResponse,
     User,
-} from '../types/auth.types';
+} from '../schemas/auth.schema';
 
 export interface IAuthRepository {
   // Login/Logout

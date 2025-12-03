@@ -5,7 +5,7 @@
  * Tanto el MockCardRepository como el RealCardRepository deben implementar esta interfaz.
  */
 
-import {
+import type {
     Account,
     BlockCardRequest,
     Card,
@@ -23,7 +23,7 @@ import {
     Subscription,
     Transaction,
     TravelNotice,
-} from '../types/card.types';
+} from '../schemas/card.schema';
 
 export interface ICardRepository {
   // Obtener tarjetas

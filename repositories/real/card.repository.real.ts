@@ -7,7 +7,7 @@
 import { API_ENDPOINTS } from '@/api/config';
 import { httpClient } from '@/api/http-client';
 import { ICardRepository } from '../interfaces/card.repository.interface';
-import {
+import type {
     Account,
     BlockCardRequest,
     Card,
@@ -25,7 +25,7 @@ import {
     Subscription,
     Transaction,
     TravelNotice,
-} from '../types/card.types';
+} from '../schemas/card.schema';
 
 export class RealCardRepository implements ICardRepository {
   

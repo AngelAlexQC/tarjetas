@@ -7,7 +7,7 @@
 
 import { API_CONFIG } from '@/api/config';
 import { ICardRepository } from '../interfaces/card.repository.interface';
-import {
+import type {
     Account,
     BlockCardRequest,
     Card,
@@ -25,7 +25,7 @@ import {
     Subscription,
     Transaction,
     TravelNotice,
-} from '../types/card.types';
+} from '../schemas/card.schema';
 
 // Helpers para generar datos aleatorios
 const generateRandomBalance = () => Math.floor(Math.random() * 5000) + 500;
@@ -218,10 +218,12 @@ export class MockCardRepository implements ICardRepository {
   async getLimits(_cardId: string): Promise<CardLimits> {
     await delay(600);
     return {
+      dailyPurchase: 2000,
       dailyAtm: 500,
-      dailyPos: 2000,
       dailyOnline: 1500,
-      monthlyTotal: 10000,
+      monthlyPurchase: 10000,
+      onlinePurchase: 1500,
+      internationalPurchase: 1000,
       perTransaction: 1000,
       creditLimit: 5000,
       availableCredit: 3200,
