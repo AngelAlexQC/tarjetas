@@ -4,7 +4,6 @@
  * Re-exporta todos los hooks especializados de tarjetas.
  */
 
-export { useCardAdvance } from './use-card-advance';
 export { useCardDefer } from './use-card-defer';
 export { useCardMutations } from './use-card-mutations';
 export { useCardOperation } from './use-card-operation';
