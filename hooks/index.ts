@@ -7,11 +7,9 @@
 // Card hooks (especializados)
 export * from './cards';
 
-// Alias para compatibilidad - useCards es un alias de useCardQueries
-export { useCardQueries as useCards } from './cards';
-
 // App hooks
 export { useAppTheme } from './use-app-theme';
+export { useAuthFlow } from './use-auth-flow';
 export { useColorScheme } from './use-color-scheme';
 export { useKeyboard } from './use-keyboard';
 export { useResponsiveLayout } from './use-responsive-layout';
