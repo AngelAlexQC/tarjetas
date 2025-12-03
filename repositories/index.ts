@@ -29,5 +29,8 @@ export type { ICardRepository } from './interfaces/card.repository.interface';
 // Tipos desde Zod Schemas (fuente única de verdad)
 export * from './schemas';
 
+// Importar RepositoryContainer para tenant accessor
+import { RepositoryContainer } from './container';
+
 // Tenant repository accessor
 export const tenantRepository$ = () => RepositoryContainer.getTenantRepository();

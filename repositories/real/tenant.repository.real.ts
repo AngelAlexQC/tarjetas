@@ -40,9 +40,7 @@ export class RealTenantRepository implements ITenantRepository {
   }
 
   async searchTenants(query: string): Promise<Tenant[]> {
-    const response = await httpClient.get<unknown>('/tenants/search', { 
-      query: { q: query }
-    });
+    const response = await httpClient.get<unknown>(`/tenants/search?q=${encodeURIComponent(query)}`);
     if (!response.success) {
       throw new Error(response.error || 'Error al buscar tenants');
     }

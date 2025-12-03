@@ -27,6 +27,9 @@ export default function TenantSelectorScreen() {
   // Usar hook de tenants dinámico
   const { tenants, isLoading, error, searchTenants } = useTenants();
 
+  // Debug: ver cuántos tenants se cargaron
+  console.log('[TenantSelector] Tenants loaded:', tenants.length, 'isLoading:', isLoading, 'error:', error);
+
   useScrollToTop(scrollRef);
   
   // Usuario autenticado - esto debería venir de tu sistema de autenticación
@@ -55,7 +58,7 @@ export default function TenantSelectorScreen() {
     }, {} as Record<string, Tenant[]>);
 
     return grouped;
-  }, [searchQuery]);
+  }, [searchQuery, searchTenants]);
 
   const countries = Object.keys(groupedTenants).sort((a, b) => {
     const priority = ["Ecuador", "Colombia", "México"];

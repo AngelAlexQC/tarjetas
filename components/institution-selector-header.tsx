@@ -76,9 +76,9 @@ export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: bo
         backgroundColor: theme.isDark ? 'rgba(255,255,255,0.05)' : '#F5F5F5',
         borderRadius: isIOS ? 8 : 12
       }]}>
-        {currentTheme?.logoUrl && !imageError ? (
+        {currentTheme && ('logoUrl' in currentTheme ? currentTheme.logoUrl : currentTheme.branding?.logoUrl) && !imageError ? (
           <Image
-            source={{ uri: currentTheme.logoUrl }}
+            source={{ uri: 'logoUrl' in currentTheme ? currentTheme.logoUrl : currentTheme.branding?.logoUrl }}
             style={styles.logo}
             contentFit="contain"
             onError={() => setImageError(true)}
