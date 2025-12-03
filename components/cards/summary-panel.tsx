@@ -21,7 +21,7 @@ export function SummaryPanel({ items, title, style }: SummaryPanelProps) {
   const theme = useAppTheme();
 
   return (
-    <ThemedView style={[styles.container, { backgroundColor: theme.colors.surface }, style]} surface="level2">
+    <ThemedView style={[styles.container, { backgroundColor: theme.colors.surface }, style]} surface={2}>
       {title && (
         <ThemedText type="subtitle" style={styles.title}>{title}</ThemedText>
       )}

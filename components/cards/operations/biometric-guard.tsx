@@ -85,7 +85,7 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
   return (
     <Modal transparent animationType="fade" visible={isVisible}>
       <View style={styles.container}>
-        <ThemedView style={styles.card} surface="level3">
+        <ThemedView style={styles.card} surface={3}>
           <ActivityIndicator size="large" color={theme.tenant.mainColor} />
           <ThemedText style={styles.text}>Verificando identidad...</ThemedText>
         </ThemedView>

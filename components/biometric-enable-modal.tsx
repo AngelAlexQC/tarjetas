@@ -51,7 +51,7 @@ export function BiometricEnableModal({ isVisible, onEnable, onSkip }: BiometricE
           entering={FadeInDown.delay(100).springify()}
           style={styles.container}
         >
-          <ThemedView style={[styles.card, { backgroundColor: theme.colors.surface }]} surface="level2">
+          <ThemedView style={[styles.card, { backgroundColor: theme.colors.surface }]} surface={2}>
             {/* Icono */}
             <View style={[styles.iconContainer, { backgroundColor: `${theme.tenant.mainColor}15` }]}>
               <Icon size={48} color={theme.tenant.mainColor} />
