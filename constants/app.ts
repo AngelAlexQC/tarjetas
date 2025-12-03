@@ -26,31 +26,6 @@ export const TIMING = {
 };
 
 /**
- * Layout Constants
- */
-export const LAYOUT = {
-  /**
-   * Ancho máximo del contenido en pantallas grandes.
-   */
-  CONTENT_MAX_WIDTH: 600,
-
-  /**
-   * Proporción de tarjeta (ancho/alto).
-   */
-  CARD_ASPECT_RATIO: 0.63,
-
-  /**
-   * Porcentaje del ancho de pantalla para las tarjetas.
-   */
-  CARD_WIDTH_PERCENTAGE: 0.85,
-
-  /**
-   * Ancho máximo de tarjeta.
-   */
-  CARD_MAX_WIDTH: 400,
-};
-
-/**
  * Storage Keys
  */
 export const STORAGE_KEYS = {

@@ -5,7 +5,7 @@
  */
 
 // App configuration
-export { LAYOUT, STORAGE_KEYS, TIMING } from './app';
+export { STORAGE_KEYS, TIMING } from './app';
 
 // Card related
 export { CARD_ACTIONS, type CardAction, type CardActionType } from './card-actions';

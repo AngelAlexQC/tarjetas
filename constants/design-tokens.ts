@@ -207,17 +207,6 @@ export const ComponentTokens = {
 // ============================================
 
 /**
- * Ajusta la opacidad del color del tema según el modo
- */
-export function adaptThemeColor(color: string, mode: 'light' | 'dark'): string {
-  if (mode === 'dark') {
-    // En dark mode, reducir saturación para evitar fatiga visual
-    return `${color}B3`; // 70% opacity
-  }
-  return color; // 100% en light mode
-}
-
-/**
  * Obtiene el color de overlay apropiado para glassmorphism
  */
 export function getGlassOverlay(

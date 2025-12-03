@@ -9,15 +9,9 @@ export {
     AppError,
     ErrorCode,
     Result,
-    ResultAsync,
     err,
-    errAsync,
-    fromPromise,
-    fromSafePromise,
-    fromThrowable,
     isAppError,
-    ok,
-    okAsync
+    ok
 } from './result';
 
 // API Validation
@@ -38,7 +32,7 @@ export { createLogger, logger, loggers } from './logger';
 export * from './formatters';
 
 // Image utilities
-export { convertImageToBase64 } from './image-to-base64';
+export { getLogoHtmlForPdf } from './image-to-base64';
 
 // Receipt HTML
 export { generateReceiptHtml } from './receipt-html';

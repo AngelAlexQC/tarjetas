@@ -48,13 +48,6 @@ const ACTION_TO_ROUTE: Record<CardActionType, CardActionRoute> = {
 };
 
 /**
- * Helper para construir rutas de tarjeta tipadas
- */
-export function cardRoute(cardId: string, action: CardActionRoute): Href {
-  return `/cards/${cardId}/${action}` as Href;
-}
-
-/**
  * Helper para construir rutas desde CardActionType
  * Convierte automáticamente nombres de acción a rutas
  */

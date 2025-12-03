@@ -309,21 +309,6 @@ export const AVAILABLE_TENANTS: TenantInfo[] = Object.values(tenantThemes).map(t
 }));
 
 /**
- * Obtiene los países únicos de los tenants disponibles
- */
-export function getAvailableCountries(): string[] {
-  const countries = new Set(AVAILABLE_TENANTS.map(t => t.country));
-  return Array.from(countries).sort();
-}
-
-/**
- * Filtra tenants por país
- */
-export function getTenantsByCountry(country: string): TenantInfo[] {
-  return AVAILABLE_TENANTS.filter(t => t.country === country);
-}
-
-/**
  * Busca tenants por nombre o país
  */
 export function searchTenants(query: string): TenantInfo[] {
