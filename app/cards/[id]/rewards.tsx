@@ -5,10 +5,11 @@ import { ThemedView } from '@/components/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
 import { ThemedButton } from '@/components/ui/themed-button';
-import { useCardOperation } from '@/hooks/cards';
+import { useCardOperation, useCardQueries } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import type { Rewards } from '@/repositories';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,18 +17,30 @@ function RewardsScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const { card, isLoadingCard } = useCardOperation();
+  const { getRewards } = useCardQueries();
   const insets = useSafeAreaInsets();
 
-  // Mock data - TODO: Obtener desde repositorio
-  const points = 12500;
-  const history = [
-    { id: 1, description: 'Compra Supermaxi', points: 150, date: '20 Nov' },
-    { id: 2, description: 'Uber Eats', points: 45, date: '19 Nov' },
-    { id: 3, description: 'Netflix', points: 12, date: '15 Nov' },
-    { id: 4, description: 'Bono Bienvenida', points: 5000, date: '01 Nov' },
-  ];
+  // Estado para datos de recompensas desde el repositorio
+  const [rewards, setRewards] = useState<Rewards | null>(null);
+  const [isLoadingRewards, setIsLoadingRewards] = useState(true);
 
-  if (isLoadingCard) {
+  // Cargar recompensas desde el repositorio
+  const loadRewards = useCallback(async () => {
+    if (!card?.id) return;
+    setIsLoadingRewards(true);
+    const data = await getRewards(card.id);
+    setRewards(data);
+    setIsLoadingRewards(false);
+  }, [card?.id, getRewards]);
+
+  useEffect(() => {
+    loadRewards();
+  }, [loadRewards]);
+
+  const points = rewards?.totalPoints ?? 0;
+  const history = rewards?.history ?? [];
+
+  if (isLoadingCard || isLoadingRewards) {
     return <LoadingScreen message="Cargando puntos..." />;
   }
 

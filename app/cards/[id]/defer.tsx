@@ -8,24 +8,15 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { useCardOperation } from '@/hooks/cards';
+import { useCardDefer, useCardOperation, useCardQueries } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import type { OperationResult, Transaction } from '@/repositories';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Check } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-// Mock Data - TODO: Mover a repositorio cuando el backend esté listo
-const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: '1', date: '2025-11-18', description: 'Supermaxi', amount: 156.50, currency: 'USD', category: 'shopping', canDefer: true },
-  { id: '2', date: '2025-11-17', description: 'Uber Trip', amount: 12.25, currency: 'USD', category: 'transport', canDefer: true },
-  { id: '3', date: '2025-11-15', description: 'Netflix', amount: 14.99, currency: 'USD', category: 'entertainment', canDefer: false },
-  { id: '4', date: '2025-11-14', description: 'Zara Fashion', amount: 89.90, currency: 'USD', category: 'shopping', canDefer: true },
-  { id: '5', date: '2025-11-10', description: 'Restaurante El Cielo', amount: 45.00, currency: 'USD', category: 'food', canDefer: true },
-];
 
 const DEFER_MONTHS = [3, 6, 9, 12, 24];
 
@@ -35,6 +26,8 @@ export default function DeferScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const { card, isLoadingCard } = useCardOperation();
+  const { getDeferrableTransactions } = useCardQueries();
+  const { simulation, confirmDefer, simulateDefer } = useCardDefer();
   const insets = useSafeAreaInsets();
   
   const [step, setStep] = useState<Step>('select');
@@ -44,22 +37,43 @@ export default function DeferScreen() {
   const [showBiometrics, setShowBiometrics] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<OperationResult | null>(null);
+  
+  // Estado para transacciones desde el repositorio
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+
+  // Cargar transacciones diferibles desde el repositorio
+  const loadTransactions = useCallback(async () => {
+    if (!card?.id) return;
+    setIsLoadingTransactions(true);
+    const data = await getDeferrableTransactions(card.id);
+    setTransactions(data);
+    setIsLoadingTransactions(false);
+  }, [card?.id, getDeferrableTransactions]);
+
+  useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
 
   // Derived state
   const selectedTransactions = useMemo(() => 
-    MOCK_TRANSACTIONS.filter(t => selectedTxIds.has(t.id)), 
-  [selectedTxIds]);
+    transactions.filter(t => selectedTxIds.has(t.id)), 
+  [selectedTxIds, transactions]);
 
   const totalAmount = useMemo(() => 
     selectedTransactions.reduce((sum, t) => sum + t.amount, 0), 
   [selectedTransactions]);
 
-  // Mock calculation
+  // Usar simulación del repositorio o calcular aproximación
   const monthlyPayment = useMemo(() => {
-    const interest = 0.15; // 15% annual mock
+    if (simulation) {
+      return simulation.monthlyFee;
+    }
+    // Cálculo de respaldo si no hay simulación
+    const interest = 0.15;
     const totalWithInterest = totalAmount * (1 + (interest * (selectedMonths / 12)));
     return totalWithInterest / selectedMonths;
-  }, [totalAmount, selectedMonths]);
+  }, [totalAmount, selectedMonths, simulation]);
 
   const toggleSelection = (id: string) => {
     const newSet = new Set(selectedTxIds);
@@ -74,7 +88,13 @@ export default function DeferScreen() {
   const handleNext = () => {
     setDirection('forward');
     if (step === 'select') setStep('term');
-    else if (step === 'term') setStep('summary');
+    else if (step === 'term') {
+      // Simular diferimiento al pasar al resumen
+      if (card?.id && totalAmount > 0) {
+        simulateDefer(card.id, totalAmount, selectedMonths);
+      }
+      setStep('summary');
+    }
     else if (step === 'summary') setShowBiometrics(true);
   };
 
@@ -85,21 +105,31 @@ export default function DeferScreen() {
     else router.back();
   };
 
-  const onBiometricSuccess = () => {
+  const onBiometricSuccess = async () => {
     setShowBiometrics(false);
     setIsProcessing(true);
-    setTimeout(() => {
+    
+    if (!card?.id) {
       setIsProcessing(false);
-      setResult({
-        success: true,
-        title: 'Diferido Exitoso',
-        message: `Has diferido $${totalAmount.toFixed(2)} a ${selectedMonths} meses.`,
-        receiptId: `DEF-${Math.floor(Math.random() * 10000)}`,
-      });
-    }, 2000);
+      return;
+    }
+    
+    const deferResult = await confirmDefer({
+      cardId: card.id,
+      transactionIds: Array.from(selectedTxIds),
+      months: selectedMonths,
+    });
+    
+    setIsProcessing(false);
+    setResult({
+      success: deferResult.success,
+      title: deferResult.success ? 'Diferido Exitoso' : 'Error',
+      message: deferResult.message,
+      receiptId: deferResult.success ? `DEF-${Math.floor(Math.random() * 10000)}` : undefined,
+    });
   };
 
-  if (isLoadingCard) {
+  if (isLoadingCard || isLoadingTransactions) {
     return <LoadingScreen message="Cargando opciones de diferidos..." />;
   }
 
@@ -129,7 +159,7 @@ export default function DeferScreen() {
   }
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={styles.container} surface={1}>
       <Animated.View exiting={SlideOutLeft} style={{ flex: 1 }}>
         <CardOperationHeader 
           title="Diferir Consumos" 
@@ -164,7 +194,7 @@ export default function DeferScreen() {
               <ThemedText style={styles.subtitle}>Elige las compras que deseas diferir.</ThemedText>
               
               <View style={styles.listContainer}>
-                {MOCK_TRANSACTIONS.map((item) => {
+                {transactions.map((item) => {
                   const isSelected = selectedTxIds.has(item.id);
                   const categoryIconMap: Record<string, keyof typeof FinancialIcons> = {
                     shopping: 'wallet',

@@ -5,46 +5,28 @@ import { ThemedView } from '@/components/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { useCardOperation } from '@/hooks/cards';
+import { useCardOperation, useCardQueries } from '@/hooks/cards';
 import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
+import type { Statement, StatementTransaction } from '@/repositories';
 import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
 import { loggers } from '@/utils/logger';
 import { cacheDirectory, moveAsync } from 'expo-file-system/legacy';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { ArrowDownToLine, Calendar, Check, ChevronDown } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Mock Data - TODO: Mover a repositorio cuando el backend esté listo
+// Tipo local para transacciones con tipo (el repositorio devuelve datos simples)
 type TransactionType = 'purchase' | 'payment' | 'transfer' | 'fee';
 
-interface Transaction {
+interface TransactionWithType extends StatementTransaction {
   id: string;
-  date: string;
-  description: string;
-  amount: number;
   type: TransactionType;
   category: string;
 }
-
-const MOCK_TRANSACTIONS: Transaction[] = Array.from({ length: 50 }).map((_, i) => {
-  const date = new Date();
-  date.setDate(date.getDate() - i);
-  const types: TransactionType[] = ['purchase', 'purchase', 'purchase', 'payment', 'transfer'];
-  const type = types[Math.floor(Math.random() * types.length)];
-  
-  return {
-    id: `tx-${i}`,
-    date: date.toISOString().split('T')[0],
-    description: type === 'payment' ? 'Pago de Tarjeta' : `Comercio Ejemplo ${i}`,
-    amount: type === 'payment' ? Math.random() * 500 : Math.random() * 100,
-    type,
-    category: type === 'payment' ? 'financial' : 'shopping',
-  };
-});
 
 const DATE_RANGES = [
   { id: '30', label: 'Últimos 30 días' },
@@ -58,11 +40,40 @@ export default function StatementsScreen() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const { card, isLoadingCard } = useCardOperation();
+  const { getStatement } = useCardQueries();
   
   const [selectedRange, setSelectedRange] = useState(DATE_RANGES[0]);
   const [showRangeModal, setShowRangeModal] = useState(false);
   const [filterType, setFilterType] = useState<'all' | 'purchase' | 'payment'>('all');
   const [isExporting, setIsExporting] = useState(false);
+  
+  // Estado para datos del repositorio
+  const [statement, setStatement] = useState<Statement | null>(null);
+  const [isLoadingStatement, setIsLoadingStatement] = useState(true);
+
+  // Cargar estado de cuenta desde el repositorio
+  const loadStatement = useCallback(async () => {
+    if (!card?.id) return;
+    setIsLoadingStatement(true);
+    const data = await getStatement(card.id);
+    setStatement(data);
+    setIsLoadingStatement(false);
+  }, [card?.id, getStatement]);
+
+  useEffect(() => {
+    loadStatement();
+  }, [loadStatement]);
+
+  // Convertir transacciones del statement a formato con tipo
+  const allTransactions: TransactionWithType[] = useMemo(() => {
+    if (!statement?.transactions) return [];
+    return statement.transactions.map((t, i) => ({
+      ...t,
+      id: `tx-${i}`,
+      type: t.amount > 0 ? 'payment' as const : 'purchase' as const,
+      category: t.amount > 0 ? 'financial' : 'shopping',
+    }));
+  }, [statement]);
 
   // Filter logic
   const filteredTransactions = useMemo(() => {
@@ -78,7 +89,7 @@ export default function StatementsScreen() {
       now.setDate(0); // End of last month
     }
 
-    return MOCK_TRANSACTIONS.filter(t => {
+    return allTransactions.filter(t => {
       const tDate = new Date(t.date);
       const dateMatch = tDate >= startDate && tDate <= now;
       
@@ -90,7 +101,7 @@ export default function StatementsScreen() {
       
       return true;
     });
-  }, [selectedRange, filterType]);
+  }, [selectedRange, filterType, allTransactions]);
 
   const handleExport = async () => {
     try {
@@ -477,7 +488,7 @@ export default function StatementsScreen() {
     }
   };
 
-  const renderTransaction = ({ item }: { item: Transaction }) => {
+  const renderTransaction = ({ item }: { item: TransactionWithType }) => {
     const isPayment = item.type === 'payment';
     const Icon = isPayment ? FinancialIcons.money : FinancialIcons.wallet;
     
@@ -494,7 +505,7 @@ export default function StatementsScreen() {
           type="defaultSemiBold" 
           style={{ color: isPayment ? '#4CAF50' : theme.colors.text }}
         >
-          {isPayment ? '+' : '-'}${item.amount.toFixed(2)}
+          {isPayment ? '+' : '-'}${Math.abs(item.amount).toFixed(2)}
         </ThemedText>
       </View>
     );
@@ -524,12 +535,12 @@ export default function StatementsScreen() {
     );
   }
 
-  if (isLoadingCard) {
+  if (isLoadingCard || isLoadingStatement) {
     return <LoadingScreen message="Cargando estados de cuenta..." />;
   }
 
   return (
-    <ThemedView style={styles.container} surface="level1">
+    <ThemedView style={styles.container} surface={1}>
       <CardOperationHeader title="Estados de Cuenta" card={card} isModal />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
