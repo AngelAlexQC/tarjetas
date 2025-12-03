@@ -6,7 +6,7 @@
  */
 
 import { API_CONFIG } from '@/api/config';
-import { ICardRepository } from '../interfaces';
+import { ICardRepository } from '../interfaces/card.repository.interface';
 import {
     Account,
     BlockCardRequest,
@@ -25,7 +25,7 @@ import {
     Subscription,
     Transaction,
     TravelNotice,
-} from '../types';
+} from '../types/card.types';
 
 // Helpers para generar datos aleatorios
 const generateRandomBalance = () => Math.floor(Math.random() * 5000) + 500;

@@ -4,8 +4,9 @@
  * Implementación del repositorio de tarjetas que hace llamadas HTTP reales al backend.
  */
 
-import { API_ENDPOINTS, httpClient } from '@/api';
-import { ICardRepository } from '../interfaces';
+import { API_ENDPOINTS } from '@/api/config';
+import { httpClient } from '@/api/http-client';
+import { ICardRepository } from '../interfaces/card.repository.interface';
 import {
     Account,
     BlockCardRequest,
@@ -24,7 +25,7 @@ import {
     Subscription,
     Transaction,
     TravelNotice,
-} from '../types';
+} from '../types/card.types';
 
 export class RealCardRepository implements ICardRepository {
   

@@ -23,7 +23,9 @@
 export { RepositoryContainer, authRepository$, cardRepository$ } from './container';
 
 // Interfaces (para typing)
-export type { IAuthRepository, ICardRepository } from './interfaces';
+export type { IAuthRepository } from './interfaces/auth.repository.interface';
+export type { ICardRepository } from './interfaces/card.repository.interface';
 
 // Tipos
-export * from './types';
+export * from './types/auth.types';
+export * from './types/card.types';

@@ -8,7 +8,7 @@ import {
     LoginRequest,
     LoginResponse,
     User,
-} from '../types';
+} from '../types/auth.types';
 
 export interface IAuthRepository {
   // Login/Logout

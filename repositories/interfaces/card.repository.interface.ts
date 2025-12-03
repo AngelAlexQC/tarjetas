@@ -23,7 +23,7 @@ import {
     Subscription,
     Transaction,
     TravelNotice,
-} from '../types';
+} from '../types/card.types';
 
 export interface ICardRepository {
   // Obtener tarjetas
