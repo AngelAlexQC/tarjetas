@@ -10,22 +10,10 @@ import {
     VisaLogo,
 } from "react-native-payment-card-icons";
 
-export interface BrandIconProps {
-  size?: number;
-}
-
-// Re-exportar los íconos con nombres consistentes (usando variante Logo - colores oficiales)
-export const VisaIcon = VisaLogo;
-export const MastercardIcon = MastercardLogo;
-export const AmexIcon = AmexLogo;
-export const DiscoverIcon = DiscoverLogo;
-export const DinersIcon = DinersLogo;
-export const JcbIcon = JcbLogo;
-export const MaestroIcon = MaestroLogo;
-export const UnionpayIcon = UnionpayLogo;
-export const GenericCardIcon = GenericCardLogo;
-
-// Exportar todos los íconos disponibles en un objeto
+/**
+ * Mapa de iconos de marcas de tarjetas
+ * Usa los logos oficiales de react-native-payment-card-icons
+ */
 export const CardBrandIcons = {
   visa: VisaLogo,
   mastercard: MastercardLogo,

@@ -26,7 +26,8 @@ export interface CardAction {
   requiresAuth?: boolean;
 }
 
-export const CARD_ACTIONS: CardAction[] = [
+// Constante interna - usar getAvailableActions() para obtener acciones filtradas
+const CARD_ACTIONS: CardAction[] = [
   {
     id: 'pay',
     title: 'Pagar Tarjeta',
@@ -132,10 +133,6 @@ export const CARD_ACTIONS: CardAction[] = [
     color: '#E91E63',
   },
 ];
-
-export function getCardAction(actionId: CardActionType): CardAction | undefined {
-  return CARD_ACTIONS.find(action => action.id === actionId);
-}
 
 /**
  * Obtiene las acciones disponibles según el tipo de tarjeta

@@ -31,8 +31,8 @@ export type TenantInfo = Pick<TenantTheme, 'slug' | 'name' | 'logoUrl' | 'mainCo
   currencyCode: string;
 };
 
-// Mapeo de tenants a sus temas personalizados
-export const tenantThemes: Record<string, TenantTheme> = {
+// Mapeo de tenants a sus temas personalizados (interno)
+const tenantThemes: Record<string, TenantTheme> = {
   // Bancos Ecuador
   'bpichincha': {
     slug: 'bpichincha',
@@ -296,9 +296,9 @@ export function getTenantTheme(slug: string): TenantTheme {
 }
 
 /**
- * Lista de todos los tenants disponibles (para el selector de instituciones)
+ * Lista de todos los tenants disponibles (interno)
  */
-export const AVAILABLE_TENANTS: TenantInfo[] = Object.values(tenantThemes).map(theme => ({
+const AVAILABLE_TENANTS: TenantInfo[] = Object.values(tenantThemes).map(theme => ({
   slug: theme.slug,
   name: theme.name,
   logoUrl: theme.logoUrl,

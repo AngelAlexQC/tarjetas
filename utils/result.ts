@@ -2,8 +2,8 @@
  * Result Pattern - Error Handling con neverthrow
  *
  * Este módulo centraliza el manejo de errores usando el patrón Result.
- * neverthrow proporciona tipos Result<T, E> y ResultAsync<T, E> que hacen
- * los errores explícitos en el sistema de tipos.
+ * neverthrow proporciona tipos Result<T, E> que hacen los errores
+ * explícitos en el sistema de tipos.
  *
  * PRINCIPIOS:
  * 1. Los errores son valores, no excepciones
@@ -12,14 +12,14 @@
  *
  * USO:
  * ```typescript
- * import { ok, err, ResultAsync } from '@/utils/result';
+ * import { ok, err, Result } from '@/utils/result';
  *
  * // Crear resultados
  * const success = ok({ id: '1', name: 'Card' });
  * const failure = err(AppError.notFound('Card not found'));
  *
  * // Encadenar operaciones
- * const result = await getCard(id)
+ * const result = getCard(id)
  *   .andThen(card => validateCard(card))
  *   .map(card => transformCard(card));
  *
@@ -31,17 +31,8 @@
  * ```
  */
 
-// Re-exportar todo de neverthrow para uso centralizado
-export {
-    err, errAsync,
-    fromPromise,
-    fromSafePromise,
-    fromThrowable, ok, okAsync, Result,
-    ResultAsync
-} from 'neverthrow';
-
-// Re-exportar tipos útiles
-export type { Err, Ok } from 'neverthrow';
+// Re-exportar los tipos básicos de neverthrow
+export { err, ok, Result } from 'neverthrow';
 
 // ============================================
 // APP ERROR - Error tipado de la aplicación

@@ -59,34 +59,11 @@ export const CARD_BRAND_DESIGNS: Record<CardBrand, Omit<CardDesign, 'brand' | 't
   },
 };
 
-// Colores adicionales según el tipo de tarjeta
-export const CARD_TYPE_VARIANTS: Record<CardType, { opacity: number; accentColor: string }> = {
-  credit: {
-    opacity: 1,
-    accentColor: '#FFD700',
-  },
-  debit: {
-    opacity: 0.95,
-    accentColor: '#4CAF50',
-  },
-  virtual: {
-    opacity: 0.9,
-    accentColor: '#9C27B0',
-  },
-};
-
 // Etiquetas localizadas
 export const CARD_TYPE_LABELS: Record<CardType, string> = {
   credit: 'Crédito',
   debit: 'Débito',
   virtual: 'Virtual',
-};
-
-export const CARD_STATUS_LABELS: Record<CardStatus, string> = {
-  active: 'Activa',
-  blocked: 'Bloqueada',
-  expired: 'Vencida',
-  pending: 'Pendiente',
 };
 
 // Función helper para obtener el diseño de una tarjeta
