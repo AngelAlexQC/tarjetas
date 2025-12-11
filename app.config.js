@@ -65,12 +65,12 @@ module.exports = ({ config }) => {
       web: {
         output: 'static',
         favicon: './assets/images/favicon.png',
-        backgroundColor: '#171717',
+        backgroundColor: '#0D1117',
       },
       splash: {
         image: './assets/images/splash-icon.png',
         resizeMode: 'contain',
-        backgroundColor: '#171717',
+        backgroundColor: '#0D1117',
       },
       plugins: [
         'expo-router',
@@ -87,9 +87,10 @@ module.exports = ({ config }) => {
             image: './assets/images/splash-icon.png',
             imageWidth: 200,
             resizeMode: 'contain',
-            backgroundColor: '#171717',
+            backgroundColor: '#0D1117',
             dark: {
-              backgroundColor: '#171717',
+              image: './assets/images/splash-icon.png',
+              backgroundColor: '#0D1117',
             },
           },
         ],

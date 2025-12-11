@@ -14,10 +14,17 @@ import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import * as SystemUI from 'expo-system-ui';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Color de fondo inicial para evitar flash blanco (mismo que el splash screen)
+const INITIAL_BACKGROUND_COLOR = '#0D1117';
+
+// Configurar el color de fondo del sistema inmediatamente
+SystemUI.setBackgroundColorAsync(INITIAL_BACKGROUND_COLOR);
 
 /**
  * ErrorBoundary global para la app.
@@ -30,6 +37,12 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 function ThemedLayoutContainer({ children }: { children: React.ReactNode }) {
   const theme = useAppTheme();
   const { contentMaxWidth } = useResponsiveLayout();
+  
+  // Actualizar el color de fondo del sistema cuando el tema cambie
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(theme.colors.background);
+  }, [theme.colors.background]);
+  
   return (
     <View style={{ flex: 1, width: '100%', height: '100%', backgroundColor: theme.colors.background }}>
       <View
@@ -157,22 +170,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1000,
   },
+  rootContainer: {
+    flex: 1,
+    backgroundColor: INITIAL_BACKGROUND_COLOR,
+  },
 });
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <SplashProvider>
-        <TenantThemeProvider>
-          <AuthProvider>
-            <TourProvider>
-              <ThemedLayoutContainer>
-                <Navigation />
-              </ThemedLayoutContainer>
-            </TourProvider>
-          </AuthProvider>
-        </TenantThemeProvider>
-      </SplashProvider>
-    </SafeAreaProvider>
+    <View style={styles.rootContainer}>
+      <SafeAreaProvider>
+        <SplashProvider>
+          <TenantThemeProvider>
+            <AuthProvider>
+              <TourProvider>
+                <ThemedLayoutContainer>
+                  <Navigation />
+                </ThemedLayoutContainer>
+              </TourProvider>
+            </AuthProvider>
+          </TenantThemeProvider>
+        </SplashProvider>
+      </SafeAreaProvider>
+    </View>
   );
 }
