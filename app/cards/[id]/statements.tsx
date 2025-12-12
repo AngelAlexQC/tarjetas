@@ -46,7 +46,7 @@ export default function StatementsScreen() {
     const data = await getStatement(card.id);
     setStatement(data);
     setIsLoadingStatement(false);
-  }, [card?.id, selectedRange.id, getStatement]);
+  }, [card?.id, getStatement]);
 
   useEffect(() => { loadStatement(); }, [loadStatement]);
 

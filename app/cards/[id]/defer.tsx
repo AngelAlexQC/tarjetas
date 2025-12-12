@@ -67,27 +67,58 @@ export default function DeferScreen() {
     setSelectedTxIds(newSet);
   };
 
+  const navigateToTermStep = () => {
+    setStep('term');
+  };
+
+  const navigateToSummaryStep = () => {
+    if (card?.id && totalAmount > 0) {
+      simulateDefer(card.id, totalAmount, selectedMonths);
+    }
+    setStep('summary');
+  };
+
   const handleNext = () => {
     setDirection('forward');
-    if (step === 'select') setStep('term');
-    else if (step === 'term') {
-      if (card?.id && totalAmount > 0) simulateDefer(card.id, totalAmount, selectedMonths);
-      setStep('summary');
-    } else if (step === 'summary') setShowBiometrics(true);
+    const stepActions: Record<Step, () => void> = {
+      select: navigateToTermStep,
+      term: navigateToSummaryStep,
+      summary: () => setShowBiometrics(true),
+    };
+    stepActions[step]();
   };
 
   const handleBack = () => {
     setDirection('back');
-    if (step === 'summary') setStep('term');
-    else if (step === 'term') setStep('select');
-    else router.back();
+    const backSteps: Record<Step, Step | null> = {
+      summary: 'term',
+      term: 'select',
+      select: null,
+    };
+    
+    const prevStep = backSteps[step];
+    if (prevStep) {
+      setStep(prevStep);
+    } else {
+      router.back();
+    }
   };
 
   const onBiometricSuccess = async () => {
     setShowBiometrics(false);
     setIsProcessing(true);
-    if (!card?.id) { setIsProcessing(false); return; }
-    const deferResult = await confirmDefer({ cardId: card.id, transactionIds: Array.from(selectedTxIds), months: selectedMonths });
+    
+    if (!card?.id) { 
+      setIsProcessing(false);
+      return;
+    }
+    
+    const deferResult = await confirmDefer({ 
+      cardId: card.id, 
+      transactionIds: Array.from(selectedTxIds), 
+      months: selectedMonths 
+    });
+    
     setIsProcessing(false);
     setResult({
       success: deferResult.success,

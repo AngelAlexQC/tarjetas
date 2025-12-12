@@ -65,18 +65,49 @@ export default function AdvanceScreen() {
     if (cleaned.length === 4) cvvRef.current?.focus();
   };
 
+  const canProceedFromForm = () => {
+    return amount && parseFloat(amount) > 0;
+  };
+
+  const canProceedFromValidation = () => {
+    return cvv.length >= 3 && expiry.length >= 4;
+  };
+
   const handleNext = () => {
     setDirection('forward');
-    if (step === 'form') { if (!amount || parseFloat(amount) <= 0) return; setStep('summary'); }
-    else if (step === 'summary') setStep('validation');
-    else if (step === 'validation') { if (cvv.length < 3 || expiry.length < 4) return; setShowBiometrics(true); }
+    
+    const stepActions: Record<Step, () => void> = {
+      form: () => {
+        if (canProceedFromForm()) {
+          setStep('summary');
+        }
+      },
+      summary: () => setStep('validation'),
+      validation: () => {
+        if (canProceedFromValidation()) {
+          setShowBiometrics(true);
+        }
+      },
+    };
+    
+    stepActions[step]();
   };
 
   const handleBack = () => {
     setDirection('back');
-    if (step === 'validation') setStep('summary');
-    else if (step === 'summary') setStep('form');
-    else router.back();
+    
+    const backSteps: Record<Step, Step | null> = {
+      validation: 'summary',
+      summary: 'form',
+      form: null,
+    };
+    
+    const prevStep = backSteps[step];
+    if (prevStep) {
+      setStep(prevStep);
+    } else {
+      router.back();
+    }
   };
 
   const onBiometricSuccess = () => {
