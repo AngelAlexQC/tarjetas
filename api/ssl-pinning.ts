@@ -287,7 +287,13 @@ export class SSLPinningManager {
   exportConfig(): {
     pins: CertificatePin[];
     validation: typeof CERTIFICATE_VALIDATION_CONFIG;
-    stats: ReturnType<typeof this.getStats>;
+    stats: {
+      initialized: boolean;
+      configuredDomains: number;
+      cachedValidations: number;
+      platform: string;
+      developmentMode: boolean;
+    };
   } {
     return {
       pins: SSL_PINNING_CONFIG,

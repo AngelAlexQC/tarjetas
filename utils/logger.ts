@@ -87,4 +87,5 @@ export const loggers = {
   theme: createLogger('Theme'),
   biometric: createLogger('Biometric'),
   formatter: createLogger('Formatter'),
+  security: createLogger('Security'),
 };
