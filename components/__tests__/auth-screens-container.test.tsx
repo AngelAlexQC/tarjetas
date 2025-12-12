@@ -24,7 +24,8 @@ jest.mock('../login-screen', () => ({
     onRegister: () => void;
     onEmailLogin: () => void;
   }) => {
-    const { View, Text, Pressable } = require('react-native');
+    const { View, Text, Pressable } = jest.requireActual('react-native');
+
     return (
       <View testID="login-screen">
         <Text>Login Screen</Text>
@@ -53,7 +54,8 @@ jest.mock('../register-screen', () => ({
     onBack: () => void;
     onSuccess: () => void;
   }) => {
-    const { View, Text, Pressable } = require('react-native');
+    const { View, Text, Pressable } = jest.requireActual('react-native');
+
     return (
       <View testID="register-screen">
         <Text>Register Screen</Text>
@@ -76,7 +78,8 @@ jest.mock('../forgot-password-screen', () => ({
     onBack: () => void;
     onSuccess: () => void;
   }) => {
-    const { View, Text, Pressable } = require('react-native');
+    const { View, Text, Pressable } = jest.requireActual('react-native');
+
     return (
       <View testID="forgot-password-screen">
         <Text>Forgot Password Screen</Text>
@@ -101,7 +104,8 @@ jest.mock('../email-login-screen', () => ({
     onLoginSuccess: () => void;
     onForgotPassword: () => void;
   }) => {
-    const { View, Text, Pressable } = require('react-native');
+    const { View, Text, Pressable } = jest.requireActual('react-native');
+
     return (
       <View testID="email-login-screen">
         <Text>Email Login Screen</Text>
@@ -136,6 +140,7 @@ describe('AuthScreensContainer', () => {
 
     it('should display login screen by default', () => {
       const { getByTestId, getByText } = render(
+
         <AuthScreensContainer onLoginSuccess={mockOnLoginSuccess} />
       );
       
@@ -301,7 +306,8 @@ describe('AuthScreensContainer', () => {
 
   describe('Flujos Complejos', () => {
     it('should handle: login -> register -> back -> forgot password -> back -> email login', () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId } = render(
+
         <AuthScreensContainer onLoginSuccess={mockOnLoginSuccess} />
       );
       

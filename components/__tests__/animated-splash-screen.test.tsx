@@ -7,6 +7,7 @@
  */
 
 import { act, render } from '@testing-library/react-native';
+import { hideAsync } from 'expo-splash-screen';
 import React from 'react';
 import { Dimensions } from 'react-native';
 import { AnimatedSplashScreen } from '../animated-splash-screen';
@@ -21,7 +22,7 @@ jest.spyOn(Dimensions, 'get').mockReturnValue({
 
 // Mock del contexto de splash
 const mockSetIsReady = jest.fn();
-const mockSetShouldShowSplash = jest.fn();
+
 
 jest.mock('@/contexts/splash-context', () => ({
   useSplash: () => ({
@@ -49,7 +50,7 @@ jest.mock('expo-splash-screen', () => ({
 }));
 
 jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
+  const Reanimated = jest.requireActual('react-native-reanimated/mock');
   
   // Patch default export
   Reanimated.default.call = () => {};
@@ -74,8 +75,8 @@ jest.mock('expo-linear-gradient', () => ({
 // Mock de SVG components
 // Mock de SVG components
 jest.mock('react-native-svg', () => {
-  const React = require('react');
-  const { View } = require('react-native');
+  const React = jest.requireActual('react');
+  const { View } = jest.requireActual('react-native');
   
   class MockSvg extends React.Component {
     render() { return <View>{this.props.children}</View>; }
@@ -136,11 +137,12 @@ describe('AnimatedSplashScreen', () => {
     });
 
     it('should render children', () => {
-      const { getByText } = render(
+      render(
         <AnimatedSplashScreen onReady={mockOnReady}>
           <></>
         </AnimatedSplashScreen>
       );
+
       
       // Children are rendered (even if hidden during splash)
       expect(true).toBeTruthy(); // Component renders without error
@@ -148,7 +150,7 @@ describe('AnimatedSplashScreen', () => {
 
     it('should accept children prop', () => {
       const ChildComponent = () => {
-        const { Text } = require('react-native');
+        const { Text } = jest.requireActual('react-native');
         return <Text testID="child-content">Child Content</Text>;
       };
       
@@ -276,8 +278,7 @@ describe('AnimatedSplashScreen', () => {
     });
     it('should handle SplashScreen.hideAsync error', async () => {
       // Mock failure
-      const { hideAsync } = require('expo-splash-screen');
-      hideAsync.mockRejectedValueOnce(new Error('Hide failed'));
+      (hideAsync as jest.Mock).mockRejectedValueOnce(new Error('Hide failed'));
 
       const { root } = render(
         <AnimatedSplashScreen onReady={mockOnReady}>
