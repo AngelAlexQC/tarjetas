@@ -3,10 +3,16 @@
  * 
  * Cliente HTTP centralizado para todas las llamadas al backend.
  * Maneja autenticación, errores, y configuración común.
+ * 
+ * SEGURIDAD: Integrado con SSL Pinning para prevenir ataques MitM.
  */
 
 import { authStorage } from '@/utils/auth-storage';
+import { loggers } from '@/utils/logger';
 import { API_CONFIG } from './config';
+import { shouldUsePinning, getPinningConfig } from './ssl-pinning.config';
+
+const log = loggers.api;
 
 // Tipos para las respuestas de la API
 export interface ApiResponse<T = unknown> {
@@ -69,6 +75,31 @@ class HttpClient {
   }
 
   /**
+   * Valida si la URL debe usar SSL Pinning
+   */
+  private validateSSLPinning(url: string): void {
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname;
+      
+      // Verificar si debe usar pinning
+      if (shouldUsePinning(hostname)) {
+        const config = getPinningConfig(hostname);
+        
+        if (config && !__DEV__) {
+          // En producción con dev build, la validación ocurre a nivel nativo
+          // Este es solo un check adicional de que la configuración existe
+          log.info(`SSL Pinning enabled for ${hostname}`);
+        } else if (__DEV__) {
+          log.warn(`SSL Pinning configured for ${hostname} but disabled in development`);
+        }
+      }
+    } catch (error) {
+      log.error('Error validating SSL Pinning:', error);
+    }
+  }
+
+  /**
    * Ejecuta una petición HTTP con timeout
    */
   private async fetchWithTimeout(
@@ -76,6 +107,9 @@ class HttpClient {
     config: RequestInit,
     timeout: number
   ): Promise<Response> {
+    // Validar SSL Pinning antes de la petición
+    this.validateSSLPinning(url);
+
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
