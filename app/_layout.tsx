@@ -1,3 +1,4 @@
+import { initializeSSLPinning } from '@/api/ssl-pinning';
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { AuthScreensContainer } from '@/components/auth-screens-container';
 import { BiometricAccessScreen } from '@/components/biometric-access-screen';
@@ -25,6 +26,16 @@ const INITIAL_BACKGROUND_COLOR = '#0D1117';
 
 // Configurar el color de fondo del sistema inmediatamente
 SystemUI.setBackgroundColorAsync(INITIAL_BACKGROUND_COLOR);
+
+// Inicializar SSL Pinning al startup
+initializeSSLPinning().catch(err => {
+  console.error('Failed to initialize SSL Pinning:', err);
+  // En producción, esto sería crítico
+  if (!__DEV__) {
+    // Aquí podrías mostrar un error crítico al usuario
+    throw err;
+  }
+});
 
 /**
  * ErrorBoundary global para la app.
