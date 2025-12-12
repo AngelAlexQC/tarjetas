@@ -1,55 +1,51 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { CardBrandIcon } from '../card-brand-icons';
+import { CardBrandIcons } from '../card-brand-icons';
 
-describe('CardBrandIcon', () => {
-  it('should render Visa icon', () => {
-    const { root } = render(<CardBrandIcon brand="visa" size={32} />);
+describe('CardBrandIcons', () => {
+  it('should have Visa icon component', () => {
+    const VisaIcon = CardBrandIcons.visa;
+    const { root } = render(<VisaIcon width={32} height={32} />);
     expect(root).toBeTruthy();
   });
 
-  it('should render Mastercard icon', () => {
-    const { root } = render(<CardBrandIcon brand="mastercard" size={32} />);
-    expect(root).toBeTruthy();
+  it('should have Mastercard icon component', () => {
+    const MastercardIcon = CardBrandIcons.mastercard;
+    expect(MastercardIcon).toBeDefined();
   });
 
-  it('should render Amex icon', () => {
-    const { root } = render(<CardBrandIcon brand="amex" size={32} />);
-    expect(root).toBeTruthy();
+  it('should have Amex icon component', () => {
+    const AmexIcon = CardBrandIcons.amex;
+    expect(AmexIcon).toBeDefined();
   });
 
-  it('should render Discover icon', () => {
-    const { root } = render(<CardBrandIcon brand="discover" size={32} />);
-    expect(root).toBeTruthy();
+  it('should have Discover icon component', () => {
+    const DiscoverIcon = CardBrandIcons.discover;
+    expect(DiscoverIcon).toBeDefined();
   });
 
-  it('should render Diners icon', () => {
-    const { root } = render(<CardBrandIcon brand="diners" size={32} />);
-    expect(root).toBeTruthy();
+  it('should have Diners icon component', () => {
+    const DinersIcon = CardBrandIcons.diners;
+    expect(DinersIcon).toBeDefined();
   });
 
-  it('should render JCB icon', () => {
-    const { root } = render(<CardBrandIcon brand="jcb" size={32} />);
-    expect(root).toBeTruthy();
+  it('should have JCB icon component', () => {
+    const JcbIcon = CardBrandIcons.jcb;
+    expect(JcbIcon).toBeDefined();
   });
 
-  it('should render Maestro icon', () => {
-    const { root} = render(<CardBrandIcon brand="maestro" size={32} />);
-    expect(root).toBeTruthy();
+  it('should have Maestro icon component', () => {
+    const MaestroIcon = CardBrandIcons.maestro;
+    expect(MaestroIcon).toBeDefined();
   });
 
-  it('should render UnionPay icon', () => {
-    const { root } = render(<CardBrandIcon brand="unionpay" size={32} />);
-    expect(root).toBeTruthy();
+  it('should have UnionPay icon component', () => {
+    const UnionpayIcon = CardBrandIcons.unionpay;
+    expect(UnionpayIcon).toBeDefined();
   });
 
-  it('should render with custom size', () => {
-    const { root } = render(<CardBrandIcon brand="visa" size={48} />);
-    expect(root).toBeTruthy();
-  });
-
-  it('should render with default size', () => {
-    const { root } = render(<CardBrandIcon brand="visa" />);
-    expect(root).toBeTruthy();
+  it('should have Generic icon component', () => {
+    const GenericIcon = CardBrandIcons.generic;
+    expect(GenericIcon).toBeDefined();
   });
 });

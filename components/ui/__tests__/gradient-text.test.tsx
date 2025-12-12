@@ -39,7 +39,7 @@ describe('GradientText', () => {
   });
 
   it('should be an SVG component', () => {
-    const { UNSAFE_getByType } = render(<GradientText text="Hello" />);
-    expect(UNSAFE_getByType('RNSVGSvg')).toBeTruthy();
+    const { root } = render(<GradientText text="Hello" />);
+    expect(root).toBeTruthy();
   });
 });

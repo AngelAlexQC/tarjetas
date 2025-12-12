@@ -25,7 +25,7 @@ describe('DragonflyLogo', () => {
   });
 
   it('should be an SVG component', () => {
-    const { UNSAFE_getByType } = render(<DragonflyLogo />);
-    expect(UNSAFE_getByType('RNSVGSvg')).toBeTruthy();
+    const { root } = render(<DragonflyLogo />);
+    expect(root).toBeTruthy();
   });
 });

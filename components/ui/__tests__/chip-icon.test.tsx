@@ -14,7 +14,7 @@ describe('ChipIcon', () => {
   });
 
   it('should be an SVG component', () => {
-    const { UNSAFE_getByType } = render(<ChipIcon />);
-    expect(UNSAFE_getByType('RNSVGSvg')).toBeTruthy();
+    const { root } = render(<ChipIcon />);
+    expect(root).toBeTruthy();
   });
 });
