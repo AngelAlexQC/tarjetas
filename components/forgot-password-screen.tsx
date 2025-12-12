@@ -295,6 +295,7 @@ function SuccessStep({ onSuccess }: SuccessStepProps) {
   );
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreenProps) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();

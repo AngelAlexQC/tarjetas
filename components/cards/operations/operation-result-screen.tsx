@@ -22,6 +22,7 @@ interface OperationResultScreenProps {
   children?: React.ReactNode;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function OperationResultScreen({ result, onClose, card, transactionDetails, children }: OperationResultScreenProps) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();

@@ -4,10 +4,11 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import type { Insurance } from './insurance-generator';
+import type { InsuranceModalStyles } from './insurance-detail-modal-styles';
 
 interface ModalContentProps {
   insurance: Insurance;
-  styles: any;
+  styles: InsuranceModalStyles;
   formatAmount: (amount: number) => string;
 }
 

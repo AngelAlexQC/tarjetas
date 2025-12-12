@@ -19,6 +19,9 @@
  * usar el backend real en lugar de datos mock.
  */
 
+// Importar RepositoryContainer para tenant accessor
+import { RepositoryContainer } from './container';
+
 // Container y accesos directos
 export { RepositoryContainer, authRepository$, cardRepository$ } from './container';
 
@@ -28,9 +31,6 @@ export type { ICardRepository } from './interfaces/card.repository.interface';
 
 // Tipos desde Zod Schemas (fuente única de verdad)
 export * from './schemas';
-
-// Importar RepositoryContainer para tenant accessor
-import { RepositoryContainer } from './container';
 
 // Tenant repository accessor
 export const tenantRepository$ = () => RepositoryContainer.getTenantRepository();

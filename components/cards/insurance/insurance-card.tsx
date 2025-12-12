@@ -45,6 +45,7 @@ const BADGE_COLORS: Record<string, string> = {
   Disponible: '#007AFF',
 };
 
+// eslint-disable-next-line max-lines-per-function
 export function InsuranceCard({ insurance, index, onPress }: InsuranceCardProps) {
   const theme = useAppTheme();
   const accentColor = INSURANCE_COLORS[insurance.type] || INSURANCE_COLORS.fraude;

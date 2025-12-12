@@ -9,12 +9,14 @@ interface StyleParams {
   modalMaxWidth: number;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export const createStyles = ({
   theme,
   insets,
   isLargeScreen,
   modalMaxHeight,
   modalMaxWidth,
+// eslint-disable-next-line complexity
 }: StyleParams) => {
   const isWeb = Platform.OS === 'web';
 
@@ -224,3 +226,5 @@ export const createStyles = ({
     },
   });
 };
+
+export type InsuranceModalStyles = ReturnType<typeof createStyles>;

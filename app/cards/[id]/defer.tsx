@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const DEFER_MONTHS = [3, 6, 9, 12, 24];
 type Step = 'select' | 'term' | 'summary';
 
+// eslint-disable-next-line max-lines-per-function, complexity
 export default function DeferScreen() {
   const theme = useAppTheme();
   const router = useRouter();

@@ -169,6 +169,38 @@ export const formatDateTime = (
 };
 
 /**
+ * Obtiene el texto relativo para un día
+ */
+const getRelativeDayText = (absDays: number, isPast: boolean, isSpanish: boolean): string => {
+  if (absDays === 1) {
+    return isPast 
+      ? (isSpanish ? 'ayer' : 'yesterday')
+      : (isSpanish ? 'mañana' : 'tomorrow');
+  }
+  return isPast
+    ? (isSpanish ? `hace ${absDays} días` : `${absDays} days ago`)
+    : (isSpanish ? `en ${absDays} días` : `in ${absDays} days`);
+};
+
+/**
+ * Obtiene el texto relativo para horas
+ */
+const getRelativeHoursText = (absHours: number, isPast: boolean, isSpanish: boolean): string => {
+  return isPast
+    ? (isSpanish ? `hace ${absHours}h` : `${absHours}h ago`)
+    : (isSpanish ? `en ${absHours}h` : `in ${absHours}h`);
+};
+
+/**
+ * Obtiene el texto relativo para minutos
+ */
+const getRelativeMinutesText = (absMinutes: number, isPast: boolean, isSpanish: boolean): string => {
+  return isPast
+    ? (isSpanish ? `hace ${absMinutes}m` : `${absMinutes}m ago`)
+    : (isSpanish ? `en ${absMinutes}m` : `in ${absMinutes}m`);
+};
+
+/**
  * Formatea una fecha de manera relativa (hace X tiempo)
  * @param date - Fecha a formatear
  * @param locale - Locale a usar
@@ -198,28 +230,22 @@ export const formatRelativeDate = (
 
     // Determinar la unidad más apropiada
     if (absDays >= 7) {
-      // Más de 7 días: mostrar fecha absoluta
       return formatDate(dateObj, { locale, dateStyle: 'medium' });
-    } else if (absDays >= 1) {
-      if (absDays === 1) {
-        return isPast 
-          ? (isSpanish ? 'ayer' : 'yesterday')
-          : (isSpanish ? 'mañana' : 'tomorrow');
-      }
-      return isPast
-        ? (isSpanish ? `hace ${absDays} días` : `${absDays} days ago`)
-        : (isSpanish ? `en ${absDays} días` : `in ${absDays} days`);
-    } else if (absHours >= 1) {
-      return isPast
-        ? (isSpanish ? `hace ${absHours}h` : `${absHours}h ago`)
-        : (isSpanish ? `en ${absHours}h` : `in ${absHours}h`);
-    } else if (absMinutes >= 1) {
-      return isPast
-        ? (isSpanish ? `hace ${absMinutes}m` : `${absMinutes}m ago`)
-        : (isSpanish ? `en ${absMinutes}m` : `in ${absMinutes}m`);
-    } else {
-      return isSpanish ? 'ahora' : 'now';
     }
+    
+    if (absDays >= 1) {
+      return getRelativeDayText(absDays, isPast, isSpanish);
+    }
+    
+    if (absHours >= 1) {
+      return getRelativeHoursText(absHours, isPast, isSpanish);
+    }
+    
+    if (absMinutes >= 1) {
+      return getRelativeMinutesText(absMinutes, isPast, isSpanish);
+    }
+    
+    return isSpanish ? 'ahora' : 'now';
   } catch (error) {
     log.warn('Error formateando fecha relativa:', error);
     return 'Fecha inválida';

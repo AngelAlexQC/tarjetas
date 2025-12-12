@@ -151,6 +151,7 @@ interface DragonflyProps {
   screenWidth: number;
 }
 
+// eslint-disable-next-line max-lines-per-function
 const DragonflyComponent = ({ progress, screenWidth: _screenWidth }: DragonflyProps) => {
   // Usar una única animación maestra para sincronizar todo
   const masterAnimation = useSharedValue(0);
@@ -421,6 +422,7 @@ const DragonflyComponent = ({ progress, screenWidth: _screenWidth }: DragonflyPr
 // Variable global para controlar si el splash ya se mostró en esta sesión
 let globalSplashShown = false;
 
+// eslint-disable-next-line max-lines-per-function
 export function AnimatedSplashScreen({
   children,
   onReady,

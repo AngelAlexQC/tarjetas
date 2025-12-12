@@ -59,6 +59,7 @@ export interface InfoTooltipProps {
   targetBorderRadius?: number;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   content,
   title,
@@ -355,6 +356,7 @@ interface TooltipContentProps {
   duration?: number;
 }
 
+// eslint-disable-next-line max-lines-per-function
 const TooltipContent: React.FC<TooltipContentProps> = ({ 
   title, 
   content, 

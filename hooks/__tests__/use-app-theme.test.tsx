@@ -4,6 +4,7 @@
 
 import { renderHook } from '@testing-library/react-native';
 import React from 'react';
+import * as useColorSchemeModule from '@/hooks/use-color-scheme';
 import { useAppTheme } from '../use-app-theme';
 import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
 
@@ -39,11 +40,9 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('useAppTheme', () => {
-  const { useColorScheme } = require('@/hooks/use-color-scheme');
-
   beforeEach(() => {
     jest.clearAllMocks();
-    useColorScheme.mockReturnValue('light');
+    (useColorSchemeModule.useColorScheme as jest.Mock).mockReturnValue('light');
   });
 
   describe('initialization', () => {
@@ -147,7 +146,7 @@ describe('useAppTheme', () => {
 
   describe('dark mode', () => {
     beforeEach(() => {
-      useColorScheme.mockReturnValue('dark');
+      (useColorSchemeModule.useColorScheme as jest.Mock).mockReturnValue('dark');
     });
 
     it('should return dark mode', () => {

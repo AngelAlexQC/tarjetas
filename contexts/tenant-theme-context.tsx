@@ -35,22 +35,25 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(savedTheme) as Tenant;
         
         // Validar que el tenant guardado aún existe en el backend
-        if (parsed.branding && parsed.features) {
-          try {
-            const repo = RepositoryContainer.getTenantRepository();
-            const current = await repo.getTenantById(parsed.id);
-            
-            if (current) {
-              setCurrentTheme(current);
-              log.info(`Loaded tenant: ${current.name}`);
-            } else {
-              log.warn('Saved tenant no longer exists, clearing');
-              await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
-            }
-          } catch {
-            log.warn('Could not verify tenant, using cached version');
-            setCurrentTheme(parsed);
+        const isValidTenant = parsed.branding && parsed.features;
+        if (!isValidTenant) {
+          return;
+        }
+
+        try {
+          const repo = RepositoryContainer.getTenantRepository();
+          const current = await repo.getTenantById(parsed.id);
+          
+          if (current) {
+            setCurrentTheme(current);
+            log.info(`Loaded tenant: ${current.name}`);
+          } else {
+            log.warn('Saved tenant no longer exists, clearing');
+            await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
           }
+        } catch {
+          log.warn('Could not verify tenant, using cached version');
+          setCurrentTheme(parsed);
         }
       }
     } catch (error) {

@@ -4,12 +4,13 @@ import React from 'react';
 import { Pressable, View } from 'react-native';
 import type { AppTheme } from '@/hooks/use-app-theme';
 import type { Insurance } from './insurance-generator';
+import type { InsuranceModalStyles } from './insurance-detail-modal-styles';
 
 interface ModalHeaderProps {
   insurance: Insurance;
   theme: AppTheme;
   onClose: () => void;
-  styles: any;
+  styles: InsuranceModalStyles;
   iconMap: Record<string, keyof typeof Ionicons.glyphMap>;
 }
 

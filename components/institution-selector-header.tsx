@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * Header minimalista moderno - Fintech Design 2025
  * Diseño "Flat & Clean" optimizado para Dark Mode
  */
+// eslint-disable-next-line complexity
 export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: boolean }) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();

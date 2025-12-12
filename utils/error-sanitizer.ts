@@ -8,6 +8,50 @@
 import { SANITIZED_ERROR_MESSAGES } from '@/constants/security';
 
 /**
+ * Verifica si el mensaje es un error de servidor
+ */
+const isServerError = (message: string): boolean => {
+  return message.includes('server') ||
+    message.includes('500') ||
+    message.includes('502') ||
+    message.includes('503') ||
+    message.includes('504');
+};
+
+/**
+ * Verifica si el mensaje es un error de rate limiting
+ */
+const isRateLimitError = (message: string): boolean => {
+  return message.includes('rate') ||
+    message.includes('limit') ||
+    message.includes('too many') ||
+    message.includes('429');
+};
+
+/**
+ * Verifica si el mensaje es un error de credenciales
+ */
+const isCredentialsError = (message: string): boolean => {
+  return message.includes('credential') ||
+    message.includes('password') ||
+    message.includes('username') ||
+    message.includes('invalid') ||
+    message.includes('unauthorized') ||
+    message.includes('401');
+};
+
+/**
+ * Verifica si el mensaje es un error de red
+ */
+const isNetworkError = (message: string): boolean => {
+  return message.includes('network') ||
+    message.includes('connection') ||
+    message.includes('timeout') ||
+    message.includes('fetch') ||
+    message.includes('econnrefused');
+};
+
+/**
  * Sanitiza mensajes de error de autenticación para no exponer detalles técnicos.
  * Los errores técnicos deben loguearse internamente pero al usuario se le muestra
  * un mensaje genérico y seguro.
@@ -22,51 +66,22 @@ export function sanitizeAuthError(
 ): string {
   const message = error instanceof Error ? error.message.toLowerCase() : '';
 
-  // Errores de servidor (verificar primero para evitar falsos positivos)
-  if (
-    message.includes('server') ||
-    message.includes('500') ||
-    message.includes('502') ||
-    message.includes('503') ||
-    message.includes('504')
-  ) {
+  if (isServerError(message)) {
     return SANITIZED_ERROR_MESSAGES.SERVER_ERROR;
   }
 
-  // Rate limiting
-  if (
-    message.includes('rate') ||
-    message.includes('limit') ||
-    message.includes('too many') ||
-    message.includes('429')
-  ) {
+  if (isRateLimitError(message)) {
     return SANITIZED_ERROR_MESSAGES.RATE_LIMITED;
   }
 
-  // Errores de credenciales - mensaje específico seguro
-  if (
-    message.includes('credential') ||
-    message.includes('password') ||
-    message.includes('username') ||
-    message.includes('invalid') ||
-    message.includes('unauthorized') ||
-    message.includes('401')
-  ) {
+  if (isCredentialsError(message)) {
     return SANITIZED_ERROR_MESSAGES.INVALID_CREDENTIALS;
   }
 
-  // Errores de red
-  if (
-    message.includes('network') ||
-    message.includes('connection') ||
-    message.includes('timeout') ||
-    message.includes('fetch') ||
-    message.includes('econnrefused')
-  ) {
+  if (isNetworkError(message)) {
     return SANITIZED_ERROR_MESSAGES.NETWORK_ERROR;
   }
 
-  // Mensaje genérico para cualquier otro error
   return defaultMessage;
 }
 

@@ -111,6 +111,34 @@ export function useCardOperation(options: UseCardOperationOptions = {}) {
     setState(prev => ({ ...prev, result: null }));
   }, []);
 
+  // Construir el resultado de una operación
+  const buildOperationResult = <T,>(
+    response: { success: boolean; message: string; data?: T },
+    successTitle: string,
+    executeOptions?: ExecuteOperationOptions<T>
+  ): OperationResult => {
+    const getMessage = () => {
+      if (response.success && executeOptions?.successMessage) {
+        return executeOptions.successMessage;
+      }
+      return response.message;
+    };
+
+    const getReceiptId = () => {
+      if (response.success && executeOptions?.receiptPrefix) {
+        return `${executeOptions.receiptPrefix}-${Math.floor(Math.random() * 10000)}`;
+      }
+      return undefined;
+    };
+
+    return {
+      success: response.success,
+      title: response.success ? successTitle : 'Error',
+      message: getMessage(),
+      receiptId: getReceiptId(),
+    };
+  };
+
   // Ejecutar operación con manejo automático de estados
   const executeOperation = useCallback(async <T>(
     operation: () => Promise<{ success: boolean; message: string; data?: T }>,
@@ -121,17 +149,7 @@ export function useCardOperation(options: UseCardOperationOptions = {}) {
     
     try {
       const response = await operation();
-      
-      const operationResult: OperationResult = {
-        success: response.success,
-        title: response.success ? successTitle : 'Error',
-        message: response.success && executeOptions?.successMessage 
-          ? executeOptions.successMessage 
-          : response.message,
-        receiptId: response.success && executeOptions?.receiptPrefix 
-          ? `${executeOptions.receiptPrefix}-${Math.floor(Math.random() * 10000)}`
-          : undefined,
-      };
+      const operationResult = buildOperationResult(response, successTitle, executeOptions);
       
       finishWithResult(operationResult);
       

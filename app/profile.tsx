@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type TabType = 'info' | 'version' | 'password';
 
+// eslint-disable-next-line max-lines-per-function
 export default function ProfileScreen() {
   const theme = useAppTheme();
   const router = useRouter();

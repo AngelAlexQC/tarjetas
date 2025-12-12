@@ -78,6 +78,25 @@ export const formatAmount = (
 };
 
 /**
+ * Determina el divisor y sufijo para un número compacto
+ */
+const getCompactNumberScale = (absAmount: number): { value: number; suffix: string } | null => {
+  if (absAmount >= NUMBER_THRESHOLDS.TRILLION) {
+    return { value: absAmount / NUMBER_THRESHOLDS.TRILLION, suffix: NUMBER_SUFFIXES.TRILLION };
+  }
+  if (absAmount >= NUMBER_THRESHOLDS.BILLION) {
+    return { value: absAmount / NUMBER_THRESHOLDS.BILLION, suffix: NUMBER_SUFFIXES.BILLION };
+  }
+  if (absAmount >= NUMBER_THRESHOLDS.MILLION) {
+    return { value: absAmount / NUMBER_THRESHOLDS.MILLION, suffix: NUMBER_SUFFIXES.MILLION };
+  }
+  if (absAmount >= NUMBER_THRESHOLDS.THOUSAND) {
+    return { value: absAmount / NUMBER_THRESHOLDS.THOUSAND, suffix: NUMBER_SUFFIXES.THOUSAND };
+  }
+  return null;
+};
+
+/**
  * Formatea un número compacto (ej: 1.2K, 1.5M)
  * Compatible con React Native/Hermes que no soporta notation: 'compact'
  * @param amount - Cantidad a formatear
@@ -103,23 +122,10 @@ export const formatCompactCurrency = (
   try {
     const absAmount = Math.abs(amount);
     const sign = amount < 0 ? '-' : '';
-    let value: number;
-    let suffix: string;
-
-    // Determinar el divisor y sufijo usando constantes
-    if (absAmount >= NUMBER_THRESHOLDS.TRILLION) {
-      value = absAmount / NUMBER_THRESHOLDS.TRILLION;
-      suffix = NUMBER_SUFFIXES.TRILLION;
-    } else if (absAmount >= NUMBER_THRESHOLDS.BILLION) {
-      value = absAmount / NUMBER_THRESHOLDS.BILLION;
-      suffix = NUMBER_SUFFIXES.BILLION;
-    } else if (absAmount >= NUMBER_THRESHOLDS.MILLION) {
-      value = absAmount / NUMBER_THRESHOLDS.MILLION;
-      suffix = NUMBER_SUFFIXES.MILLION;
-    } else if (absAmount >= NUMBER_THRESHOLDS.THOUSAND) {
-      value = absAmount / NUMBER_THRESHOLDS.THOUSAND;
-      suffix = NUMBER_SUFFIXES.THOUSAND;
-    } else {
+    
+    const scale = getCompactNumberScale(absAmount);
+    
+    if (!scale) {
       // Números menores a 1000
       if (showCurrencySymbol) {
         return formatCurrency(amount, { locale, currency, maximumFractionDigits });
@@ -131,7 +137,7 @@ export const formatCompactCurrency = (
     }
 
     // Formatear el número con decimales
-    const formattedValue = value.toLocaleString(locale, {
+    const formattedValue = scale.value.toLocaleString(locale, {
       minimumFractionDigits: 0,
       maximumFractionDigits,
     });
@@ -139,10 +145,10 @@ export const formatCompactCurrency = (
     // Agregar símbolo de moneda si se requiere
     if (showCurrencySymbol) {
       const symbol = getCurrencySymbol(currency, locale);
-      return `${sign}${symbol}${formattedValue}${suffix}`;
+      return `${sign}${symbol}${formattedValue}${scale.suffix}`;
     }
 
-    return `${sign}${formattedValue}${suffix}`;
+    return `${sign}${formattedValue}${scale.suffix}`;
   } catch (error) {
     log.warn('Error formateando moneda compacta:', error);
     

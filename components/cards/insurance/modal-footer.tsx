@@ -5,6 +5,7 @@ import React from 'react';
 import { View } from 'react-native';
 import type { Card } from '@/repositories';
 import type { Insurance } from './insurance-generator';
+import type { InsuranceModalStyles } from './insurance-detail-modal-styles';
 
 interface ModalFooterProps {
   insurance: Insurance;
@@ -12,7 +13,7 @@ interface ModalFooterProps {
   formatAmount: (amount: number) => string;
   onContract?: (insurance: Insurance) => void;
   onClose: () => void;
-  styles: any;
+  styles: InsuranceModalStyles;
 }
 
 export const ModalFooter = ({

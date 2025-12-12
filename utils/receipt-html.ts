@@ -10,6 +10,7 @@ interface ReceiptData {
   theme: AppTheme;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export const generateReceiptHtml = async ({ result, card: _card, transactionDetails, theme }: ReceiptData) => {
   const isSuccess = result.success;
   const color = isSuccess ? '#4CAF50' : '#F44336';

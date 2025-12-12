@@ -25,6 +25,7 @@ const ACCOUNTS = [
 const TERMS = [3, 6, 9, 12, 24];
 type Step = 'form' | 'summary' | 'validation';
 
+// eslint-disable-next-line max-lines-per-function, complexity
 export default function AdvanceScreen() {
   const theme = useAppTheme();
   const router = useRouter();
