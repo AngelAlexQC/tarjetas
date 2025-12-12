@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AngelAlexQC_financiero&metric=alert_status&token=b8abbf841d65dad2abd894a2700b8c909c27e6b5)](https://sonarcloud.io/summary/new_code?id=AngelAlexQC_financiero)
+
 # Aplicación Financiera Marca Blanca (Multi-Tenant)
 
 Aplicación móvil desarrollada en **React Native + Expo** diseñada para operar bajo un modelo de marca blanca, permitiendo a múltiples instituciones financieras ofrecer sus servicios con una experiencia de usuario personalizada y segura.
