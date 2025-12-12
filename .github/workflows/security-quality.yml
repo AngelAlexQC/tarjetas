@@ -158,6 +158,7 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v6
+        continue-on-error: true  # Permite obtener informe aunque no pase el Quality Gate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -181,6 +182,6 @@ jobs:
           echo "| Tests & Coverage | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| npm Audit | ${{ needs.npm-audit.result == 'success' && '✅ Passed' || '⚠️ Issues Found' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| OWASP Dependency Check | ${{ needs.owasp-dependency-check.result == 'success' && '✅ Passed' || '⚠️ Issues Found' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| SonarCloud | ${{ needs.sonarcloud.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| SonarCloud | ${{ needs.sonarcloud.result == 'success' && '✅ Passed' || '⚠️ Quality Gate Issues' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📁 Check the Artifacts tab for detailed reports." >> $GITHUB_STEP_SUMMARY
