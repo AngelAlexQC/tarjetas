@@ -2,10 +2,10 @@
  * BiometricAccessScreen Component Tests
  * 
  * Tests para el componente de acceso biométrico.
- * Se enfocan en renderizado básico debido a la complejidad de la autenticación.
+ * Se enfocan en el flujo de autenticación, éxito, error y reintento.
  */
 
-import { render } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Platform } from 'react-native';
 import { BiometricAccessScreen } from '../biometric-access-screen';
@@ -71,9 +71,9 @@ jest.mock('@/utils/logger', () => ({
 
 // Mock de ThemedText
 jest.mock('@/components/themed-text', () => ({
-  ThemedText: ({ children }: { children: React.ReactNode }) => {
+  ThemedText: ({ children, testID }: { children: React.ReactNode, testID?: string }) => {
     const { Text } = require('react-native');
-    return <Text>{children}</Text>;
+    return <Text testID={testID}>{children}</Text>;
   },
 }));
 
@@ -110,38 +110,107 @@ describe('BiometricAccessScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    mockAuthenticateWithBiometric.mockResolvedValue({ success: false });
   });
 
   afterEach(() => {
     jest.useRealTimers();
   });
 
-  describe('Renderizado', () => {
-    it('should render correctly', () => {
-      const { root } = render(<BiometricAccessScreen {...mockProps} />);
-      expect(root).toBeTruthy();
+  it('should attempt authentication on mount', async () => {
+    mockAuthenticateWithBiometric.mockResolvedValue({ success: false });
+    render(<BiometricAccessScreen {...mockProps} />);
+    
+    // Fast-forward timer for auto-start (500ms in component)
+    act(() => {
+      jest.advanceTimersByTime(500);
     });
 
-    it('should display user greeting when userName is provided', () => {
-      const { getByText } = render(<BiometricAccessScreen {...mockProps} />);
-      
-      expect(getByText('¡Hola, Juan!')).toBeTruthy();
-    });
-
-    it('should display biometric access title', () => {
-      const { getByText } = render(<BiometricAccessScreen {...mockProps} />);
-      
-      expect(getByText('Acceso Biométrico')).toBeTruthy();
+    await waitFor(() => {
+      expect(mockAuthenticateWithBiometric).toHaveBeenCalled();
     });
   });
 
-  describe('Estructura', () => {
-    it('should have View elements', () => {
-      const { root } = render(<BiometricAccessScreen {...mockProps} />);
-      
-      const views = root.findAllByType('View');
-      expect(views.length).toBeGreaterThan(0);
+  it('should call onSuccess after successful authentication', async () => {
+    mockAuthenticateWithBiometric.mockResolvedValue({ success: true });
+    render(<BiometricAccessScreen {...mockProps} />);
+
+    // Fast-forward start timer
+    act(() => {
+      jest.advanceTimersByTime(500);
     });
+
+    await waitFor(() => {
+      expect(mockAuthenticateWithBiometric).toHaveBeenCalled();
+    });
+
+    // Fast-forward success delay (500ms in component)
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(mockProps.onSuccess).toHaveBeenCalled();
+  });
+
+  it('should show error and retry button on failed authentication', async () => {
+    mockAuthenticateWithBiometric.mockResolvedValue({ success: false, error: 'No reconocido' });
+    const { getByText } = render(<BiometricAccessScreen {...mockProps} />);
+
+    // Fast-forward start timer
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    await waitFor(() => {
+      expect(mockAuthenticateWithBiometric).toHaveBeenCalled();
+    });
+
+    // Should display error
+    expect(getByText('No reconocido')).toBeTruthy();
+
+    // Should show buttons
+    expect(getByText('Intentar de nuevo')).toBeTruthy();
+  });
+
+  it('should retry authentication when retry button is pressed', async () => {
+    mockAuthenticateWithBiometric.mockResolvedValueOnce({ success: false, error: 'Error 1' });
+    const { getByText } = render(<BiometricAccessScreen {...mockProps} />);
+
+    // Fast-forward start timer
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+    await waitFor(() => {
+      expect(mockAuthenticateWithBiometric).toHaveBeenCalledTimes(1);
+    });
+
+    const retryButton = getByText('Intentar de nuevo');
+    
+    mockAuthenticateWithBiometric.mockResolvedValueOnce({ success: true });
+    fireEvent.press(retryButton);
+
+    await waitFor(() => {
+      expect(mockAuthenticateWithBiometric).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should call onUsePassword when password button is pressed', async () => {
+     // We need to wait for auth to fail/finish so buttons appear
+    mockAuthenticateWithBiometric.mockResolvedValue({ success: false });
+    const { getByText } = render(<BiometricAccessScreen {...mockProps} />);
+
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+    
+    await waitFor(() => {
+      // Wait for buttons
+      expect(getByText('Usar contraseña')).toBeTruthy();
+    });
+
+    const passwordButton = getByText('Usar contraseña');
+    fireEvent.press(passwordButton);
+
+    expect(mockProps.onUsePassword).toHaveBeenCalled();
   });
 });

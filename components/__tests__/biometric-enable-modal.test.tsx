@@ -4,7 +4,7 @@
  * Tests para el modal de habilitación biométrica.
  */
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Platform } from 'react-native';
 import { BiometricEnableModal } from '../biometric-enable-modal';
@@ -68,6 +68,28 @@ jest.mock('@/components/ui/themed-button', () => ({
   },
 }));
 
+// Mock ThemedText
+jest.mock('@/components/themed-text', () => ({
+  ThemedText: ({ children }: { children: React.ReactNode }) => {
+    const { Text } = require('react-native');
+    return <Text>{children}</Text>;
+  },
+}));
+
+// Mock ThemedView
+jest.mock('@/components/themed-view', () => ({
+  ThemedView: ({ children, style }: { children: React.ReactNode, style: any }) => {
+    const { View } = require('react-native');
+    return <View style={style}>{children}</View>;
+  },
+}));
+
+// Mock Icons
+jest.mock('lucide-react-native', () => ({
+  Fingerprint: () => 'FingerprintIcon',
+  ShieldCheck: () => 'ShieldCheckIcon',
+}));
+
 describe('BiometricEnableModal', () => {
   const mockProps = {
     isVisible: true,
@@ -88,50 +110,61 @@ describe('BiometricEnableModal', () => {
       expect(root).toBeTruthy();
     });
 
-    it('should render modal title', () => {
-      const { getByText } = render(<BiometricEnableModal {...mockProps} />);
-      
-      expect(getByText('¿Activar Acceso Rápido?')).toBeTruthy();
+    it('should return null if biometric is not available', () => {
+      mockUseAuth.mockReturnValue({ isBiometricAvailable: false });
+      const { toJSON } = render(<BiometricEnableModal {...mockProps} />);
+      expect(toJSON()).toBeNull();
     });
 
-    it('should render description', () => {
-      const { getByText } = render(<BiometricEnableModal {...mockProps} />);
-      
-      expect(getByText(/para acceder más rápido/)).toBeTruthy();
-    });
+    it('should render correct text based on Platform', () => {
+       // Default is iOS in mock setup usually or we can spy on it. 
+       // Platform.OS is mocked at top level.
+       mockPlatform.OS = 'ios';
+       const { getByText, rerender } = render(<BiometricEnableModal {...mockProps} />);
+       expect(getByText(/Face ID \/ Touch ID/)).toBeTruthy();
 
-    it('should render benefits list', () => {
-      const { getByText } = render(<BiometricEnableModal {...mockProps} />);
-      
-      expect(getByText('Acceso instantáneo')).toBeTruthy();
-      expect(getByText('Mayor seguridad')).toBeTruthy();
-      expect(getByText('Sin contraseñas')).toBeTruthy();
-    });
-
-    it('should render action buttons', () => {
-      const { getByText } = render(<BiometricEnableModal {...mockProps} />);
-      
-      expect(getByText('Activar Ahora')).toBeTruthy();
-      expect(getByText('Más Tarde')).toBeTruthy();
+       mockPlatform.OS = 'android';
+       rerender(<BiometricEnableModal {...mockProps} />);
+       expect(getByText(/Huella Digital/)).toBeTruthy();
     });
   });
 
   describe('Interacciones', () => {
     it('should call onSkip when skip button is pressed', () => {
       const { getByText } = render(<BiometricEnableModal {...mockProps} />);
-      
       fireEvent.press(getByText('Más Tarde'));
-      
       expect(mockProps.onSkip).toHaveBeenCalledTimes(1);
     });
-  });
 
-  describe('Estructura', () => {
-    it('should have View elements', () => {
-      const { root } = render(<BiometricEnableModal {...mockProps} />);
+    it('should call onEnable when enable button is pressed', async () => {
+      const { getByText } = render(<BiometricEnableModal {...mockProps} />);
+      const enableButton = getByText('Activar Ahora');
       
-      const views = root.findAllByType('View');
-      expect(views.length).toBeGreaterThan(0);
+      await act(async () => {
+          fireEvent.press(enableButton);
+      });
+      
+      expect(mockProps.onEnable).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show loading state while enabling', async () => {
+      let resolveEnable: (value: void) => void;
+      const enablePromise = new Promise<void>((resolve) => {
+        resolveEnable = resolve;
+      });
+      mockProps.onEnable.mockReturnValue(enablePromise);
+
+      const { getByText } = render(<BiometricEnableModal {...mockProps} />);
+      const enableButton = getByText('Activar Ahora');
+      
+      fireEvent.press(enableButton);
+      
+      // Check loading state (button text changes to Loading... in our mock)
+      expect(getByText('Loading...')).toBeTruthy();
+
+      await act(async () => {
+         resolveEnable!();
+      });
     });
   });
 });

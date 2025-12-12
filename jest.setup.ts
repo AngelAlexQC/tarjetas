@@ -11,19 +11,20 @@ jest.mock('react-native-reanimated', () => {
   
   // Helper to ensure functions are valid
   const noop = () => {};
-  const mockFn = (fn: any) => fn || noop;
-
+  
   // Enhance the mock
   Reanimated.default.call = () => {};
-  Reanimated.runOnJS = jest.fn((fn: any) => fn);
+  
+  // Properly type runOnJS mock
+  Reanimated.runOnJS = jest.fn((fn: (...args: any[]) => any) => fn);
   
   return {
     ...Reanimated,
-    runOnJS: jest.fn((fn: any) => fn),
+    runOnJS: jest.fn((fn: (...args: any[]) => any) => fn),
     useSharedValue: jest.fn((val: any) => ({ value: val })),
-    useAnimatedStyle: jest.fn((fn: any) => fn()),
-    useAnimatedProps: jest.fn((fn: any) => fn()),
-    useDerivedValue: jest.fn((fn: any) => ({ value: fn() })),
+    useAnimatedStyle: jest.fn((fn: () => any) => fn()),
+    useAnimatedProps: jest.fn((fn: () => any) => fn()),
+    useDerivedValue: jest.fn((fn: () => any) => ({ value: fn() })),
     withTiming: jest.fn((toValue: any, config: any, callback: any) => {
       if (callback) callback(true);
       return toValue;
