@@ -4,6 +4,10 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 
+// Import components
+import { AmountInput, InfoBox } from '../advance-components';
+import { ProgressHeader } from '../defer-components';
+
 // Mock dependencies
 jest.mock('@/hooks/use-app-theme', () => ({
   useAppTheme: () => ({
@@ -43,10 +47,6 @@ jest.mock('@/components/themed-text', () => ({
     return <Text style={style} {...props}>{children}</Text>;
   },
 }));
-
-// Import components
-import { AmountInput, InfoBox } from '../advance-components';
-import { ProgressHeader } from '../defer-components';
 
 describe('Operations Components', () => {
   describe('Advance Components', () => {

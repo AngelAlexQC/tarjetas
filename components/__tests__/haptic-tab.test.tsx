@@ -46,6 +46,7 @@ describe('HapticTab', () => {
   const mockProps = {
     onPressIn: mockOnPressIn,
     accessibilityState: mockAccessibilityState,
+    children: <></>,
   };
 
   beforeEach(() => {
@@ -102,6 +103,7 @@ describe('HapticTab', () => {
     it('should handle missing onPressIn prop gracefully', () => {
       const propsWithoutOnPressIn = {
         accessibilityState: mockAccessibilityState,
+        children: <></>,
       };
       
       const { getByTestId } = render(<HapticTab {...propsWithoutOnPressIn} />);

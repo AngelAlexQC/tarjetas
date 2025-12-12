@@ -6,6 +6,12 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 
+// Import components after mocks
+import { createMockCard } from '@test-utils';
+import { CardCarousel } from '../card-carousel';
+import { CreditCard } from '../credit-card';
+import { SummaryPanel } from '../summary-panel';
+
 // Mock all heavy dependencies
 jest.mock('@/hooks/use-app-theme', () => ({
   useAppTheme: () => ({
@@ -194,12 +200,6 @@ jest.mock('@/components/themed-text', () => ({
     return <Text style={style} {...props}>{children}</Text>;
   },
 }));
-
-// Import components after mocks
-import { createMockCard } from '@test-utils';
-import { CardCarousel } from '../card-carousel';
-import { CreditCard } from '../credit-card';
-import { SummaryPanel } from '../summary-panel';
 
 describe('Card Components Integration', () => {
   const mockCard = createMockCard({

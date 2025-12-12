@@ -3,6 +3,9 @@
  */
 
 // Mock dependencies
+// Import after mocks
+import { formatCurrencyWithSymbol } from '../utils';
+
 jest.mock('@/hooks/use-app-theme', () => ({
   useAppTheme: () => ({
     isDark: false,
@@ -34,9 +37,6 @@ jest.mock('@/components/ui/circular-progress', () => ({
 jest.mock('@/components/ui/tab-icons', () => ({
   SettingsIcon: () => null,
 }));
-
-// Import after mocks
-import { formatCurrencyWithSymbol } from '../utils';
 
 describe('CardFinancialInfo Subcomponents', () => {
   describe('formatCurrencyWithSymbol', () => {

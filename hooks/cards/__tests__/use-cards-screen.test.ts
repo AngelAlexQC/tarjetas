@@ -2,6 +2,7 @@
  * Cards Screen Hook Tests
  */
 
+import { InsuranceType } from '@/components/cards/insurance/insurance-generator';
 import { useSplash } from '@/contexts/splash-context';
 import { act, renderHook } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
@@ -89,7 +90,8 @@ describe('useCardsScreen', () => {
       isLoading: false,
       fetchCards: mockFetchCards,
     });
-    (Platform as any).OS = 'ios';
+    // @ts-ignore
+    Platform.OS = 'ios';
   });
 
   afterEach(() => {
@@ -192,7 +194,6 @@ describe('useCardsScreen', () => {
       act(() => {
         result.current.onViewableItemsChanged({
           viewableItems: [{ index: 1, item: mockCards[1], isViewable: true, key: '1' }],
-          changed: [],
         });
       });
 
@@ -207,7 +208,6 @@ describe('useCardsScreen', () => {
       act(() => {
         result.current.onViewableItemsChanged({
           viewableItems: [],
-          changed: [],
         });
       });
 
@@ -221,8 +221,7 @@ describe('useCardsScreen', () => {
 
       act(() => {
         result.current.onViewableItemsChanged({
-          viewableItems: [{ index: null, item: mockCards[0], isViewable: true, key: '0' }],
-          changed: [],
+          viewableItems: [{ index: null, item: mockCards[0], isViewable: true, key: '0' } as any],
         });
       });
 
@@ -279,10 +278,16 @@ describe('useCardsScreen', () => {
   describe('insurance handling', () => {
     const mockInsurance = {
       id: 'ins-1',
+      type: 'vida' as InsuranceType,
       title: 'Seguro de Vida',
       description: 'Protección para tu familia',
+      coverage: 'Hasta',
+      coverageAmount: 100000,
       monthlyPrice: 50,
       currency: 'USD',
+      icon: 'heart',
+      color: '#FF3B30',
+      benefits: ['Beneficio 1'],
     };
 
     it('should open insurance modal on press', () => {
@@ -417,7 +422,8 @@ describe('useCardsScreen', () => {
 
   describe('handleAddToWallet', () => {
     it('should show Apple Wallet alert on iOS', () => {
-      (Platform as any).OS = 'ios';
+      // @ts-ignore
+      Platform.OS = 'ios';
 
       const { result } = renderHook(() => 
         useCardsScreen({ cardWidth: 300, cardSpacing: 16 })
@@ -434,7 +440,8 @@ describe('useCardsScreen', () => {
     });
 
     it('should show Google Wallet alert on Android', () => {
-      (Platform as any).OS = 'android';
+      // @ts-ignore
+      Platform.OS = 'android';
 
       const { result } = renderHook(() => 
         useCardsScreen({ cardWidth: 300, cardSpacing: 16 })
@@ -475,10 +482,16 @@ describe('useCardsScreen', () => {
       act(() => {
         result.current.handleInsurancePress({
           id: 'ins-1',
+          type: 'vida' as InsuranceType,
           title: 'Test',
           description: 'Test',
+          coverage: 'Hasta',
+          coverageAmount: 100000,
           monthlyPrice: 50,
           currency: 'USD',
+          icon: 'heart',
+          color: '#FF3B30',
+          benefits: ['Beneficio 1'],
         });
       });
 
