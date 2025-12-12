@@ -373,7 +373,8 @@ describe('useCardsScreen', () => {
 
       expect(Alert.alert).toHaveBeenCalledWith(
         'Fondos Insuficientes',
-        expect.stringContaining('crédito disponible')
+        expect.stringContaining('crédito disponible'),
+        [{ text: 'Entendido' }]
       );
     });
 
@@ -399,7 +400,8 @@ describe('useCardsScreen', () => {
 
       expect(Alert.alert).toHaveBeenCalledWith(
         'Fondos Insuficientes',
-        expect.stringContaining('saldo')
+        expect.stringContaining('saldo'),
+        [{ text: 'Entendido' }]
       );
     });
 

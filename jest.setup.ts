@@ -5,18 +5,71 @@
  */
 
 // Mock de react-native-reanimated
+// Mock de react-native-reanimated
 jest.mock('react-native-reanimated', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const Reanimated = require('react-native-reanimated/mock');
+  
+  // Helper to ensure functions are valid
+  const noop = () => {};
+  const mockFn = (fn) => fn || noop;
+
+  // Enhance the mock
   Reanimated.default.call = () => {};
   Reanimated.runOnJS = jest.fn((fn: any) => fn);
+  
   return {
     ...Reanimated,
     runOnJS: jest.fn((fn: any) => fn),
+    useSharedValue: jest.fn((val: any) => ({ value: val })),
+    useAnimatedStyle: jest.fn((fn: any) => fn()),
+    useAnimatedProps: jest.fn((fn: any) => fn()),
+    useDerivedValue: jest.fn((fn: any) => ({ value: fn() })),
+    withTiming: jest.fn((toValue: any, config: any, callback: any) => {
+      if (callback) callback(true);
+      return toValue;
+    }),
+    withSpring: jest.fn((toValue: any) => toValue),
+    withDelay: jest.fn((_: any, anim: any) => anim),
+    withSequence: jest.fn((...args: any[]) => args[args.length - 1]),
+    withRepeat: jest.fn((anim: any) => anim),
+    interpolate: jest.fn(() => 0),
+    Easing: {
+      bezier: () => 0,
+      in: () => 0,
+      out: () => 0,
+      inOut: () => 0,
+      ease: () => 0,
+      linear: () => 0,
+    },
+    Extrapolation: {
+      CLAMP: 'clamp',
+    },
   };
 });
 
 // Mock de expo-modules
+jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry', () => {
+  const actual = jest.requireActual('react-native/Libraries/TurboModule/TurboModuleRegistry');
+  return {
+    ...actual,
+    getEnforcing: (name: string) => {
+      if (name === 'DevMenu') {
+        return {
+          show: jest.fn(),
+          reload: jest.fn(),
+        };
+      }
+      if (name === 'SettingsManager') {
+        return {
+          settings: {},
+          getConstants: jest.fn(() => ({ settings: {} })),
+        };
+      }
+      return actual.getEnforcing(name);
+    },
+  };
+});
+
 jest.mock('expo-font', () => ({
   loadAsync: jest.fn(),
   isLoaded: jest.fn(() => true),

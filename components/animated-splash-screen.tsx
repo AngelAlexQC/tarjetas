@@ -538,7 +538,8 @@ export function AnimatedSplashScreen({
       );
 
       // Salida suave y elegante
-      setTimeout(() => {
+      // Salida suave y elegante
+      const timer1 = setTimeout(() => {
         opacityValue.value = withTiming(0, {
           duration: 500, // Más rápido
           easing: Easing.in(Easing.ease), // Ease-in para salida
@@ -548,12 +549,16 @@ export function AnimatedSplashScreen({
           easing: Easing.in(Easing.ease),
         });
 
-        setTimeout(() => {
+        const timer2 = setTimeout(() => {
           globalSplashShown = true;
           runOnJS(setSplashAnimationComplete)(true);
           runOnJS(setSplashComplete)(true);
         }, 500);
+
+        return () => clearTimeout(timer2);
       }, 2500);
+      
+      return () => clearTimeout(timer1);
     }
   }, [isAppReady, masterProgress, dragonflyY, dragonflyRotation, dragonflyScale, glowIntensity, opacity, scale, setSplashComplete]);
 
