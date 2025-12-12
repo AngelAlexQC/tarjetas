@@ -194,7 +194,7 @@ export class SSLPinningManager {
    */
   async validateCertificate(
     hostname: string,
-    certificate: string
+    _certificate: string
   ): Promise<CertificateValidationResult> {
     // Verificar si está en caché
     const cached = this.validationCache.get(hostname);

@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
 import { useKeyboard } from '../use-keyboard';
 import { Keyboard, Platform } from 'react-native';
 

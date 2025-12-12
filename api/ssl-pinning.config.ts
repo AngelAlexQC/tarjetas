@@ -128,7 +128,7 @@ export const CERTIFICATE_VALIDATION_CONFIG = {
  * 2. Extraer public key: openssl x509 -in cert.pem -pubkey -noout
  * 3. Generar pin: openssl pkey -pubin -in pubkey.pem -outform der | openssl dgst -sha256 -binary | openssl enc -base64
  */
-export function generateCertificatePin(certificatePem: string): string {
+export function generateCertificatePin(_certificatePem: string): string {
   // Esta función requiere implementación nativa
   // En producción, generar los pins offline y hardcodearlos arriba
   throw new Error('Generate pins offline using OpenSSL. See documentation in comments.');

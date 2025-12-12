@@ -38,25 +38,25 @@ describe('ThemedView', () => {
     });
 
     it('should apply default surface level 0', () => {
-      const { root } = render(<ThemedView testID="themed-view" />);
+      render(<ThemedView testID="themed-view" />);
       
       expect(mockTheme.helpers.getSurface).toHaveBeenCalledWith(0);
     });
 
     it('should apply surface level 1', () => {
-      const { root } = render(<ThemedView surface={1} testID="themed-view" />);
+      render(<ThemedView surface={1} testID="themed-view" />);
       
       expect(mockTheme.helpers.getSurface).toHaveBeenCalledWith(1);
     });
 
     it('should apply surface level 2', () => {
-      const { root } = render(<ThemedView surface={2} testID="themed-view" />);
+      render(<ThemedView surface={2} testID="themed-view" />);
       
       expect(mockTheme.helpers.getSurface).toHaveBeenCalledWith(2);
     });
 
     it('should apply surface level 3', () => {
-      const { root } = render(<ThemedView surface={3} testID="themed-view" />);
+      render(<ThemedView surface={3} testID="themed-view" />);
       
       expect(mockTheme.helpers.getSurface).toHaveBeenCalledWith(3);
     });

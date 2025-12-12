@@ -157,7 +157,7 @@ describe('SSL Pinning Configuration', () => {
 
   describe('SSL_PINNING_CONFIG validation', () => {
     it('should have valid configuration structure', () => {
-      SSL_PINNING_CONFIG.forEach((config, index) => {
+      SSL_PINNING_CONFIG.forEach((config, _index) => {
         expect(config.hostname).toBeDefined();
         expect(typeof config.hostname).toBe('string');
         expect(config.hostname.length).toBeGreaterThan(0);

@@ -164,10 +164,20 @@ describe('TourContext', () => {
 
   it('should handle onTooltipClosed and save to storage', async () => {
     const { result } = renderHook(() => useTour(), { wrapper: TestWrapper });
+    const showMock = jest.fn();
 
     act(() => {
-      result.current.register('close-test-key', jest.fn(), 1);
+      result.current.setAppReady();
     });
+
+    act(() => {
+      result.current.register('close-test-key', showMock, 1);
+    });
+
+    // Esperar a que el item se muestre (implica que currentKey se estableció)
+    await waitFor(() => {
+      expect(showMock).toHaveBeenCalled();
+    }, { timeout: 1000 });
 
     await act(async () => {
       result.current.onTooltipClosed('close-test-key');

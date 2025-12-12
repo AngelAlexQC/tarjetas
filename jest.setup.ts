@@ -9,10 +9,10 @@ jest.mock('react-native-reanimated', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const Reanimated = require('react-native-reanimated/mock');
   Reanimated.default.call = () => {};
-  Reanimated.runOnJS = (fn: any) => fn;
+  Reanimated.runOnJS = jest.fn((fn: any) => fn);
   return {
     ...Reanimated,
-    runOnJS: (fn: any) => fn,
+    runOnJS: jest.fn((fn: any) => fn),
   };
 });
 

@@ -99,21 +99,21 @@ describe('ThemedText', () => {
 
     it('should apply tertiary variant color', () => {
       const { getByText } = render(<ThemedText variant="tertiary">Tertiary Text</ThemedText>);
-      const text = getByText('Tertiary Text');
+      getByText('Tertiary Text');
       
       expect(mockTheme.helpers.getText).toHaveBeenCalledWith('tertiary');
     });
 
     it('should apply disabled variant color', () => {
       const { getByText } = render(<ThemedText variant="disabled">Disabled Text</ThemedText>);
-      const text = getByText('Disabled Text');
+      getByText('Disabled Text');
       
       expect(mockTheme.helpers.getText).toHaveBeenCalledWith('disabled');
     });
 
     it('should apply inverse variant color', () => {
       const { getByText } = render(<ThemedText variant="inverse">Inverse Text</ThemedText>);
-      const text = getByText('Inverse Text');
+      getByText('Inverse Text');
       
       expect(mockTheme.helpers.getText).toHaveBeenCalledWith('inverse');
     });

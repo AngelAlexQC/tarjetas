@@ -63,7 +63,7 @@ describe('card-types', () => {
     });
 
     it('should work for all brands', () => {
-      const brands: Array<'visa' | 'mastercard' | 'amex' | 'discover' | 'diners' | 'jcb' | 'maestro' | 'unionpay'> = 
+      const brands: ('visa' | 'mastercard' | 'amex' | 'discover' | 'diners' | 'jcb' | 'maestro' | 'unionpay')[] = 
         ['visa', 'mastercard', 'amex', 'discover', 'diners', 'jcb', 'maestro', 'unionpay'];
       
       brands.forEach(brand => {
