@@ -204,6 +204,46 @@ describe('AuthContext', () => {
         error: 'Error al iniciar sesión. Intenta de nuevo.',
       });
     });
+
+    it('should handle network error', async () => {
+      mockAuthRepository.login.mockRejectedValue(new Error('Network connection failed'));
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      let loginResult;
+      await act(async () => {
+        loginResult = await result.current.login('testuser', 'password');
+      });
+
+      expect(loginResult).toEqual({
+        success: false,
+        error: 'Error de conexión. Verifica tu internet e intenta de nuevo.',
+      });
+    });
+
+    it('should handle server error', async () => {
+      mockAuthRepository.login.mockRejectedValue(new Error('Server error 500'));
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      let loginResult;
+      await act(async () => {
+        loginResult = await result.current.login('testuser', 'password');
+      });
+
+      expect(loginResult).toEqual({
+        success: false,
+        error: 'El servicio no está disponible. Intenta más tarde.',
+      });
+    });
   });
 
   describe('logout', () => {

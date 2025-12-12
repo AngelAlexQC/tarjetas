@@ -25,10 +25,12 @@ jest.mock('@/utils/logger', () => ({
   },
 }));
 
+const mockGetTenantById = jest.fn();
+
 jest.mock('@/repositories', () => ({
   RepositoryContainer: {
     getTenantRepository: () => ({
-      getTenantById: jest.fn().mockResolvedValue(null),
+      getTenantById: mockGetTenantById,
     }),
   },
 }));
@@ -126,6 +128,63 @@ describe('TenantThemeContext', () => {
       });
 
       expect(result.current.colorScheme).toBe('light');
+    });
+
+    it('should load saved tenant and verify with backend', async () => {
+      const savedTenant = { ...mockTenant };
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(savedTenant));
+      mockGetTenantById.mockResolvedValue(savedTenant);
+
+      const { result } = renderHook(() => useTenantTheme(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(mockGetTenantById).toHaveBeenCalledWith(savedTenant.id);
+      expect(result.current.currentTheme).toEqual(savedTenant);
+    });
+
+    it('should clear tenant when saved tenant no longer exists in backend', async () => {
+      const savedTenant = { ...mockTenant };
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(savedTenant));
+      mockGetTenantById.mockResolvedValue(null);
+
+      const { result } = renderHook(() => useTenantTheme(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(AsyncStorage.removeItem).toHaveBeenCalledWith('@tenant_theme');
+      expect(result.current.currentTheme.slug).toBe('default');
+    });
+
+    it('should use cached tenant when backend verification fails', async () => {
+      const savedTenant = { ...mockTenant };
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(savedTenant));
+      mockGetTenantById.mockRejectedValue(new Error('Network error'));
+
+      const { result } = renderHook(() => useTenantTheme(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.currentTheme).toEqual(savedTenant);
+    });
+
+    it('should not load invalid tenant from storage', async () => {
+      const invalidTenant = { ...mockTenant, branding: undefined };
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(invalidTenant));
+
+      const { result } = renderHook(() => useTenantTheme(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.currentTheme.slug).toBe('default');
     });
   });
 

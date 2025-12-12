@@ -95,6 +95,15 @@ describe('useAppTheme', () => {
       expect(typeof result.current.helpers.getThemeGradient).toBe('function');
     });
 
+    it('should execute getThemeGradient and return gradient', () => {
+      const { result } = renderHook(() => useAppTheme(), { wrapper });
+
+      const gradient = result.current.helpers.getThemeGradient();
+      expect(gradient).toBeDefined();
+      expect(Array.isArray(gradient)).toBe(true);
+      expect(gradient.length).toBeGreaterThan(0);
+    });
+
     it('should provide getOverlay helper', () => {
       const { result } = renderHook(() => useAppTheme(), { wrapper });
 
