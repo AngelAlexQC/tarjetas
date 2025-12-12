@@ -43,7 +43,7 @@ export default function StatementsScreen() {
   const loadStatement = useCallback(async () => {
     if (!card?.id) return;
     setIsLoadingStatement(true);
-    const data = await getStatement(card.id, selectedRange.id);
+    const data = await getStatement(card.id);
     setStatement(data);
     setIsLoadingStatement(false);
   }, [card?.id, selectedRange.id, getStatement]);
