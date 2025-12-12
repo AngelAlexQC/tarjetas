@@ -111,6 +111,7 @@ jobs:
           project: 'financiero'
           path: '.'
           format: 'HTML,JSON,SARIF'
+          out: 'reports'
           args: >
             --enableRetired
             --enableExperimental
@@ -130,7 +131,7 @@ jobs:
           retention-days: 30
 
       - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: reports/dependency-check-report.sarif
