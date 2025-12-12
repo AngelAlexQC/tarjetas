@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 import type { Insurance } from './insurance-generator';
-import { BADGE_COLORS } from './insurance-card-constants';
 
 interface InsuranceBadgeProps {
   badge?: string;

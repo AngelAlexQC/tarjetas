@@ -36,7 +36,7 @@ export function getInsuranceColor(type: string): string {
   return INSURANCE_COLORS[type] || INSURANCE_COLORS.fraude;
 }
 
-export function getBadgeStyle(badge: string | undefined, isDark: boolean) {
+export function getBadgeStyle(badge: string | undefined, _isDark: boolean) {
   if (!badge) {
     return {
       backgroundColor: 'transparent',
