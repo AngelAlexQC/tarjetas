@@ -8,10 +8,10 @@
  * - Remember email functionality
  */
 
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Alert } from 'react-native';
-import { EmailLoginScreen } from '../email-login-screen';
+import { EmailLoginScreen, useEmailLoginLogic } from '../email-login-screen';
 
 // Mock de Alert
 jest.spyOn(Alert, 'alert');
@@ -90,19 +90,12 @@ jest.mock('@/components/ui/themed-button', () => ({
 }));
 
 jest.mock('@/components/ui/themed-input', () => ({
-  ThemedInput: ({ label, value, onChangeText, placeholder }: {
-    label: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    placeholder?: string;
-  }) => {
+  ThemedInput: (props: any) => {
     const { TextInput } = require('react-native');
     return (
       <TextInput
-        testID={`input-${label}`}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
+        testID={`input-${props.label}`}
+        {...props}
       />
     );
   },
@@ -359,6 +352,62 @@ describe('EmailLoginScreen', () => {
       await waitFor(() => {
         expect(mockRememberUsername).toHaveBeenCalledWith('test@example.com');
       });
+    });
+  });
+  describe('Lógica del Hook (Unit Tests)', () => {
+    it('should validate empty email', async () => {
+      const { result } = renderHook(() => useEmailLoginLogic(jest.fn()));
+      
+      await act(async () => {
+        // Only set password, leave email empty
+        result.current.setPassword('password123');
+        await result.current.handleLogin();
+      });
+
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Campo requerido', 
+        'Ingresa tu correo electrónico', 
+        expect.any(Array)
+      );
+    });
+
+    it('should validate empty password', async () => {
+      const { result } = renderHook(() => useEmailLoginLogic(jest.fn()));
+      
+      await act(async () => {
+        // Only set email, leave password empty
+        result.current.setEmail('test@example.com');
+      });
+
+      await act(async () => {
+        await result.current.handleLogin();
+      });
+
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Campo requerido', 
+        'Ingresa tu contraseña', 
+        expect.any(Array)
+      );
+    });
+  });
+
+  describe('Password Visibility', () => {
+    it('should toggle password visibility', () => {
+      const { getByTestId, getByPlaceholderText } = render(<EmailLoginScreen {...mockProps} />);
+      
+      const toggleButton = getByTestId('toggle-password');
+      const passwordInput = getByPlaceholderText('••••••••••••');
+      
+      // Initial state: secureTextEntry is true (icon eye-off-outline)
+      expect(passwordInput.props.secureTextEntry).toBe(true);
+      
+      // Press to toggle
+      fireEvent.press(toggleButton);
+      expect(passwordInput.props.secureTextEntry).toBe(false);
+      
+      // Press to toggle back
+      fireEvent.press(toggleButton);
+      expect(passwordInput.props.secureTextEntry).toBe(true);
     });
   });
 });

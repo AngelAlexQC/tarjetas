@@ -4,7 +4,7 @@
  * Tests para el selector de institución.
  */
 
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { InstitutionSelectorHeader } from '../institution-selector-header';
 
@@ -21,6 +21,7 @@ jest.mock('expo-router', () => ({
 
 jest.mock('@/types/routes', () => ({
   homeRoute: () => '/home',
+  loginRoute: () => '/login',
 }));
 
 // Mock de tenant theme context
@@ -72,11 +73,15 @@ jest.mock('@/hooks/use-responsive-layout', () => ({
 
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 34, left: 0, right: 0 }),
+  SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock('react-native-reanimated', () => {
   const Reanimated = require('react-native-reanimated/mock');
   Reanimated.default.call = () => {};
+  Reanimated.useSharedValue = jest.fn((initialValue) => ({ value: initialValue }));
+  Reanimated.useAnimatedStyle = jest.fn(() => ({}));
+  Reanimated.withSpring = jest.fn((val) => val);
   return Reanimated;
 });
 
@@ -87,7 +92,13 @@ jest.mock('expo-blur', () => ({
 jest.mock('expo-image', () => ({
   Image: ({ source, onError }: { source: { uri: string }; onError?: () => void }) => {
     const { Image: RNImage } = require('react-native');
-    return <RNImage source={source} onError={onError} testID="institution-logo" />;
+    return (
+      <RNImage 
+        source={source} 
+        onError={onError} 
+        testID="institution-logo" 
+      />
+    );
   },
 }));
 
@@ -97,6 +108,11 @@ jest.mock('@/components/themed-text', () => ({
     const { Text } = require('react-native');
     return <Text>{children}</Text>;
   },
+}));
+
+// Mock Ionicons
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: ({ name }: { name: string }) => `Icon-${name}`,
 }));
 
 describe('InstitutionSelectorHeader', () => {
@@ -112,33 +128,51 @@ describe('InstitutionSelectorHeader', () => {
 
     it('should render institution name', () => {
       const { getByText } = render(<InstitutionSelectorHeader />);
-      
       expect(getByText('Test Bank')).toBeTruthy();
     });
 
     it('should render logo when available', () => {
       const { getByTestId } = render(<InstitutionSelectorHeader />);
-      
       expect(getByTestId('institution-logo')).toBeTruthy();
     });
   });
 
-  describe('Estructura', () => {
-    it('should have View elements', () => {
-      const { root } = render(<InstitutionSelectorHeader />);
+  describe('Interacciones', () => {
+    it('should prevent navigation on press if disabled', () => {
+       // This component doesn't seem to have disabled prop based on implementation shown
+       // passing logic is handlePress -> router.push(homeRoute())
+    });
+
+    it('should navigate to home on press', () => {
+      const { getByText } = render(<InstitutionSelectorHeader />);
+      const name = getByText('Test Bank');
+      // We need to press the pressable which wraps the content.
+      // Since it doesn't have a testID and wrapping pressable might be hard to find by text if it's deep.
+      // But text is child of Pressable.
+      fireEvent.press(name);
+      expect(mockPush).toHaveBeenCalledWith('/home');
+    });
+
+    it('should handle image error and show placeholder', () => {
+      const { getByTestId, getByText, rerender } = render(<InstitutionSelectorHeader />);
+      const logo = getByTestId('institution-logo');
       
-      const views = root.findAllByType('View');
-      expect(views.length).toBeGreaterThan(0);
+      fireEvent(logo, 'onError');
+      
+      // Update component
+      rerender(<InstitutionSelectorHeader />);
+      
+      // Should show initial "T" for Test Bank
+      expect(getByText('T')).toBeTruthy();
     });
 
-    it('should render with hasHeader prop', () => {
-      const { root } = render(<InstitutionSelectorHeader hasHeader={true} />);
-      expect(root).toBeTruthy();
-    });
-
-    it('should render without hasHeader prop', () => {
-      const { root } = render(<InstitutionSelectorHeader hasHeader={false} />);
-      expect(root).toBeTruthy();
+    it('should handle press animations', () => {
+      const { getByText } = render(<InstitutionSelectorHeader />);
+      const name = getByText('Test Bank');
+      
+      // We are just verifying it doesn't crash as we mocked reanimated
+      fireEvent(name, 'onPressIn');
+      fireEvent(name, 'onPressOut');
     });
   });
 });

@@ -10,13 +10,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { ArrowLeft, LockKeyhole, Mail } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +30,7 @@ interface EmailLoginScreenProps {
 }
 
 // Hook personalizado para la lógica de login con email
-function useEmailLoginLogic(onLoginSuccess: () => void) {
+export function useEmailLoginLogic(onLoginSuccess: () => void) {
   const { login, rememberUsername, getRememberedUsername } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -194,6 +194,7 @@ export function EmailLoginScreen({ onBack, onLoginSuccess, onForgotPassword }: E
                 icon={<LockKeyhole size={20} color={theme.colors.textSecondary} />}
               />
               <Pressable
+                testID="toggle-password"
                 onPress={() => setSecureTextEntry(!secureTextEntry)}
                 style={styles.togglePassword}
               >

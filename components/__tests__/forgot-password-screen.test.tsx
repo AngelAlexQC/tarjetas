@@ -5,7 +5,7 @@
  * Se enfocan en renderizado básico y estructura.
  */
 
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Alert } from 'react-native';
 import { ForgotPasswordScreen } from '../forgot-password-screen';
@@ -261,6 +261,29 @@ describe('ForgotPasswordScreen Integration', () => {
     await advanceToCodeStep(getByText, getByTestId);
     expect(getByText('Verifica tu identidad')).toBeTruthy();
 
+    // Test Resend Code
+    const resendLink = getByText('¿No recibiste el código? Reenviar');
+    mockSendRecoveryCode.mockResolvedValueOnce({ success: true });
+    
+    await act(async () => {
+      fireEvent.press(resendLink);
+    });
+    
+    await waitFor(() => {
+      expect(mockSendRecoveryCode).toHaveBeenCalledTimes(2); // 1 initial + 1 resend
+      expect(Alert.alert).toHaveBeenCalledWith('Código reenviado', 'Se ha enviado un nuevo código a tu correo', expect.any(Array));
+    });
+
+    // Test Resend Error
+    mockSendRecoveryCode.mockResolvedValueOnce({ success: false, error: 'Resend Failed' });
+    await act(async () => {
+      fireEvent.press(resendLink);
+    });
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith('Error', 'Resend Failed', expect.any(Array));
+    });
+
     const codeInput = getByTestId('input-Código de verificación');
     const verifyButton = getByText('Verificar Código');
 
@@ -268,6 +291,17 @@ describe('ForgotPasswordScreen Integration', () => {
     // We can verify button is disabled verifyButton.props.accessibilityState.disabled === true
     // But let's skip the Alert test for empty and incomplete code as they are enforced by UI
     
+    // Test Verify Error
+    mockVerifyCode.mockResolvedValueOnce({ success: false, error: 'Invalid Code' });
+    fireEvent.changeText(codeInput, '654321');
+    await act(async () => {
+      fireEvent.press(verifyButton);
+    });
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith('Error de verificación', 'Invalid Code', expect.any(Array));
+    });
+
     // Test Success
     mockVerifyCode.mockResolvedValue({ success: true });
     fireEvent.changeText(codeInput, '123456');
@@ -325,9 +359,30 @@ describe('ForgotPasswordScreen Integration', () => {
     fireEvent.press(changePassButton);
     expect(Alert.alert).toHaveBeenCalledWith('Error', 'Las contraseñas no coinciden', expect.any(Array));
 
+    // Test Reset Error
+    mockResetPassword.mockResolvedValueOnce({ success: false, error: 'Reset Failed' });
+    fireEvent.changeText(confirmPassInput, '12345678');
+    await act(async () => {
+      fireEvent.press(changePassButton);
+    });
+    
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith('Error', 'Reset Failed', expect.any(Array));
+    });
+
+    // Test Reset Exception (Catch block)
+    mockResetPassword.mockRejectedValueOnce(new Error('Network Error'));
+    await act(async () => {
+      fireEvent.press(changePassButton);
+    });
+    
+    await waitFor(() => {
+      // Expect generic error message from catch block
+      expect(Alert.alert).toHaveBeenCalledWith('Error', 'Error al cambiar la contraseña. Intenta de nuevo.', expect.any(Array));
+    });
+
     // Test Success
     mockResetPassword.mockResolvedValue({ success: true });
-    fireEvent.changeText(confirmPassInput, '12345678');
     await act(async () => {
       fireEvent.press(changePassButton);
     });

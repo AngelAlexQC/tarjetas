@@ -25,10 +25,8 @@ const mockSetShouldShowSplash = jest.fn();
 
 jest.mock('@/contexts/splash-context', () => ({
   useSplash: () => ({
-    isReady: false,
-    shouldShowSplash: true,
-    setIsReady: mockSetIsReady,
-    setShouldShowSplash: mockSetShouldShowSplash,
+    isSplashComplete: false,
+    setSplashComplete: mockSetIsReady,
   }),
 }));
 
@@ -233,32 +231,36 @@ describe('AnimatedSplashScreen', () => {
   });
 
   describe('Animaciones', () => {
-    it('should not crash during animation timeline', async () => {
+  describe('Animaciones', () => {
+    it('should complete full animation lifecycle', async () => {
       const { root } = render(
         <AnimatedSplashScreen onReady={mockOnReady}>
           <></>
         </AnimatedSplashScreen>
       );
       
-      // Advance through animation timeline
+      // Wait for app to be ready (useEffect -> prepare -> setAppReady)
       await act(async () => {
-        jest.advanceTimersByTime(500);
+        await Promise.resolve(); // Flush microtasks for prepare()
       });
       
-      expect(root).toBeTruthy();
+      // Also expect ready callback to ensure we are ready
+      // Mock hideAsync resolution might need a tick
       
+      // Advance to trigger first timeout (2500ms)
       await act(async () => {
-        jest.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(2500);
       });
       
-      expect(root).toBeTruthy();
-      
+      // Advance to trigger second timeout (500ms) - exit animation
       await act(async () => {
-        jest.advanceTimersByTime(1000);
+        jest.advanceTimersByTime(600);
       });
-      
-      expect(root).toBeTruthy();
+
+      // Verify context updates
+      expect(mockSetIsReady).toHaveBeenCalled(); 
     });
+  });
   });
 
   describe('Manejo de Errores', () => {
@@ -272,5 +274,20 @@ describe('AnimatedSplashScreen', () => {
       
       expect(root).toBeTruthy();
     });
+    it('should handle SplashScreen.hideAsync error', async () => {
+      // Mock failure
+      const { hideAsync } = require('expo-splash-screen');
+      hideAsync.mockRejectedValueOnce(new Error('Hide failed'));
+
+      const { root } = render(
+        <AnimatedSplashScreen onReady={mockOnReady}>
+          <></>
+        </AnimatedSplashScreen>
+      );
+      
+      // Should not crash
+      expect(root).toBeTruthy();
+    });
+
   });
 });

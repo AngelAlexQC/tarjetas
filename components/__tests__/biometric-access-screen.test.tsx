@@ -213,4 +213,18 @@ describe('BiometricAccessScreen', () => {
 
     expect(mockProps.onUsePassword).toHaveBeenCalled();
   });
+
+  it('should handle authentication exception', async () => {
+    mockAuthenticateWithBiometric.mockRejectedValueOnce(new Error('System error'));
+    
+    const { getByText } = render(<BiometricAccessScreen {...mockProps} />);
+    
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+    
+    await waitFor(() => {
+      expect(getByText('Error inesperado')).toBeTruthy();
+    });
+  });
 });
