@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ArrowLeft, KeyRound, Mail, ShieldCheck } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -313,11 +314,15 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
   const handleSendCode = useCallback(async () => {
     setError('');
     if (!email.trim()) {
-      setError('Ingresa tu correo electrónico');
+      const errorMessage = 'Ingresa tu correo electrónico';
+      setError(errorMessage);
+      Alert.alert('Campo requerido', errorMessage, [{ text: 'OK' }]);
       return;
     }
     if (!isValidEmail(email.trim())) {
-      setError('Ingresa un correo electrónico válido');
+      const errorMessage = 'Ingresa un correo electrónico válido';
+      setError(errorMessage);
+      Alert.alert('Correo inválido', errorMessage, [{ text: 'OK' }]);
       return;
     }
     setIsLoading(true);
@@ -326,10 +331,14 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
       if (result.success) {
         setStep('code');
       } else {
-        setError(result.error || 'Error al enviar el código. Intenta de nuevo.');
+        const errorMessage = result.error || 'Error al enviar el código. Intenta de nuevo.';
+        setError(errorMessage);
+        Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
       }
     } catch {
-      setError('Error al enviar el código. Intenta de nuevo.');
+      const errorMessage = 'Error al enviar el código. Intenta de nuevo.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }
@@ -338,11 +347,15 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
   const handleVerifyCode = useCallback(async () => {
     setError('');
     if (!code.trim()) {
-      setError('Ingresa el código de verificación');
+      const errorMessage = 'Ingresa el código de verificación';
+      setError(errorMessage);
+      Alert.alert('Campo requerido', errorMessage, [{ text: 'OK' }]);
       return;
     }
     if (code.trim().length !== 6) {
-      setError('El código debe tener 6 dígitos');
+      const errorMessage = 'El código debe tener 6 dígitos';
+      setError(errorMessage);
+      Alert.alert('Código incompleto', errorMessage, [{ text: 'OK' }]);
       return;
     }
     setIsLoading(true);
@@ -351,10 +364,14 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
       if (result.success) {
         setStep('newPassword');
       } else {
-        setError(result.error || 'Código incorrecto. Intenta de nuevo.');
+        const errorMessage = result.error || 'Código incorrecto. Intenta de nuevo.';
+        setError(errorMessage);
+        Alert.alert('Error de verificación', errorMessage, [{ text: 'OK' }]);
       }
     } catch {
-      setError('Código incorrecto. Intenta de nuevo.');
+      const errorMessage = 'Código incorrecto. Intenta de nuevo.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }
@@ -363,15 +380,21 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
   const handleResetPassword = useCallback(async () => {
     setError('');
     if (!newPassword.trim()) {
-      setError('Ingresa tu nueva contraseña');
+      const errorMessage = 'Ingresa tu nueva contraseña';
+      setError(errorMessage);
+      Alert.alert('Campo requerido', errorMessage, [{ text: 'OK' }]);
       return;
     }
     if (!isValidPassword(newPassword)) {
-      setError('La contraseña debe tener al menos 8 caracteres');
+      const errorMessage = 'La contraseña debe tener al menos 8 caracteres';
+      setError(errorMessage);
+      Alert.alert('Contraseña inválida', errorMessage, [{ text: 'OK' }]);
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      const errorMessage = 'Las contraseñas no coinciden';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
       return;
     }
     setIsLoading(true);
@@ -384,10 +407,14 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
       if (result.success) {
         setStep('success');
       } else {
-        setError(result.error || 'Error al cambiar la contraseña. Intenta de nuevo.');
+        const errorMessage = result.error || 'Error al cambiar la contraseña. Intenta de nuevo.';
+        setError(errorMessage);
+        Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
       }
     } catch {
-      setError('Error al cambiar la contraseña. Intenta de nuevo.');
+      const errorMessage = 'Error al cambiar la contraseña. Intenta de nuevo.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }
@@ -399,11 +426,16 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
       const result = await sendRecoveryCode({ email: email.trim() });
       if (result.success) {
         setError('');
+        Alert.alert('Código reenviado', 'Se ha enviado un nuevo código a tu correo', [{ text: 'OK' }]);
       } else {
-        setError(result.error || 'Error al reenviar el código.');
+        const errorMessage = result.error || 'Error al reenviar el código.';
+        setError(errorMessage);
+        Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
       }
     } catch {
-      setError('Error al reenviar el código.');
+      const errorMessage = 'Error al reenviar el código.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }

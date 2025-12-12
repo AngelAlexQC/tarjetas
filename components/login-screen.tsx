@@ -67,11 +67,15 @@ function useLoginLogic(onLoginSuccess: () => void) {
         }
         onLoginSuccess();
       } else {
-        setError(result.error || 'Error al iniciar sesión');
+        const errorMessage = result.error || 'Error al iniciar sesión';
+        setError(errorMessage);
+        Alert.alert('Error de inicio de sesión', errorMessage, [{ text: 'OK' }]);
       }
     } catch (err) {
       log.error('Error inesperado en login:', err);
-      setError('Error inesperado. Intenta de nuevo.');
+      const errorMessage = 'Error inesperado. Intenta de nuevo.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }

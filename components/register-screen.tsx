@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ArrowLeft, Mail, Phone, ShieldCheck, User, UserPlus } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -330,6 +331,7 @@ function useRegisterLogic() {
     const validationError = validateRegistrationForm(formData, acceptedTerms);
     if (validationError) {
       setError(validationError);
+      Alert.alert('Error de validación', validationError, [{ text: 'OK' }]);
       return;
     }
     setIsLoading(true);
@@ -344,10 +346,14 @@ function useRegisterLogic() {
       if (result.success) {
         setStep('verification');
       } else {
-        setError(result.error || 'Error al crear la cuenta. Intenta de nuevo.');
+        const errorMessage = result.error || 'Error al crear la cuenta. Intenta de nuevo.';
+        setError(errorMessage);
+        Alert.alert('Error de registro', errorMessage, [{ text: 'OK' }]);
       }
     } catch {
-      setError('Error al crear la cuenta. Intenta de nuevo.');
+      const errorMessage = 'Error al crear la cuenta. Intenta de nuevo.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }
@@ -356,7 +362,9 @@ function useRegisterLogic() {
   const handleVerify = useCallback(async () => {
     setError('');
     if (verificationCode.length !== 6) {
-      setError('El código debe tener 6 dígitos');
+      const errorMessage = 'El código debe tener 6 dígitos';
+      setError(errorMessage);
+      Alert.alert('Código incompleto', errorMessage, [{ text: 'OK' }]);
       return;
     }
     setIsLoading(true);
@@ -368,10 +376,14 @@ function useRegisterLogic() {
       if (result.success) {
         setStep('success');
       } else {
-        setError(result.error || 'Código incorrecto. Intenta de nuevo.');
+        const errorMessage = result.error || 'Código incorrecto. Intenta de nuevo.';
+        setError(errorMessage);
+        Alert.alert('Error de verificación', errorMessage, [{ text: 'OK' }]);
       }
     } catch {
-      setError('Código incorrecto. Intenta de nuevo.');
+      const errorMessage = 'Código incorrecto. Intenta de nuevo.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }
@@ -383,11 +395,16 @@ function useRegisterLogic() {
       const result = await resendCode(formData.email.trim());
       if (result.success) {
         setError('');
+        Alert.alert('Código reenviado', 'Se ha enviado un nuevo código a tu correo', [{ text: 'OK' }]);
       } else {
-        setError(result.error || 'Error al reenviar el código.');
+        const errorMessage = result.error || 'Error al reenviar el código.';
+        setError(errorMessage);
+        Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
       }
     } catch {
-      setError('Error al reenviar el código.');
+      const errorMessage = 'Error al reenviar el código.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }

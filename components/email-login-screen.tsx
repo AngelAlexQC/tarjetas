@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ArrowLeft, LockKeyhole, Mail } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -53,17 +54,23 @@ function useEmailLoginLogic(onLoginSuccess: () => void) {
     setError('');
     
     if (!email.trim()) {
-      setError('Ingresa tu correo electrónico');
+      const errorMessage = 'Ingresa tu correo electrónico';
+      setError(errorMessage);
+      Alert.alert('Campo requerido', errorMessage, [{ text: 'OK' }]);
       return;
     }
     
     if (!isValidEmail(email.trim())) {
-      setError('Ingresa un correo electrónico válido');
+      const errorMessage = 'Ingresa un correo electrónico válido';
+      setError(errorMessage);
+      Alert.alert('Correo inválido', errorMessage, [{ text: 'OK' }]);
       return;
     }
     
     if (!password) {
-      setError('Ingresa tu contraseña');
+      const errorMessage = 'Ingresa tu contraseña';
+      setError(errorMessage);
+      Alert.alert('Campo requerido', errorMessage, [{ text: 'OK' }]);
       return;
     }
     
@@ -78,11 +85,15 @@ function useEmailLoginLogic(onLoginSuccess: () => void) {
         }
         onLoginSuccess();
       } else {
-        setError(result.error || 'Error al iniciar sesión');
+        const errorMessage = result.error || 'Error al iniciar sesión';
+        setError(errorMessage);
+        Alert.alert('Error de inicio de sesión', errorMessage, [{ text: 'OK' }]);
       }
     } catch (err) {
       log.error('Error inesperado en login:', err);
-      setError('Error inesperado. Intenta de nuevo.');
+      const errorMessage = 'Error inesperado. Intenta de nuevo.';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }
