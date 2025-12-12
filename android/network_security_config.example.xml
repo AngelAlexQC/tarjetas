@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network Security Configuration para Android
+  
+  IMPORTANTE: Este es un archivo de EJEMPLO.
+  
+  Para implementar SSL Pinning en producción:
+  1. Obtener los pins SHA-256 de tus certificados SSL
+  2. Reemplazar los pins de ejemplo con tus pins reales
+  3. Configurar los dominios correctos
+  4. Incluir este archivo en tu build de Android con expo-dev-client
+  
+  Ver: api/ssl-pinning.implementation.md
+-->
+<network-security-config>
+    <!-- 
+      CONFIGURACIÓN DE PRODUCCIÓN
+      
+      Reemplazar 'api.tudominio.com' con tu dominio real
+      Reemplazar los pins con los pins SHA-256 de tus certificados
+    -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Tu dominio de API de producción -->
+        <domain includeSubdomains="true">api.tudominio.com</domain>
+        
+        <!-- Pins SHA-256 de certificados -->
+        <pin-set expiration="2026-12-31">
+            <!-- 
+              Pin principal (certificado actual)
+              Obtener con: 
+              openssl s_client -connect api.tudominio.com:443 | openssl x509 -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
+            -->
+            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            
+            <!-- 
+              Pin de backup (para rotación de certificados)
+              IMPORTANTE: Siempre tener al menos 2 pins
+            -->
+            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
+        </pin-set>
+        
+        <!-- 
+          Trust anchors: Solo certificados del sistema en producción
+          NO incluir certificados de usuario en producción
+        -->
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- 
+      CONFIGURACIÓN ADICIONAL (opcional)
+      
+      Si tienes múltiples dominios, agregar más domain-config
+    -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">cdn.tudominio.com</domain>
+        <pin-set expiration="2026-12-31">
+            <pin digest="SHA-256">CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=</pin>
+            <pin digest="SHA-256">DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD=</pin>
+        </pin-set>
+    </domain-config>
+
+    <!-- 
+      DEBUG OVERRIDES
+      
+      Esto permite certificados de usuario (Charles Proxy, mitmproxy)
+      SOLO en builds de debug. Se ignora automáticamente en release builds.
+      
+      Permite desarrollo y debugging sin desactivar el pinning en producción.
+    -->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Certificados del sistema -->
+            <certificates src="system" />
+            <!-- Certificados de usuario (para debugging con proxy) -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+
+    <!-- 
+      BASE CONFIG (fallback)
+      
+      Configuración por defecto para dominios no especificados.
+      Recomendado: bloquear cleartext (HTTP) para TODOS los dominios.
+    -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
