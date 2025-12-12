@@ -98,15 +98,194 @@ describe('MockAuthRepository', () => {
 
   describe('updateProfile', () => {
     it('should update profile', async () => {
-      await repository.login({ username: 'test', password: 'password' });
+      await repository.login({ username: 'test', password: 'password123' });
       const user = await repository.updateProfile({ name: 'New Name' });
       expect(user.name).toBe('New Name');
     });
 
     it('should preserve existing data', async () => {
-      await repository.login({ username: 'test', password: 'password' });
+      await repository.login({ username: 'test', password: 'password123' });
       const user = await repository.updateProfile({ name: 'New' });
       expect(user.username).toBe('test');
+    });
+
+    it('should work without login using mock user', async () => {
+      const user = await repository.updateProfile({ name: 'Updated' });
+      expect(user.name).toBe('Updated');
+    });
+  });
+
+  describe('register', () => {
+    it('should register successfully', async () => {
+      const result = await repository.register({
+        email: 'new@example.com',
+        username: 'newuser',
+        password: 'password123',
+        fullName: 'New User',
+        phone: '1234567890',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.requiresVerification).toBe(true);
+      expect(result.userId).toBeDefined();
+    });
+
+    it('should throw for missing fields', async () => {
+      await expect(repository.register({
+        email: '',
+        username: 'newuser',
+        password: 'password123',
+        fullName: 'Test',
+        phone: '123',
+      })).rejects.toThrow('Por favor completa todos los campos obligatorios');
+    });
+
+    it('should throw for short password', async () => {
+      await expect(repository.register({
+        email: 'new@example.com',
+        username: 'newuser',
+        password: '123',
+        fullName: 'Test',
+        phone: '123',
+      })).rejects.toThrow('La contraseña debe tener al menos 8 caracteres');
+    });
+
+    it('should throw for existing email', async () => {
+      await expect(repository.register({
+        email: 'existing@example.com',
+        username: 'newuser',
+        password: 'password123',
+        fullName: 'Test',
+        phone: '123',
+      })).rejects.toThrow('Este correo electrónico ya está registrado');
+    });
+  });
+
+  describe('verifyEmail', () => {
+    it('should verify email with correct code', async () => {
+      // First register
+      await repository.register({
+        email: 'verify@example.com',
+        username: 'verifyuser',
+        password: 'password123',
+        fullName: 'Verify User',
+        phone: '123',
+      });
+
+      const result = await repository.verifyEmail({
+        email: 'verify@example.com',
+        code: '000000',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.token).toBeDefined();
+      expect(result.user).toBeDefined();
+    });
+
+    it('should throw for wrong code', async () => {
+      await repository.register({
+        email: 'wrong@example.com',
+        username: 'wronguser',
+        password: 'password123',
+        fullName: 'Wrong User',
+        phone: '123',
+      });
+
+      await expect(repository.verifyEmail({
+        email: 'wrong@example.com',
+        code: '999999',
+      })).rejects.toThrow('Código de verificación incorrecto');
+    });
+
+    it('should throw for non-pending email', async () => {
+      await expect(repository.verifyEmail({
+        email: 'notpending@example.com',
+        code: '000000',
+      })).rejects.toThrow('No hay registro pendiente para este email');
+    });
+  });
+
+  describe('resendVerificationCode', () => {
+    it('should resend code for pending registration', async () => {
+      await repository.register({
+        email: 'resend@example.com',
+        username: 'resenduser',
+        password: 'password123',
+        fullName: 'Resend User',
+        phone: '123',
+      });
+
+      const result = await repository.resendVerificationCode('resend@example.com');
+      expect(result.success).toBe(true);
+    });
+
+    it('should throw for non-pending email', async () => {
+      await expect(repository.resendVerificationCode('notregistered@example.com'))
+        .rejects.toThrow('No hay registro pendiente para este email');
+    });
+  });
+
+  describe('forgotPassword', () => {
+    it('should send recovery code', async () => {
+      const result = await repository.forgotPassword({
+        email: 'recover@example.com',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('Código');
+    });
+
+    it('should throw for empty email', async () => {
+      await expect(repository.forgotPassword({ email: '' }))
+        .rejects.toThrow('Por favor ingresa tu correo electrónico');
+    });
+  });
+
+  describe('verifyRecoveryCode', () => {
+    it('should verify recovery code successfully', async () => {
+      const result = await repository.verifyRecoveryCode({
+        email: 'recover@example.com',
+        code: '000000',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.resetToken).toBeDefined();
+    });
+
+    it('should throw for wrong code', async () => {
+      await expect(repository.verifyRecoveryCode({
+        email: 'recover@example.com',
+        code: '123456',
+      })).rejects.toThrow('Código de verificación incorrecto');
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should reset password successfully', async () => {
+      const result = await repository.resetPassword({
+        email: 'reset@example.com',
+        code: '000000',
+        newPassword: 'newpassword123',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.message).toContain('actualizada');
+    });
+
+    it('should throw for short password', async () => {
+      await expect(repository.resetPassword({
+        email: 'reset@example.com',
+        code: '000000',
+        newPassword: '123',
+      })).rejects.toThrow('La contraseña debe tener al menos 8 caracteres');
+    });
+
+    it('should throw for wrong code', async () => {
+      await expect(repository.resetPassword({
+        email: 'reset@example.com',
+        code: '999999',
+        newPassword: 'newpassword123',
+      })).rejects.toThrow('Código de verificación incorrecto');
     });
   });
 });

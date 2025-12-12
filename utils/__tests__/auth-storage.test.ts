@@ -2,12 +2,12 @@
  * Auth Storage Tests
  */
 
-import { authStorage } from '../auth-storage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { Platform } from 'react-native';
 import { STORAGE_KEYS } from '@/constants/app';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+import { authStorage } from '../auth-storage';
 
 // Mock modules
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -376,6 +376,115 @@ describe('authStorage', () => {
 
       // Should not throw
       await authStorage.clearRememberedUsername();
+    });
+  });
+
+  describe('additional edge cases', () => {
+    describe('saveToken error handling', () => {
+      beforeEach(() => {
+        (Platform as any).OS = 'ios';
+        jest.clearAllMocks();
+      });
+
+      it('should throw error when saveToken fails', async () => {
+        (SecureStore.setItemAsync as jest.Mock).mockRejectedValue(new Error('Storage full'));
+
+        await expect(authStorage.saveToken('token')).rejects.toThrow('Storage full');
+      });
+    });
+
+    describe('saveUser fallback to AsyncStorage', () => {
+      beforeEach(() => {
+        (Platform as any).OS = 'ios';
+        jest.clearAllMocks();
+      });
+
+      it('should use AsyncStorage for large user data', async () => {
+        // Create a user with data larger than 2048 bytes
+        const largeUser = {
+          id: '1',
+          username: 'testuser',
+          email: 'test@example.com',
+          name: 'Test User',
+          fullName: 'Test User Full Name Very Long',
+          phone: '1234567890',
+          avatar: 'a'.repeat(3000), // Large avatar URL
+        };
+
+        await authStorage.saveUser(largeUser);
+
+        // Should use AsyncStorage for large data
+        expect(AsyncStorage.setItem).toHaveBeenCalled();
+      });
+
+      it('should throw error when saveUser fails', async () => {
+        (SecureStore.setItemAsync as jest.Mock).mockRejectedValue(new Error('Save failed'));
+
+        await expect(authStorage.saveUser(mockUser)).rejects.toThrow('Save failed');
+      });
+    });
+
+    describe('clearSession on web', () => {
+      beforeEach(() => {
+        (Platform as any).OS = 'web';
+        jest.clearAllMocks();
+      });
+
+      afterEach(() => {
+        (Platform as any).OS = 'ios';
+      });
+
+      it('should clear session on web platform', async () => {
+        (AsyncStorage.removeItem as jest.Mock).mockResolvedValue(undefined);
+        (AsyncStorage.multiRemove as jest.Mock).mockResolvedValue(undefined);
+
+        await authStorage.clearSession();
+
+        expect(AsyncStorage.removeItem).toHaveBeenCalledWith(STORAGE_KEYS.AUTH_TOKEN);
+        expect(AsyncStorage.multiRemove).toHaveBeenCalled();
+        // Should not call SecureStore on web
+        expect(SecureStore.deleteItemAsync).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('enableBiometric error handling', () => {
+      beforeEach(() => {
+        (Platform as any).OS = 'ios';
+        jest.clearAllMocks();
+      });
+
+      it('should throw error when enableBiometric fails', async () => {
+        (SecureStore.setItemAsync as jest.Mock).mockRejectedValue(new Error('Biometric error'));
+
+        await expect(authStorage.enableBiometric()).rejects.toThrow('Biometric error');
+      });
+    });
+
+    describe('onboarding error handling', () => {
+      it('should handle getOnboardingStatus error', async () => {
+        (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Error'));
+
+        const result = await authStorage.getOnboardingStatus();
+
+        expect(result).toBe(false);
+      });
+
+      it('should handle setOnboardingCompleted error silently', async () => {
+        (AsyncStorage.setItem as jest.Mock).mockRejectedValue(new Error('Error'));
+
+        // Should not throw
+        await authStorage.setOnboardingCompleted();
+      });
+    });
+
+    describe('authenticate error handling', () => {
+      it('should return error result on authentication failure', async () => {
+        (LocalAuthentication.authenticateAsync as jest.Mock).mockRejectedValue(new Error('Auth error'));
+
+        const result = await authStorage.authenticate();
+
+        expect(result).toEqual({ success: false, error: 'system_cancel' });
+      });
     });
   });
 });

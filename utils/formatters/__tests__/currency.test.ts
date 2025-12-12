@@ -2,7 +2,7 @@
  * Currency Formatter Tests
  */
 
-import { formatCurrency, formatAmount, formatCompactCurrency } from '../currency';
+import { formatAmount, formatCompactCurrency, formatCurrency, getCurrencySymbol } from '../currency';
 
 // Mock logger
 jest.mock('@/utils/logger', () => ({
@@ -207,6 +207,86 @@ describe('Currency Formatters', () => {
       const result = formatCompactCurrency(1000000);
 
       expect(result).toBe('1M');
+    });
+  });
+
+  describe('getCurrencySymbol', () => {
+    it('should get USD symbol', () => {
+      const result = getCurrencySymbol('USD', 'en-US');
+
+      expect(result).toBe('$');
+    });
+
+    it('should get EUR symbol', () => {
+      const result = getCurrencySymbol('EUR', 'de-DE');
+
+      expect(result).toBe('€');
+    });
+
+    it('should get GBP symbol', () => {
+      const result = getCurrencySymbol('GBP', 'en-GB');
+
+      expect(result).toBe('£');
+    });
+
+    it('should use default currency and locale', () => {
+      const result = getCurrencySymbol();
+
+      expect(result).toBe('$');
+    });
+
+    it('should handle different locales for same currency', () => {
+      const usResult = getCurrencySymbol('USD', 'en-US');
+      const esResult = getCurrencySymbol('USD', 'es-ES');
+
+      // Both should return a dollar-related symbol
+      expect(usResult).toContain('$');
+      expect(esResult).toBeTruthy();
+    });
+  });
+
+  describe('formatCompactCurrency edge cases', () => {
+    it('should format with currency symbol for small numbers', () => {
+      const result = formatCompactCurrency(500, {
+        showCurrencySymbol: true,
+        currency: 'USD',
+      });
+
+      // Intl may format as "$500" or "USD 500" depending on locale
+      expect(result).toMatch(/(\$|USD)/i);
+      expect(result).toContain('500');
+    });
+
+    it('should handle negative millions', () => {
+      const result = formatCompactCurrency(-2500000);
+
+      expect(result).toBe('-2.5M');
+    });
+
+    it('should handle negative billions', () => {
+      const result = formatCompactCurrency(-3500000000);
+
+      expect(result).toBe('-3.5B');
+    });
+
+    it('should handle different decimal places for thousands', () => {
+      const result = formatCompactCurrency(1234567, {
+        maximumFractionDigits: 2,
+      });
+
+      expect(result).toBe('1.23M');
+    });
+
+    it('should format with currency symbol for large numbers', () => {
+      const result = formatCompactCurrency(5000000, {
+        showCurrencySymbol: true,
+        currency: 'EUR',
+        locale: 'de-DE',
+      });
+
+      expect(result).toContain('€');
+      expect(result).toContain('5');
+      expect(result).toContain('M');
     });
   });
 });

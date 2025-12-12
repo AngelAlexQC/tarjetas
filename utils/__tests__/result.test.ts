@@ -208,6 +208,24 @@ describe('AppError', () => {
       const json = error.toJSON();
       expect(json.cause).toBe('Original error');
     });
+
+    it('toJSON() should serialize non-Error cause', () => {
+      const error = AppError.unknown('Error', { detail: 'some detail' });
+      const json = error.toJSON();
+      expect(json.cause).toEqual({ detail: 'some detail' });
+    });
+
+    it('operationNotAllowed() should use custom message', () => {
+      const error = AppError.operationNotAllowed('Custom operation not allowed');
+      expect(error.code).toBe(ErrorCode.OPERATION_NOT_ALLOWED);
+      expect(error.message).toBe('Custom operation not allowed');
+    });
+
+    it('limitExceeded() should use custom message', () => {
+      const error = AppError.limitExceeded('Daily limit exceeded');
+      expect(error.code).toBe(ErrorCode.LIMIT_EXCEEDED);
+      expect(error.message).toBe('Daily limit exceeded');
+    });
   });
 });
 
