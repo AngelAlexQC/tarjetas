@@ -138,7 +138,7 @@ async function fetchTopFiles() {
         bugs: ms.bugs || 0,
         vulnerabilities: ms.vulnerabilities || 0,
         code_smells: ms.code_smells || 0,
-        coverage: ms.coverage || 0,
+        coverage: parseFloat(ms.coverage || 0),
         lines: ms.ncloc || 0
       };
     });
