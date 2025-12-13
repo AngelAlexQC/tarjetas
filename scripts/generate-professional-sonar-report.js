@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 
-// Configuración desde variables de entorno (para CI/CD) o valores por defecto
+// Configuración desde variables de entorno
 const SONAR_CONFIG = {
   url: process.env.SONAR_URL || 'http://localhost:9000',
   token: process.env.SONAR_TOKEN || 'sqa_b6df0791d826ed92ba2534146d61a7f2a6dd1bad',
@@ -15,11 +15,10 @@ const SONAR_CONFIG = {
 
 const OUTPUT_DIR = process.env.OUTPUT_DIR || path.resolve(__dirname, '..');
 
-// --- API FETCHING FUNCTIONS ---
+// --- API FETCHING FUNCTIONS (Enhanced) ---
 
 async function fetchSonarMetrics() {
   console.log('Obteniendo métricas de SonarQube...');
-
   const auth = Buffer.from(`${SONAR_CONFIG.token}:`).toString('base64');
   const headers = { Authorization: `Basic ${auth}` };
 
@@ -40,7 +39,9 @@ async function fetchSonarMetrics() {
     });
 
     const measures = {};
-    response.data.component.measures.forEach(m => measures[m.metric] = m.value);
+    if (response.data.component && response.data.component.measures) {
+      response.data.component.measures.forEach(m => measures[m.metric] = m.value);
+    }
     return measures;
   } catch (error) {
     console.warn('Error fetching metrics:', error.message);
@@ -52,7 +53,6 @@ async function fetchIssuesBySeverity() {
   console.log('Analizando issues por severidad...');
   const auth = Buffer.from(`${SONAR_CONFIG.token}:`).toString('base64');
   const headers = { Authorization: `Basic ${auth}` };
-
   const severities = ['BLOCKER', 'CRITICAL', 'MAJOR', 'MINOR', 'INFO'];
   const issues = {};
 
@@ -70,7 +70,6 @@ async function fetchIssuesBySeverity() {
   return issues;
 }
 
-// [NEW] Obtener Top 10 archivos más complejos o con más problemas
 async function fetchTopFiles() {
   console.log('Identificando archivos críticos (Top Offenders)...');
   const auth = Buffer.from(`${SONAR_CONFIG.token}:`).toString('base64');
@@ -84,11 +83,13 @@ async function fetchTopFiles() {
         qualifiers: 'FIL',
         ps: 10,
         s: 'metric',
-        metricSort: 'complexity', // Sort by complexity descending
+        metricSort: 'complexity',
         asc: false
       },
       headers
     });
+
+    if (!response.data.components) return [];
 
     return response.data.components.map(file => {
       const metrics = {};
@@ -109,7 +110,6 @@ async function fetchTopFiles() {
   }
 }
 
-// [NEW] Obtener Tendencias Históricas
 async function fetchQualityTrends() {
   console.log('Obteniendo tendencias históricas...');
   const auth = Buffer.from(`${SONAR_CONFIG.token}:`).toString('base64');
@@ -121,19 +121,20 @@ async function fetchQualityTrends() {
       params: {
         component: SONAR_CONFIG.component,
         metrics: metrics.join(','),
-        ps: 100 // Last 100 analyses
+        ps: 30
       },
       headers
     });
 
-    // Transform response into easier structure: { metric: [{ date, value }] }
     const trends = {};
-    response.data.measures.forEach(measure => {
-      trends[measure.metric] = measure.history.map(point => ({
-        date: new Date(point.date).toLocaleDateString(),
-        value: parseFloat(point.value || 0)
-      }));
-    });
+    if (response.data.measures) {
+      response.data.measures.forEach(measure => {
+        trends[measure.metric] = measure.history.map(point => ({
+          date: new Date(point.date).toLocaleDateString('es-ES'),
+          value: parseFloat(point.value || 0)
+        }));
+      });
+    }
     return trends;
   } catch (error) {
     console.warn('No se pudieron obtener tendencias:', error.message);
@@ -149,163 +150,280 @@ function getLogoBase64() {
   return null;
 }
 
-// --- HTML GENERATOR ---
+function formatTechDebt(minutes) {
+  if (!minutes) return '0 min';
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 8) return `${hours} h`;
+  const days = Math.floor(hours / 8);
+  return `${days} d`;
+}
+
+function getRatingLetter(rating) {
+  const r = parseFloat(rating);
+  if (r <= 1) return 'A';
+  if (r <= 2) return 'B';
+  if (r <= 3) return 'C';
+  if (r <= 4) return 'D';
+  return 'E';
+}
+
+function getConclusion(bugs, vulnerabilities, codeSmells, coverage, reliabilityRating) {
+  const hasHighRisk = bugs > 5 || vulnerabilities > 0;
+  const hasMediumRisk = bugs > 0 || codeSmells > 100 || coverage < 60;
+
+  if (hasHighRisk) {
+    return `El análisis revela áreas críticas. Con ${bugs} bugs y ${vulnerabilities} vulnerabilidades, se recomienda un plan de acción inmediato.`;
+  } else if (hasMediumRisk) {
+    return `Calidad aceptable con oportunidades. La calificación ${reliabilityRating} en confiabilidad es buena, pero se debe mejorar la cobertura (${coverage}%).`;
+  } else {
+    return `Excelente nivel de calidad. Mantener los estándares actuales y revisiones periódicas.`;
+  }
+}
+
+// --- HTML GENERATOR (Restored Professional Style + New Data) ---
 
 function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
   const logoBase64 = getLogoBase64();
   const date = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+  const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-  // Helpers
-  const getRatingColor = (letter) => ({ 'A': '#2E7D32', 'B': '#7CB342', 'C': '#FBC02D', 'D': '#F57C00', 'E': '#C62828' }[letter] || '#757575');
-  const relColor = getRatingColor(getRatingLetter(metrics.reliability_rating));
-  const secColor = getRatingColor(getRatingLetter(metrics.security_rating));
-  const mainColor = getRatingColor(getRatingLetter(metrics.sqale_rating));
+  // Default default values safety
+  const coverage = parseFloat(metrics.coverage || 0);
+  const bugs = parseInt(metrics.bugs || 0);
+  const vulnerabilities = parseInt(metrics.vulnerabilities || 0);
+  const codeSmells = parseInt(metrics.code_smells || 0);
+  const hotspots = parseInt(metrics.security_hotspots || 0);
+  const duplication = parseFloat(metrics.duplicated_lines_density || 0);
+  const lines = parseInt(metrics.ncloc || 0);
+  const techDebt = formatTechDebt(parseInt(metrics.sqale_index || 0));
 
+  const relRating = getRatingLetter(metrics.reliability_rating);
+  const secRating = getRatingLetter(metrics.security_rating);
+  const mainRating = getRatingLetter(metrics.sqale_rating);
+  const alertStatus = metrics.alert_status || 'OK';
+
+  const coverageColor = coverage >= 80 ? '#2E7D32' : coverage >= 60 ? '#F57C00' : '#C62828';
   return `
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Informe de Calidad de Código - ${SONAR_CONFIG.project}</title>
+  <title>Informe Profesional - ${SONAR_CONFIG.project}</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; color: #1F2937; margin: 0; background: #F3F4F6; }
-    .page { background: white; width: 210mm; min-height: 297mm; margin: 0 auto; padding: 15mm 20mm; box-sizing: border-box; position: relative; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page { size: A4; margin: 15mm; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; color: #212121; font-size: 10pt; line-height: 1.5; }
+    .container { max-width: 210mm; margin: 0 auto; }
+    .page { padding: 20px 30px; min-height: 270mm; position: relative; }
     .page-break { page-break-after: always; }
-    
-    /* Header */
-    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #3B82F6; padding-bottom: 20px; margin-bottom: 30px; }
-    .header-logo img { height: 60px; }
-    .header-info h1 { margin: 0; font-size: 24px; color: #111827; }
-    .header-info p { margin: 5px 0 0; color: #6B7280; font-size: 14px; }
-    
-    /* Metrics Summary */
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-    .card { background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .card-title { font-size: 12px; text-transform: uppercase; color: #6B7280; font-weight: 600; margin-bottom: 10px; }
-    .card-value { font-size: 32px; font-weight: 700; color: #111827; }
-    .rating { display: inline-block; padding: 4px 12px; border-radius: 4px; color: white; font-weight: 700; font-size: 14px; vertical-align: middle; margin-left: 10px; }
-    
-    /* Charts Area */
-    .chart-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-    .chart-box { height: 250px; position: relative; }
 
-    /* Tables */
-    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-    th { text-align: left; padding: 12px; background: #F9FAFB; border-bottom: 2px solid #E5E7EB; color: #374151; }
-    td { padding: 10px 12px; border-bottom: 1px solid #E5E7EB; color: #4B5563; }
+    /* PROFESSIONAL HEADER (RESTORED) */
+    .report-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 30px 40px;
+      margin: -20px -30px 30px -30px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header-text h1 { font-size: 22pt; font-weight: 300; margin-bottom: 5px; letter-spacing: -0.5px; }
+    .header-text .subtitle { font-size: 10pt; opacity: 0.9; font-weight: 400; }
+    .header-logo { width: 90px; height: auto; background: white; padding: 5px; border-radius: 6px; }
+
+    /* SECTIONS */
+    .section { margin-bottom: 25px; }
+    .section-title {
+      font-size: 13pt; font-weight: 600; color: #1e3a8a;
+      border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; margin-bottom: 15px;
+    }
+
+    /* EXECUTIVE SUMMARY */
+    .executive-summary { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; font-size: 9.5pt; text-align: justify; }
+
+    /* QUALITY GATE */
+    .quality-gate { display: flex; align-items: center; gap: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 4px; background: #fff; }
+    .gate-status {
+      padding: 8px 16px; border-radius: 4px; font-weight: 700; color: white; font-size: 11pt;
+      background: ${alertStatus === 'OK' ? '#2E7D32' : '#C62828'};
+    }
+    .gate-info h3 { margin: 0 0 5px; color: #1e3a8a; font-size: 11pt; }
+    .gate-info p { margin: 0; font-size: 9pt; color: #666; }
+
+    /* METRICS GRID */
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
+    .metric-box { background: white; border: 1px solid #e0e0e0; padding: 15px; text-align: center; border-radius: 4px; }
+    .metric-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .metric-label { font-size: 8pt; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .metric-value { font-size: 20pt; font-weight: 700; color: #333; line-height: 1; }
+    .metric-rating {
+      display: inline-block; width: 24px; height: 24px; line-height: 24px;
+      border-radius: 3px; font-weight: 700; font-size: 10pt; color: white; margin-top: 5px;
+    }
+    .rating-A { background: #2E7D32; }
+    .rating-B { background: #7CB342; }
+    .rating-C { background: #FBC02D; }
+    .rating-D { background: #E64A19; }
+    .rating-E { background: #C62828; }
+
+    /* TABLES (Enhanced) */
+    table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+    th { text-align: left; padding: 10px; background: #f1f5f9; color: #475569; font-weight: 600; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
     tr:last-child td { border-bottom: none; }
-    
-    .section-title { font-size: 18px; font-weight: 600; color: #1e3a8a; margin: 30px 0 15px; border-left: 4px solid #3B82F6; padding-left: 10px; }
-    .meta-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
-    .tag-red { background: #FEE2E2; color: #991B1B; }
-    .tag-green { background: #D1FAE5; color: #065F46; }
+    .badge { padding: 2px 6px; border-radius: 3px; font-size: 8pt; font-weight: 600; color: #fff; }
+    .badge-red { background: #ef4444; }
+    .badge-orange { background: #f97316; }
+    .badge-yellow { background: #eab308; }
+    .badge-blue { background: #3b82f6; }
+    .badge-green { background: #22c55e; }
+
+    /* CHARTS */
+    .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .chart-container { height: 220px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 4px; }
+
+    /* FOOTER */
+    .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #94a3b8; font-size: 8pt; }
+    .footer strong { color: #1e3a8a; }
+
+    /* TABS/DETAILS */
+    .detail-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+    .detail-item { background: #f8fafc; padding: 10px; border-left: 3px solid #cbd5e1; }
+    .detail-item small { display: block; color: #64748b; font-size: 7.5pt; text-transform: uppercase; }
+    .detail-item span { display: block; font-size: 12pt; font-weight: 700; color: #334155; }
   </style>
 </head>
 <body>
 
-  <!-- Page 1: Overview & Metrics -->
-  <div class="page">
-    <div class="header">
-      <div class="header-info">
-        <h1>Reporte de Calidad de Código</h1>
-        <p>${SONAR_CONFIG.project} • Versión ${SONAR_CONFIG.release}</p>
-        <p style="font-size: 12px; margin-top: 3px;">Generado el ${date}</p>
+  <!-- PAGE 1 -->
+  <div class="container page">
+    <div class="report-header">
+      <div class="header-text">
+        <h1>Informe de Calidad de Código</h1>
+        <div class="subtitle">${SONAR_CONFIG.project} • ${date}</div>
       </div>
-      <div class="header-logo">
-        ${logoBase64 ? `<img src="${logoBase64}" />` : ''}
+      ${logoBase64 ? `<img src="${logoBase64}" class="header-logo" alt="Logo"/>` : ''}
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="section">
+      <h2 class="section-title">Resumen Ejecutivo</h2>
+      <div class="executive-summary">
+        <p>
+          Este informe certifica el estado de calidad de la versión <strong>${SONAR_CONFIG.release}</strong>.
+          El sistema cuenta con <strong>${lines.toLocaleString()}</strong> líneas de código y una deuda técnica estimada de <strong>${techDebt}</strong>.
+          ${getConclusion(bugs, vulnerabilities, codeSmells, coverage, relRating)}
+        </p>
       </div>
     </div>
 
-    <!-- Executive Summary Cards -->
-    <div class="grid">
-      <div class="card" style="border-top: 4px solid ${relColor}">
-        <div class="card-title">Reliability (Bugs)</div>
-        <div>
-          <span class="card-value">${metrics.bugs}</span>
-          <span class="rating" style="background: ${relColor}">${getRatingLetter(metrics.reliability_rating)}</span>
+    <!-- Quality Gate -->
+    <div class="section">
+      <div class="quality-gate">
+        <div class="gate-status">${alertStatus}</div>
+        <div class="gate-info">
+          <h3>${alertStatus === 'OK' ? 'Quality Gate Aprobado' : 'Quality Gate Fallido'}</h3>
+          <p>${alertStatus === 'OK' ? 'El proyecto cumple con los criterios de certificación.' : 'Se requieren correcciones bloqueantes para pasar a producción.'}</p>
         </div>
-        <p style="font-size: 12px; color: #666; margin-top: 5px;">Bugs Confirmados</p>
-      </div>
-      <div class="card" style="border-top: 4px solid ${secColor}">
-        <div class="card-title">Security (Vulns)</div>
-        <div>
-          <span class="card-value">${metrics.vulnerabilities}</span>
-          <span class="rating" style="background: ${secColor}">${getRatingLetter(metrics.security_rating)}</span>
-        </div>
-        <p style="font-size: 12px; color: #666; margin-top: 5px;">Vulnerabilidades</p>
-      </div>
-      <div class="card" style="border-top: 4px solid ${mainColor}">
-        <div class="card-title">Maintainability</div>
-        <div>
-          <span class="card-value">${metrics.code_smells}</span>
-          <span class="rating" style="background: ${mainColor}">${getRatingLetter(metrics.sqale_rating)}</span>
-        </div>
-        <p style="font-size: 12px; color: #666; margin-top: 5px;">Code Smells</p>
       </div>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <div class="card-title">Coverage</div>
-        <span class="card-value">${parseFloat(metrics.coverage || 0).toFixed(1)}%</span>
-        <div style="background: #E5E7EB; border-radius: 4px; height: 6px; width: 100%; margin-top: 10px; overflow: hidden;">
-          <div style="background: #10B981; height: 100%; width: ${metrics.coverage}%"></div>
+    <!-- Main Metrics -->
+    <div class="section">
+      <h2 class="section-title">Indicadores Clave</h2>
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-label">Confiabilidad (Bugs)</div>
+          <div class="metric-value" style="color: ${bugs > 0 ? '#D32F2F' : '#388E3C'}">${bugs}</div>
+          <div class="metric-rating rating-${relRating}">${relRating}</div>
         </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Duplications</div>
-        <span class="card-value">${parseFloat(metrics.duplicated_lines_density || 0).toFixed(1)}%</span>
-      </div>
-      <div class="card">
-        <div class="card-title">Hotspots</div>
-        <span class="card-value">${metrics.security_hotspots || 0}</span>
+        <div class="metric-box">
+          <div class="metric-label">Seguridad (Vulns)</div>
+          <div class="metric-value" style="color: ${vulnerabilities > 0 ? '#D32F2F' : '#388E3C'}">${vulnerabilities}</div>
+          <div class="metric-rating rating-${secRating}">${secRating}</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Mantenibilidad (Smells)</div>
+          <div class="metric-value">${codeSmells}</div>
+          <div class="metric-rating rating-${mainRating}">${mainRating}</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Cobertura Tests</div>
+          <div class="metric-value" style="color: ${coverageColor}">${coverage.toFixed(1)}%</div>
+          <div style="font-size: 8pt; color: #888;">${metrics.lines_to_cover || 0} líneas</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Duplicación</div>
+          <div class="metric-value">${duplication.toFixed(1)}%</div>
+          <div style="font-size: 8pt; color: #888;">Density</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Security Hotspots</div>
+          <div class="metric-value">${hotspots}</div>
+          <div style="font-size: 8pt; color: #888;">Review required</div>
+        </div>
       </div>
     </div>
 
-    <div class="section-title">Distribución de Problemas</div>
-    <div class="chart-section">
-      <div class="card chart-box">
-        <canvas id="severityChart"></canvas>
+    <!-- Visual Analysis (Restored placement) -->
+    <div class="section">
+      <h2 class="section-title">Distribución de Issues</h2>
+      <div class="chart-row">
+        <div class="chart-container">
+          <canvas id="severityChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="typeChart"></canvas>
+        </div>
       </div>
-      <div class="card chart-box">
-        <canvas id="typeChart"></canvas>
-      </div>
+    </div>
+
+    <div class="footer">
+      <strong>LibelulaSoft</strong> &copy; ${new Date().getFullYear()} • Generado automáticamente con SonarCloud & Puppeteer
     </div>
   </div>
 
-  <div class="page page-break">
-    <!-- Page 2: Top Offenders & Trends -->
-    <div class="header">
-      <div class="header-info">
-        <h1>Análisis Detallado</h1>
-        <p>Archivos Críticos y Tendencias Históricas</p>
+  <!-- PAGE 2: DETAILS & TRENDS (New Enhanced Section) -->
+  <div class="container page page-break">
+    <div class="report-header" style="margin-bottom: 20px; padding: 20px 40px;">
+      <div class="header-text">
+        <h1>Análisis Profundo</h1>
+        <div class="subtitle">Detalles por archivo y tendencias</div>
       </div>
     </div>
 
-    <!-- Top Files Table -->
-    <div class="section-title">Top 10 Archivos Más Complejos (Hotspots)</div>
-    <div class="card">
-      <table>
+    <!-- Technical Details Grid -->
+    <div class="section">
+      <h2 class="section-title">Métricas Técnicas Adicionales</h2>
+      <div class="detail-grid">
+        <div class="detail-item"><small>Complejidad Total</small><span>${metrics.complexity || 0}</span></div>
+        <div class="detail-item"><small>Clases</small><span>${metrics.classes || 0}</span></div>
+        <div class="detail-item"><small>Funciones</small><span>${metrics.functions || 0}</span></div>
+        <div class="detail-item"><small>Comentarios %</small><span>${parseFloat(metrics.comment_lines_density || 0).toFixed(1)}%</span></div>
+      </div>
+    </div>
+
+    <!-- TOP FILES (Enhanced Feature) -->
+    <div class="section">
+      <h2 class="section-title">Top 10 Archivos Más Complejos (Hotspots)</h2>
+      <table class="data-table">
         <thead>
           <tr>
-            <th width="40%">Archivo</th>
+            <th width="45%">Archivo</th>
             <th width="15%">Complejidad</th>
             <th width="15%">Bugs</th>
             <th width="15%">Vulns</th>
-            <th width="15%">Cobertura</th>
           </tr>
         </thead>
         <tbody>
-          ${topFiles.length === 0 ? '<tr><td colspan="5" align="center">No hay datos disponibles</td></tr>' :
-      topFiles.map(file => `
+          ${topFiles.length === 0 ? '<tr><td colspan="4" align="center">Sin datos disponibles</td></tr>' :
+      topFiles.map(f => `
               <tr>
-                <td style="font-family: monospace; font-size: 11px;">${file.name}</td>
-                <td><strong>${file.complexity}</strong></td>
-                <td><span class="${file.bugs > 0 ? 'meta-tag tag-red' : 'meta-tag'}">${file.bugs}</span></td>
-                <td><span class="${file.vulnerabilities > 0 ? 'meta-tag tag-red' : 'meta-tag'}">${file.vulnerabilities}</span></td>
-                <td><span class="${file.coverage < 80 ? 'meta-tag tag-red' : 'meta-tag tag-green'}">${parseFloat(file.coverage).toFixed(1)}%</span></td>
+                <td style="font-family:consolas; font-size:8.5pt;">${f.name}</td>
+                <td><strong>${f.complexity}</strong></td>
+                <td>${f.bugs > 0 ? `<span class="badge badge-red">${f.bugs}</span>` : '0'}</td>
+                <td>${f.vulnerabilities > 0 ? `<span class="badge badge-red">${f.vulnerabilities}</span>` : '0'}</td>
               </tr>
             `).join('')
     }
@@ -313,24 +431,30 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
       </table>
     </div>
 
-    <!-- Historical Trends -->
-    <div class="section-title">Tendencias de Calidad (Últimos Analisis)</div>
-    <div class="chart-section">
-      <div class="card chart-box">
-        <canvas id="bugsTrendChart"></canvas>
+    <!-- HISTORICAL TRENDS (Enhanced Feature) -->
+    <div class="section">
+      <h2 class="section-title">Evolución Histórica (Últimos 30 análisis)</h2>
+      <div class="chart-row">
+        <div class="chart-container">
+          <canvas id="bugsTrendChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="coverageTrendChart"></canvas>
+        </div>
       </div>
-      <div class="card chart-box">
-        <canvas id="coverageTrendChart"></canvas>
-      </div>
+    </div>
+
+    <div class="footer">
+      Página 2/2 • Documento confidencial
     </div>
   </div>
 
-  <!-- Charts Logic -->
   <script>
-    Chart.defaults.font.family = 'Inter';
-    Chart.defaults.color = '#4B5563';
+    // Global Constants
+    Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', Arial";
+    Chart.defaults.font.size = 10;
     
-    // Severity Chart
+    // 1. Severity Chart
     new Chart(document.getElementById('severityChart'), {
       type: 'bar',
       data: {
@@ -338,63 +462,71 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
         datasets: [{
           label: 'Issues',
           data: [${issuesBySeverity.BLOCKER}, ${issuesBySeverity.CRITICAL}, ${issuesBySeverity.MAJOR}, ${issuesBySeverity.MINOR}, ${issuesBySeverity.INFO}],
-          backgroundColor: ['#991b1b', '#dc2626', '#ea580c', '#fbbf24', '#3b82f6'],
-          borderRadius: 4
+          backgroundColor: ['#b91c1c', '#dc2626', '#ea580c', '#0ea5e9', '#64748b'],
+          borderRadius: 3
         }]
       },
-      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      options: { plugins: { legend: { display:false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // Type Chart
+    // 2. Type Chart (Donut)
     new Chart(document.getElementById('typeChart'), {
       type: 'doughnut',
       data: {
         labels: ['Bugs', 'Vulns', 'Smells'],
         datasets: [{
           data: [${metrics.bugs}, ${metrics.vulnerabilities}, ${metrics.code_smells}],
-          backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6']
+          backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6'],
+          borderWidth: 0
         }]
       },
-      options: { plugins: { legend: { position: 'right' } }, cutout: '70%' }
+      options: { cutout: '65%', plugins: { legend: { position: 'right' } } }
     });
 
-    // --- Trend Charts (Safe Handling) ---
-    const trendDates = ${(JSON.stringify(trends.bugs || []))}.map(d => d.date);
-    const bugValues = ${(JSON.stringify(trends.bugs || []))}.map(d => d.value);
-    const covValues = ${(JSON.stringify(trends.coverage || []))}.map(d => d.value);
-
-    // Bugs Trend
+    // 3. Trends - Bugs
+    const dates = ${(JSON.stringify(trends.bugs || []))}.map(d => d.date);
+    const bugsData = ${(JSON.stringify(trends.bugs || []))}.map(d => d.value);
+    
     new Chart(document.getElementById('bugsTrendChart'), {
       type: 'line',
       data: {
-        labels: trendDates,
+        labels: dates,
         datasets: [{
           label: 'Bugs',
-          data: bugValues,
-          borderColor: '#EF4444',
-          tension: 0.3,
+          data: bugsData,
+          borderColor: '#ef4444',
+          tension: 0.2,
+          pointRadius: 2,
           fill: true,
-          backgroundColor: 'rgba(239, 68, 68, 0.1)'
+          backgroundColor: 'rgba(239, 68, 68, 0.05)'
         }]
       },
-      options: { plugins: { title: { display: true, text: 'Evolución de Bugs' } }, scales: { y: { beginAtZero: true } } }
+      options: { 
+        plugins: { title: { display: true, text: 'Bugs encontrados' }, legend: {display: false} },
+        scales: { x: { display: false }, y: { beginAtZero: true } }
+      }
     });
 
-    // Coverage Trend
+    // 4. Trends - Coverage
+    const covData = ${(JSON.stringify(trends.coverage || []))}.map(d => d.value);
     new Chart(document.getElementById('coverageTrendChart'), {
       type: 'line',
       data: {
-        labels: trendDates,
+        labels: dates,
         datasets: [{
           label: 'Cobertura %',
-          data: covValues,
-          borderColor: '#10B981',
-          tension: 0.3,
+          data: covData,
+          borderColor: '#22c55e',
+          tension: 0.2,
+          pointRadius: 2,
           fill: true,
-          backgroundColor: 'rgba(16, 185, 129, 0.1)'
+          backgroundColor: 'rgba(34, 197, 94, 0.05)'
         }]
       },
-      options: { plugins: { title: { display: true, text: 'Evolución de Cobertura' } }, scales: { y: { min: 0, max: 100 } } }
+      options: { 
+        plugins: { title: { display: true, text: 'Cobertura de Código (%)' }, legend: {display: false} },
+        scales: { x: { display: false }, y: { min: 0, max: 100 } }
+      }
     });
   </script>
 </body>
@@ -402,18 +534,10 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
   `;
 }
 
-function getRatingLetter(val) {
-  const v = parseFloat(val);
-  if (v < 2) return 'A';
-  if (v < 3) return 'B';
-  if (v < 4) return 'C';
-  if (v < 5) return 'D';
-  return 'E';
-}
-
 // MAIN EXECUTION
 async function generateProfessionalReport() {
-  console.log('--- Generando Reporte Avanzado de SonarCloud ---');
+  console.log('|-- Inicio de generación de reporte profesional --|');
+
   try {
     const [metrics, issues, topFiles, trends] = await Promise.all([
       fetchSonarMetrics(),
@@ -422,31 +546,38 @@ async function generateProfessionalReport() {
       fetchQualityTrends()
     ]);
 
-    const html = generateProfessionalHTML(metrics, issues, topFiles, trends);
+    // Generar contenido HTML
+    const htmlContent = generateProfessionalHTML(metrics, issues, topFiles, trends);
     const htmlPath = path.resolve(OUTPUT_DIR, 'sonar-professional-report.html');
-    fs.writeFileSync(htmlPath, html);
-    console.log('HTML generado:', htmlPath);
+    fs.writeFileSync(htmlPath, htmlContent);
+    console.log('-> HTML generado en:', htmlPath);
 
-    console.log('Renderizando PDF...');
+    // Renderizar PDF con Puppeteer
+    console.log('-> Renderizando PDF...');
     const browser = await puppeteer.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
-    const page = await browser.newPage();
-    await page.goto(`file://${htmlPath}`, { waitUntil: 'networkidle0' });
 
+    const page = await browser.newPage();
+    await page.goto(`file://${htmlPath}`, {
+      waitUntil: 'networkidle0',
+      timeout: 60000
+    });
+
+    const pdfPath = path.resolve(OUTPUT_DIR, 'sonar-professional-report.pdf');
     await page.pdf({
-      path: path.resolve(OUTPUT_DIR, 'sonar-professional-report.pdf'),
+      path: pdfPath,
       format: 'A4',
       printBackground: true,
-      margin: { top: '0', right: '0', bottom: '0', left: '0' }
+      margin: { top: '0', bottom: '0', left: '0', right: '0' }
     });
 
     await browser.close();
-    console.log('PDF Generado Exitosamente!');
+    console.log(`-> ÉXITO: Reporte creado en ${pdfPath}`);
 
-  } catch (e) {
-    console.error('Error fatal:', e);
+  } catch (error) {
+    console.error('!!! ERROR FATAL !!!', error);
     process.exit(1);
   }
 }
