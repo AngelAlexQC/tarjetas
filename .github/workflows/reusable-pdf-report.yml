@@ -17,22 +17,35 @@ on:
     secrets:
       SONAR_TOKEN:
         required: true
+  workflow_dispatch:
+    inputs:
+      project-version:
+        description: 'Project version for the report'
+        required: false
+        type: string
+        default: '1.0.0'
+      artifact-retention-days:
+        description: 'Days to retain artifacts'
+        required: false
+        type: number
+        default: 30
 
 jobs:
   generate:
     name: Generate PDF Report
     runs-on: ubuntu-latest
-
+    container:
+      image: ghcr.io/puppeteer/puppeteer:latest
+      options: --user root # Needed to write to the mounted workspace and install packages
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
+        
       - name: Install dependencies for PDF generation
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable
         run: npm install puppeteer axios
 
       - name: Wait for SonarCloud to process analysis
@@ -46,6 +59,7 @@ jobs:
           SONAR_PROJECT_NAME: LibelulaSoft Tarjetas
           SONAR_PROJECT_VERSION: ${{ inputs.project-version }}
           OUTPUT_DIR: ${{ github.workspace }}/output
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable
         run: |
           mkdir -p output
           node scripts/generate-professional-sonar-report.js
