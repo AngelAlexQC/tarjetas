@@ -19,8 +19,11 @@
     "security:check": "npm run audit:check && npm run lint && npm run typecheck",
     "validate": "npm run typecheck && npm run lint && npm run test",
     "generate:icons": "node scripts/generate-icons.js",
-    "sonar": "npm run test:coverage && sonar-scanner",
-    "sonar:local": "npm run test:coverage && sonar-scanner -Dsonar.host.url=http://localhost:9000"
+    "sonar": "npm run test:coverage && npx sonarqube-scanner",
+    "sonar:local": "npm run test:coverage && npx sonarqube-scanner -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqa_b6df0791d826ed92ba2534146d61a7f2a6dd1bad",
+    "sonar:report": "sonar-report --sonarurl=http://localhost:9000 --sonarcomponent=AngelAlexQC_financiero --project=\"Financiero App\" --output=sonar-report.html",
+    "sonar:pdf": "node scripts/generate-sonar-pdf.js",
+    "sonar:full": "npm run sonar:local && npm run sonar:pdf"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
@@ -71,7 +74,10 @@
     "expo-dev-client": "~6.0.18",
     "jest": "~29.7.0",
     "jest-expo": "~54.0.13",
+    "puppeteer": "^23.10.4",
     "sharp": "^0.34.5",
+    "sonar-report": "^2.1.0",
+    "sonarqube-scanner": "^4.3.2",
     "typescript": "~5.9.2"
   },
   "private": true

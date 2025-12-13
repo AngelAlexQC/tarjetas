@@ -42,6 +42,11 @@ Thumbs.db
 coverage/
 *.lcov
 
+# SonarQube Reports
+sonar-report.html
+sonar-report.pdf
+.scannerwork/
+
 # IDE
 .vscode/*
 !.vscode/settings.json

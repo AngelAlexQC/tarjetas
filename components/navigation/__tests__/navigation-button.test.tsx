@@ -55,15 +55,31 @@ describe('NavigationButton', () => {
   });
 
   it('should render ArrowLeft icon on Android', () => {
-    Object.defineProperty(Platform, 'OS', { get: () => 'android', configurable: true });
+    const originalOS = Platform.OS;
+    Object.defineProperty(Platform, 'OS', {
+      get: () => 'android',
+      configurable: true,
+    });
     const { root } = render(<NavigationButton onPress={mockOnPress} />);
     expect(root).toBeTruthy();
+    Object.defineProperty(Platform, 'OS', {
+      get: () => originalOS,
+      configurable: true,
+    });
   });
 
   it('should render ChevronLeft icon on iOS', () => {
-    Object.defineProperty(Platform, 'OS', { get: () => 'ios', configurable: true });
+    const originalOS = Platform.OS;
+    Object.defineProperty(Platform, 'OS', {
+      get: () => 'ios',
+      configurable: true,
+    });
     const { root } = render(<NavigationButton onPress={mockOnPress} />);
     expect(root).toBeTruthy();
+    Object.defineProperty(Platform, 'OS', {
+      get: () => originalOS,
+      configurable: true,
+    });
   });
 
   it('should render X icon when type is close', () => {
