@@ -1,0 +1,92 @@
+name: SonarQube Analysis & PDF Report
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      generate_pdf:
+        description: 'Generate PDF report'
+        required: false
+        default: 'true'
+        type: boolean
+
+jobs:
+  sonar-analysis:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        continue-on-error: true
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Wait for Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
+
+  generate-pdf-report:
+    name: Generate PDF Report
+    runs-on: ubuntu-latest
+    needs: sonar-analysis
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.generate_pdf == 'true')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build PDF Generator Image
+        run: docker build -f Dockerfile.sonar-report -t sonar-report-generator .
+
+      - name: Generate PDF Report
+        run: |
+          mkdir -p output
+          docker run --rm \
+            --network host \
+            -e SONAR_URL=${{ secrets.SONAR_HOST_URL }} \
+            -e SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} \
+            -e SONAR_PROJECT_KEY=${{ secrets.SONAR_PROJECT_KEY }} \
+            -e SONAR_PROJECT_NAME="${{ secrets.SONAR_PROJECT_NAME }}" \
+            -e SONAR_PROJECT_VERSION=${{ github.ref_name }} \
+            -e OUTPUT_DIR=/app/output \
+            -v $(pwd)/output:/app/output \
+            sonar-report-generator
+
+      - name: Upload PDF Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-quality-report
+          path: output/sonar-professional-report.pdf
+          retention-days: 30
+
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-quality-report-html
+          path: output/sonar-professional-report.html
+          retention-days: 30

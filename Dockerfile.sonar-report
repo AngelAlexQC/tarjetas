@@ -1,0 +1,41 @@
+# Dockerfile para generación de reportes PDF de SonarQube
+# Usa Node.js slim con Chromium instalado manualmente (no la imagen oficial de Puppeteer)
+
+FROM node:20-slim
+
+# Instalar Chromium y dependencias necesarias para renderizado
+RUN apt-get update && apt-get install -y \
+    chromium \
+    fonts-liberation \
+    fonts-noto-color-emoji \
+    fonts-freefont-ttf \
+    fonts-dejavu-core \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configurar Puppeteer para usar Chromium del sistema
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY package.json ./
+
+# Instalar solo las dependencias necesarias para el script
+RUN npm install --omit=dev puppeteer axios
+
+# Copiar script y assets
+COPY scripts/generate-professional-sonar-report.js ./scripts/
+COPY LibelulaLogo.png ./
+
+# Crear directorio de salida
+RUN mkdir -p /app/output
+
+# Usuario no-root para seguridad (opcional pero recomendado)
+RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+    && chown -R pptruser:pptruser /app
+
+USER pptruser
+
+CMD ["node", "scripts/generate-professional-sonar-report.js"]
