@@ -4,7 +4,7 @@ import { RepositoryContainer } from '@/repositories';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
 import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState, useMemo } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
 const log = loggers.theme;
@@ -83,16 +83,16 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const value = useMemo(() => ({
+    currentTheme,
+    colorScheme,
+    setTenant,
+    clearTenant,
+    isLoading,
+  }), [currentTheme, colorScheme, setTenant, clearTenant, isLoading]);
+
   return (
-    <TenantThemeContext.Provider
-      value={{
-        currentTheme,
-        colorScheme,
-        setTenant,
-        clearTenant,
-        isLoading,
-      }}
-    >
+    <TenantThemeContext.Provider value={value}>
       {children}
     </TenantThemeContext.Provider>
   );
