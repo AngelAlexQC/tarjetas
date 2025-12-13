@@ -4,7 +4,7 @@ import { RepositoryContainer } from '@/repositories';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
 import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useContext, useEffect, useState, useMemo, useCallback } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
 const log = loggers.theme;
@@ -22,7 +22,7 @@ const TenantThemeContext = createContext<TenantThemeContextType | undefined>(und
 export function TenantThemeProvider({ children }: { children: ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState<Tenant>(defaultTenant);
   const [isLoading, setIsLoading] = useState(true);
-  const colorScheme = useRNColorScheme() ?? 'light';
+  const colorScheme = (useRNColorScheme() ?? 'light') as 'light' | 'dark';
 
   useEffect(() => {
     loadSavedTheme();

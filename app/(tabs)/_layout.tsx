@@ -17,7 +17,9 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 }
 
 // Componente extraído para evitar nested components (S6478)
-const TabBarBackground = ({ colorScheme }: { colorScheme: 'light' | 'dark' | null | undefined }) => {
+import { type ColorSchemeName } from 'react-native';
+
+const TabBarBackground = ({ colorScheme }: { colorScheme: ColorSchemeName }) => {
   if (Platform.OS !== 'ios') return null;
   return (
     <BlurView 
@@ -57,7 +59,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Instituciones',
-          tabBarIcon: ({ color, focused }) => <HomeIcon size={26} color={color} focused={focused} />,
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => <HomeIcon size={26} color={color} focused={focused} />,
           headerShown: false,
         }}
       />
@@ -65,7 +67,7 @@ export default function TabLayout() {
         name="cards"
         options={{
           title: 'Tarjetas',
-          tabBarIcon: ({ color, focused }) => <CardsIcon size={26} color={color} focused={focused} />,
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => <CardsIcon size={26} color={color} focused={focused} />,
           headerShown: false,
         }}
       />

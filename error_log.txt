@@ -1,0 +1,299 @@
+generate-pdf / Generate PDF Report	UNKNOWN STEP	﻿2025-12-13T05:19:16.7616763Z Current runner version: '2.329.0'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7642179Z ##[group]Runner Image Provisioner
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7643009Z Hosted Compute Agent
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7643567Z Version: 20251202.455
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7644232Z Commit: 6c10caca4910e198df60de23adf20ad317c474e3
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7644891Z Build Date: 2025-12-02T15:56:59Z
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7645551Z Worker ID: {b8472c32-121c-4889-aa42-a4905dfa6535}
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7646213Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7646740Z ##[group]Operating System
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7647275Z Ubuntu
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7647721Z 24.04.3
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7648170Z LTS
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7648570Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7649117Z ##[group]Runner Image
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7649662Z Image: ubuntu-24.04
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7650122Z Version: 20251208.163.1
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7651411Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251208.163/images/ubuntu/Ubuntu2404-Readme.md
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7652970Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251208.163
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7654028Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7655060Z ##[group]GITHUB_TOKEN Permissions
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7656930Z Contents: read
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7657459Z Metadata: read
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7658010Z Packages: read
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7658537Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7660558Z Secret source: Actions
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.7661486Z Prepare workflow directory
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.8073002Z Prepare all required actions
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:16.8112607Z Getting action download info
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.2507281Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.3321968Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5278597Z Uses: AngelAlexQC/tarjetas/.github/workflows/reusable-pdf-report.yml@refs/heads/main (51af948922ce2ec426b3ba2e730649ae717fb850)
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5284980Z ##[group] Inputs
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5285493Z   project-version: main
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5286572Z   artifact-retention-days: 30
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5287060Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5287530Z Complete job name: generate-pdf / Generate PDF Report
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5794847Z ##[group]Checking docker version
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.5808107Z ##[command]/usr/bin/docker version --format '{{.Server.APIVersion}}'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6446717Z '1.48'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6458080Z Docker daemon API version: '1.48'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6458815Z ##[command]/usr/bin/docker version --format '{{.Client.APIVersion}}'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6624418Z '1.48'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6637858Z Docker client API version: '1.48'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6643829Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6647143Z ##[group]Clean up resources from previous jobs
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6653081Z ##[command]/usr/bin/docker ps --all --quiet --no-trunc --filter "label=72e03b"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6844978Z ##[command]/usr/bin/docker network prune --force --filter "label=72e03b"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6994389Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.6995166Z ##[group]Create local container network
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.7010059Z ##[command]/usr/bin/docker network create --label 72e03b github_network_ba001a460a1d4af99b59e08075601c24
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.8928405Z 17a79ad5ff211b4e96ea81d9c0638a765a5368ca4ffa50c964bb6287f12247b1
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.8949839Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.8984548Z ##[group]Starting job container
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:17.9015450Z ##[command]/usr/bin/docker --config /home/runner/work/_temp/.docker_d55b52e5-149e-4fe4-ba6d-75c7b1ad8cdc login ghcr.io -u AngelAlexQC --password-stdin
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:18.5022664Z ##[command]/usr/bin/docker --config /home/runner/work/_temp/.docker_d55b52e5-149e-4fe4-ba6d-75c7b1ad8cdc pull ghcr.io/puppeteer/puppeteer:latest
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2974901Z latest: Pulling from puppeteer/puppeteer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2976350Z bfecd07633a3: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2977071Z 8cdff261ed5c: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2977782Z 078b2eece9b2: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2978861Z a1208d53eb06: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2979538Z 362e190e81e3: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2980209Z 90ee3f3f5efa: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2981175Z 492322b34046: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2981874Z fb630f06ead6: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2982585Z 8748e8891998: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2983251Z 960de9286b40: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2983922Z 4f4fb700ef54: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2984572Z 89c9829f70f3: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2985252Z f4d030a039b2: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2985962Z bb2871f37f9a: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2986725Z 8f6d8c9a3110: Pulling fs layer
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2987420Z 492322b34046: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2988063Z fb630f06ead6: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2988700Z 8748e8891998: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2989342Z 960de9286b40: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2989982Z 4f4fb700ef54: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2991091Z 89c9829f70f3: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2992174Z f4d030a039b2: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2993187Z bb2871f37f9a: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2993886Z 8f6d8c9a3110: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2994636Z a1208d53eb06: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2995635Z 362e190e81e3: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.2996601Z 90ee3f3f5efa: Waiting
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.6138685Z 8cdff261ed5c: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.6140585Z 8cdff261ed5c: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.7026256Z bfecd07633a3: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.7028112Z bfecd07633a3: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.7242138Z 078b2eece9b2: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.7243671Z 078b2eece9b2: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.8530974Z 362e190e81e3: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:19.8532467Z 362e190e81e3: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.0682095Z 90ee3f3f5efa: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.0689690Z 90ee3f3f5efa: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.1079718Z 492322b34046: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.1082783Z 492322b34046: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.2746016Z fb630f06ead6: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.2748651Z fb630f06ead6: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.5020096Z 960de9286b40: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.5021286Z 960de9286b40: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.5188822Z a1208d53eb06: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.5189374Z a1208d53eb06: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.6975252Z 4f4fb700ef54: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.6975768Z 4f4fb700ef54: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.7359307Z 89c9829f70f3: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.7360373Z 89c9829f70f3: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.8822808Z 8748e8891998: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:20.8826975Z 8748e8891998: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:21.1836006Z 8f6d8c9a3110: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:21.1836647Z 8f6d8c9a3110: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:21.4101314Z bb2871f37f9a: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:21.4101788Z bb2871f37f9a: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:21.8521808Z bfecd07633a3: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:24.6472510Z f4d030a039b2: Verifying Checksum
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:24.6485501Z f4d030a039b2: Download complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:26.1958424Z 8cdff261ed5c: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:28.7013796Z 078b2eece9b2: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:35.1675970Z a1208d53eb06: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:35.1808092Z 362e190e81e3: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:37.5614404Z 90ee3f3f5efa: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:37.5975217Z 492322b34046: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:37.6075908Z fb630f06ead6: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:38.1430385Z 8748e8891998: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:38.1556234Z 960de9286b40: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:38.1633536Z 4f4fb700ef54: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:38.1778778Z 89c9829f70f3: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:44.6333531Z f4d030a039b2: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:46.9083931Z bb2871f37f9a: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:46.9753420Z 8f6d8c9a3110: Pull complete
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:46.9783740Z Digest: sha256:1d586016666747885e9f8e3b20fc9d30b7ddf08db451c42fcdda7df60e6c72ae
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:46.9794361Z Status: Downloaded newer image for ghcr.io/puppeteer/puppeteer:latest
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:46.9806466Z ghcr.io/puppeteer/puppeteer:latest
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:46.9890568Z ##[command]/usr/bin/docker create --name aa5946d935994287bbd1a9365298f765_ghcriopuppeteerpuppeteerlatest_59c08e --label 72e03b --workdir /__w/tarjetas/tarjetas --network github_network_ba001a460a1d4af99b59e08075601c24 --user root -e "HOME=/github/home" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work":"/__w" -v "/home/runner/actions-runner/cached/externals":"/__e":ro -v "/home/runner/work/_temp":"/__w/_temp" -v "/home/runner/work/_actions":"/__w/_actions" -v "/opt/hostedtoolcache":"/__t" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" --entrypoint "tail" ghcr.io/puppeteer/puppeteer:latest "-f" "/dev/null"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.0146563Z 64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.0170300Z ##[command]/usr/bin/docker start 64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.1735934Z 64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.1755320Z ##[command]/usr/bin/docker ps --all --filter id=64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6 --filter status=running --no-trunc --format "{{.ID}} {{.Status}}"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.1870455Z 64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6 Up Less than a second
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.1891877Z ##[command]/usr/bin/docker inspect --format "{{range .Config.Env}}{{println .}}{{end}}" 64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2014284Z HOME=/github/home
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2014636Z GITHUB_ACTIONS=true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2014977Z CI=true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2015418Z PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2015991Z NODE_VERSION=22.21.1
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2016301Z YARN_VERSION=1.22.22
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2016620Z LANG=en_US.UTF-8
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2016914Z PPTRUSER_UID=10042
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2017633Z DBUS_SESSION_BUS_ADDRESS=autolaunch:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2037062Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2046763Z ##[group]Waiting for all services to be ready
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2048420Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2306564Z ##[group]Run actions/checkout@v4
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2307097Z with:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2307302Z   repository: AngelAlexQC/tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2307836Z   token: ***
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2308012Z   ssh-strict: true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2308194Z   ssh-user: git
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2308378Z   persist-credentials: true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2308594Z   clean: true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2308782Z   sparse-checkout-cone-mode: true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2309008Z   fetch-depth: 1
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2309187Z   fetch-tags: false
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2309363Z   show-progress: true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2309565Z   lfs: false
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2309725Z   submodules: false
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2309897Z   set-safe-directory: true
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2310278Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.2367069Z ##[command]/usr/bin/docker exec  64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6 sh -c "cat /etc/*release | grep ^ID"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4513567Z Syncing repository: AngelAlexQC/tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4515766Z ##[group]Getting Git version info
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4516315Z Working directory is '/__w/tarjetas/tarjetas'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4517160Z [command]/usr/bin/git version
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4517625Z git version 2.39.5
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4545078Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4561929Z Temporarily overriding HOME='/__w/_temp/121f698a-bb05-4435-992f-28d7e7664062' before making global git config changes
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4562741Z Adding repository directory to the temporary git global config as a safe directory
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4568741Z [command]/usr/bin/git config --global --add safe.directory /__w/tarjetas/tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4604445Z Deleting the contents of '/__w/tarjetas/tarjetas'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4609036Z ##[group]Initializing the repository
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4621286Z [command]/usr/bin/git init /__w/tarjetas/tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4654864Z hint: Using 'master' as the name for the initial branch. This default branch name
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4655568Z hint: is subject to change. To configure the initial branch name to use in all
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4656134Z hint: of your new repositories, which will suppress this warning, call:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4656780Z hint: 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4657224Z hint: 	git config --global init.defaultBranch <name>
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4657588Z hint: 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4657915Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4658432Z hint: 'development'. The just-created branch can be renamed via this command:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4658903Z hint: 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4659271Z hint: 	git branch -m <name>
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4663279Z Initialized empty Git repository in /__w/tarjetas/tarjetas/.git/
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4676672Z [command]/usr/bin/git remote add origin https://github.com/AngelAlexQC/tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4709640Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4710216Z ##[group]Disabling automatic garbage collection
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4714414Z [command]/usr/bin/git config --local gc.auto 0
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4743069Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4743411Z ##[group]Setting up auth
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4750472Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.4780861Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5024663Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5057943Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5299893Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5332389Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5573396Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5608442Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5608984Z ##[group]Fetching the repository
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:47.5617466Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +51af948922ce2ec426b3ba2e730649ae717fb850:refs/remotes/origin/main
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2182016Z From https://github.com/AngelAlexQC/tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2182799Z  * [new ref]         51af948922ce2ec426b3ba2e730649ae717fb850 -> origin/main
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2204377Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2204751Z ##[group]Determining the checkout info
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2207276Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2213434Z [command]/usr/bin/git sparse-checkout disable
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2252240Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2281232Z ##[group]Checking out the ref
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2285671Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2544218Z Switched to a new branch 'main'
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2544843Z branch 'main' set up to track 'origin/main'.
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2550457Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2588826Z [command]/usr/bin/git log -1 --format=%H
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2612382Z 51af948922ce2ec426b3ba2e730649ae717fb850
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2812177Z ##[group]Run npm install puppeteer axios
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2812529Z [36;1mnpm install puppeteer axios[0m
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2815685Z shell: sh -e {0}
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:48.2815902Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:51.8096810Z npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:52.9605365Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:53.8281256Z npm warn deprecated domexception@4.0.0: Use your platform's native DOMException instead
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:54.1013225Z npm warn deprecated puppeteer@23.11.1: < 24.15.0 is no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:54.4010650Z npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:56.2042594Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:56.3130935Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:56.3152232Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:56.5661659Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:56.5666743Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:56.9224065Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:19:56.9224916Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8640116Z 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8640936Z added 1314 packages, and audited 1315 packages in 22s
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8641418Z 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8641542Z 222 packages are looking for funding
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8641880Z   run `npm fund` for details
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8669161Z 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8669435Z 2 high severity vulnerabilities
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8669902Z 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8670160Z To address all issues (including breaking changes), run:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8670906Z   npm audit fix --force
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8671155Z 
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.8671312Z Run `npm audit` for details.
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.9205233Z ##[group]Run sleep 30
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.9205472Z [36;1msleep 30[0m
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.9205766Z shell: sh -e {0}
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:10.9205946Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9824536Z ##[group]Run mkdir -p output
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9824825Z [36;1mmkdir -p output[0m
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9825119Z [36;1mnode scripts/generate-professional-sonar-report.js[0m
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9825525Z shell: sh -e {0}
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9825700Z env:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9825873Z   SONAR_URL: https://sonarcloud.io
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9826249Z   SONAR_TOKEN: ***
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9826441Z   SONAR_PROJECT_KEY: AngelAlexQC_tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9826702Z   SONAR_PROJECT_NAME: LibelulaSoft Tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9826950Z   SONAR_PROJECT_VERSION: main
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9827213Z   OUTPUT_DIR: /home/runner/work/tarjetas/tarjetas/output
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:40.9827504Z ##[endgroup]
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:41.2541076Z |-- Inicio Generación Reporte Profesional Completo --|
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:41.2544796Z Obteniendo métricas completas de SonarQube...
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:41.2753300Z Analizando distribución de severidad...
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:41.2770400Z Identificando Hotspots...
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:41.2784783Z Obteniendo tendencias históricas...
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:41.2797156Z Obteniendo issues críticos detallados...
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7785968Z Failure: TypeError: f.coverage.toFixed is not a function
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7786882Z     at /__w/tarjetas/tarjetas/scripts/generate-professional-sonar-report.js:384:28
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7787670Z     at Array.map (<anonymous>)
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7788534Z     at generateProfessionalHTML (/__w/tarjetas/tarjetas/scripts/generate-professional-sonar-report.js:376:18)
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7789784Z     at generateFinalReport (/__w/tarjetas/tarjetas/scripts/generate-professional-sonar-report.js:469:18)
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7791213Z     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7890515Z ##[error]Process completed with exit code 1.
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7990028Z Post job cleanup.
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.7994005Z ##[command]/usr/bin/docker exec  64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6 sh -c "cat /etc/*release | grep ^ID"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.9931206Z [command]/usr/bin/git version
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:43.9966153Z git version 2.39.5
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0010184Z Temporarily overriding HOME='/__w/_temp/ea466355-ff52-4f66-8c70-56ba71521365' before making global git config changes
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0011642Z Adding repository directory to the temporary git global config as a safe directory
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0017308Z [command]/usr/bin/git config --global --add safe.directory /__w/tarjetas/tarjetas
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0049496Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0089184Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0326903Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0346973Z http.https://github.com/.extraheader
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0359333Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0390035Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0621103Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.0652085Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.1005562Z Stop and remove container: aa5946d935994287bbd1a9365298f765_ghcriopuppeteerpuppeteerlatest_59c08e
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.1009997Z ##[command]/usr/bin/docker rm --force 64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.1942775Z 64b216eb605d1769d0b41ea865be5b6ae9ac381fffda37c2ae93ea6b1d818eb6
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.1972775Z Remove container network: github_network_ba001a460a1d4af99b59e08075601c24
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.1977076Z ##[command]/usr/bin/docker network rm github_network_ba001a460a1d4af99b59e08075601c24
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.3285935Z github_network_ba001a460a1d4af99b59e08075601c24
+generate-pdf / Generate PDF Report	UNKNOWN STEP	2025-12-13T05:20:44.3344062Z Cleaning up orphan processes
