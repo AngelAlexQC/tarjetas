@@ -15,7 +15,7 @@ const SONAR_CONFIG = {
 
 const OUTPUT_DIR = process.env.OUTPUT_DIR || path.resolve(__dirname, '..');
 
-// --- API FETCHING FUNCTIONS (Enhanced) ---
+// --- API FETCHING FUNCTIONS (Professional + Detailed) ---
 
 async function fetchSonarMetrics() {
   console.log('Obteniendo métricas de SonarQube...');
@@ -68,6 +68,40 @@ async function fetchIssuesBySeverity() {
     }
   }
   return issues;
+}
+
+// [NEW] Get Specific Actionable Issues (Re-added)
+async function fetchLatestIssues() {
+  console.log('Obteniendo detalles de issues críticos...');
+  const auth = Buffer.from(`${SONAR_CONFIG.token}:`).toString('base64');
+  const headers = { Authorization: `Basic ${auth}` };
+
+  try {
+    const response = await axios.get(`${SONAR_CONFIG.url}/api/issues/search`, {
+      params: {
+        componentKeys: SONAR_CONFIG.component,
+        severities: 'BLOCKER,CRITICAL,MAJOR',
+        resolved: false,
+        ps: 8, // Top 8
+        s: 'CREATION_DATE',
+        asc: false
+      },
+      headers
+    });
+
+    if (!response.data.issues) return [];
+
+    return response.data.issues.map(issue => ({
+      message: issue.message,
+      component: issue.component.split(':').pop(), // Simple filename
+      severity: issue.severity,
+      line: issue.line || '-',
+      type: issue.type
+    }));
+  } catch (err) {
+    console.warn('Error fetching specific issues:', err.message);
+    return [];
+  }
 }
 
 async function fetchTopFiles() {
@@ -181,14 +215,14 @@ function getConclusion(bugs, vulnerabilities, codeSmells, coverage, reliabilityR
   }
 }
 
-// --- HTML GENERATOR (Restored Professional Style + New Data) ---
+// --- HTML GENERATOR (Professional Style + All Details) ---
 
-function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
+function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends, criticalIssues) {
   const logoBase64 = getLogoBase64();
   const date = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
   const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-  // Default default values safety
+  // Default values safety
   const coverage = parseFloat(metrics.coverage || 0);
   const bugs = parseInt(metrics.bugs || 0);
   const vulnerabilities = parseInt(metrics.vulnerabilities || 0);
@@ -219,7 +253,7 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
     .page { padding: 20px 30px; min-height: 270mm; position: relative; }
     .page-break { page-break-after: always; }
 
-    /* PROFESSIONAL HEADER (RESTORED) */
+    /* PROFESSIONAL HEADER */
     .report-header {
       background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
       color: white;
@@ -272,12 +306,28 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
     th { text-align: left; padding: 10px; background: #f1f5f9; color: #475569; font-weight: 600; border-bottom: 2px solid #e2e8f0; }
     td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
     tr:last-child td { border-bottom: none; }
+    
     .badge { padding: 2px 6px; border-radius: 3px; font-size: 8pt; font-weight: 600; color: #fff; }
     .badge-red { background: #ef4444; }
     .badge-orange { background: #f97316; }
     .badge-yellow { background: #eab308; }
     .badge-blue { background: #3b82f6; }
     .badge-green { background: #22c55e; }
+
+    /* ISSUES SNAPSHOT (Professional Style) */
+    .issue-list { margin-top: 10px; }
+    .issue-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 10px; border-left: 3px solid #ccc; background: #f9fafb; margin-bottom: 8px;
+    }
+    .issue-row.BLOCKER { border-left-color: #b91c1c; background: #fef2f2; }
+    .issue-row.CRITICAL { border-left-color: #dc2626; background: #fff1f2; }
+    .issue-row.MAJOR { border-left-color: #ea580c; background: #fff7ed; }
+    
+    .issue-content { flex: 1; margin-right: 15px; }
+    .issue-msg { font-size: 9pt; color: #1f2937; margin-bottom: 3px; font-weight: 500; }
+    .issue-loc { font-size: 8pt; color: #64748b; font-family: consolas, monospace; }
+    .issue-meta { text-align: right; }
 
     /* CHARTS */
     .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -366,16 +416,24 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
       </div>
     </div>
 
-    <!-- Visual Analysis (Restored placement) -->
+    <!-- CRITICAL ISSUES SNAPSHOT (NEW FEATURE IN PRO DESIGN) -->
     <div class="section">
-      <h2 class="section-title">Distribución de Issues</h2>
-      <div class="chart-row">
-        <div class="chart-container">
-          <canvas id="severityChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <canvas id="typeChart"></canvas>
-        </div>
+      <h2 class="section-title">Problemas Críticos (Actionable Items)</h2>
+      <div class="issue-list">
+        ${criticalIssues.length === 0 ? '<p>No se encontraron problemas críticos recientes.</p>' :
+      criticalIssues.map(i => `
+            <div class="issue-row ${i.severity}">
+              <div class="issue-content">
+                <div class="issue-msg">${i.message}</div>
+                <div class="issue-loc">${i.component} : ${i.line}</div>
+              </div>
+              <div class="issue-meta">
+                <span class="badge ${i.severity === 'BLOCKER' ? 'badge-red' : 'badge-orange'}">${i.severity}</span>
+                <div style="font-size: 7.5pt; color: #888; margin-top: 2px;">${i.type}</div>
+              </div>
+            </div>
+          `).join('')
+    }
       </div>
     </div>
 
@@ -454,35 +512,6 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends) {
     Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', Arial";
     Chart.defaults.font.size = 10;
     
-    // 1. Severity Chart
-    new Chart(document.getElementById('severityChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Blocker', 'Critical', 'Major', 'Minor', 'Info'],
-        datasets: [{
-          label: 'Issues',
-          data: [${issuesBySeverity.BLOCKER}, ${issuesBySeverity.CRITICAL}, ${issuesBySeverity.MAJOR}, ${issuesBySeverity.MINOR}, ${issuesBySeverity.INFO}],
-          backgroundColor: ['#b91c1c', '#dc2626', '#ea580c', '#0ea5e9', '#64748b'],
-          borderRadius: 3
-        }]
-      },
-      options: { plugins: { legend: { display:false } }, scales: { y: { beginAtZero: true } } }
-    });
-
-    // 2. Type Chart (Donut)
-    new Chart(document.getElementById('typeChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Bugs', 'Vulns', 'Smells'],
-        datasets: [{
-          data: [${metrics.bugs}, ${metrics.vulnerabilities}, ${metrics.code_smells}],
-          backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6'],
-          borderWidth: 0
-        }]
-      },
-      options: { cutout: '65%', plugins: { legend: { position: 'right' } } }
-    });
-
     // 3. Trends - Bugs
     const dates = ${(JSON.stringify(trends.bugs || []))}.map(d => d.date);
     const bugsData = ${(JSON.stringify(trends.bugs || []))}.map(d => d.value);
@@ -539,15 +568,16 @@ async function generateProfessionalReport() {
   console.log('|-- Inicio de generación de reporte profesional --|');
 
   try {
-    const [metrics, issues, topFiles, trends] = await Promise.all([
+    const [metrics, issues, topFiles, trends, criticalIssues] = await Promise.all([
       fetchSonarMetrics(),
       fetchIssuesBySeverity(),
       fetchTopFiles(),
-      fetchQualityTrends()
+      fetchQualityTrends(),
+      fetchLatestIssues()
     ]);
 
     // Generar contenido HTML
-    const htmlContent = generateProfessionalHTML(metrics, issues, topFiles, trends);
+    const htmlContent = generateProfessionalHTML(metrics, issues, topFiles, trends, criticalIssues);
     const htmlPath = path.resolve(OUTPUT_DIR, 'sonar-professional-report.html');
     fs.writeFileSync(htmlPath, htmlContent);
     console.log('-> HTML generado en:', htmlPath);
