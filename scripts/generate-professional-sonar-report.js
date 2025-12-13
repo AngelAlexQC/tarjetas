@@ -577,9 +577,8 @@ async function generateProfessionalReport() {
       fetchLatestIssues()
     ]);
 
-    // Dynamic Filename
-    const dateStr = new Date().toISOString().split('T')[0];
-    const fileName = `sonar-report-${dateStr}-${RUN_ID}.pdf`;
+    // Fixed Filename (as per working version)
+    const fileName = 'sonar-professional-report.pdf';
 
     // Generar contenido HTML
     const htmlContent = generateProfessionalHTML(metrics, issues, topFiles, trends, criticalIssues);

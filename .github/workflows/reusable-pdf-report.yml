@@ -62,39 +62,11 @@ jobs:
           mkdir -p output
           node scripts/generate-professional-sonar-report.js
 
-      - name: Push Report to Azure DevOps
-        if: success()
-        run: |
-          # Install git if missing (container might strictly be minimal)
-          which git || (apt-get update && apt-get install -y git)
-          
-          # Configure Git
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          
-          # Clone Azure DevOps Repo
-          echo "Cloning Azure DevOps repository..."
-          # Mask token in logs just in case, though secrets are masked automatically
-          git clone https://${{ secrets.AZURE_DEVOPS_TOKEN }}@dev.azure.com/LibelulaSoft/Orion/_git/OrionCards azure_repo
-          
-          # Copy PDF to root
-          echo "Copying PDF report..."
-          cp output/*.pdf azure_repo/
-          
-          # Commit and Push
-          cd azure_repo
-          git add *.pdf
-          git commit -m "chore: upload SonarCloud PDF report [skip ci]" || echo "No changes to commit"
-          git push
-          # Note: Assuming default branch is 'master' or 'main'. If unsure, we can check. 
-          # But 'HEAD:master' force pushes to master? No, standard push. 
-          # Safer to just git push and let it push to the cloned branch (usually default).
-
       - name: Upload PDF Report
         uses: actions/upload-artifact@v4
         with:
           name: sonar-quality-report-pdf
-          path: output/*.pdf
+          path: output/sonar-professional-report.pdf
           retention-days: ${{ inputs.artifact-retention-days }}
 
       - name: Upload HTML Report
