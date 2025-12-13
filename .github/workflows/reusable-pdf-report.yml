@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sonar-quality-report-pdf
-          path: output/sonar-professional-report.pdf
+          path: output/*.pdf
           retention-days: ${{ inputs.artifact-retention-days }}
 
       - name: Upload HTML Report
