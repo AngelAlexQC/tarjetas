@@ -17,8 +17,6 @@ on:
     secrets:
       SONAR_TOKEN:
         required: true
-      AZURE_DEVOPS_TOKEN:
-        required: true
   workflow_dispatch:
     inputs:
       project-version:

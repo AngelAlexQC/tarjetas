@@ -157,7 +157,6 @@ jobs:
     if: always() && needs.sonarcloud.result == 'success'
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      AZURE_DEVOPS_TOKEN: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
   # ========================================
   # Job 5: Resumen de seguridad
