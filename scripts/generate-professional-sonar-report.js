@@ -295,7 +295,7 @@ function generateProfessionalHTML(metrics, issuesBySeverity, topFiles, trends, c
 <div class="page">
   <div class="header">
     <div>
-      <h1>Reporte de Calidad</h1>
+      <h1>Informe de Clean Code y Seguridad</h1>
       <div class="sub">${SONAR_CONFIG.project} • ${dateFormatted}</div>
     </div>
     ${logoBase64 ? `<img src="${logoBase64}" class="logo"/>` : ''}
