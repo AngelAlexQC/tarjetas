@@ -28,7 +28,7 @@ export function SummaryPanel({ items, title, style }: SummaryPanelProps) {
       
       <View style={styles.content}>
         {items.map((item, index) => (
-          <React.Fragment key={index}>
+          <React.Fragment key={item.label}>
             <View style={styles.row}>
               <ThemedText style={styles.label}>{item.label}</ThemedText>
               <ThemedText 

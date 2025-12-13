@@ -174,7 +174,7 @@ export default function AdvanceScreen() {
                       <ThemedText style={styles.col3}>Saldo</ThemedText>
                     </View>
                     {Array.from({ length: Math.min(selectedTerm, 5) }).map((_, i) => (
-                      <View key={i} style={[styles.tableRow, { borderBottomColor: theme.colors.borderSubtle }]}>
+                      <View key={`payment-row-${i}`} style={[styles.tableRow, { borderBottomColor: theme.colors.borderSubtle }]}>
                         <ThemedText style={styles.col1}>{i + 1}</ThemedText>
                         <ThemedText style={styles.col2}>${calculations.monthly.toFixed(2)}</ThemedText>
                         <ThemedText style={styles.col3}>${(calculations.total - (calculations.monthly * (i + 1))).toFixed(2)}</ThemedText>

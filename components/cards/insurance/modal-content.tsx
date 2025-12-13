@@ -34,7 +34,7 @@ export const ModalContent = ({ insurance, styles, formatAmount }: ModalContentPr
       <ThemedText style={styles.sectionTitle}>Beneficios incluidos</ThemedText>
       {insurance.benefits.map((benefit, index) => (
         <Animated.View
-          key={index}
+          key={benefit}
           entering={FadeIn.delay(index * 80)}
           style={styles.benefitItem}
         >

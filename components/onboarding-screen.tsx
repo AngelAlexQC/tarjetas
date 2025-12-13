@@ -90,8 +90,8 @@ const PaginatorDot = ({ index, scrollX }: { index: number; scrollX: SharedValue<
 const Paginator = ({ data, scrollX }: { data: typeof SLIDES; scrollX: SharedValue<number> }) => {
   return (
     <View style={styles.paginatorContainer}>
-      {data.map((_, i) => (
-        <PaginatorDot key={i.toString()} index={i} scrollX={scrollX} />
+      {data.map((slide, i) => (
+        <PaginatorDot key={slide.id} index={i} scrollX={scrollX} />
       ))}
     </View>
   );

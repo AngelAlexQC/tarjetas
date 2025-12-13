@@ -53,26 +53,28 @@ export default function FaqScreen() {
         { text: "Cancelar", style: "cancel" },
         { 
           text: "Reiniciar", 
-          onPress: async () => {
+          onPress: () => {
             // Reiniciar estado del tour
-            await resetTour();
-            
-            try {
-              // Intentar recargar con expo-updates
-              await Updates.reloadAsync();
-            } catch (error) {
-              // Fallback si falla expo-updates (común en desarrollo)
-              loggers.ui.debug('expo-updates no disponible, usando fallback:', error);
-              if (__DEV__ && NativeModules.DevSettings) {
-                NativeModules.DevSettings.reload();
-              } else {
-                // Fallback de navegación
-                if (router.canGoBack()) {
-                  router.dismissAll();
+            void (async () => {
+              await resetTour();
+              
+              try {
+                // Intentar recargar con expo-updates
+                await Updates.reloadAsync();
+              } catch (error) {
+                // Fallback si falla expo-updates (común en desarrollo)
+                loggers.ui.debug('expo-updates no disponible, usando fallback:', error);
+                if (__DEV__ && NativeModules.DevSettings) {
+                  NativeModules.DevSettings.reload();
+                } else {
+                  // Fallback de navegación
+                  if (router.canGoBack()) {
+                    router.dismissAll();
+                  }
+                  router.replace('/');
                 }
-                router.replace('/');
               }
-            }
+            })();
           }
         }
       ]
@@ -113,7 +115,7 @@ export default function FaqScreen() {
         <ThemedText type="subtitle" style={{ marginBottom: 16, marginTop: 8 }}>Temas Populares</ThemedText>
 
         {FAQ_ITEMS.map((item, index) => (
-            <View key={index} style={[styles.item, { backgroundColor: theme.colors.surface, borderColor: theme.colors.borderSubtle }]}>
+            <View key={item.question} style={[styles.item, { backgroundColor: theme.colors.surface, borderColor: theme.colors.borderSubtle }]}>
                 <View style={styles.questionRow}>
                   <Ionicons name="chatbubble-ellipses-outline" size={20} color={theme.tenant.mainColor} style={{ marginRight: 12 }} />
                   <ThemedText type="defaultSemiBold" style={styles.question}>{item.question}</ThemedText>

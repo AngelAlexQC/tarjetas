@@ -76,7 +76,7 @@ export function ReceiptView({ result, card: _card, transactionDetails, children 
         {transactionDetails && (
           <View style={styles.detailsContainer}>
             {transactionDetails.map((detail, index) => (
-              <View key={index} style={[styles.detailRow, { borderBottomColor: theme.colors.border }]}>
+              <View key={detail.label} style={[styles.detailRow, { borderBottomColor: theme.colors.border }]}>
                 <ThemedText style={[styles.detailLabel, { color: secondaryTextColor }]}>{detail.label}</ThemedText>
                 <ThemedText 
                   type={detail.isAmount ? 'defaultSemiBold' : 'default'} 

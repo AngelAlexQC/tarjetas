@@ -612,7 +612,7 @@ export function AnimatedSplashScreen({
         {/* Campo de partículas con morphing líquido - timing escalonado fluido */}
         <View style={styles.particleContainer}>
           {Array.from({ length: 24 }).map((_, index) => (
-            <Particle key={index} delay={index * 18} index={index} totalParticles={24} />
+            <Particle key={`particle-${index}`} delay={index * 18} index={index} totalParticles={24} />
           ))}
         </View>
 
