@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-undef, no-unused-vars */
 /**
  * Script para analizar código potencialmente no usado
  */

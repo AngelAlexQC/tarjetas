@@ -41,6 +41,9 @@ Thumbs.db
 # Testing
 coverage/
 *.lcov
+test-results.txt
+test-coverage-output.txt
+final-coverage-report.txt
 
 # SonarQube Reports
 sonar-report.html
@@ -49,6 +52,13 @@ sonar-report.pdf
 reports/
 *.docx
 *.xlsx
+Dockerfile.sonar-report
+
+# Analysis and Research (temporary files)
+*ANALISIS*.md
+*RESEARCH*.md
+*_RESEARCH.md
+*_ANALISIS.md
 
 # IDE
 .vscode/*
@@ -59,6 +69,9 @@ reports/
 .idea/
 *.swp
 *.swo
+
+# Claude AI settings (local configuration only)
+.claude/settings.local.json
 
 # App example
 app-example
