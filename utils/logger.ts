@@ -16,7 +16,7 @@ interface LoggerOptions {
 }
 
 class Logger {
-  private prefix: string;
+  private readonly prefix: string;
 
   constructor(options: LoggerOptions = {}) {
     this.prefix = options.prefix ? `[${options.prefix}]` : '';

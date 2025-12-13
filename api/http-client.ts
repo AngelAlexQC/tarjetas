@@ -41,8 +41,8 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 class HttpClient {
   private baseUrl: string;
-  private defaultHeaders: Record<string, string>;
-  private timeout: number;
+  private readonly defaultHeaders: Record<string, string>;
+  private readonly timeout: number;
 
   constructor() {
     this.baseUrl = API_CONFIG.BASE_URL;
