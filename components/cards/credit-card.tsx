@@ -96,9 +96,7 @@ export function CreditCard({
                 tourOrder={baseOrder + 2}
               >
                 <View style={styles.cardBrandLogoContainer}>
-                  {CardBrandIcons[card.cardBrand] && 
-                    CardBrandIcons[card.cardBrand]({ width: 60, height: 38 })
-                  }
+                  {CardBrandIcons[card.cardBrand]?.({ width: 60, height: 38 })}
                 </View>
               </InfoTooltip>
             </View>

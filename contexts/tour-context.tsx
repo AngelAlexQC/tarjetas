@@ -1,7 +1,7 @@
 import { STORAGE_KEYS } from '@/constants/app';
 import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
 
 const log = loggers.tour;
 
@@ -146,8 +146,20 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
   const isTourActive = currentKey !== null;
 
+  const value = useMemo(() => ({
+    register,
+    unregister,
+    onTooltipClosed,
+    resetTour,
+    setAppReady,
+    stopTour,
+    pauseTour,
+    resumeTour,
+    isTourActive
+  }), [register, unregister, onTooltipClosed, resetTour, setAppReady, stopTour, pauseTour, resumeTour, isTourActive]);
+
   return (
-    <TourContext.Provider value={{ register, unregister, onTooltipClosed, resetTour, setAppReady, stopTour, pauseTour, resumeTour, isTourActive }}>
+    <TourContext.Provider value={value}>
       {children}
     </TourContext.Provider>
   );

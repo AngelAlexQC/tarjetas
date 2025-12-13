@@ -237,7 +237,7 @@ function LoginForm({
         <Ionicons name={secureTextEntry ? 'eye-off-outline' : 'eye-outline'} size={20} color={theme.colors.textSecondary} />
       </Pressable>
 
-      {error && (
+      {!!error && (
         <Animated.View entering={FadeInDown.duration(300)}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
         </Animated.View>

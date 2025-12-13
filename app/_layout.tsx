@@ -107,17 +107,21 @@ function Navigation() {
     <AnimatedSplashScreen>
       <ThemeProvider value={navTheme}>
         {/* Main Navigation Stack */}
-        {currentScreen === 'main' && (
+        {currentScreen === 'main' && (() => {
+          const isIOS = Platform.OS === 'ios';
+          const headerBlurEffect = isIOS ? (theme.isDark ? 'dark' : 'light') : undefined;
+          
+          return (
           <>
             <Stack screenOptions={{
               contentStyle: { backgroundColor: theme.colors.background },
               animation: 'fade',
-              headerLargeTitle: Platform.OS === 'ios',
-              headerTransparent: Platform.OS === 'ios',
-              headerBlurEffect: Platform.OS === 'ios' ? (theme.isDark ? 'dark' : 'light') : undefined,
+              headerLargeTitle: isIOS,
+              headerTransparent: isIOS,
+              headerBlurEffect,
               headerLargeTitleShadowVisible: false,
               headerStyle: {
-                backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.background,
+                backgroundColor: isIOS ? 'transparent' : theme.colors.background,
               },
               headerTintColor: theme.colors.text,
             }}>
@@ -134,7 +138,8 @@ function Navigation() {
               />
             )}
           </>
-        )}
+          );
+        })()}
 
         {/* Loading Screen */}
         {currentScreen === 'loading' && (

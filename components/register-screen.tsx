@@ -175,7 +175,7 @@ function RegisterForm({
         </ThemedText>
       </Pressable>
 
-      {error && (
+      {!!error && (
         <Animated.View entering={FadeInDown.duration(300)}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
         </Animated.View>
@@ -237,7 +237,7 @@ function VerificationStep({
         icon={<ShieldCheck size={20} color={theme.colors.textSecondary} />}
       />
 
-      {error && (
+      {!!error && (
         <Animated.View entering={FadeInDown.duration(300)}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
         </Animated.View>

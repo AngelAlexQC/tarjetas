@@ -73,7 +73,7 @@ export interface CertificateValidationResult {
 export class SSLPinningManager {
   private static instance: SSLPinningManager;
   private initialized = false;
-  private validationCache = new Map<string, CertificateValidationResult>();
+  private readonly validationCache = new Map<string, CertificateValidationResult>();
 
   private constructor() {}
 

@@ -16,7 +16,6 @@ import Animated, {
     Easing,
     FadeIn,
     FadeOut,
-    runOnJS,
     useAnimatedStyle,
     useSharedValue,
     withTiming
@@ -229,6 +228,49 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({
   );
 };
 
+interface InvertedCornerProps {
+  style: ViewStyle;
+  position: 'TL' | 'TR' | 'BL' | 'BR';
+  borderRadius: number;
+  overlayColor: string;
+}
+
+// Componente para las esquinas invertidas (Spandrels)
+// Crea un relleno del color del overlay con un recorte circular transparente
+const InvertedCorner = ({ style, position, borderRadius, overlayColor }: InvertedCornerProps) => {
+  const R = borderRadius;
+  // Parámetros para crear el círculo hueco
+  // Usamos un borde grueso para crear el relleno exterior
+  const size = 4 * R;
+  const radius = 2 * R;
+  const border = R;
+  
+  let top = 0, left = 0;
+  // Ajustar posición del círculo hueco según la esquina
+  switch (position) {
+    case 'TL': top = -R; left = -R; break;
+    case 'TR': top = -R; left = -2 * R; break;
+    case 'BL': top = -2 * R; left = -R; break;
+    case 'BR': top = -2 * R; left = -2 * R; break;
+  }
+
+  return (
+    <View style={[style, { width: R, height: R, overflow: 'hidden' }]}>
+      <View style={{
+        position: 'absolute',
+        top,
+        left,
+        width: size,
+        height: size,
+        borderRadius: radius,
+        borderWidth: border,
+        borderColor: overlayColor,
+        backgroundColor: 'transparent',
+      }} />
+    </View>
+  );
+};
+
 const SpotlightOverlay = ({ 
   layout, 
   onClose, 
@@ -238,7 +280,6 @@ const SpotlightOverlay = ({
   onClose: () => void,
   borderRadius: number
 }) => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const overlayColor = 'rgba(0, 0, 0, 0.7)'; 
   const padding = 4;
 
@@ -247,46 +288,6 @@ const SpotlightOverlay = ({
   const y = layout.y - padding;
   const w = layout.width + (padding * 2);
   const h = layout.height + (padding * 2);
-
-  // Componente para las esquinas invertidas (Spandrels)
-  // Crea un relleno del color del overlay con un recorte circular transparente
-  const InvertedCorner = ({ style, position }: { style: ViewStyle, position: 'TL' | 'TR' | 'BL' | 'BR' }) => {
-    const R = borderRadius;
-    // Parámetros para crear el círculo hueco
-    // Usamos un borde grueso para crear el relleno exterior
-    const size = 4 * R;
-    const radius = 2 * R;
-    const border = R;
-    
-    // Las dimensiones de la pantalla se usan implícitamente para asegurar cobertura completa
-    void screenWidth;
-    void screenHeight;
-    
-    let top = 0, left = 0;
-    // Ajustar posición del círculo hueco según la esquina
-    switch (position) {
-      case 'TL': top = -R; left = -R; break;
-      case 'TR': top = -R; left = -2 * R; break;
-      case 'BL': top = -2 * R; left = -R; break;
-      case 'BR': top = -2 * R; left = -2 * R; break;
-    }
-
-    return (
-      <View style={[style, { width: R, height: R, overflow: 'hidden' }]}>
-        <View style={{
-          position: 'absolute',
-          top,
-          left,
-          width: size,
-          height: size,
-          borderRadius: radius,
-          borderWidth: border,
-          borderColor: overlayColor,
-          backgroundColor: 'transparent',
-        }} />
-      </View>
-    );
-  };
 
   return (
     <Animated.View 
@@ -316,10 +317,10 @@ const SpotlightOverlay = ({
       />
 
       {/* Esquinas Invertidas para redondear el hueco */}
-      <InvertedCorner style={{ position: 'absolute', top: y, left: x }} position="TL" />
-      <InvertedCorner style={{ position: 'absolute', top: y, left: x + w - borderRadius }} position="TR" />
-      <InvertedCorner style={{ position: 'absolute', top: y + h - borderRadius, left: x + w - borderRadius }} position="BR" />
-      <InvertedCorner style={{ position: 'absolute', top: y + h - borderRadius, left: x }} position="BL" />
+      <InvertedCorner style={{ position: 'absolute', top: y, left: x }} position="TL" borderRadius={borderRadius} overlayColor={overlayColor} />
+      <InvertedCorner style={{ position: 'absolute', top: y, left: x + w - borderRadius }} position="TR" borderRadius={borderRadius} overlayColor={overlayColor} />
+      <InvertedCorner style={{ position: 'absolute', top: y + h - borderRadius, left: x + w - borderRadius }} position="BR" borderRadius={borderRadius} overlayColor={overlayColor} />
+      <InvertedCorner style={{ position: 'absolute', top: y + h - borderRadius, left: x }} position="BL" borderRadius={borderRadius} overlayColor={overlayColor} />
       
       {/* Highlight Border */}
       <Animated.View 
@@ -377,8 +378,9 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
         duration: duration,
         easing: Easing.linear,
       }, (finished) => {
+        'worklet';
         if (finished) {
-          runOnJS(onClose)();
+          onClose();
         }
       });
     }
@@ -452,29 +454,35 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
           { text: 'OK' },
           { 
             text: 'Ver evento', 
-            onPress: async () => {
-              if (Platform.OS === 'android') {
-                // Android: Abrir calendario en la fecha del evento (más confiable que por ID)
-                try {
-                  const timeUri = `content://com.android.calendar/time/${calendarEvent.startDate.getTime()}`;
-                  const canOpen = await Linking.canOpenURL(timeUri);
-                  if (canOpen) {
-                    await Linking.openURL(timeUri);
-                    return;
+            onPress: () => {
+              void (async () => {
+                if (Platform.OS === 'android') {
+                  // Android: Abrir calendario en la fecha del evento (más confiable que por ID)
+                  try {
+                    const timeUri = `content://com.android.calendar/time/${calendarEvent.startDate.getTime()}`;
+                    const canOpen = await Linking.canOpenURL(timeUri);
+                    if (canOpen) {
+                      await Linking.openURL(timeUri);
+                      return;
+                    }
+                  } catch (e) {
+                    log.warn('Error trying to open Android calendar by time', e);
                   }
-                } catch (e) {
-                  log.warn('Error trying to open Android calendar by time', e);
+                  // Fallback: abrir la app de calendario general
+                  try {
+                    await Linking.openURL('content://com.android.calendar/time/');
+                  } catch (err) {
+                    log.warn('Error opening calendar app', err);
+                  }
+                } else {
+                  // iOS: Abrir calendario en la fecha del evento
+                  // calshow: espera segundos desde 2001-01-01
+                  const referenceDate = new Date('2001-01-01T00:00:00Z').getTime();
+                  const secondsSinceRef = (calendarEvent.startDate.getTime() - referenceDate) / 1000;
+                  const url = `calshow:${secondsSinceRef}`;
+                  await Linking.openURL(url);
                 }
-                // Fallback si falla la apertura por tiempo
-                Calendar.openEventInCalendar(eventId);
-              } else {
-                // iOS: Abrir calendario en la fecha del evento
-                // calshow: espera segundos desde 2001-01-01
-                const referenceDate = new Date('2001-01-01T00:00:00Z').getTime();
-                const secondsSinceRef = (calendarEvent.startDate.getTime() - referenceDate) / 1000;
-                const url = `calshow:${secondsSinceRef}`;
-                Linking.openURL(url);
-              }
+              })();
             } 
           }
         ]

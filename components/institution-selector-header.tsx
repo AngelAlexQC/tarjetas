@@ -27,9 +27,12 @@ const getPlatformStyles = (isDark: boolean) => {
   const isIOS = Platform.OS === 'ios';
   const borderRadius = isIOS ? 10 : 24;
   
-  const backgroundColor = isDark 
-    ? (isIOS ? 'rgba(28, 28, 30, 0.6)' : '#1C1C1E') 
-    : (isIOS ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF');
+  let backgroundColor: string;
+  if (isDark) {
+    backgroundColor = isIOS ? 'rgba(28, 28, 30, 0.6)' : '#1C1C1E';
+  } else {
+    backgroundColor = isIOS ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF';
+  }
     
   const borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
   const shadowOpacity = isDark ? 0.3 : 0.05;
@@ -40,8 +43,75 @@ const getPlatformStyles = (isDark: boolean) => {
 
 const getTopPadding = (hasHeader: boolean, insetsTop: number) => {
   const isIOS = Platform.OS === 'ios';
-  return isIOS ? (hasHeader ? 10 : insetsTop + 10) : 10;
+  if (!isIOS) return 10;
+  return hasHeader ? 10 : insetsTop + 10;
 };
+
+interface SelectorContentProps {
+  currentTheme: { name: string; branding: { logoUrl?: string }; };
+  imageError: boolean;
+  setImageError: (error: boolean) => void;
+  logoContainerBg: string;
+  textColor: string;
+  actionBg: string;
+  platformStyles: { logoContainerRadius: number };
+  tenantMainColor: string;
+}
+
+const SelectorContent = ({ 
+  currentTheme, 
+  imageError, 
+  setImageError, 
+  logoContainerBg, 
+  textColor, 
+  actionBg, 
+  platformStyles,
+  tenantMainColor 
+}: SelectorContentProps) => (
+  <View style={styles.contentRow}>
+    <View style={[styles.logoContainer, { 
+      backgroundColor: logoContainerBg,
+      borderRadius: platformStyles.logoContainerRadius
+    }]}>
+      {currentTheme.branding.logoUrl && !imageError ? (
+        <Image
+          source={{ uri: currentTheme.branding.logoUrl }}
+          style={styles.logo}
+          contentFit="contain"
+          onError={() => setImageError(true)}
+          transition={300}
+        />
+      ) : (
+        <View style={[styles.logoPlaceholder, { backgroundColor: tenantMainColor }]}>
+          <ThemedText style={styles.logoInitial}>
+            {currentTheme.name.charAt(0)}
+          </ThemedText>
+        </View>
+      )}
+    </View>
+
+    <View style={styles.textContainer}>
+      <ThemedText 
+        type="defaultSemiBold" 
+        style={[styles.institutionName, { color: textColor }]} 
+        numberOfLines={1}
+      >
+        {currentTheme?.name}
+      </ThemedText>
+    </View>
+
+    <View style={[styles.actionIconContainer, { 
+      backgroundColor: actionBg,
+      borderRadius: 14
+    }]}>
+      <Ionicons 
+        name="chevron-down" 
+        size={16} 
+        color={textColor} 
+      />
+    </View>
+  </View>
+);
 
 /**
  * Header minimalista moderno - Fintech Design 2025
@@ -76,51 +146,16 @@ export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: bo
   const textColor = theme.isDark ? '#FFFFFF' : '#000000';
   const actionBg = theme.isDark ? 'rgba(255,255,255,0.1)' : '#F0F0F0';
 
-  const Content = () => (
-    <View style={styles.contentRow}>
-      <View style={[styles.logoContainer, { 
-        backgroundColor: logoContainerBg,
-        borderRadius: platformStyles.logoContainerRadius
-      }]}>
-        {currentTheme.branding.logoUrl && !imageError ? (
-          <Image
-            source={{ uri: currentTheme.branding.logoUrl }}
-            style={styles.logo}
-            contentFit="contain"
-            onError={() => setImageError(true)}
-            transition={300}
-          />
-        ) : (
-          <View style={[styles.logoPlaceholder, { backgroundColor: theme.tenant.mainColor }]}>
-            <ThemedText style={styles.logoInitial}>
-              {currentTheme.name.charAt(0)}
-            </ThemedText>
-          </View>
-        )}
-      </View>
-
-      <View style={styles.textContainer}>
-        <ThemedText 
-          type="defaultSemiBold" 
-          style={[styles.institutionName, { color: textColor }]} 
-          numberOfLines={1}
-        >
-          {currentTheme?.name}
-        </ThemedText>
-      </View>
-
-      <View style={[styles.actionIconContainer, { 
-        backgroundColor: actionBg,
-        borderRadius: 14
-      }]}>
-        <Ionicons 
-          name="chevron-down" 
-          size={16} 
-          color={textColor} 
-        />
-      </View>
-    </View>
-  );
+  const contentProps: SelectorContentProps = {
+    currentTheme,
+    imageError,
+    setImageError,
+    logoContainerBg,
+    textColor,
+    actionBg,
+    platformStyles,
+    tenantMainColor: theme.tenant.mainColor
+  };
 
   return (
     <View style={[styles.wrapper, { paddingTop: topPadding }]}>
@@ -151,10 +186,10 @@ export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: bo
                 style={[StyleSheet.absoluteFill, { borderRadius: platformStyles.borderRadius }]}
               >
                 <View style={[StyleSheet.absoluteFill, { backgroundColor: platformStyles.backgroundColor }]} />
-                <Content />
+                <SelectorContent {...contentProps} />
               </BlurView>
             ) : (
-              <Content />
+              <SelectorContent {...contentProps} />
             )}
           </Pressable>
         </Animated.View>

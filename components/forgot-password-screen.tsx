@@ -319,7 +319,7 @@ function EmailStep({ email, setEmail, error, setError, isLoading, onSubmit }: Em
         error={error && !email ? 'Campo requerido' : undefined}
       />
 
-      {error && (
+      {!!error && (
         <Animated.View entering={FadeInDown.duration(300)}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
         </Animated.View>
@@ -380,7 +380,7 @@ function CodeStep({ email, code, setCode, error, setError, isLoading, onVerify, 
         icon={<ShieldCheck size={20} color={theme.colors.textSecondary} />}
       />
 
-      {error && (
+      {!!error && (
         <Animated.View entering={FadeInDown.duration(300)}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
         </Animated.View>
@@ -496,7 +496,7 @@ function NewPasswordStep({
         </Pressable>
       </View>
 
-      {error && (
+      {!!error && (
         <Animated.View entering={FadeInDown.duration(300)}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
         </Animated.View>
@@ -591,10 +591,10 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
       isLoading,
     },
     {
-      handleSendCode,
-      handleVerifyCode,
-      handleResetPassword,
-      handleResendCode,
+      handleSendCode: () => { void handleSendCode(); },
+      handleVerifyCode: () => { void handleVerifyCode(); },
+      handleResetPassword: () => { void handleResetPassword(); },
+      handleResendCode: () => { void handleResendCode(); },
       onChangeEmail: () => setStep('email'),
       onSuccess,
     }

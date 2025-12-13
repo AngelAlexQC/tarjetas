@@ -26,7 +26,7 @@ export const GradientText = ({
           <LinearGradient id="textGrad" x1="0" y1="0" x2="1" y2="0">
             {colors.map((color, index) => (
               <Stop
-                key={`gradient-stop-${index}`}
+                key={`gradient-stop-${color}-${index}`}
                 offset={`${(index / (colors.length - 1)) * 100}%`}
                 stopColor={color}
                 stopOpacity="1"

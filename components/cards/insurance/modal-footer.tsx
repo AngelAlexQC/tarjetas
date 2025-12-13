@@ -33,9 +33,7 @@ export const ModalFooter = ({
         </ThemedText>
         <View style={styles.paymentCardContent}>
           <View style={styles.cardIconContainer}>
-            {CardBrandIcons[activeCard.cardBrand] && 
-              CardBrandIcons[activeCard.cardBrand]({ width: 40, height: 26 })
-            }
+            {CardBrandIcons[activeCard.cardBrand]?.({ width: 40, height: 26 })}
           </View>
           <View style={styles.cardInfo}>
             <ThemedText style={styles.cardNumber}>

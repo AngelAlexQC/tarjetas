@@ -206,7 +206,7 @@ export function EmailLoginScreen({ onBack, onLoginSuccess, onForgotPassword }: E
               </Pressable>
             </View>
 
-            {error && (
+            {!!error && (
               <Animated.View entering={FadeInDown.duration(300)}>
                 <ThemedText style={styles.errorText}>{error}</ThemedText>
               </Animated.View>

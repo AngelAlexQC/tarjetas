@@ -25,16 +25,19 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 export default function CardOperationsLayout() {
   const theme = useAppTheme();
   const colorScheme = useColorScheme();
+  
+  const isIOS = Platform.OS === 'ios';
+  const headerBlurEffect = isIOS ? (colorScheme === 'dark' ? 'dark' : 'light') : undefined;
 
   return (
     <Stack
       screenOptions={{
         presentation: 'modal',
         headerShown: false,
-        headerTransparent: Platform.OS === 'ios',
-        headerBlurEffect: Platform.OS === 'ios' ? (colorScheme === 'dark' ? 'dark' : 'light') : undefined,
+        headerTransparent: isIOS,
+        headerBlurEffect,
         headerStyle: {
-          backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.surfaceElevated,
+          backgroundColor: isIOS ? 'transparent' : theme.colors.surfaceElevated,
         },
         headerTintColor: theme.colors.text,
         contentStyle: {

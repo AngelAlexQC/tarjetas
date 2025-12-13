@@ -46,6 +46,9 @@ coverage/
 sonar-report.html
 sonar-report.pdf
 .scannerwork/
+reports/
+*.docx
+*.xlsx
 
 # IDE
 .vscode/*

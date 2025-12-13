@@ -45,7 +45,7 @@ const passwordSchema = z.string()
 export const UserSchema = z.object({
   id: z.string().min(1),
   username: z.string().min(1),
-  email: z.string().email().optional(),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email format').optional(),
   name: z.string().optional(),
   fullName: z.string().optional(),
   phone: z.string().optional(),
@@ -67,7 +67,7 @@ export const LoginResponseSchema = z.object({
   token: z.string().min(1),
   refreshToken: z.string().optional(),
   user: UserSchema,
-  expiresAt: z.string().datetime().optional(),
+  expiresAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, 'Invalid datetime format').optional(),
 });
 
 // ============================================
@@ -76,7 +76,7 @@ export const LoginResponseSchema = z.object({
 
 export const RegisterRequestSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
-  email: z.string().email('Invalid email'),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email'),
   phone: z.string().min(AUTH_CONFIG.PHONE_MIN_LENGTH, 'Phone is required'),
   username: z.string().min(AUTH_CONFIG.USERNAME_MIN_LENGTH, `Username must be at least ${AUTH_CONFIG.USERNAME_MIN_LENGTH} characters`),
   password: passwordSchema,
@@ -90,7 +90,7 @@ export const RegisterResponseSchema = z.object({
 });
 
 export const VerifyEmailRequestSchema = z.object({
-  email: z.string().email(),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
   code: z.string().length(AUTH_CONFIG.VERIFICATION_CODE_LENGTH),
 });
 
@@ -106,7 +106,7 @@ export const VerifyEmailResponseSchema = z.object({
 // ============================================
 
 export const ForgotPasswordRequestSchema = z.object({
-  email: z.string().email('Invalid email'),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email'),
 });
 
 export const ForgotPasswordResponseSchema = z.object({
@@ -115,7 +115,7 @@ export const ForgotPasswordResponseSchema = z.object({
 });
 
 export const VerifyRecoveryCodeRequestSchema = z.object({
-  email: z.string().email(),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
   code: z.string().length(AUTH_CONFIG.VERIFICATION_CODE_LENGTH),
 });
 
@@ -126,7 +126,7 @@ export const VerifyRecoveryCodeResponseSchema = z.object({
 });
 
 export const ResetPasswordRequestSchema = z.object({
-  email: z.string().email(),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
   code: z.string().length(AUTH_CONFIG.VERIFICATION_CODE_LENGTH),
   newPassword: passwordSchema,
 });

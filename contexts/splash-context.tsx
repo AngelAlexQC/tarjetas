@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
 
 interface SplashContextType {
   isSplashComplete: boolean;
@@ -10,13 +10,13 @@ const SplashContext = createContext<SplashContextType | undefined>(undefined);
 export function SplashProvider({ children }: { children: ReactNode }) {
   const [isSplashComplete, setIsSplashComplete] = useState(false);
 
+  const value = useMemo(() => ({
+    isSplashComplete,
+    setSplashComplete: setIsSplashComplete,
+  }), [isSplashComplete]);
+
   return (
-    <SplashContext.Provider
-      value={{
-        isSplashComplete,
-        setSplashComplete: setIsSplashComplete,
-      }}
-    >
+    <SplashContext.Provider value={value}>
       {children}
     </SplashContext.Provider>
   );

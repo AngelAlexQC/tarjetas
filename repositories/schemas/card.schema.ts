@@ -50,7 +50,7 @@ export const CardSchema = z.object({
   status: CardStatusSchema,
   creditLimit: z.number().positive().optional(),
   availableCredit: z.number().optional(),
-  lastTransactionDate: z.string().datetime().optional(),
+  lastTransactionDate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, 'Invalid datetime format').optional(),
 });
 
 export const CardArraySchema = z.array(CardSchema);
@@ -198,7 +198,7 @@ export const StatementSchema = z.object({
   interest: z.number().optional(),
   newBalance: z.number().optional(),
   transactions: z.array(StatementTransactionSchema).or(TransactionArraySchema),
-  pdfUrl: z.string().url().optional(),
+  pdfUrl: z.string().regex(/^https?:\/\/.+/, 'Invalid URL format').optional(),
 });
 
 // ============================================
@@ -248,7 +248,7 @@ export const SubscriptionSchema = z.object({
   nextBillingDate: z.string().optional(),
   status: SubscriptionStatusSchema.optional(),
   category: SubscriptionCategorySchema,
-  logoUrl: z.string().url().optional(),
+  logoUrl: z.string().regex(/^https?:\/\/.+/, 'Invalid URL format').optional(),
 });
 
 export const SubscriptionArraySchema = z.array(SubscriptionSchema);
@@ -281,7 +281,7 @@ export const RewardsSchema = z.object({
 
 export const DynamicCvvSchema = z.object({
   cvv: z.string().regex(/^\d{3,4}$/, 'CVV must be 3-4 digits'),
-  expiresAt: z.string().datetime().optional(),
+  expiresAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, 'Invalid datetime format').optional(),
   expiresIn: z.number().int().positive().optional(),
   remainingSeconds: z.number().int().positive().optional(),
 });

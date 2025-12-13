@@ -53,16 +53,18 @@ export default function ProfileScreen() {
         { 
           text: "Cerrar sesión", 
           style: "destructive",
-          onPress: async () => {
-            try {
-              await logout();
-              await clearTenant();
-              await resetTour();
-              router.replace('/');
-            } catch (error) {
-              loggers.auth.error("Error al cerrar sesión:", error);
-              router.replace('/');
-            }
+          onPress: () => {
+            void (async () => {
+              try {
+                await logout();
+                await clearTenant();
+                await resetTour();
+                router.replace('/');
+              } catch (error) {
+                loggers.auth.error("Error al cerrar sesión:", error);
+                router.replace('/');
+              }
+            })();
           }
         }
       ]

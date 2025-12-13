@@ -11,7 +11,7 @@ import { z } from 'zod';
  * Schema de branding (colores, logos, etc.)
  */
 export const TenantBrandingSchema = z.object({
-  logoUrl: z.string().url().optional(), // Opcional - la UI muestra nombre como fallback
+  logoUrl: z.string().regex(/^https?:\/\/.+/, 'Invalid URL format').optional(), // Opcional - la UI muestra nombre como fallback
   primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i),
   secondaryColor: z.string().regex(/^#[0-9A-F]{6}$/i),
   accentColor: z.string().regex(/^#[0-9A-F]{6}$/i),
@@ -81,7 +81,7 @@ export const TenantInfoSchema = TenantSchema.pick({
   country: true,
   countryFlag: true,
 }).extend({
-  logoUrl: z.string().url(),
+  logoUrl: z.string().regex(/^https?:\/\/.+/, 'Invalid URL format'),
   mainColor: z.string(),
   currencyCode: z.string(),
 });

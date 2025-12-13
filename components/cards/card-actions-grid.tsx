@@ -10,6 +10,8 @@ import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useShare
 const ACTION_BUTTON_SIZE = 80;
 const ACTION_BUTTON_SPACING = 14;
 
+const ActionSeparator = () => <View style={{ width: ACTION_BUTTON_SPACING }} />;
+
 interface CardActionsGridProps {
   cardType: 'credit' | 'debit' | 'virtual';
   isLoading?: boolean;
@@ -115,7 +117,7 @@ export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActi
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.carouselContent}
-          ItemSeparatorComponent={() => <View style={{ width: ACTION_BUTTON_SPACING }} />}
+          ItemSeparatorComponent={ActionSeparator}
         />
       )}
     </Animated.View>

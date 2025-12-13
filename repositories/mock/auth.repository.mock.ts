@@ -46,7 +46,7 @@ const MOCK_VERIFICATION_CODE = process.env.EXPO_PUBLIC_MOCK_OTP || '000000';
 
 export class MockAuthRepository implements IAuthRepository {
   private currentUser: User | null = null;
-  private pendingRegistrations: Map<string, RegisterRequest> = new Map();
+  private readonly pendingRegistrations: Map<string, RegisterRequest> = new Map();
 
   async login(request: LoginRequest): Promise<LoginResponse> {
     await delay();
