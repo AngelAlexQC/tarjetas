@@ -8,6 +8,7 @@
 import type { Card, OperationResult } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
 import { loggers } from '@/utils/logger';
+import { generateSecureReceiptId } from '@/utils/secure-random';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -126,7 +127,7 @@ export function useCardOperation(options: UseCardOperationOptions = {}) {
 
     const getReceiptId = () => {
       if (response.success && executeOptions?.receiptPrefix) {
-        return `${executeOptions.receiptPrefix}-${Math.floor(Math.random() * 10000)}`;
+        return generateSecureReceiptId(executeOptions.receiptPrefix);
       }
       return undefined;
     };

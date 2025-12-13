@@ -13,6 +13,7 @@ import { useCardQueries } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useKeyboard } from '@/hooks/use-keyboard';
 import type { Card, OperationResult } from '@/repositories';
+import { generateSecureReceiptId } from '@/utils/secure-random';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -57,7 +58,7 @@ export default function PayCardScreen() {
         success: true,
         title: 'Pago Exitoso',
         message: `Has pagado $${amount || totalDebt} a tu tarjeta.`,
-        receiptId: `PAY-${Math.floor(Math.random() * 10000)}`,
+        receiptId: generateSecureReceiptId('PAY'),
       });
     }, 2000);
   };

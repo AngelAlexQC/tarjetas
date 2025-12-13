@@ -2,9 +2,9 @@
  * Card Operation Hook Tests
  */
 
+import { cardRepository$ } from '@/repositories';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useCardOperation } from '../use-card-operation';
-import { cardRepository$ } from '@/repositories';
 
 // Mock del repositorio
 jest.mock('@/repositories', () => ({
@@ -275,7 +275,8 @@ describe('useCardOperation', () => {
         );
       });
 
-      expect(result.current.result?.receiptId).toMatch(/^BLK-\d+$/);
+      // El nuevo formato incluye timestamp y número aleatorio seguro
+      expect(result.current.result?.receiptId).toMatch(/^BLK-[0-9a-z]+-\d{6}$/);
     });
 
     it('should execute operation with custom success message', async () => {

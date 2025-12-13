@@ -18,7 +18,9 @@
     "audit:fix": "npm audit fix",
     "security:check": "npm run audit:check && npm run lint && npm run typecheck",
     "validate": "npm run typecheck && npm run lint && npm run test",
-    "generate:icons": "node scripts/generate-icons.js"
+    "generate:icons": "node scripts/generate-icons.js",
+    "sonar": "npm run test:coverage && sonar-scanner",
+    "sonar:local": "npm run test:coverage && sonar-scanner -Dsonar.host.url=http://localhost:9000"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",

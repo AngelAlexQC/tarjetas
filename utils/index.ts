@@ -10,3 +10,6 @@ export { loggers } from './logger';
 
 // Validators
 export * from './validators';
+
+// Secure Random
+export * from './secure-random';

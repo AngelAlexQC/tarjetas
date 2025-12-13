@@ -12,6 +12,7 @@ import { useCardQueries } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useKeyboard } from '@/hooks/use-keyboard';
 import type { Card, OperationResult } from '@/repositories';
+import { generateSecureReceiptId, getSecureRandomInRange } from '@/utils/secure-random';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -52,7 +53,7 @@ export default function CardlessAtmScreen() {
     // Simulate code generation
     setTimeout(() => {
       setIsProcessing(false);
-      setGeneratedCode(Math.floor(100000 + Math.random() * 900000).toString());
+      setGeneratedCode(getSecureRandomInRange(100000, 1000000).toString());
     }, 2000);
   };
 
@@ -69,7 +70,7 @@ export default function CardlessAtmScreen() {
       success: true,
       title: 'Retiro Generado',
       message: 'Ingresa este código en cualquier cajero automático.',
-      receiptId: `ATM-${Math.floor(Math.random() * 10000)}`,
+      receiptId: generateSecureReceiptId('ATM'),
     };
 
     return (

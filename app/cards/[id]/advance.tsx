@@ -11,6 +11,7 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { useCardQueries } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import type { Card, OperationResult } from '@/repositories';
+import { generateSecureReceiptId } from '@/utils/secure-random';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -116,7 +117,7 @@ export default function AdvanceScreen() {
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
-      setResult({ success: true, title: 'Avance Exitoso', message: `Se han acreditado $${parseFloat(amount).toFixed(2)} en tu cuenta.`, receiptId: `ADV-${Math.floor(Math.random() * 10000)}` });
+      setResult({ success: true, title: 'Avance Exitoso', message: `Se han acreditado $${parseFloat(amount).toFixed(2)} en tu cuenta.`, receiptId: generateSecureReceiptId('ADV') });
     }, 2000);
   };
 

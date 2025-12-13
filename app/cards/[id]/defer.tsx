@@ -11,6 +11,7 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { useCardDefer, useCardOperation, useCardQueries } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import type { OperationResult, Transaction } from '@/repositories';
+import { generateSecureReceiptId } from '@/utils/secure-random';
 import { useRouter } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -125,7 +126,7 @@ export default function DeferScreen() {
       success: deferResult.success,
       title: deferResult.success ? 'Diferido Exitoso' : 'Error',
       message: deferResult.message,
-      receiptId: deferResult.success ? `DEF-${Math.floor(Math.random() * 10000)}` : undefined,
+      receiptId: deferResult.success ? generateSecureReceiptId('DEF') : undefined,
     });
   };
 
