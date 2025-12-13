@@ -1,0 +1,140 @@
+🧪 Tests & Coverage	Run ESLint	﻿2025-12-13T03:39:04.0913326Z ##[group]Run npm run lint
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:04.0913774Z [36;1mnpm run lint[0m
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:04.0949225Z shell: /usr/bin/bash -e {0}
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:04.0949463Z ##[endgroup]
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:04.1946999Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:04.1951813Z > financiero@1.0.0 lint
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:04.1956262Z > eslint . --ext .ts,.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:04.1960446Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2755066Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2760194Z /home/runner/work/financiero/financiero/app/faq.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2900452Z ##[warning]  117:31  warning  'index' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2930453Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2931240Z /home/runner/work/financiero/financiero/components/__tests__/animated-splash-screen.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2933674Z ##[warning]  238:15  warning  'root' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2935104Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2935781Z /home/runner/work/financiero/financiero/components/__tests__/biometric-access-screen.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2937757Z ##[warning]  14:7   warning  'mockPlatform' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2980378Z ##[warning]  59:44  warning  A `require()` style import is forbidden                                                  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2982852Z ##[warning]  75:22  warning  A `require()` style import is forbidden                                                  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2985114Z ##[warning]  94:33  warning  A `require()` style import is forbidden                                                  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2986328Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2986966Z /home/runner/work/financiero/financiero/components/__tests__/biometric-enable-modal.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.2988385Z ##[warning]  52:44  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3011183Z ##[warning]  62:33  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3013190Z ##[warning]  74:22  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3015050Z ##[warning]  82:22  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3016597Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3017189Z /home/runner/work/financiero/financiero/components/__tests__/email-login-screen.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3018497Z ##[warning]  69:44  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3020568Z ##[warning]  83:33  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3022445Z ##[warning]  94:27  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3023630Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3024269Z /home/runner/work/financiero/financiero/components/__tests__/forgot-password-screen.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3025902Z ##[warning]   68:44  warning  A `require()` style import is forbidden                                                           @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3028206Z ##[warning]   82:33  warning  A `require()` style import is forbidden                                                           @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3090770Z ##[warning]   99:27  warning  A `require()` style import is forbidden                                                           @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3093431Z ##[warning]  130:13  warning  'button' is assigned a value but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3096077Z ##[warning]  196:48  warning  'rerender' is assigned a value but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3122713Z ##[warning]  207:15  warning  'getByText' is assigned a value but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3125427Z ##[warning]  246:9   warning  'advanceToPasswordStep' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3126865Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3127409Z /home/runner/work/financiero/financiero/components/__tests__/haptic-tab.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3128716Z ##[warning]   29:27  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3170813Z ##[warning]  135:24  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3172172Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3172897Z /home/runner/work/financiero/financiero/components/__tests__/institution-selector-header.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3174365Z ##[warning]   80:22  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3176292Z ##[warning]   94:32  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3178230Z ##[warning]  108:22  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3179334Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3179862Z /home/runner/work/financiero/financiero/components/__tests__/login-screen.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3181278Z ##[warning]   76:44  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3183155Z ##[warning]   91:33  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3185056Z ##[warning]  112:27  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3186220Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3186809Z /home/runner/work/financiero/financiero/components/__tests__/onboarding-screen.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3188132Z ##[warning]  55:22  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3189313Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3189884Z /home/runner/work/financiero/financiero/components/__tests__/register-screen.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3251451Z ##[warning]  64:44  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3253691Z ##[warning]  78:33  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3255497Z ##[warning]  94:27  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3256586Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3257215Z /home/runner/work/financiero/financiero/components/cards/__tests__/cards.integration.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3259037Z ##[warning]   49:14  warning  A `require()` style import is forbidden                                    @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3261471Z ##[warning]  198:28  warning  'type' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3263800Z ##[warning]  198:34  warning  'variant' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3266038Z ##[warning]  199:22  warning  A `require()` style import is forbidden                                    @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3267239Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3268001Z /home/runner/work/financiero/financiero/components/cards/insurance/__tests__/insurance.integration.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3330166Z ##[warning]  21:28  warning  'type' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3332708Z ##[warning]  21:34  warning  'variant' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3335277Z ##[warning]  22:22  warning  A `require()` style import is forbidden                                    @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3336426Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3337186Z /home/runner/work/financiero/financiero/components/cards/operations/__tests__/operations.integration.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3339097Z ##[warning]  45:28  warning  'type' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3341625Z ##[warning]  45:34  warning  'variant' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3343903Z ##[warning]  46:22  warning  A `require()` style import is forbidden                                    @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3345025Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3345578Z /home/runner/work/financiero/financiero/components/cards/operations/receipt-view.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3347065Z ##[warning]  78:46  warning  'index' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3348280Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3348869Z /home/runner/work/financiero/financiero/components/ui/__tests__/dragonfly-loading.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3410903Z ##[warning]  6:9   warning  'View' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3413283Z ##[warning]  6:16  warning  A `require()` style import is forbidden                                          @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3414460Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3414994Z /home/runner/work/financiero/financiero/components/ui/__tests__/tab-icons.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3416576Z ##[warning]  6:9   warning  'View' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3418781Z ##[warning]  6:16  warning  A `require()` style import is forbidden                                          @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3420098Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3420682Z /home/runner/work/financiero/financiero/components/ui/__tests__/themed-button.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3422158Z ##[warning]  141:23  warning  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3423609Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3424079Z /home/runner/work/financiero/financiero/components/ui/info-tooltip.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3425731Z ##[warning]  442:13  warning  'eventId' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3427052Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3427605Z /home/runner/work/financiero/financiero/contexts/__tests__/tour-context.test.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3429475Z ##[warning]  124:13  warning  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3490983Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3491479Z /home/runner/work/financiero/financiero/contexts/tenant-theme-context.tsx
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3494539Z ##[warning]  66:9  warning  The 'setTenant' function makes the dependencies of useMemo Hook (at line 92) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'setTenant' in its own useCallback() Hook      react-hooks/exhaustive-deps
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3499006Z ##[warning]  76:9  warning  The 'clearTenant' function makes the dependencies of useMemo Hook (at line 92) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'clearTenant' in its own useCallback() Hook  react-hooks/exhaustive-deps
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3501132Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3501695Z /home/runner/work/financiero/financiero/hooks/__tests__/use-statement-export.test.ts
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3503719Z ##[warning]  105:11  warning  'exportingDuringCall' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3505396Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3505738Z /home/runner/work/financiero/financiero/jest.setup.ts
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3507057Z ##[warning]  10:22  warning  A `require()` style import is forbidden                                          @typescript-eslint/no-require-imports
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3509311Z ##[warning]  13:9   warning  'noop' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3521229Z ##[warning]  19:47  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3523415Z ##[warning]  19:57  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3525584Z ##[warning]  23:37  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3527717Z ##[warning]  23:47  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3529795Z ##[warning]  24:35  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3532082Z ##[warning]  25:42  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3534212Z ##[warning]  26:42  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3536389Z ##[warning]  27:41  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3538606Z ##[warning]  28:35  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3541033Z ##[warning]  28:48  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3543259Z ##[warning]  28:63  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3545695Z ##[warning]  32:35  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3547889Z ##[warning]  33:28  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3550218Z ##[warning]  33:39  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3552479Z ##[warning]  34:37  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3554818Z ##[warning]  35:32  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3556093Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3556562Z /home/runner/work/financiero/financiero/scripts/analyze-unused-code.js
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3582633Z ##[error]   11:24  error    '__dirname' is not defined                                                    no-undef
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3584921Z ##[warning]  106:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3586207Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3586836Z /home/runner/work/financiero/financiero/scripts/generate-professional-sonar-report.js
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3588216Z ##[error]  17:59  error    '__dirname' is not defined                                                        no-undef
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3590575Z ##[error]  23:16  error    'Buffer' is not defined                                                           no-undef
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3592494Z ##[error]  65:16  error    'Buffer' is not defined                                                           no-undef
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3594620Z ##[warning]  86:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  no-unused-vars
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3596631Z ##[error]  96:33  error    '__dirname' is not defined                                                        no-undef
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3597744Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3598264Z ✖ 78 problems (5 errors, 73 warnings)
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.3598536Z 
+🧪 Tests & Coverage	Run ESLint	2025-12-13T03:39:16.6429883Z ##[error]Process completed with exit code 1.

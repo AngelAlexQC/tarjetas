@@ -161,12 +161,21 @@ jobs:
           path: coverage/
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarcloud-github-action@v3
         continue-on-error: true  # Permite obtener informe aunque no pase el Quality Gate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+
+  # ========================================
+  # Job added: Generación de Reporte PDF
+  # ========================================
+  pdf-report:
+    needs: sonarcloud
+    uses: ./.github/workflows/reusable-pdf-report.yml
+    if: always() && needs.sonarcloud.result == 'success'
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # ========================================
   # Job 5: Resumen de seguridad
@@ -174,7 +183,7 @@ jobs:
   security-summary:
     name: 📊 Security Summary
     runs-on: ubuntu-latest
-    needs: [test, npm-audit, owasp-dependency-check, sonarcloud]
+    needs: [test, npm-audit, owasp-dependency-check, sonarcloud, pdf-report]
     if: always()
     steps:
       - name: Check job results
@@ -187,5 +196,6 @@ jobs:
           echo "| npm Audit | ${{ needs.npm-audit.result == 'success' && '✅ Passed' || '⚠️ Issues Found' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| OWASP Dependency Check | ${{ needs.owasp-dependency-check.result == 'success' && '✅ Passed' || '⚠️ Issues Found' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| SonarCloud | ${{ needs.sonarcloud.result == 'success' && '✅ Passed' || '⚠️ Quality Gate Issues' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PDF Report | ${{ needs.pdf-report.result == 'success' && '✅ Generated' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📁 Check the Artifacts tab for detailed reports." >> $GITHUB_STEP_SUMMARY

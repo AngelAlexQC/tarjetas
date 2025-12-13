@@ -55,7 +55,7 @@ jobs:
         env:
           SONAR_URL: https://sonarcloud.io
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: LibelulaSoft_Tarjetas
+          SONAR_PROJECT_KEY: AngelAlexQC_tarjetas
           SONAR_PROJECT_NAME: LibelulaSoft Tarjetas
           SONAR_PROJECT_VERSION: ${{ inputs.project-version }}
           OUTPUT_DIR: ${{ github.workspace }}/output

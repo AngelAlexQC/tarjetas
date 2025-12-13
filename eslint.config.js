@@ -1,5 +1,6 @@
 // https://docs.expo.dev/guides/using-eslint/
 const expoConfig = require('eslint-config-expo/flat');
+const globals = require('globals');
 
 module.exports = [
   // Spread the expo config array
@@ -11,22 +12,22 @@ module.exports = [
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       // TypeScript
-      '@typescript-eslint/no-unused-vars': ['warn', { 
+      '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
       }],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      
+
       // React Hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // General - SEGURIDAD: No permitir console.log en producción
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'prefer-const': 'error',
       'no-var': 'error',
-      
+
       // Complexity (ajustado para mejor calidad de código)
       // SonarQube recomienda funciones más cortas
       'max-lines-per-function': ['warn', { max: 150, skipBlankLines: true, skipComments: true }],
@@ -41,7 +42,7 @@ module.exports = [
       'max-lines-per-function': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { 
+      '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
       }],
@@ -50,24 +51,17 @@ module.exports = [
   },
   {
     // Configuración para scripts de Node.js
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.js', '*.config.js'],
     languageOptions: {
       globals: {
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        Buffer: 'readonly',
-        process: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
-        exports: 'readonly',
-        console: 'readonly',
+        ...globals.node,
       },
       ecmaVersion: 2022,
       sourceType: 'commonjs',
     },
     rules: {
       'no-console': 'off',
-      'no-unused-vars': ['warn', { 
+      'no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
         caughtErrorsIgnorePattern: '^_',
