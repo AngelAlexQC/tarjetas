@@ -7,11 +7,7 @@
 
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { Platform } from 'react-native';
 import { BiometricAccessScreen } from '../biometric-access-screen';
-
-// Mock de Platform
-const mockPlatform = Platform as { OS: typeof Platform.OS };
 
 // Mock de useAuth
 const mockAuthenticateWithBiometric = jest.fn();

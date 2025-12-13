@@ -114,7 +114,7 @@ export default function FaqScreen() {
 
         <ThemedText type="subtitle" style={{ marginBottom: 16, marginTop: 8 }}>Temas Populares</ThemedText>
 
-        {FAQ_ITEMS.map((item, index) => (
+        {FAQ_ITEMS.map((item) => (
             <View key={item.question} style={[styles.item, { backgroundColor: theme.colors.surface, borderColor: theme.colors.borderSubtle }]}>
                 <View style={styles.questionRow}>
                   <Ionicons name="chatbubble-ellipses-outline" size={20} color={theme.tenant.mainColor} style={{ marginRight: 12 }} />

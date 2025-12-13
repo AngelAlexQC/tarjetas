@@ -1,4 +1,3 @@
-/* eslint-disable no-undef, no-unused-vars */
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
@@ -84,7 +83,7 @@ async function fetchIssuesBySeverity() {
         }
       );
       issuesBySeverity[severity] = response.data.total || 0;
-    } catch (error) {
+    } catch (_error) {
       issuesBySeverity[severity] = 0;
     }
   }

@@ -126,12 +126,9 @@ describe('ForgotPasswordScreen', () => {
 
   describe('Paso 1: Email', () => {
     it('should have disabled button if email is empty', () => {
-      const { getByText } = render(<ForgotPasswordScreen {...mockProps} />);
-      const button = getByText('Enviar Código').parent?.parent; // Depending on how ThemedButton mock renders (Pressable)
-      // Actually my mock returns Pressable with testID `button-${title}`
-      // But `disabled` prop is passed to Pressable. 
-      // RNTL `fireEvent.press` on disabled element usually does nothing or warns, but the component logic prevents `onPress` call.
-      
+      render(<ForgotPasswordScreen {...mockProps} />);
+      // Button should be disabled when email is empty
+      // The component logic prevents `onPress` call when disabled.
       // Let's rely on finding the button by testID
     });
 
@@ -193,7 +190,7 @@ describe('ForgotPasswordScreen', () => {
     beforeEach(async () => {
       // Setup: move to code step
       mockSendRecoveryCode.mockResolvedValue({ success: true });
-      const { getByText, getByPlaceholderText, rerender } = render(<ForgotPasswordScreen {...mockProps} />);
+      const { getByText, getByPlaceholderText } = render(<ForgotPasswordScreen {...mockProps} />);
       const emailInput = getByPlaceholderText('correo@ejemplo.com');
       const sendButton = getByText('Enviar Código');
       
@@ -204,7 +201,7 @@ describe('ForgotPasswordScreen', () => {
     });
 
     it('should show error if code is empty', async () => {
-      const { getByText } = render(<ForgotPasswordScreen {...mockProps} />); // Need to re-render to get latest state mock effects if not using `screen`
+      render(<ForgotPasswordScreen {...mockProps} />); // Need to re-render to get latest state mock effects if not using `screen`
       
       // Since we can't easily persist state across renders without a helper component or using `screen` in RNTL (which we are not fully using here as existing code uses `render` destructuring), 
       // we will simulate the whole flow in one go or rely on the previous setup being part of the same test if possible.

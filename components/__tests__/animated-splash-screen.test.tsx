@@ -235,7 +235,7 @@ describe('AnimatedSplashScreen', () => {
   describe('Animaciones', () => {
   describe('Animaciones', () => {
     it('should complete full animation lifecycle', async () => {
-      const { root } = render(
+      render(
         <AnimatedSplashScreen onReady={mockOnReady}>
           <></>
         </AnimatedSplashScreen>

@@ -43,4 +43,30 @@ module.exports = [
       'no-console': 'off',
     },
   },
+  {
+    // Configuración para scripts de Node.js
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        Buffer: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        console: 'readonly',
+      },
+      ecmaVersion: 2022,
+      sourceType: 'commonjs',
+    },
+    rules: {
+      'no-console': 'off',
+      'no-unused-vars': ['warn', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      }],
+    },
+  },
 ];

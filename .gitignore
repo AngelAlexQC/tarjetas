@@ -60,6 +60,21 @@ Dockerfile.sonar-report
 *_RESEARCH.md
 *_ANALISIS.md
 
+# Scripts temporales (mantener generate-professional-sonar-report.js)
+scripts/analyze-unused-code.js
+
+# Dependency check
+.dependency-check-suppression.xml
+
+# Logos e imágenes temporales en root
+/LibelulaLogo.png
+
+# Docs temporales
+docs/ESTIMACION_TIEMPOS.md
+docs/**/STATUS.md
+api/*_STATUS.md
+api/*.implementation.md
+
 # IDE
 .vscode/*
 !.vscode/settings.json
@@ -69,6 +84,7 @@ Dockerfile.sonar-report
 .idea/
 *.swp
 *.swo
+.claude/
 
 # Claude AI settings (local configuration only)
 .claude/settings.local.json
