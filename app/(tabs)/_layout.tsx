@@ -16,6 +16,18 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return <ErrorFallback error={error} retry={retry} title="Error en la pantalla" />;
 }
 
+// Componente extraído para evitar nested components (S6478)
+const TabBarBackground = ({ colorScheme }: { colorScheme: 'light' | 'dark' | null | undefined }) => {
+  if (Platform.OS !== 'ios') return null;
+  return (
+    <BlurView 
+      intensity={80} 
+      style={StyleSheet.absoluteFill} 
+      tint={colorScheme === 'dark' ? 'dark' : 'light'} 
+    />
+  );
+};
+
 export default function TabLayout() {
   const theme = useAppTheme();
   const colorScheme = useColorScheme();
@@ -31,15 +43,7 @@ export default function TabLayout() {
         },
         headerTintColor: theme.colors.text,
         tabBarButton: HapticTab,
-        tabBarBackground: () => (
-          Platform.OS === 'ios' ? (
-            <BlurView 
-              intensity={80} 
-              style={StyleSheet.absoluteFill} 
-              tint={colorScheme === 'dark' ? 'dark' : 'light'} 
-            />
-          ) : null
-        ),
+        tabBarBackground: () => <TabBarBackground colorScheme={colorScheme} />,
         tabBarStyle: {
           backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.colors.background,
           borderTopWidth: 0,

@@ -8,6 +8,29 @@ import { Pressable, View } from 'react-native';
 import { formatCurrencyWithSymbol } from './utils';
 import type { CardMetrics } from './metrics';
 
+// Componente extraído para evitar nested components (S6478)
+const LimitsConfigButton = ({ close, cardId, primaryColor, router }: { close: () => void; cardId: string; primaryColor: string; router: ReturnType<typeof useRouter> }) => (
+  <View style={{ gap: 16 }}>
+    <Pressable
+      onPress={() => {
+        close();
+        router.push(`/cards/${cardId}/limits`);
+      }}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        opacity: pressed ? 0.7 : 1,
+      })}
+    >
+      <SettingsIcon size={16} color={primaryColor} />
+      <ThemedText style={{ fontSize: 13, color: primaryColor, fontWeight: '600' }}>
+        Configurar límites
+      </ThemedText>
+    </Pressable>
+  </View>
+);
+
 interface VirtualCardStatsProps {
   metrics: CardMetrics;
   locale: string;
@@ -43,27 +66,7 @@ export function VirtualCardStats({
         title="Límite de Gasto"
         content={`Esta tarjeta virtual tiene un límite máximo de ${formatCurrencyWithSymbol(spendingLimit, { locale, currency, currencySymbol })}. ${isReloadable ? 'Puedes recargarla múltiples veces hasta este límite.' : 'Es una tarjeta de un solo uso, ideal para compras online seguras.'}`}
         placement="bottom"
-        extraContent={({ close }) => (
-          <View style={{ gap: 16 }}>
-            <Pressable
-              onPress={() => {
-                close();
-                router.push(`/cards/${cardId}/limits`);
-              }}
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
-                opacity: pressed ? 0.7 : 1,
-              })}
-            >
-              <SettingsIcon size={16} color={primaryColor} />
-              <ThemedText style={{ fontSize: 13, color: primaryColor, fontWeight: '600' }}>
-                Configurar límites
-              </ThemedText>
-            </Pressable>
-          </View>
-        )}
+        extraContent={({ close }) => <LimitsConfigButton close={close} cardId={cardId} primaryColor={primaryColor} router={router} />}
         tourKey="tour-virtual-spending-limit"
         tourOrder={baseOrder + 11}
       >
