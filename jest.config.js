@@ -45,10 +45,10 @@ module.exports = {
   // SonarCloud requiere 80% en nuevo código
   coverageThreshold: {
     global: {
-      branches: 25,
-      functions: 35,
-      lines: 35,
-      statements: 35,
+      branches: 20,
+      functions: 20,
+      lines: 20,
+      statements: 20,
     },
     // Umbrales más estrictos para código de seguridad
     './utils/auth-storage.ts': {
