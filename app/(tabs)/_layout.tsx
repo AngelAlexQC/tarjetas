@@ -6,7 +6,8 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { BlurView } from 'expo-blur';
 import { Tabs, type ErrorBoundaryProps } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, type ColorSchemeName } from 'react-native';
+
 
 /**
  * ErrorBoundary para las pantallas de tabs.
@@ -17,7 +18,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 }
 
 // Componente extraído para evitar nested components (S6478)
-import { type ColorSchemeName } from 'react-native';
+
 
 const TabBarBackground = ({ colorScheme }: { colorScheme: ColorSchemeName }) => {
   if (Platform.OS !== 'ios') return null;

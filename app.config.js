@@ -1,14 +1,14 @@
-module.exports = ({ config }) => {
+module.exports = ({ config: _config }) => {
   // Detectar si estamos en desarrollo local o en CI/producción
   const isProduction = process.env.EAS_BUILD === 'true' || process.env.CI === 'true';
-  
+
   // Configuración dinámica desde variables de entorno
   const appName = process.env.APP_NAME || (isProduction ? 'Tarjetas' : 'Tarjetas Dev');
   const appSlug = process.env.APP_SLUG || (isProduction ? 'tarjetas' : 'tarjetas-dev');
   const bundleIdIOS = process.env.APP_BUNDLE_ID_IOS || (isProduction ? 'com.libelulasoft.tarjetas' : 'com.libelulasoft.tarjetas.dev');
   const bundleIdAndroid = process.env.APP_BUNDLE_ID_ANDROID || (isProduction ? 'com.libelulasoft.tarjetas' : 'com.libelulasoft.tarjetas.dev');
   const scheme = process.env.APP_SCHEME || (isProduction ? 'tarjetas' : 'tarjetas-dev');
-  
+
   // Configuración para desarrollo local
   const devConfig = {
     name: appName,
@@ -21,12 +21,12 @@ module.exports = ({ config }) => {
     },
     scheme: scheme,
   };
-  
+
   // Configuración para producción (usa las mismas variables)
   const prodConfig = devConfig;
-  
+
   const envConfig = isProduction ? prodConfig : devConfig;
-  
+
   return {
     expo: {
       name: envConfig.name,
