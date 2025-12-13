@@ -1,0 +1,72 @@
+# Workflow reutilizable para generación de PDF
+name: Reusable PDF Report Generator
+
+on:
+  workflow_call:
+    inputs:
+      project-version:
+        description: 'Project version for the report'
+        required: false
+        type: string
+        default: '1.0.0'
+      artifact-retention-days:
+        description: 'Days to retain artifacts'
+        required: false
+        type: number
+        default: 30
+      dockerfile-path:
+        description: 'Path to Dockerfile'
+        required: false
+        type: string
+        default: 'Dockerfile.sonar-report'
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
+      SONAR_PROJECT_KEY:
+        required: true
+      SONAR_PROJECT_NAME:
+        required: true
+
+jobs:
+  generate:
+    name: Generate PDF Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build PDF Generator Image
+        run: docker build -f ${{ inputs.dockerfile-path }} -t sonar-report-generator .
+
+      - name: Create output directory
+        run: mkdir -p output
+
+      - name: Generate PDF Report
+        run: |
+          docker run --rm \
+            --network host \
+            -e SONAR_URL=${{ secrets.SONAR_HOST_URL }} \
+            -e SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} \
+            -e SONAR_PROJECT_KEY=${{ secrets.SONAR_PROJECT_KEY }} \
+            -e SONAR_PROJECT_NAME="${{ secrets.SONAR_PROJECT_NAME }}" \
+            -e SONAR_PROJECT_VERSION=${{ inputs.project-version }} \
+            -e OUTPUT_DIR=/app/output \
+            -v $(pwd)/output:/app/output \
+            sonar-report-generator
+
+      - name: Upload PDF Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-quality-report-pdf
+          path: output/sonar-professional-report.pdf
+          retention-days: ${{ inputs.artifact-retention-days }}
+
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-quality-report-html
+          path: output/sonar-professional-report.html
+          retention-days: ${{ inputs.artifact-retention-days }}
