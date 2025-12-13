@@ -42,7 +42,7 @@ jest.mock('lucide-react-native', () => ({
 }));
 
 jest.mock('@/components/themed-text', () => ({
-  ThemedText: ({ children, type, variant, style, ...props }: any) => {
+  ThemedText: ({ children, style, ...props }: any) => {
     const { Text } = require('react-native');
     return <Text style={style} {...props}>{children}</Text>;
   },

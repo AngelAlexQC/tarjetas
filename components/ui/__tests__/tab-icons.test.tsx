@@ -3,7 +3,6 @@ import { render } from '@testing-library/react-native';
 import { HomeIcon, CardsIcon, SettingsIcon } from '../tab-icons';
 
 jest.mock('react-native-reanimated', () => {
-  const View = require('react-native').View;
   return {
     ...jest.requireActual('react-native-reanimated/mock'),
     useSharedValue: jest.fn(() => ({ value: 0 })),

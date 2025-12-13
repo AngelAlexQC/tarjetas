@@ -3,7 +3,6 @@ import { render } from '@testing-library/react-native';
 import { DragonflyLoading } from '../dragonfly-loading';
 
 jest.mock('react-native-reanimated', () => {
-  const View = require('react-native').View;
   return {
     ...jest.requireActual('react-native-reanimated/mock'),
     useSharedValue: jest.fn(() => ({ value: 0 })),

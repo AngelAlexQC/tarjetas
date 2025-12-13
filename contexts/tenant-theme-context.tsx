@@ -4,7 +4,7 @@ import { RepositoryContainer } from '@/repositories';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
 import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useContext, useEffect, useState, useMemo } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
 const log = loggers.theme;
@@ -63,7 +63,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const setTenant = async (tenant: Tenant) => {
+  const setTenant = useCallback(async (tenant: Tenant) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.TENANT_THEME, JSON.stringify(tenant));
       setCurrentTheme(tenant);
@@ -71,9 +71,9 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       log.error('Error saving theme:', error);
     }
-  };
+  }, []);
 
-  const clearTenant = async () => {
+  const clearTenant = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
       setCurrentTheme(defaultTenant);
@@ -81,7 +81,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       log.error('Error clearing theme:', error);
     }
-  };
+  }, []);
 
   const value = useMemo(() => ({
     currentTheme,

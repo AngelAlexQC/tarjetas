@@ -240,7 +240,7 @@ describe('ForgotPasswordScreen Integration', () => {
     });
   };
 
-  const advanceToPasswordStep = async (getByText: any, getByTestId: any) => {
+  const _advanceToPasswordStep = async (getByText: any, getByTestId: any) => {
     await advanceToCodeStep(getByText, getByTestId);
     mockVerifyCode.mockResolvedValue({ success: true });
     const codeInput = getByTestId('input-Código de verificación');

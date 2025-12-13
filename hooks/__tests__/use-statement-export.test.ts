@@ -102,7 +102,6 @@ describe('useStatementExport', () => {
 
   describe('exportToPdf', () => {
     it('should set isExporting to true while exporting', async () => {
-      let exportingDuringCall = false;
       (ExpoPrint.printToFileAsync as jest.Mock).mockImplementation(async () => {
         // This simulates checking isExporting during the export
         await new Promise((resolve) => setTimeout(resolve, 10));

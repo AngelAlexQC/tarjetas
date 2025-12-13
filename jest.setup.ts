@@ -9,9 +9,6 @@
 jest.mock('react-native-reanimated', () => {
   const Reanimated = require('react-native-reanimated/mock');
   
-  // Helper to ensure functions are valid
-  const noop = () => {};
-  
   // Enhance the mock
   Reanimated.default.call = () => {};
   

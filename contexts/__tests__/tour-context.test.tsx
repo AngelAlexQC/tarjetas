@@ -121,7 +121,7 @@ describe('TourContext', () => {
       .mockResolvedValueOnce(JSON.stringify(['key1']))  // seen keys
       .mockResolvedValueOnce('true');  // paused state
 
-    const { result } = renderHook(() => useTour(), { wrapper: TestWrapper });
+    renderHook(() => useTour(), { wrapper: TestWrapper });
 
     await waitFor(() => {
       expect(AsyncStorage.getItem).toHaveBeenCalledTimes(2);

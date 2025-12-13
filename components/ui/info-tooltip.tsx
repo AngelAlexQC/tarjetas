@@ -439,7 +439,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
         ? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'GMT')
         : undefined;
 
-      const eventId = await Calendar.createEventAsync(defaultCalendarId, {
+      await Calendar.createEventAsync(defaultCalendarId, {
         title: calendarEvent.title,
         startDate: calendarEvent.startDate,
         endDate: endDate,
