@@ -17,11 +17,36 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// Helper functions to reduce complexity
+const getContainerWidth = (isLandscape: boolean, screenWidth: number) => {
+  const widthPercentage = isLandscape ? 0.5 : 0.9;
+  return Math.min(screenWidth * widthPercentage, 420);
+};
+
+const getPlatformStyles = (isDark: boolean) => {
+  const isIOS = Platform.OS === 'ios';
+  const borderRadius = isIOS ? 10 : 24;
+  
+  const backgroundColor = isDark 
+    ? (isIOS ? 'rgba(28, 28, 30, 0.6)' : '#1C1C1E') 
+    : (isIOS ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF');
+    
+  const borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
+  const shadowOpacity = isDark ? 0.3 : 0.05;
+  const logoContainerRadius = isIOS ? 8 : 12;
+
+  return { isIOS, borderRadius, backgroundColor, borderColor, shadowOpacity, logoContainerRadius };
+};
+
+const getTopPadding = (hasHeader: boolean, insetsTop: number) => {
+  const isIOS = Platform.OS === 'ios';
+  return isIOS ? (hasHeader ? 10 : insetsTop + 10) : 10;
+};
+
 /**
  * Header minimalista moderno - Fintech Design 2025
  * Diseño "Flat & Clean" optimizado para Dark Mode
  */
-// eslint-disable-next-line complexity
 export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: boolean }) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();
@@ -31,50 +56,31 @@ export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: bo
   const scaleValue = useSharedValue(1);
   const [imageError, setImageError] = useState(false);
   
-  // Resetear error de imagen cuando cambia el tema
   useEffect(() => {
     setImageError(false);
   }, [currentTheme?.slug]);
   
-  // Ancho consistente con el resto de componentes (max 420px)
-  const containerWidth = layout.isLandscape 
-    ? Math.min(layout.screenWidth * 0.5, 420)
-    : Math.min(layout.screenWidth * 0.9, 420);
+  const containerWidth = getContainerWidth(layout.isLandscape, layout.screenWidth);
+  const platformStyles = getPlatformStyles(theme.isDark);
+  const topPadding = getTopPadding(hasHeader, insets.top);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scaleValue.value }],
   }));
 
-  const handlePress = () => {
-    router.push(homeRoute());
-  };
+  const handlePress = () => router.push(homeRoute());
+  const handlePressIn = () => { scaleValue.value = withSpring(0.98, { damping: 15 }); };
+  const handlePressOut = () => { scaleValue.value = withSpring(1, { damping: 15 }); };
 
-  const handlePressIn = () => {
-    scaleValue.value = withSpring(0.98, { damping: 15 });
-  };
-
-  const handlePressOut = () => {
-    scaleValue.value = withSpring(1, { damping: 15 });
-  };
-
-  // Estilos específicos por plataforma
-  const isIOS = Platform.OS === 'ios';
-  const borderRadius = isIOS ? 10 : 24; // 10px para iOS (Apple Wallet style), 24px para Android (Material You)
-  
-  // Colores dinámicos según el modo
-  const backgroundColor = theme.isDark 
-    ? (isIOS ? 'rgba(28, 28, 30, 0.6)' : '#1C1C1E') 
-    : (isIOS ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF');
-    
-  const borderColor = theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
-  const shadowColor = theme.isDark ? '#000000' : '#000000';
-  const shadowOpacity = theme.isDark ? 0.3 : 0.05;
+  const logoContainerBg = theme.isDark ? 'rgba(255,255,255,0.05)' : '#F5F5F5';
+  const textColor = theme.isDark ? '#FFFFFF' : '#000000';
+  const actionBg = theme.isDark ? 'rgba(255,255,255,0.1)' : '#F0F0F0';
 
   const Content = () => (
     <View style={styles.contentRow}>
       <View style={[styles.logoContainer, { 
-        backgroundColor: theme.isDark ? 'rgba(255,255,255,0.05)' : '#F5F5F5',
-        borderRadius: isIOS ? 8 : 12
+        backgroundColor: logoContainerBg,
+        borderRadius: platformStyles.logoContainerRadius
       }]}>
         {currentTheme.branding.logoUrl && !imageError ? (
           <Image
@@ -96,36 +102,31 @@ export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: bo
       <View style={styles.textContainer}>
         <ThemedText 
           type="defaultSemiBold" 
-          style={[styles.institutionName, { color: theme.isDark ? '#FFFFFF' : '#000000' }]} 
+          style={[styles.institutionName, { color: textColor }]} 
           numberOfLines={1}
         >
           {currentTheme?.name}
         </ThemedText>
       </View>
 
-      {/* Indicador de acción */}
       <View style={[styles.actionIconContainer, { 
-        backgroundColor: theme.isDark ? 'rgba(255,255,255,0.1)' : '#F0F0F0',
-        borderRadius: isIOS ? 14 : 14
+        backgroundColor: actionBg,
+        borderRadius: 14
       }]}>
         <Ionicons 
           name="chevron-down" 
           size={16} 
-          color={theme.isDark ? '#FFFFFF' : '#000000'} 
+          color={textColor} 
         />
       </View>
     </View>
   );
 
-  // En iOS: si hay header (transparente), no agregar insets porque el header ya lo maneja
-  // Si no hay header, sí agregar insets para el notch/Dynamic Island
-  const topPadding = isIOS ? (hasHeader ? 10 : insets.top + 10) : 10;
-
   return (
     <View style={[styles.wrapper, { paddingTop: topPadding }]}>
       <Animated.View entering={FadeInDown.delay(100).springify()}>
         <Animated.View 
-          style={[styles.container, { width: containerWidth, borderRadius }, animatedStyle]}
+          style={[styles.container, { width: containerWidth, borderRadius: platformStyles.borderRadius }, animatedStyle]}
         >
           <Pressable
             onPress={handlePress}
@@ -134,22 +135,22 @@ export function InstitutionSelectorHeader({ hasHeader = true }: { hasHeader?: bo
             style={({ pressed }) => [
               styles.pressable, 
               { 
-                borderRadius,
-                borderColor,
-                shadowColor,
-                shadowOpacity,
-                backgroundColor: isIOS ? 'transparent' : backgroundColor,
+                borderRadius: platformStyles.borderRadius,
+                borderColor: platformStyles.borderColor,
+                shadowColor: '#000000',
+                shadowOpacity: platformStyles.shadowOpacity,
+                backgroundColor: platformStyles.isIOS ? 'transparent' : platformStyles.backgroundColor,
                 opacity: pressed ? 0.9 : 1
               }
             ]}
           >
-            {isIOS ? (
+            {platformStyles.isIOS ? (
               <BlurView 
                 intensity={theme.isDark ? 40 : 60} 
                 tint={theme.isDark ? 'dark' : 'light'}
-                style={[StyleSheet.absoluteFill, { borderRadius }]}
+                style={[StyleSheet.absoluteFill, { borderRadius: platformStyles.borderRadius }]}
               >
-                <View style={[StyleSheet.absoluteFill, { backgroundColor }]} />
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: platformStyles.backgroundColor }]} />
                 <Content />
               </BlurView>
             ) : (

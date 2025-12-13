@@ -90,8 +90,7 @@ describe('useCardsScreen', () => {
       isLoading: false,
       fetchCards: mockFetchCards,
     });
-    // @ts-ignore
-    Platform.OS = 'ios';
+    (Platform as { OS: string }).OS = 'ios';
   });
 
   afterEach(() => {
@@ -424,8 +423,7 @@ describe('useCardsScreen', () => {
 
   describe('handleAddToWallet', () => {
     it('should show Apple Wallet alert on iOS', () => {
-      // @ts-ignore
-      Platform.OS = 'ios';
+      (Platform as { OS: string }).OS = 'ios';
 
       const { result } = renderHook(() => 
         useCardsScreen({ cardWidth: 300, cardSpacing: 16 })
@@ -442,8 +440,7 @@ describe('useCardsScreen', () => {
     });
 
     it('should show Google Wallet alert on Android', () => {
-      // @ts-ignore
-      Platform.OS = 'android';
+      (Platform as { OS: string }).OS = 'android';
 
       const { result } = renderHook(() => 
         useCardsScreen({ cardWidth: 300, cardSpacing: 16 })
