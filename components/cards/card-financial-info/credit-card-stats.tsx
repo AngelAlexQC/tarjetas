@@ -101,7 +101,7 @@ export function CreditCardStats({
         content={`Tienes ${nextPaymentDays} días para realizar tu pago. ${isPaymentSoon ? 'Tu fecha de pago está cerca, considera programar tu pago pronto.' : 'El pago mínimo sugerido es de ' + formatCurrencyWithSymbol(minimumPayment, { locale, currency, currencySymbol }) + '.'}`}
         placement="bottom"
         calendarEvent={{
-          title: `Pago de Tarjeta ${cardNumber ? `(**** ${cardNumber.slice(-4)})` : ''}`,
+          title: cardNumber ? `Pago de Tarjeta (**** ${cardNumber.slice(-4)})` : 'Pago de Tarjeta',
           startDate: nextPaymentDate,
           notes: `Pago mínimo sugerido: ${formatCurrencyWithSymbol(minimumPayment, { locale, currency, currencySymbol })}. Saldo actual: ${formatCurrencyWithSymbol(usedCredit, { locale, currency, currencySymbol })}`,
         }}

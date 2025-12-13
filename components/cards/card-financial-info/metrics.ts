@@ -57,7 +57,14 @@ export function calculateCardMetrics(
   const usageColors = getUsageColor();
   const dailySpentColors = getUsageColor();
   const heroColor = primaryColor;
-  const baseOrder = card.cardType === 'credit' ? 100 : card.cardType === 'debit' ? 200 : 300;
+  
+  // Evitar ternario anidado (S3358)
+  const getBaseOrderByCardType = (cardType: string): number => {
+    if (cardType === 'credit') return 100;
+    if (cardType === 'debit') return 200;
+    return 300;
+  };
+  const baseOrder = getBaseOrderByCardType(card.cardType);
 
   return {
     usagePercentage,
