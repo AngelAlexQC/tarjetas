@@ -48,8 +48,8 @@ jobs:
         run: npm run test:coverage
         continue-on-error: true
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v3
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
