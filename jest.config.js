@@ -20,23 +20,35 @@ module.exports = {
     '^@test-utils/(.*)$': '<rootDir>/test-utils/$1',
   },
   collectCoverageFrom: [
+    // Incluir todos los archivos fuente principales
+    'app/**/*.{ts,tsx}',
+    'components/**/*.{ts,tsx}',
+    'contexts/**/*.{ts,tsx}',
     'hooks/**/*.{ts,tsx}',
     'repositories/**/*.{ts,tsx}',
     'utils/**/*.{ts,tsx}',
-    'components/**/*.{ts,tsx}',
-    'contexts/**/*.{ts,tsx}',
+    'api/**/*.{ts,tsx}',
+    // Excluir archivos que no deben ser testeados
     '!**/*.d.ts',
     '!**/index.ts',
+    '!**/index.tsx',
+    '!**/*.test.{ts,tsx}',
+    '!**/*.spec.{ts,tsx}',
+    '!**/__tests__/**',
+    '!**/__mocks__/**',
+    '!**/test-utils/**',
+    '!app/_layout.tsx',
+    '!app/+not-found.tsx',
   ],
   // SEGURIDAD: Umbrales de cobertura para código financiero
-  // TODO: Incrementar gradualmente hasta 80% conforme se agreguen tests
-  // SonarCloud monitoreará la calidad de código adicional
+  // Objetivo: Mantener y aumentar la cobertura progresivamente
+  // SonarCloud requiere 80% en nuevo código
   coverageThreshold: {
     global: {
-      branches: 15,
-      functions: 15,
-      lines: 15,
-      statements: 15,
+      branches: 28,  // Actual: ~28.63%
+      functions: 36,  // Actual: ~36.94%
+      lines: 37,     // Actual: ~37.54%
+      statements: 37, // Actual: ~37.30%
     },
     // Umbrales más estrictos para código de seguridad
     './utils/auth-storage.ts': {
