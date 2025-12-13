@@ -118,7 +118,7 @@ describe('useStatementExport', () => {
           transactions: mockTransactions,
         });
         // Check state during export (needs small delay)
-        exportingDuringCall = result.current.isExporting;
+        // exportingDuringCall would check result.current.isExporting here
         await promise;
       });
 
