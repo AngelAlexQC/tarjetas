@@ -1,5 +1,5 @@
-# Workflow reutilizable para análisis de SonarQube
-name: Reusable SonarQube Analysis
+# Workflow reutilizable para análisis de SonarCloud
+name: Reusable SonarCloud Analysis
 
 on:
   workflow_call:
@@ -22,12 +22,10 @@ on:
     secrets:
       SONAR_TOKEN:
         required: true
-      SONAR_HOST_URL:
-        required: true
 
 jobs:
   analyze:
-    name: SonarQube Analysis
+    name: SonarCloud Analysis
     runs-on: ubuntu-latest
 
     steps:
@@ -50,15 +48,8 @@ jobs:
         run: npm run test:coverage
         continue-on-error: true
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v3
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: Wait for Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@v1
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        continue-on-error: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

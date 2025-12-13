@@ -1,4 +1,4 @@
-# Workflow reutilizable para generación de PDF
+# Workflow reutilizable para generación de PDF desde SonarCloud
 name: Reusable PDF Report Generator
 
 on:
@@ -14,19 +14,8 @@ on:
         required: false
         type: number
         default: 30
-      dockerfile-path:
-        description: 'Path to Dockerfile'
-        required: false
-        type: string
-        default: 'Dockerfile.sonar-report'
     secrets:
       SONAR_TOKEN:
-        required: true
-      SONAR_HOST_URL:
-        required: true
-      SONAR_PROJECT_KEY:
-        required: true
-      SONAR_PROJECT_NAME:
         required: true
 
 jobs:
@@ -38,24 +27,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build PDF Generator Image
-        run: docker build -f ${{ inputs.dockerfile-path }} -t sonar-report-generator .
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Create output directory
-        run: mkdir -p output
+      - name: Install dependencies for PDF generation
+        run: npm install puppeteer axios
+
+      - name: Wait for SonarCloud to process analysis
+        run: sleep 30
 
       - name: Generate PDF Report
+        env:
+          SONAR_URL: https://sonarcloud.io
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: LibelulaSoft_Tarjetas
+          SONAR_PROJECT_NAME: LibelulaSoft Tarjetas
+          SONAR_PROJECT_VERSION: ${{ inputs.project-version }}
+          OUTPUT_DIR: ${{ github.workspace }}/output
         run: |
-          docker run --rm \
-            --network host \
-            -e SONAR_URL=${{ secrets.SONAR_HOST_URL }} \
-            -e SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} \
-            -e SONAR_PROJECT_KEY=${{ secrets.SONAR_PROJECT_KEY }} \
-            -e SONAR_PROJECT_NAME="${{ secrets.SONAR_PROJECT_NAME }}" \
-            -e SONAR_PROJECT_VERSION=${{ inputs.project-version }} \
-            -e OUTPUT_DIR=/app/output \
-            -v $(pwd)/output:/app/output \
-            sonar-report-generator
+          mkdir -p output
+          node scripts/generate-professional-sonar-report.js
 
       - name: Upload PDF Report
         uses: actions/upload-artifact@v4

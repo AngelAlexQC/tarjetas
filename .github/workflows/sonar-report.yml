@@ -1,5 +1,5 @@
 # Workflow principal que orquesta análisis y generación de reportes
-name: SonarQube Analysis & PDF Report
+name: SonarCloud Analysis & PDF Report
 
 on:
   push:
@@ -20,7 +20,7 @@ on:
         type: boolean
 
 jobs:
-  # Job 1: Análisis de SonarQube (reutilizable)
+  # Job 1: Análisis de SonarCloud
   sonar-analysis:
     uses: ./.github/workflows/reusable-sonar-analysis.yml
     with:
@@ -28,9 +28,8 @@ jobs:
       run-tests: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_tests }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-  # Job 2: Generación de PDF (reutilizable)
+  # Job 2: Generación de PDF (solo en push a main/develop)
   generate-pdf:
     needs: sonar-analysis
     if: |
@@ -42,6 +41,3 @@ jobs:
       artifact-retention-days: 30
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-      SONAR_PROJECT_NAME: ${{ secrets.SONAR_PROJECT_NAME }}
