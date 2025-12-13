@@ -579,8 +579,8 @@ async function generateProfessionalReport() {
 
     // Dynamic Filename
     const dateStr = new Date().toISOString().split('T')[0];
-    const fileName = \`sonar-report-\${dateStr}-\${RUN_ID}.pdf\`;
-    
+    const fileName = `sonar-report-${dateStr}-${RUN_ID}.pdf`;
+
     // Generar contenido HTML
     const htmlContent = generateProfessionalHTML(metrics, issues, topFiles, trends, criticalIssues);
     const htmlPath = path.resolve(OUTPUT_DIR, 'sonar-professional-report.html');
@@ -593,13 +593,13 @@ async function generateProfessionalReport() {
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
-    
+
     const page = await browser.newPage();
-    await page.goto(\`file://\${htmlPath}\`, { 
+    await page.goto(`file://${htmlPath}`, {
       waitUntil: 'networkidle0',
-      timeout: 60000 
+      timeout: 60000
     });
-    
+
     const pdfPath = path.resolve(OUTPUT_DIR, fileName);
     await page.pdf({
       path: pdfPath,
@@ -607,10 +607,10 @@ async function generateProfessionalReport() {
       printBackground: true,
       margin: { top: '0', bottom: '0', left: '0', right: '0' }
     });
-    
+
     await browser.close();
-    console.log(\`-> ÉXITO: Reporte creado en \${pdfPath}\`);
-    
+    console.log(`-> ÉXITO: Reporte creado en ${pdfPath}`);
+
   } catch (error) {
     console.error('!!! ERROR FATAL !!!', error);
     process.exit(1);
