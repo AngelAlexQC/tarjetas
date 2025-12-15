@@ -4,8 +4,32 @@
  * Configuración global para los tests.
  */
 
+// Mock de Expo Winter (debe ir primero antes de cualquier otra importación)
+jest.mock('expo/src/winter/installGlobal', () => ({}));
+jest.mock('expo/src/winter/runtime.native', () => ({}));
+
 // Mock de react-native-gesture-handler (debe ir primero)
 import 'react-native-gesture-handler/jestSetup';
+
+// Helper para crear layout animations con métodos encadenables
+const createLayoutAnimation = () => {
+  const animation = {
+    duration: jest.fn().mockReturnThis(),
+    delay: jest.fn().mockReturnThis(),
+    easing: jest.fn().mockReturnThis(),
+    springify: jest.fn().mockReturnThis(),
+    damping: jest.fn().mockReturnThis(),
+    mass: jest.fn().mockReturnThis(),
+    stiffness: jest.fn().mockReturnThis(),
+    overshootClamping: jest.fn().mockReturnThis(),
+    energyThreshold: jest.fn().mockReturnThis(),
+    randomDelay: jest.fn().mockReturnThis(),
+    reduceMotion: jest.fn().mockReturnThis(),
+    withInitialValues: jest.fn().mockReturnThis(),
+    withCallback: jest.fn().mockReturnThis(),
+  };
+  return animation;
+};
 
 // Mock de react-native-reanimated
 // Este mock debe definir todo inline porque jest.mock se ejecuta antes que cualquier import
@@ -17,6 +41,26 @@ jest.mock('react-native-reanimated', () => {
   const Image = require('react-native').Image;
   const ScrollView = require('react-native').ScrollView;
   const FlatList = require('react-native').FlatList;
+  
+  // Helper para crear layout animations con métodos encadenables
+  const createLayoutAnimation = () => {
+    const animation = {
+      duration: jest.fn().mockReturnThis(),
+      delay: jest.fn().mockReturnThis(),
+      easing: jest.fn().mockReturnThis(),
+      springify: jest.fn().mockReturnThis(),
+      damping: jest.fn().mockReturnThis(),
+      mass: jest.fn().mockReturnThis(),
+      stiffness: jest.fn().mockReturnThis(),
+      overshootClamping: jest.fn().mockReturnThis(),
+      energyThreshold: jest.fn().mockReturnThis(),
+      randomDelay: jest.fn().mockReturnThis(),
+      reduceMotion: jest.fn().mockReturnThis(),
+      withInitialValues: jest.fn().mockReturnThis(),
+      withCallback: jest.fn().mockReturnThis(),
+    };
+    return animation;
+  };
   
   return {
     __esModule: true,
@@ -99,18 +143,18 @@ jest.mock('react-native-reanimated', () => {
       IDENTITY: 'identity',
     },
     
-    // Layout animations
-    FadeIn: { duration: jest.fn().mockReturnThis() },
-    FadeOut: { duration: jest.fn().mockReturnThis() },
-    FadeInUp: { duration: jest.fn().mockReturnThis() },
-    FadeInDown: { duration: jest.fn().mockReturnThis() },
-    FadeOutUp: { duration: jest.fn().mockReturnThis() },
-    FadeOutDown: { duration: jest.fn().mockReturnThis() },
-    SlideInRight: { duration: jest.fn().mockReturnThis() },
-    SlideOutRight: { duration: jest.fn().mockReturnThis() },
-    SlideInLeft: { duration: jest.fn().mockReturnThis() },
-    SlideOutLeft: { duration: jest.fn().mockReturnThis() },
-    Layout: { duration: jest.fn().mockReturnThis() },
+    // Layout animations - con encadenamiento de métodos
+    FadeIn: createLayoutAnimation(),
+    FadeOut: createLayoutAnimation(),
+    FadeInUp: createLayoutAnimation(),
+    FadeInDown: createLayoutAnimation(),
+    FadeOutUp: createLayoutAnimation(),
+    FadeOutDown: createLayoutAnimation(),
+    SlideInRight: createLayoutAnimation(),
+    SlideOutRight: createLayoutAnimation(),
+    SlideInLeft: createLayoutAnimation(),
+    SlideOutLeft: createLayoutAnimation(),
+    Layout: createLayoutAnimation(),
     
     // Animated components
     createAnimatedComponent: (Component: any) => Component,

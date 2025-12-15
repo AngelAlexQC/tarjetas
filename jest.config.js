@@ -2,6 +2,8 @@
 module.exports = {
   preset: 'jest-expo',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  // Agregar mocks globales antes del setup
+  setupFiles: ['<rootDir>/jest.polyfills.js'],
   testMatch: [
     '**/__tests__/**/*.(test|spec).[jt]s?(x)',
     '**/*.(test|spec).[jt]s?(x)',
@@ -12,7 +14,7 @@ module.exports = {
     '/.expo/',
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|react-native-reanimated)',
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/(?!.*winter)|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|react-native-reanimated)',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
