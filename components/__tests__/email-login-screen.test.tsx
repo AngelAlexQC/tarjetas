@@ -66,7 +66,7 @@ jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: jest.fn(() => ({ top: 0, bottom: 0, left: 0, right: 0 })),
 }));
 
-jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 // Mock de componentes UI
 jest.mock('@/components/ui/auth-logo-header', () => ({

@@ -49,20 +49,7 @@ jest.mock('expo-splash-screen', () => ({
   hideAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('react-native-reanimated', () => {
-  const Reanimated = jest.requireActual('react-native-reanimated/mock');
-  
-  // Patch default export
-  Reanimated.default.call = () => {};
-  Reanimated.default.createAnimatedComponent = (component: any) => component;
-
-  return {
-    ...Reanimated,
-    __esModule: true,
-    default: Reanimated.default,
-    runOnJS: (fn: any) => fn,
-  };
-});
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 jest.mock('expo-blur', () => ({
   BlurView: ({ children }: { children: React.ReactNode }) => children,

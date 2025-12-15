@@ -76,14 +76,7 @@ jest.mock('react-native-safe-area-context', () => ({
   SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  Reanimated.useSharedValue = jest.fn((initialValue) => ({ value: initialValue }));
-  Reanimated.useAnimatedStyle = jest.fn(() => ({}));
-  Reanimated.withSpring = jest.fn((val) => val);
-  return Reanimated;
-});
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 jest.mock('expo-blur', () => ({
   BlurView: ({ children }: { children: React.ReactNode }) => children,

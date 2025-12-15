@@ -65,7 +65,7 @@ jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
 }));
 
-jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 // Mock de componentes UI
 jest.mock('@/components/ui/auth-logo-header', () => ({
