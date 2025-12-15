@@ -2,14 +2,14 @@ import { useAppTheme } from '@/hooks/use-app-theme';
 import type { Card } from '@/repositories';
 import { formatCurrency } from '@/utils/formatters/currency';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
-    Dimensions,
     Modal,
     Platform,
     ScrollView,
     TouchableWithoutFeedback,
     View,
+    useWindowDimensions,
 } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,8 +18,6 @@ import { createStyles } from './insurance-detail-modal-styles';
 import { ModalHeader } from './modal-header';
 import { ModalContent } from './modal-content';
 import { ModalFooter } from './modal-footer';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface InsuranceDetailModalProps {
   insurance: Insurance | null;
@@ -50,23 +48,27 @@ export function InsuranceDetailModal({
 }: InsuranceDetailModalProps) {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
-
-  if (!insurance) return null;
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   // Calcular dimensiones responsivas
   const isWeb = Platform.OS === 'web';
-  const isLargeScreen = SCREEN_WIDTH > 768;
-  const modalMaxWidth = isLargeScreen ? 480 : SCREEN_WIDTH;
-  const modalMaxHeight = isLargeScreen ? SCREEN_HEIGHT * 0.85 : SCREEN_HEIGHT * 0.85;
+  const isLargeScreen = screenWidth > 768;
+  const modalMaxWidth = isLargeScreen ? 480 : screenWidth;
+  const modalMaxHeight = screenHeight * 0.85;
 
-  const formatAmount = (amount: number): string => {
-    return formatCurrency(amount, {
-      locale: 'en-US',
-      currency: insurance.currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
-  };
+  const formatAmount = useMemo(() => {
+    if (!insurance) return (amount: number) => String(amount);
+    return (amount: number): string => {
+      return formatCurrency(amount, {
+        locale: 'en-US',
+        currency: insurance.currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+    };
+  }, [insurance]);
+
+  if (!insurance) return null;
 
   const styles = createStyles({
     theme,
