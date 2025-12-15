@@ -4,20 +4,20 @@ import { formatCurrency } from '@/utils/formatters/currency';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 import {
-    Modal,
-    Platform,
-    ScrollView,
-    TouchableWithoutFeedback,
-    View,
-    useWindowDimensions,
+  Modal,
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
+  View,
+  useWindowDimensions,
 } from 'react-native';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Insurance } from './insurance-generator';
 import { createStyles } from './insurance-detail-modal-styles';
-import { ModalHeader } from './modal-header';
+import { Insurance } from './insurance-generator';
 import { ModalContent } from './modal-content';
 import { ModalFooter } from './modal-footer';
+import { ModalHeader } from './modal-header';
 
 interface InsuranceDetailModalProps {
   insurance: Insurance | null;
