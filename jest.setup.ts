@@ -4,44 +4,135 @@
  * Configuración global para los tests.
  */
 
+// Mock de react-native-gesture-handler (debe ir primero)
+import 'react-native-gesture-handler/jestSetup';
+
 // Mock de react-native-reanimated
-// Mock de react-native-reanimated
+// Este mock debe definir todo inline porque jest.mock se ejecuta antes que cualquier import
 jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
+  const React = require('react');
   
-  // Enhance the mock
-  Reanimated.default.call = () => {};
-  
-  // Properly type runOnJS mock
-  Reanimated.runOnJS = jest.fn((fn: (...args: any[]) => any) => fn);
+  const View = require('react-native').View;
+  const Text = require('react-native').Text;
+  const Image = require('react-native').Image;
+  const ScrollView = require('react-native').ScrollView;
+  const FlatList = require('react-native').FlatList;
   
   return {
-    ...Reanimated,
-    runOnJS: jest.fn((fn: (...args: any[]) => any) => fn),
-    useSharedValue: jest.fn((val: any) => ({ value: val })),
-    useAnimatedStyle: jest.fn((fn: () => any) => fn()),
-    useAnimatedProps: jest.fn((fn: () => any) => fn()),
-    useDerivedValue: jest.fn((fn: () => any) => ({ value: fn() })),
-    withTiming: jest.fn((toValue: any, config: any, callback: any) => {
+    __esModule: true,
+    default: {
+      call: jest.fn(),
+      createAnimatedComponent: (Component: any) => Component,
+      View,
+      Text,
+      Image,
+      ScrollView,
+      FlatList,
+    },
+    // Hooks
+    useSharedValue: jest.fn((initialValue: any) => ({ value: initialValue })),
+    useAnimatedStyle: jest.fn((styleFactory: () => any) => {
+      try { return styleFactory(); } catch { return {}; }
+    }),
+    useAnimatedProps: jest.fn((propsFactory: () => any) => {
+      try { return propsFactory(); } catch { return {}; }
+    }),
+    useDerivedValue: jest.fn((valueFactory: () => any) => {
+      try { return { value: valueFactory() }; } catch { return { value: undefined }; }
+    }),
+    useAnimatedRef: jest.fn(() => ({ current: null })),
+    useAnimatedScrollHandler: jest.fn(() => jest.fn()),
+    useAnimatedGestureHandler: jest.fn(() => ({})),
+    useAnimatedReaction: jest.fn(),
+    
+    // Worklet helpers
+    runOnJS: jest.fn((fn: any) => fn),
+    runOnUI: jest.fn((fn: any) => fn),
+    
+    // Animations
+    withTiming: jest.fn((toValue: any, _config?: any, callback?: any) => {
       if (callback) callback(true);
       return toValue;
     }),
     withSpring: jest.fn((toValue: any) => toValue),
-    withDelay: jest.fn((_: any, anim: any) => anim),
-    withSequence: jest.fn((...args: any[]) => args[args.length - 1]),
-    withRepeat: jest.fn((anim: any) => anim),
-    interpolate: jest.fn(() => 0),
+    withDelay: jest.fn((_delay: any, animation: any) => animation),
+    withSequence: jest.fn((...animations: any[]) => animations[animations.length - 1]),
+    withRepeat: jest.fn((animation: any) => animation),
+    withDecay: jest.fn(() => 0),
+    cancelAnimation: jest.fn(),
+    
+    // Interpolation
+    interpolate: jest.fn((value: any, inputRange: any, outputRange: any) => {
+      if (typeof value === 'number' && Array.isArray(outputRange) && outputRange.length > 0) {
+        return outputRange[0];
+      }
+      return 0;
+    }),
+    interpolateColor: jest.fn(() => 'transparent'),
+    
+    // Easing
     Easing: {
-      bezier: () => 0,
-      in: () => 0,
-      out: () => 0,
-      inOut: () => 0,
-      ease: () => 0,
-      linear: () => 0,
+      linear: jest.fn((t: any) => t),
+      ease: jest.fn((t: any) => t),
+      bezier: jest.fn(() => (t: any) => t),
+      in: jest.fn((easing: any) => easing),
+      out: jest.fn((easing: any) => easing),
+      inOut: jest.fn((easing: any) => easing),
+      poly: jest.fn(() => (t: any) => t),
+      sin: jest.fn((t: any) => t),
+      exp: jest.fn((t: any) => t),
+      circle: jest.fn((t: any) => t),
+      back: jest.fn(() => (t: any) => t),
+      bounce: jest.fn((t: any) => t),
+      elastic: jest.fn(() => (t: any) => t),
     },
+    
+    // Extrapolation
     Extrapolation: {
       CLAMP: 'clamp',
+      EXTEND: 'extend',
+      IDENTITY: 'identity',
     },
+    Extrapolate: {
+      CLAMP: 'clamp',
+      EXTEND: 'extend',
+      IDENTITY: 'identity',
+    },
+    
+    // Layout animations
+    FadeIn: { duration: jest.fn().mockReturnThis() },
+    FadeOut: { duration: jest.fn().mockReturnThis() },
+    FadeInUp: { duration: jest.fn().mockReturnThis() },
+    FadeInDown: { duration: jest.fn().mockReturnThis() },
+    FadeOutUp: { duration: jest.fn().mockReturnThis() },
+    FadeOutDown: { duration: jest.fn().mockReturnThis() },
+    SlideInRight: { duration: jest.fn().mockReturnThis() },
+    SlideOutRight: { duration: jest.fn().mockReturnThis() },
+    SlideInLeft: { duration: jest.fn().mockReturnThis() },
+    SlideOutLeft: { duration: jest.fn().mockReturnThis() },
+    Layout: { duration: jest.fn().mockReturnThis() },
+    
+    // Animated components
+    createAnimatedComponent: (Component: any) => Component,
+    
+    // Animated versions of RN components  
+    Animated: {
+      View,
+      Text,
+      Image,
+      ScrollView,
+      FlatList,
+      createAnimatedComponent: (Component: any) => Component,
+    },
+    
+    // Misc
+    measure: jest.fn(),
+    scrollTo: jest.fn(),
+    setGestureState: jest.fn(),
+    makeMutable: jest.fn((value: any) => ({ value })),
+    
+    // Setup for testing (no-op since we're mocking everything)
+    setUpTests: jest.fn(),
   };
 });
 
