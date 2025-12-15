@@ -45,9 +45,18 @@ test-results.txt
 test-coverage-output.txt
 final-coverage-report.txt
 
+# Logs temporales
+*_log.txt
+log.txt
+error_log.txt
+failed_log.txt
+full_log.txt
+
 # SonarQube Reports
 sonar-report.html
 sonar-report.pdf
+sonar-professional-report.html
+sonar-professional-report.pdf
 .scannerwork/
 reports/
 *.docx
@@ -59,6 +68,8 @@ Dockerfile.sonar-report
 *RESEARCH*.md
 *_RESEARCH.md
 *_ANALISIS.md
+CODIGO_NO_USADO_ANALISIS.md
+SONAR_ISSUES_RESEARCH.md
 
 # Scripts temporales (mantener generate-professional-sonar-report.js)
 scripts/analyze-unused-code.js
