@@ -100,7 +100,7 @@ jobs:
         with:
           project: 'financiero'
           path: '.'
-          format: 'HTML,JSON,SARIF'
+          format: 'HTML'
           out: 'reports'
           args: >
             --enableRetired
@@ -108,6 +108,8 @@ jobs:
             --nodeAuditSkipDevDependencies
             --failOnCVSS 8
             --suppression .dependency-check-suppression.xml
+            --format JSON
+            --format SARIF
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         continue-on-error: true
