@@ -3,17 +3,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 import { CircularProgress } from '../circular-progress';
 
-// Mock react-native-reanimated
-jest.mock('react-native-reanimated', () => {
-  return {
-    ...jest.requireActual('react-native-reanimated/mock'),
-    useSharedValue: jest.fn(() => ({ value: 0 })),
-    useAnimatedProps: jest.fn(() => ({})),
-    useAnimatedStyle: jest.fn(() => ({})),
-    withSpring: jest.fn((value) => value),
-    createAnimatedComponent: jest.fn((component) => component),
-  };
-});
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 // Mock useAppTheme for ThemedText
 jest.mock('@/hooks/use-app-theme');

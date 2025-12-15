@@ -19,23 +19,7 @@ jest.mock('@/hooks/use-app-theme', () => ({
   })),
 }));
 
-jest.mock('react-native-reanimated', () => {
-  return {
-    ...jest.requireActual('react-native-reanimated/mock'),
-    useSharedValue: jest.fn(() => ({ value: 0 })),
-    useAnimatedProps: jest.fn(() => ({})),
-    useAnimatedStyle: jest.fn(() => ({})),
-    withRepeat: jest.fn((animation) => animation),
-    withTiming: jest.fn((value) => value),
-    withSequence: jest.fn((...animations) => animations[0]),
-    createAnimatedComponent: jest.fn((component) => component),
-    Easing: {
-      inOut: jest.fn((fn) => fn),
-      sin: jest.fn(),
-      ease: jest.fn(),
-    },
-  };
-});
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 describe('LoadingScreen', () => {
   beforeEach(() => {

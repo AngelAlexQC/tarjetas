@@ -37,27 +37,7 @@ jest.mock('expo-calendar', () => ({
   CalendarAccessLevel: { OWNER: 'owner', EDITOR: 'editor' },
 }));
 
-jest.mock('react-native-reanimated', () => {
-  return {
-    ...jest.requireActual('react-native-reanimated/mock'),
-    useSharedValue: jest.fn(() => ({ value: 0 })),
-    useAnimatedProps: jest.fn(() => ({})),
-    useAnimatedStyle: jest.fn(() => ({})),
-    withTiming: jest.fn((value, _config, callback) => {
-      if (callback) callback(true);
-      return value;
-    }),
-    withSpring: jest.fn((value) => value),
-    runOnJS: jest.fn((fn) => fn),
-    FadeIn: { duration: () => ({ delay: () => ({}) }) },
-    FadeOut: { duration: () => ({}) },
-    Easing: {
-      linear: 'linear',
-      inOut: jest.fn((fn) => fn),
-    },
-    createAnimatedComponent: jest.fn((component) => component),
-  };
-});
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: jest.fn(() => ({

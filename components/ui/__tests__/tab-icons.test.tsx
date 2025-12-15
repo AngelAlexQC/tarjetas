@@ -2,15 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { HomeIcon, CardsIcon, SettingsIcon } from '../tab-icons';
 
-jest.mock('react-native-reanimated', () => {
-  return {
-    ...jest.requireActual('react-native-reanimated/mock'),
-    useSharedValue: jest.fn(() => ({ value: 0 })),
-    useAnimatedStyle: jest.fn(() => ({})),
-    withSpring: jest.fn((value) => value),
-    withTiming: jest.fn((value) => value),
-  };
-});
+// react-native-reanimated está mockeado globalmente en jest.setup.ts
 
 describe('TabIcons', () => {
   describe('HomeIcon', () => {
