@@ -5,11 +5,11 @@
  */
 
 // Mock de Expo Winter (debe ir primero antes de cualquier otra importación)
-jest.mock('expo/src/winter/installGlobal', () => ({}));
-jest.mock('expo/src/winter/runtime.native', () => ({}));
-
 // Mock de react-native-gesture-handler (debe ir primero)
 import 'react-native-gesture-handler/jestSetup';
+
+jest.mock('expo/src/winter/installGlobal', () => ({}));
+jest.mock('expo/src/winter/runtime.native', () => ({}));
 
 // Mock de react-native-reanimated
 // Este mock debe definir todo inline porque jest.mock se ejecuta antes que cualquier import
