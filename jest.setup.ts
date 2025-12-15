@@ -11,30 +11,9 @@ jest.mock('expo/src/winter/runtime.native', () => ({}));
 // Mock de react-native-gesture-handler (debe ir primero)
 import 'react-native-gesture-handler/jestSetup';
 
-// Helper para crear layout animations con métodos encadenables
-const createLayoutAnimation = () => {
-  const animation = {
-    duration: jest.fn().mockReturnThis(),
-    delay: jest.fn().mockReturnThis(),
-    easing: jest.fn().mockReturnThis(),
-    springify: jest.fn().mockReturnThis(),
-    damping: jest.fn().mockReturnThis(),
-    mass: jest.fn().mockReturnThis(),
-    stiffness: jest.fn().mockReturnThis(),
-    overshootClamping: jest.fn().mockReturnThis(),
-    energyThreshold: jest.fn().mockReturnThis(),
-    randomDelay: jest.fn().mockReturnThis(),
-    reduceMotion: jest.fn().mockReturnThis(),
-    withInitialValues: jest.fn().mockReturnThis(),
-    withCallback: jest.fn().mockReturnThis(),
-  };
-  return animation;
-};
-
 // Mock de react-native-reanimated
 // Este mock debe definir todo inline porque jest.mock se ejecuta antes que cualquier import
 jest.mock('react-native-reanimated', () => {
-  const React = require('react');
   
   const View = require('react-native').View;
   const Text = require('react-native').Text;
