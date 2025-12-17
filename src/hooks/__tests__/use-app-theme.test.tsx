@@ -38,12 +38,17 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
   <TenantThemeProvider>{children}</TenantThemeProvider>
 );
 
+// Import mock at top level
+const mockUseColorScheme = jest.fn();
+jest.mock('@/hooks/use-color-scheme', () => ({
+  useColorScheme: mockUseColorScheme,
+}));
+
 describe('useAppTheme', () => {
-  const { useColorScheme } = require('@/hooks/use-color-scheme');
 
   beforeEach(() => {
     jest.clearAllMocks();
-    useColorScheme.mockReturnValue('light');
+    mockUseColorScheme.mockReturnValue('light');
   });
 
   describe('initialization', () => {
@@ -147,7 +152,7 @@ describe('useAppTheme', () => {
 
   describe('dark mode', () => {
     beforeEach(() => {
-      useColorScheme.mockReturnValue('dark');
+      mockUseColorScheme.mockReturnValue('dark');
     });
 
     it('should return dark mode', () => {

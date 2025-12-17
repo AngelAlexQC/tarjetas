@@ -4,7 +4,6 @@
 
 import { HttpClient } from '../http-client';
 import { authStorage } from '@/utils/auth-storage';
-import { API_CONFIG } from '../config';
 
 // Mock authStorage
 jest.mock('@/utils/auth-storage', () => ({
@@ -418,7 +417,7 @@ describe('HttpClient', () => {
       // This test is tricky with fake timers, but we can verify the abort controller is used
       mockFetch.mockImplementation(() => new Promise(() => {})); // Never resolves
 
-      const promise = httpClient.get('/test', { timeout: 1000 });
+      const _promise = httpClient.get('/test', { timeout: 1000 });
 
       // Advance timers to trigger timeout
       jest.advanceTimersByTime(1001);

@@ -12,6 +12,11 @@ const log = loggers.theme;
 // Tipo unificado que soporta tanto el formato antiguo como el nuevo
 type TenantThemeType = TenantTheme | Tenant;
 
+// Type guard para distinguir entre formatos
+function isTenant(theme: TenantThemeType): theme is Tenant {
+  return 'branding' in theme && 'features' in theme;
+}
+
 interface TenantThemeContextType {
   currentTheme: TenantThemeType | null;
   colorScheme: 'light' | 'dark';
@@ -53,7 +58,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
               log.warn('Saved tenant no longer exists, clearing');
               await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
             }
-          } catch (err) {
+          } catch {
             // Si falla la verificación, usar lo guardado (modo offline)
             log.warn('Could not verify tenant, using cached version');
             setCurrentTheme(parsed);
@@ -129,17 +134,34 @@ export function useTenantTheme() {
 export function useThemedColors() {
   const { currentTheme, colorScheme } = useTenantTheme();
   
-  // Determinar si es formato nuevo o antiguo
-  const branding = currentTheme && 'branding' in currentTheme 
-    ? currentTheme.branding 
-    : {
-        primaryColor: (currentTheme as any)?.mainColor || '#0a7ea4',
-        secondaryColor: (currentTheme as any)?.secondaryColor || '#2196F3',
-        accentColor: (currentTheme as any)?.accentColor || '#FF9800',
-        textOnPrimary: (currentTheme as any)?.textOnPrimary || '#FFFFFF',
-        textOnSecondary: (currentTheme as any)?.textOnSecondary || '#FFFFFF',
-        gradientColors: (currentTheme as any)?.gradientColors || ['#0a7ea4', '#2196F3'],
+  // Determinar si es formato nuevo (Tenant) o antiguo (TenantTheme)
+  const branding = (() => {
+    if (!currentTheme) {
+      return {
+        primaryColor: '#0a7ea4',
+        secondaryColor: '#2196F3',
+        accentColor: '#FF9800',
+        textOnPrimary: '#FFFFFF',
+        textOnSecondary: '#FFFFFF',
+        gradientColors: ['#0a7ea4', '#2196F3'],
       };
+    }
+
+    if (isTenant(currentTheme)) {
+      // Formato nuevo (Tenant con branding)
+      return currentTheme.branding;
+    } else {
+      // Formato antiguo (TenantTheme)
+      return {
+        primaryColor: currentTheme.mainColor,
+        secondaryColor: currentTheme.secondaryColor,
+        accentColor: currentTheme.accentColor,
+        textOnPrimary: currentTheme.textOnPrimary,
+        textOnSecondary: currentTheme.textOnSecondary,
+        gradientColors: currentTheme.gradientColors,
+      };
+    }
+  })();
   
   return {
     primary: branding.primaryColor,

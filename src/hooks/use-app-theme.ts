@@ -14,6 +14,8 @@ import {
 } from '@/constants/design-tokens';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import type { Tenant, TenantBranding } from '@/repositories/schemas/tenant.schema';
+import type { TenantTheme } from '@/constants/tenant-themes';
 
 export type ColorMode = 'light' | 'dark';
 export type GlassIntensity = 'light' | 'medium' | 'heavy';
@@ -34,37 +36,73 @@ export function useAppTheme() {
   const colorScheme = useColorScheme();
   const mode: ColorMode = colorScheme === 'dark' ? 'dark' : 'light';
   
-  // Determinar si es formato nuevo (con branding) o antiguo
-  const isNewFormat = currentTheme && 'branding' in currentTheme;
+  // Helper para obtener branding según el formato
+  const getBranding = (): TenantBranding & { slug: string; name: string; locale: string; currency: string; currencySymbol: string; } => {
+    if (!currentTheme) {
+      return {
+        slug: 'default',
+        name: 'App',
+        logoUrl: '',
+        primaryColor: '#007AFF',
+        secondaryColor: '#2196F3',
+        accentColor: '#FF9800',
+        gradientColors: ['#007AFF', '#2196F3'],
+        textOnPrimary: '#FFFFFF',
+        textOnSecondary: '#FFFFFF',
+        locale: 'en-US',
+        currency: 'USD',
+        currencySymbol: '$',
+      };
+    }
+
+    // Determinar si es formato nuevo (Tenant) o antiguo (TenantTheme)
+    if ('branding' in currentTheme) {
+      // Formato nuevo (Tenant)
+      const tenant = currentTheme as Tenant;
+      return {
+        slug: tenant.slug,
+        name: tenant.name,
+        locale: tenant.locale,
+        currency: tenant.currency,
+        currencySymbol: tenant.currencySymbol,
+        ...tenant.branding,
+      };
+    } else {
+      // Formato antiguo (TenantTheme)
+      const legacy = currentTheme as TenantTheme;
+      return {
+        slug: legacy.slug,
+        name: legacy.name,
+        locale: legacy.locale,
+        currency: legacy.currency,
+        currencySymbol: legacy.currencySymbol,
+        logoUrl: legacy.logoUrl,
+        primaryColor: legacy.mainColor,
+        secondaryColor: legacy.secondaryColor,
+        accentColor: legacy.accentColor,
+        gradientColors: legacy.gradientColors,
+        textOnPrimary: legacy.textOnPrimary,
+        textOnSecondary: legacy.textOnSecondary,
+      };
+    }
+  };
+
+  const branding = getBranding();
   
-  // Colores del tenant actual - soportar ambos formatos
+  // Colores del tenant actual
   const tenant = {
-    slug: currentTheme?.slug || 'default',
-    mainColor: isNewFormat 
-      ? (currentTheme as any).branding.primaryColor 
-      : (currentTheme as any)?.mainColor || '#007AFF',
-    secondaryColor: isNewFormat 
-      ? (currentTheme as any).branding.secondaryColor 
-      : (currentTheme as any)?.secondaryColor || '#2196F3',
-    accentColor: isNewFormat 
-      ? (currentTheme as any).branding.accentColor 
-      : (currentTheme as any)?.accentColor || '#FF9800',
-    name: currentTheme?.name || 'App',
-    logoUrl: isNewFormat 
-      ? (currentTheme as any).branding.logoUrl 
-      : (currentTheme as any)?.logoUrl || '',
-    textOnPrimary: isNewFormat 
-      ? (currentTheme as any).branding.textOnPrimary 
-      : (currentTheme as any)?.textOnPrimary || '#FFFFFF',
-    textOnSecondary: isNewFormat 
-      ? (currentTheme as any).branding.textOnSecondary 
-      : (currentTheme as any)?.textOnSecondary || '#FFFFFF',
-    locale: currentTheme?.locale || 'en-US',
-    currency: currentTheme?.currency || 'USD',
-    currencySymbol: currentTheme?.currencySymbol || '$',
-    gradientColors: isNewFormat 
-      ? (currentTheme as any).branding.gradientColors 
-      : (currentTheme as any)?.gradientColors || ['#007AFF', '#2196F3'],
+    slug: branding.slug,
+    name: branding.name,
+    mainColor: branding.primaryColor,
+    secondaryColor: branding.secondaryColor,
+    accentColor: branding.accentColor,
+    logoUrl: branding.logoUrl,
+    textOnPrimary: branding.textOnPrimary,
+    textOnSecondary: branding.textOnSecondary,
+    locale: branding.locale,
+    currency: branding.currency,
+    currencySymbol: branding.currencySymbol,
+    gradientColors: branding.gradientColors,
   };
 
   // Tokens semánticos según el modo

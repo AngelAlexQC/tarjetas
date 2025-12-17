@@ -20,6 +20,9 @@
  */
 
 // Container y accesos directos
+// Importar RepositoryContainer para tenant accessor
+import { RepositoryContainer } from './container';
+
 export { RepositoryContainer, authRepository$, cardRepository$ } from './container';
 
 // Interfaces (para typing)
@@ -28,9 +31,6 @@ export type { ICardRepository } from './interfaces/card.repository.interface';
 
 // Tipos desde Zod Schemas (fuente única de verdad)
 export * from './schemas';
-
-// Importar RepositoryContainer para tenant accessor
-import { RepositoryContainer } from './container';
 
 // Tenant repository accessor
 export const tenantRepository$ = () => RepositoryContainer.getTenantRepository();

@@ -7,6 +7,7 @@
 
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import type { CardActionType } from '@/constants/card-actions';
+import type { Tenant } from '@/repositories/schemas/tenant.schema';
 
 interface UseFeatures {
   // Features principales
@@ -16,8 +17,8 @@ interface UseFeatures {
   hasInsurance: boolean;
 
   // Configuración de tarjetas
-  allowedCardTypes: Array<'credit' | 'debit' | 'virtual'>;
-  allowedCardActions: string[];
+  allowedCardTypes: readonly ('credit' | 'debit' | 'virtual')[];
+  allowedCardActions: readonly string[];
   maxCardLimit: number | undefined;
 
   // Seguros
@@ -34,7 +35,7 @@ interface UseFeatures {
 export function useFeatures(): UseFeatures {
   const { currentTheme } = useTenantTheme();
 
-  // Si no hay tenant, retornar features vacías
+  // Si no hay tenant o es formato antiguo (sin features), retornar features vacías
   if (!currentTheme || !('features' in currentTheme)) {
     return {
       hasCards: false,
@@ -50,22 +51,24 @@ export function useFeatures(): UseFeatures {
     };
   }
 
-  const features = (currentTheme as any).features;
+  // Type assertion segura - ya validamos que tiene 'features'
+  const tenant = currentTheme as Tenant;
+  const features = tenant.features;
 
   return {
     // Features principales
-    hasCards: features?.cards?.enabled ?? true,
-    hasTransfers: features?.transfers?.enabled ?? false,
-    hasLoans: features?.loans?.enabled ?? false,
-    hasInsurance: features?.insurance?.enabled ?? false,
+    hasCards: features.cards.enabled,
+    hasTransfers: features.transfers.enabled,
+    hasLoans: features.loans.enabled,
+    hasInsurance: features.insurance.enabled,
 
     // Configuración de tarjetas
-    allowedCardTypes: features?.cards?.allowedTypes ?? ['credit', 'debit', 'virtual'],
-    allowedCardActions: features?.cards?.allowedActions ?? [],
-    maxCardLimit: features?.cards?.maxCreditLimit,
+    allowedCardTypes: features.cards.allowedTypes,
+    allowedCardActions: features.cards.allowedActions,
+    maxCardLimit: features.cards.maxCreditLimit,
 
     // Seguros
-    allowedInsuranceTypes: features?.insurance?.allowedTypes ?? [],
+    allowedInsuranceTypes: features.insurance.allowedTypes,
 
     // Helpers
     isActionAvailable: (action: CardActionType) => {
