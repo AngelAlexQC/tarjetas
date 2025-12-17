@@ -15,15 +15,21 @@ module.exports = {
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|react-native-reanimated)',
   ],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
     '^@test-utils$': '<rootDir>/test-utils',
     '^@test-utils/(.*)$': '<rootDir>/test-utils/$1',
+
+    // Expo SDK 54+ (winter runtime) puede romper en Jest en algunos entornos.
+    // Lo stubbeamos para tests unitarios.
+    '^expo/src/winter/runtime\\.native(\\.ts)?$': '<rootDir>/test-utils/expo-winter.stub.ts',
+    '^expo/src/winter/runtime(\\.ts)?$': '<rootDir>/test-utils/expo-winter.stub.ts',
+    '^expo/src/winter/installGlobal(\\.ts)?$': '<rootDir>/test-utils/expo-winter.stub.ts',
   },
   collectCoverageFrom: [
-    'hooks/**/*.{ts,tsx}',
-    'repositories/**/*.{ts,tsx}',
-    'utils/**/*.{ts,tsx}',
-    'components/**/*.{ts,tsx}',
+    'src/hooks/**/*.{ts,tsx}',
+    'src/repositories/**/*.{ts,tsx}',
+    'src/utils/**/*.{ts,tsx}',
+    'src/components/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/index.ts',
   ],

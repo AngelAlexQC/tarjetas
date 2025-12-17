@@ -22,6 +22,8 @@ interface TenantThemeContextType {
 
 const TenantThemeContext = createContext<TenantThemeContextType | undefined>(undefined);
 
+let hasWarnedMissingProvider = false;
+
 export function TenantThemeProvider({ children }: { children: ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState<TenantThemeType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -92,7 +94,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     <TenantThemeContext.Provider
       value={{
         currentTheme: currentTheme || defaultTheme,
-        colorScheme,
+        colorScheme: colorScheme === 'unspecified' ? 'light' : colorScheme,
         setTenant,
         clearTenant,
         isLoading,
@@ -105,8 +107,20 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTenantTheme() {
   const context = useContext(TenantThemeContext);
+  const fallbackColorScheme = useRNColorScheme() ?? 'light';
   if (context === undefined) {
-    throw new Error('useTenantTheme must be used within a TenantThemeProvider');
+    if (!hasWarnedMissingProvider) {
+      hasWarnedMissingProvider = true;
+      log.warn('useTenantTheme used outside TenantThemeProvider; falling back to defaultTheme');
+    }
+
+    return {
+      currentTheme: defaultTheme,
+      colorScheme: fallbackColorScheme,
+      setTenant: async () => {},
+      clearTenant: async () => {},
+      isLoading: false,
+    };
   }
   return context;
 }

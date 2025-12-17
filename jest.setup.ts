@@ -4,6 +4,14 @@
  * Configuración global para los tests.
  */
 
+// Expo SDK 54+ incluye el runtime "winter" (import.meta registry) que no es
+// necesario para unit tests y puede romper en Jest con:
+// "You are trying to import a file outside of the scope of the test code."
+// Lo deshabilitamos mockeando sus módulos internos.
+jest.mock('expo/src/winter/runtime.native', () => ({}));
+jest.mock('expo/src/winter/runtime', () => ({}));
+jest.mock('expo/src/winter/installGlobal', () => ({}));
+
 // Mock de react-native-reanimated
 jest.mock('react-native-reanimated', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
