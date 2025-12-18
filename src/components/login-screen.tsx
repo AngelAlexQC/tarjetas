@@ -7,16 +7,17 @@ import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme, useResponsiveLayout } from '@/hooks';
 import { loggers } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
+import { ImageBackground } from 'expo-image';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +29,7 @@ interface LoginScreenProps {
   onForgotPassword?: () => void;
   onRegister?: () => void;
   onEmailLogin?: () => void;
+  onRecoverUser?: () => void;
 }
 
 // Hook personalizado para la lógica de login
@@ -90,7 +92,8 @@ export function LoginScreen({
   onLoginSuccess, 
   onForgotPassword, 
   onRegister, 
-  onEmailLogin 
+  onEmailLogin,
+  onRecoverUser
 }: LoginScreenProps) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();
@@ -142,12 +145,30 @@ export function LoginScreen({
     }
   };
 
+  const handleRecoverUser = () => {
+    if (onRecoverUser) {
+      onRecoverUser();
+    } else {
+      Alert.alert(
+        'Recuperar Usuario',
+        'Contacta a tu institución.',
+        [{ text: 'Entendido' }]
+      );
+    }
+  };
+
   const containerMaxWidth = Math.min(layout.screenWidth * 0.9, 420);
+  const bgImage = (theme.tenant as any).branding?.images?.loginBackground;
 
   return (
+    <ImageBackground
+      source={bgImage ? { uri: bgImage } : undefined}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      contentFit="cover"
+    >
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, !bgImage && { backgroundColor: theme.colors.background }]}
     >
       <ScrollView
         contentContainerStyle={[
@@ -159,6 +180,7 @@ export function LoginScreen({
       >
         <Animated.View entering={FadeInUp.duration(600)} style={[styles.content, { maxWidth: containerMaxWidth }]}>
           <AuthLogoHeader size="large" showSubtitle />
+
           <LoginForm
             username={username}
             setUsername={(text) => { setUsername(text); setError(''); }}
@@ -174,10 +196,12 @@ export function LoginScreen({
             onForgotPassword={handleForgotPassword}
             onRegister={handleRegister}
             onEmailLogin={handleEmailLogin}
+            onRecoverUser={handleRecoverUser}
           />
         </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
@@ -197,11 +221,12 @@ interface LoginFormProps {
   onForgotPassword: () => void;
   onRegister: () => void;
   onEmailLogin: () => void;
+  onRecoverUser: () => void;
 }
 
 function LoginForm({
   username, setUsername, password, setPassword, rememberUser, setRememberUser,
-  secureTextEntry, setSecureTextEntry, isLoading, error, onLogin, onForgotPassword, onRegister, onEmailLogin,
+  secureTextEntry, setSecureTextEntry, isLoading, error, onLogin, onForgotPassword, onRegister, onEmailLogin, onRecoverUser
 }: LoginFormProps) {
   const theme = useAppTheme();
 
@@ -243,6 +268,10 @@ function LoginForm({
         <Pressable onPress={onForgotPassword}>
           <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>Olvidé mi contraseña</ThemedText>
         </Pressable>
+        <ThemedText style={{ marginHorizontal: 8, color: theme.colors.textSecondary }}>|</ThemedText>
+        <Pressable onPress={onRecoverUser}>
+          <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>Olvidé mi usuario</ThemedText>
+        </Pressable>
       </View>
 
       <Pressable onPress={() => setRememberUser(!rememberUser)} style={styles.rememberRow}>
@@ -250,26 +279,32 @@ function LoginForm({
         <ThemedText style={styles.rememberText}>Recordar mi usuario</ThemedText>
       </Pressable>
 
-      <Pressable onPress={onRegister}>
-        <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>Registro</ThemedText>
-      </Pressable>
+      <View style={styles.buttonsContainer}>
+        <ThemedButton
+          title="Registrarme"
+          onPress={onRegister}
+          variant="primary"
+          style={styles.registerButton}
+        />
 
-      <ThemedButton
-        title="Ingrese con tu email"
-        onPress={onEmailLogin}
-        variant="outline"
-        icon={<Mail size={20} color={theme.tenant.mainColor} />}
-        style={styles.emailButton}
-      />
+        <ThemedButton
+          title="Iniciar Sesión"
+          onPress={onLogin}
+          variant="outline"
+          loading={isLoading}
+          disabled={isLoading || !username || !password}
+          style={styles.loginButton}
+        />
 
-      <ThemedButton
-        title="Continuar"
-        onPress={onLogin}
-        variant="primary"
-        loading={isLoading}
-        disabled={isLoading || !username || !password}
-        style={styles.loginButton}
-      />
+        <ThemedButton
+          title="Ingresa con tu email"
+          onPress={onEmailLogin}
+          variant="ghost"
+          icon={<Mail size={16} color={theme.colors.textSecondary} />}
+          style={styles.emailButton}
+          textStyle={{ fontSize: 13, color: theme.colors.textSecondary }}
+        />
+      </View>
     </Animated.View>
   );
 }
@@ -321,10 +356,18 @@ const styles = StyleSheet.create({
   rememberText: {
     fontSize: 14,
   },
-  emailButton: {
-    marginTop: 8,
+  buttonsContainer: {
+    gap: 12,
+    marginTop: 16,
+  },
+  registerButton: {
+    marginBottom: 0,
   },
   loginButton: {
-    marginTop: 8,
+    marginTop: 0,
+  },
+  emailButton: {
+    marginTop: 0,
+    borderWidth: 0,
   },
 });

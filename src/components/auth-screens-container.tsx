@@ -8,6 +8,7 @@ type AuthScreen = 'login' | 'register' | 'forgotPassword' | 'emailLogin';
 
 interface AuthScreensContainerProps {
   onLoginSuccess: () => void;
+  onRecoverUser?: () => void;
 }
 
 /**
@@ -19,7 +20,7 @@ interface AuthScreensContainerProps {
  * - ForgotPassword: Recuperación de contraseña
  * - EmailLogin: Inicio de sesión alternativo con email
  */
-export function AuthScreensContainer({ onLoginSuccess }: AuthScreensContainerProps) {
+export function AuthScreensContainer({ onLoginSuccess, onRecoverUser }: AuthScreensContainerProps) {
   const [currentScreen, setCurrentScreen] = useState<AuthScreen>('login');
 
   const navigateToLogin = useCallback(() => setCurrentScreen('login'), []);
@@ -35,6 +36,7 @@ export function AuthScreensContainer({ onLoginSuccess }: AuthScreensContainerPro
           onForgotPassword={navigateToForgotPassword}
           onRegister={navigateToRegister}
           onEmailLogin={navigateToEmailLogin}
+          onRecoverUser={onRecoverUser}
         />
       );
     case 'register':

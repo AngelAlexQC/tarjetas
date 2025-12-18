@@ -18,6 +18,17 @@ export const TenantBrandingSchema = z.object({
   gradientColors: z.array(z.string()),
   textOnPrimary: z.string(),
   textOnSecondary: z.string(),
+  images: z.object({
+    loginBackground: z.string().url().optional(),
+    cardsBackground: z.string().url().optional(),
+    onboarding: z.array(z.object({
+      title: z.string(),
+      description: z.string(),
+      imageUrl: z.string().url(),
+    })).optional(),
+    maintenance: z.string().url().optional(),
+    settings: z.string().url().optional(),
+  }).optional(),
 });
 
 /**
@@ -39,6 +50,17 @@ export const TenantInsuranceFeaturesSchema = z.object({
 });
 
 /**
+ * Schema de features de autenticación
+ */
+export const TenantAuthFeaturesSchema = z.object({
+  biometric: z.boolean(),
+  pin: z.boolean(),
+  password: z.boolean(),
+  recoveryMethods: z.array(z.string()), // ['email', 'account+dob', 'account+pin']
+  allowedDocumentTypes: z.array(z.string()), // ['CC', 'CE', 'CI', 'PAS', 'NIT', 'RUC', 'TI', 'PEP']
+});
+
+/**
  * Schema de features disponibles por tenant
  */
 export const TenantFeaturesSchema = z.object({
@@ -46,6 +68,7 @@ export const TenantFeaturesSchema = z.object({
   transfers: z.object({ enabled: z.boolean() }),
   loans: z.object({ enabled: z.boolean() }),
   insurance: TenantInsuranceFeaturesSchema,
+  auth: TenantAuthFeaturesSchema.optional(),
 });
 
 /**

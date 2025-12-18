@@ -18,7 +18,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 
-export type AuthFlowScreen = 'loading' | 'onboarding' | 'login' | 'biometric-access' | 'main';
+export type AuthFlowScreen = 'loading' | 'onboarding' | 'name-input' | 'login' | 'recover-user' | 'biometric-access' | 'main';
 
 interface UseAuthFlowState {
   /** Pantalla actual que se debe mostrar */
@@ -30,6 +30,12 @@ interface UseAuthFlowState {
 interface UseAuthFlowReturn extends UseAuthFlowState {
   /** Llamar cuando el onboarding termina */
   handleOnboardingFinish: () => Promise<void>;
+  /** Llamar cuando el usuario ingresa su nombre */
+  handleNameSubmit: (name: string) => Promise<void>;
+  /** Llamar cuando el usuario quiere recuperar su usuario */
+  handleRecoverUser: () => void;
+  /** Llamar cuando el usuario cancela la recuperación */
+  handleRecoverUserCancel: () => void;
   /** Llamar cuando el login es exitoso */
   handleLoginSuccess: () => void;
   /** Llamar cuando la autenticación biométrica es exitosa */
@@ -59,56 +65,30 @@ export function useAuthFlow(): UseAuthFlowReturn {
   const lastBiometricSuccess = useRef<number>(0);
 
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+  const [showNameInput, setShowNameInput] = useState<boolean | null>(null);
   const [showLogin, setShowLogin] = useState(false);
+  const [showRecoverUser, setShowRecoverUser] = useState(false);
   const [showBiometricAccess, setShowBiometricAccess] = useState(false);
   const [showBiometricModal, setShowBiometricModal] = useState(false);
 
-  // Cargar estado de onboarding al inicio
+  // Cargar estado inicial
   useEffect(() => {
-    authStorage.getOnboardingStatus().then(isCompleted => {
-      setShowOnboarding(!isCompleted);
-    });
-  }, []);
-
-  // Manejar AppState para bloqueo biométrico al regresar a la app
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        const timeSinceLastSuccess = Date.now() - lastBiometricSuccess.current;
-        if (isAuthenticated && isBiometricEnabled && timeSinceLastSuccess > TIMING.BIOMETRIC_GRACE_PERIOD) {
-          pauseTour();
-          setShowBiometricAccess(true);
-        }
+    const loadState = async () => {
+      try {
+        const [onboardingCompleted, installationName] = await Promise.all([
+          authStorage.getOnboardingStatus(),
+          authStorage.getInstallationName(),
+        ]);
+        
+        setShowOnboarding(!onboardingCompleted);
+        setShowNameInput(!installationName);
+      } catch (error) {
+        setShowOnboarding(true);
+        setShowNameInput(true);
       }
-      appState.current = nextAppState;
-    });
-
-    return () => {
-      subscription.remove();
     };
-  }, [isAuthenticated, isBiometricEnabled, pauseTour]);
-
-  // Verificar biométrica al inicio si hay sesión guardada
-  useEffect(() => {
-    if (!isAuthLoading && isAuthenticated && isBiometricEnabled && !initialCheckDone.current) {
-      pauseTour();
-      setShowBiometricAccess(true);
-    }
-  }, [isAuthLoading, isAuthenticated, isBiometricEnabled, pauseTour]);
-
-  // Determinar qué pantalla mostrar después del onboarding
-  useEffect(() => {
-    if (showOnboarding === false && !isAuthenticated && !isAuthLoading) {
-      if (isBiometricEnabled && isBiometricAvailable) {
-        setShowBiometricAccess(true);
-      } else {
-        setShowLogin(true);
-      }
-    }
-  }, [showOnboarding, isAuthenticated, isAuthLoading, isBiometricEnabled, isBiometricAvailable]);
+    loadState();
+  }, []);
 
   // Navegación después de la autenticación
   useEffect(() => {
@@ -136,6 +116,22 @@ export function useAuthFlow(): UseAuthFlowReturn {
   const handleOnboardingFinish = useCallback(async () => {
     await authStorage.setOnboardingCompleted();
     setShowOnboarding(false);
+    // showNameInput se mantiene true si no hay nombre guardado
+  }, []);
+
+  const handleNameSubmit = useCallback(async (name: string) => {
+    await authStorage.saveInstallationName(name);
+    setShowNameInput(false);
+    setShowLogin(true);
+  }, []);
+
+  const handleRecoverUser = useCallback(() => {
+    setShowLogin(false);
+    setShowRecoverUser(true);
+  }, []);
+
+  const handleRecoverUserCancel = useCallback(() => {
+    setShowRecoverUser(false);
     setShowLogin(true);
   }, []);
 
@@ -171,13 +167,17 @@ export function useAuthFlow(): UseAuthFlowReturn {
   }, [navigateToMain]);
 
   // Calcular pantalla actual
-  const isLoading = showOnboarding === null || isAuthLoading || isTenantLoading;
+  const isLoading = showOnboarding === null || showNameInput === null || isAuthLoading || isTenantLoading;
   
   let currentScreen: AuthFlowScreen;
   if (isLoading) {
     currentScreen = 'loading';
   } else if (showOnboarding) {
     currentScreen = 'onboarding';
+  } else if (showNameInput) {
+    currentScreen = 'name-input';
+  } else if (showRecoverUser) {
+    currentScreen = 'recover-user';
   } else if (showBiometricAccess) {
     currentScreen = 'biometric-access';
   } else if (showLogin) {
@@ -190,6 +190,9 @@ export function useAuthFlow(): UseAuthFlowReturn {
     currentScreen,
     showBiometricModal,
     handleOnboardingFinish,
+    handleNameSubmit,
+    handleRecoverUser,
+    handleRecoverUserCancel,
     handleLoginSuccess,
     handleBiometricSuccess,
     handleBiometricUsePassword,

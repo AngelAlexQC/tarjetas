@@ -23,6 +23,7 @@ export const UserSchema = z.object({
   avatar: z.string().url().optional(),
   clientNumber: z.string().optional(),
   documentId: z.string().optional(),
+  documentType: z.string().optional(),
 });
 
 // ============================================
@@ -51,6 +52,8 @@ export const RegisterRequestSchema = z.object({
   phone: z.string().min(10, 'Phone is required'),
   username: z.string().min(4, 'Username must be at least 4 characters'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
+  documentType: z.string().optional(),
+  documentId: z.string().optional(),
 });
 
 export const RegisterResponseSchema = z.object({
@@ -73,6 +76,27 @@ export const VerifyEmailResponseSchema = z.object({
 });
 
 // ============================================
+// USER RECOVERY
+// ============================================
+
+export const RecoverUserRequestSchema = z.object({
+  documentType: z.string().min(1, 'Tipo de documento requerido'), // CC, CE, CI, PAS, etc.
+  documentId: z.string().min(1, 'Número de documento requerido'),
+  birthDate: z.string().optional(),
+  pin: z.string().length(4, 'El PIN debe tener 4 dígitos').optional(),
+}).refine(data => {
+  return data.birthDate || data.pin;
+}, {
+  message: "Debes ingresar tu fecha de nacimiento o PIN para verificar tu identidad",
+});
+
+export const RecoverUserResponseSchema = z.object({
+  success: z.boolean(),
+  username: z.string(),
+  maskedEmail: z.string(),
+});
+
+// ============================================
 // PASSWORD RECOVERY
 // ============================================
 
@@ -82,10 +106,16 @@ export const ForgotPasswordRequestSchema = z.object({
   birthDate: z.string().optional(),
   constitutionDate: z.string().optional(),
   cardPin: z.string().length(4, 'El PIN debe tener 4 dígitos').optional(),
+  documentType: z.string().optional(),
+  documentId: z.string().optional(),
 }).refine(data => {
-  return data.email || (data.accountNumber && (data.birthDate || data.constitutionDate || data.cardPin));
+  const hasEmail = !!data.email;
+  const hasAccountData = data.accountNumber && (data.birthDate || data.constitutionDate || data.cardPin);
+  const hasDocData = data.documentType && data.documentId && (data.birthDate || data.cardPin);
+  
+  return hasEmail || hasAccountData || hasDocData;
 }, {
-  message: "Debes ingresar tu correo o tu número de cuenta con datos de verificación",
+  message: "Debes ingresar tu correo o tus datos de cuenta/identificación",
 });
 
 export const ForgotPasswordResponseSchema = z.object({
@@ -163,6 +193,8 @@ export type VerifyEmailResponse = z.infer<typeof VerifyEmailResponseSchema>;
 // Password recovery types
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
 export type ForgotPasswordResponse = z.infer<typeof ForgotPasswordResponseSchema>;
+export type RecoverUserRequest = z.infer<typeof RecoverUserRequestSchema>;
+export type RecoverUserResponse = z.infer<typeof RecoverUserResponseSchema>;
 export type VerifyRecoveryCodeRequest = z.infer<typeof VerifyRecoveryCodeRequestSchema>;
 export type VerifyRecoveryCodeResponse = z.infer<typeof VerifyRecoveryCodeResponseSchema>;
 export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;

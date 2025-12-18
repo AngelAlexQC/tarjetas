@@ -175,4 +175,27 @@ export const authStorage = {
       log.error('Error clearing username:', error);
     }
   },
+
+  /**
+   * Guarda el nombre del usuario de la instalación (persistente)
+   */
+  async saveInstallationName(name: string): Promise<void> {
+    try {
+      await AsyncStorage.setItem('installation_name', name);
+    } catch (error) {
+      log.error('Error saving installation name:', error);
+    }
+  },
+
+  /**
+   * Obtiene el nombre del usuario de la instalación
+   */
+  async getInstallationName(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem('installation_name');
+    } catch (error) {
+      log.error('Error getting installation name:', error);
+      return null;
+    }
+  },
 };

@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
     FORGOT_PASSWORD: '/auth/forgot-password',
     VERIFY_RECOVERY_CODE: '/auth/verify-recovery-code',
     RESET_PASSWORD: '/auth/reset-password',
+    RECOVER_USER: '/auth/recover-user',
   },
 
   // User

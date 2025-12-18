@@ -11,6 +11,8 @@ import type {
     ForgotPasswordResponse,
     LoginRequest,
     LoginResponse,
+    RecoverUserRequest,
+    RecoverUserResponse,
     RegisterRequest,
     RegisterResponse,
     ResetPasswordRequest,
@@ -189,6 +191,25 @@ export class MockAuthRepository implements IAuthRepository {
     return {
       success: true,
       message: 'Código de recuperación enviado',
+    };
+  }
+
+  async recoverUser(request: RecoverUserRequest): Promise<RecoverUserResponse> {
+    await delay();
+
+    if (!request.documentId || !request.documentType) {
+      throw new Error('Datos de identificación incompletos');
+    }
+
+    if (!request.birthDate && !request.pin) {
+      throw new Error('Debes ingresar tu fecha de nacimiento o PIN');
+    }
+
+    // Mock response
+    return {
+      success: true,
+      username: MOCK_USER.username,
+      maskedEmail: 'd***@example.com',
     };
   }
 

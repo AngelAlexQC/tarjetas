@@ -9,30 +9,33 @@ import { API_ENDPOINTS } from '@/api/config';
 import { httpClient } from '@/api/http-client';
 import { parseApiData, validateOptionalApiData } from '@/utils/api-validation';
 import { IAuthRepository } from '../interfaces/auth.repository.interface';
-import type { 
-  ForgotPasswordRequest, 
-  ForgotPasswordResponse, 
-  LoginRequest, 
-  LoginResponse, 
-  RegisterRequest, 
-  RegisterResponse, 
-  ResetPasswordRequest, 
-  ResetPasswordResponse, 
-  User,
-  VerifyEmailRequest,
-  VerifyEmailResponse,
-  VerifyRecoveryCodeRequest,
-  VerifyRecoveryCodeResponse,
+import type {
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
+    LoginRequest,
+    LoginResponse,
+    RecoverUserRequest,
+    RecoverUserResponse,
+    RegisterRequest,
+    RegisterResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
+    User,
+    VerifyEmailRequest,
+    VerifyEmailResponse,
+    VerifyRecoveryCodeRequest,
+    VerifyRecoveryCodeResponse,
 } from '../schemas/auth.schema';
 import {
-  ForgotPasswordResponseSchema,
-  LoginResponseSchema,
-  RefreshTokenResponseSchema,
-  RegisterResponseSchema,
-  ResetPasswordResponseSchema,
-  UserSchema,
-  VerifyEmailResponseSchema,
-  VerifyRecoveryCodeResponseSchema,
+    ForgotPasswordResponseSchema,
+    LoginResponseSchema,
+    RecoverUserResponseSchema,
+    RefreshTokenResponseSchema,
+    RegisterResponseSchema,
+    ResetPasswordResponseSchema,
+    UserSchema,
+    VerifyEmailResponseSchema,
+    VerifyRecoveryCodeResponseSchema,
 } from '../schemas/auth.schema';
 
 export class RealAuthRepository implements IAuthRepository {
@@ -136,6 +139,24 @@ export class RealAuthRepository implements IAuthRepository {
     }
 
     return { success: true };
+  }
+
+  // ============================================
+  // RECUPERACIÓN DE USUARIO
+  // ============================================
+
+  async recoverUser(request: RecoverUserRequest): Promise<RecoverUserResponse> {
+    const response = await httpClient.post<unknown>(
+      API_ENDPOINTS.AUTH.RECOVER_USER,
+      request,
+      { skipAuth: true }
+    );
+
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Error al recuperar usuario');
+    }
+
+    return parseApiData(RecoverUserResponseSchema, response.data, 'recuperación de usuario');
   }
 
   // ============================================

@@ -9,6 +9,8 @@ import type {
     ForgotPasswordResponse,
     LoginRequest,
     LoginResponse,
+    RecoverUserRequest,
+    RecoverUserResponse,
     RegisterRequest,
     RegisterResponse,
     ResetPasswordRequest,
@@ -39,6 +41,7 @@ export interface IAuthRepository {
   
   // Recuperación de contraseña
   forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse>;
+  recoverUser(request: RecoverUserRequest): Promise<RecoverUserResponse>;
   verifyRecoveryCode(request: VerifyRecoveryCodeRequest): Promise<VerifyRecoveryCodeResponse>;
   resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse>;
 }

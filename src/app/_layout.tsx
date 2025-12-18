@@ -1,8 +1,10 @@
 import { AnimatedSplashScreen } from '@/components/animated-splash-screen';
 import { AuthScreensContainer } from '@/components/auth-screens-container';
+import { RecoverUserScreen } from '@/components/auth/recover-user-screen';
 import { BiometricAccessScreen } from '@/components/biometric-access-screen';
 import { BiometricEnableModal } from '@/components/biometric-enable-modal';
 import { ErrorFallback } from '@/components/error-fallback';
+import { NameInputScreen } from '@/components/name-input-screen';
 import { OnboardingScreen } from '@/components/onboarding-screen';
 import { AuthProvider, useAuth } from '@/contexts/auth-context';
 import { SplashProvider } from '@/contexts/splash-context';
@@ -72,6 +74,9 @@ function Navigation() {
     currentScreen,
     showBiometricModal,
     handleOnboardingFinish,
+    handleNameSubmit: handleNameInputSubmit,
+    handleRecoverUser,
+    handleRecoverUserCancel,
     handleLoginSuccess,
     handleBiometricSuccess,
     handleBiometricUsePassword,
@@ -137,6 +142,21 @@ function Navigation() {
           <OnboardingScreen onFinish={handleOnboardingFinish} />
         )}
 
+        {/* Name Input Screen */}
+        {currentScreen === 'name-input' && (
+          <NameInputScreen onContinue={handleNameInputSubmit} />
+        )}
+
+        {/* Recover User Screen */}
+        {currentScreen === 'recover-user' && (
+          <RecoverUserScreen 
+            onBack={handleRecoverUserCancel}
+            onSuccess={() => {
+              handleRecoverUserCancel(); // Go back to login
+            }}
+          />
+        )}
+
         {/* Biometric Access Screen */}
         {currentScreen === 'biometric-access' && (
           <View style={[StyleSheet.absoluteFill, { zIndex: 10000, backgroundColor: theme.colors.background }]}>
@@ -151,7 +171,10 @@ function Navigation() {
         {/* Login Screen - Ahora con navegación completa de autenticación */}
         {currentScreen === 'login' && (
           <>
-            <AuthScreensContainer onLoginSuccess={handleLoginSuccess} />
+            <AuthScreensContainer 
+              onLoginSuccess={handleLoginSuccess} 
+              onRecoverUser={handleRecoverUser}
+            />
             <BiometricEnableModal
               isVisible={showBiometricModal}
               onEnable={handleEnableBiometric}

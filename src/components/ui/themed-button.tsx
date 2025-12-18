@@ -3,16 +3,17 @@ import { FeedbackColors } from '@/constants';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 interface ThemedButtonProps {
-  title: string;
+  title?: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
   disabled?: boolean;
   loading?: boolean;
   icon?: React.ReactNode;
   style?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
 export function ThemedButton({ 
@@ -22,7 +23,8 @@ export function ThemedButton({
   disabled = false, 
   loading = false,
   icon,
-  style 
+  style,
+  textStyle
 }: ThemedButtonProps) {
   const theme = useAppTheme();
   
@@ -37,6 +39,7 @@ export function ThemedButton({
       case 'danger':
         return FeedbackColors.error;
       case 'outline':
+      case 'ghost':
         return 'transparent';
       default:
         return theme.tenant.mainColor;
@@ -50,6 +53,7 @@ export function ThemedButton({
       case 'danger':
         return '#FFFFFF';
       case 'outline':
+      case 'ghost':
         return theme.tenant.mainColor;
       default:
         return theme.colors.text;
@@ -82,9 +86,11 @@ export function ThemedButton({
         <ActivityIndicator color={getTextColor()} />
       ) : (
         <>
-          <ThemedText style={[styles.text, { color: getTextColor() }]}>
-            {title}
-          </ThemedText>
+          {title && (
+            <ThemedText style={[styles.text, { color: getTextColor() }, textStyle]}>
+              {title}
+            </ThemedText>
+          )}
           {icon}
         </>
       )}
