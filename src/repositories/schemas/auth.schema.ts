@@ -77,7 +77,15 @@ export const VerifyEmailResponseSchema = z.object({
 // ============================================
 
 export const ForgotPasswordRequestSchema = z.object({
-  email: z.string().email('Invalid email'),
+  email: z.string().email('Invalid email').optional(),
+  accountNumber: z.string().min(1, 'Número de cuenta requerido').optional(),
+  birthDate: z.string().optional(),
+  constitutionDate: z.string().optional(),
+  cardPin: z.string().length(4, 'El PIN debe tener 4 dígitos').optional(),
+}).refine(data => {
+  return data.email || (data.accountNumber && (data.birthDate || data.constitutionDate || data.cardPin));
+}, {
+  message: "Debes ingresar tu correo o tu número de cuenta con datos de verificación",
 });
 
 export const ForgotPasswordResponseSchema = z.object({
@@ -86,7 +94,7 @@ export const ForgotPasswordResponseSchema = z.object({
 });
 
 export const VerifyRecoveryCodeRequestSchema = z.object({
-  email: z.string().email(),
+  email: z.string().min(1, 'Identifier required'), // Can be email or account number
   code: z.string().length(6),
 });
 
@@ -97,7 +105,7 @@ export const VerifyRecoveryCodeResponseSchema = z.object({
 });
 
 export const ResetPasswordRequestSchema = z.object({
-  email: z.string().email(),
+  email: z.string().min(1, 'Identifier required'), // Can be email or account number
   code: z.string().length(6),
   newPassword: z.string().min(8),
 });

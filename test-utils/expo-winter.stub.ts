@@ -6,4 +6,5 @@
  * "You are trying to import a file outside of the scope of the test code".
  */
 
-export {};
+export { };
+

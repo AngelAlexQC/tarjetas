@@ -2,8 +2,8 @@
  * HTTP Client Tests
  */
 
-import { HttpClient } from '../http-client';
 import { authStorage } from '@/utils/auth-storage';
+import { HttpClient } from '../http-client';
 
 // Mock authStorage
 jest.mock('@/utils/auth-storage', () => ({

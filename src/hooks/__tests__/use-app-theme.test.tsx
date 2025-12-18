@@ -2,10 +2,10 @@
  * useAppTheme Hook Tests
  */
 
+import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
 import { renderHook } from '@testing-library/react-native';
 import React from 'react';
 import { useAppTheme } from '../use-app-theme';
-import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
 
 // Mock useColorScheme
 jest.mock('@/hooks/use-color-scheme', () => ({

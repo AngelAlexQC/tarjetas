@@ -12,10 +12,10 @@ import {
     PrimitiveColors,
     SemanticColors,
 } from '@/constants/design-tokens';
+import type { TenantTheme } from '@/constants/tenant-themes';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Tenant, TenantBranding } from '@/repositories/schemas/tenant.schema';
-import type { TenantTheme } from '@/constants/tenant-themes';
 
 export type ColorMode = 'light' | 'dark';
 export type GlassIntensity = 'light' | 'medium' | 'heavy';

@@ -8,6 +8,7 @@ interface ThemedInputProps extends TextInputProps {
   label?: string;
   icon?: React.ReactNode;
   error?: string;
+  helperText?: string;
   containerStyle?: ViewStyle;
 }
 
@@ -44,7 +45,10 @@ export function ThemedInput({
         />
       </View>
       
+
+      
       {error && <ThemedText style={styles.error}>{error}</ThemedText>}
+      {!error && props.helperText && <ThemedText style={styles.helper}>{props.helperText}</ThemedText>}
     </View>
   );
 }
@@ -79,5 +83,10 @@ const styles = StyleSheet.create({
     color: FeedbackColors.error,
     fontSize: 12,
     marginTop: 4,
+  },
+  helper: {
+    fontSize: 12,
+    marginTop: 4,
+    opacity: 0.6,
   },
 });

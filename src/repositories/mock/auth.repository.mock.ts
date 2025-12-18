@@ -6,20 +6,20 @@
 
 import { API_CONFIG } from '@/api/config';
 import { IAuthRepository } from '../interfaces/auth.repository.interface';
-import type { 
-  ForgotPasswordRequest, 
-  ForgotPasswordResponse, 
-  LoginRequest, 
-  LoginResponse, 
-  RegisterRequest, 
-  RegisterResponse, 
-  ResetPasswordRequest, 
-  ResetPasswordResponse, 
-  User,
-  VerifyEmailRequest,
-  VerifyEmailResponse,
-  VerifyRecoveryCodeRequest,
-  VerifyRecoveryCodeResponse,
+import type {
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
+    LoginRequest,
+    LoginResponse,
+    RegisterRequest,
+    RegisterResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
+    User,
+    VerifyEmailRequest,
+    VerifyEmailResponse,
+    VerifyRecoveryCodeRequest,
+    VerifyRecoveryCodeResponse,
 } from '../schemas/auth.schema';
 
 // Simula delay de red
@@ -181,8 +181,8 @@ export class MockAuthRepository implements IAuthRepository {
   async forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     await delay();
 
-    if (!request.email) {
-      throw new Error('Por favor ingresa tu correo electrónico');
+    if (!request.email && (!request.accountNumber || (!request.birthDate && !request.constitutionDate && !request.cardPin))) {
+      throw new Error('Por favor ingresa tu correo o tu número de cuenta con datos de verificación');
     }
 
     // En mock siempre retornamos éxito

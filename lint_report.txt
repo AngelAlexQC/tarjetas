@@ -1,0 +1,34 @@
+
+> financiero@1.0.0 lint
+> eslint . --ext .ts,.tsx
+
+(node:4772) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+C:\Libelula\financiero\src\app\cards\[id]\statements.tsx
+   39:16  warning  Function 'StatementsScreen' has too many lines (555). Maximum allowed is 300  max-lines-per-function
+  106:24  warning  Async arrow function has too many lines (339). Maximum allowed is 300         max-lines-per-function
+
+C:\Libelula\financiero\src\components\auth\recovery-input-screen.tsx
+  20:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Libelula\financiero\src\components\cards\card-financial-info.tsx
+  119:75  warning  Arrow function has too many lines (328). Maximum allowed is 300  max-lines-per-function
+  131:4   warning  Arrow function has a complexity of 32. Maximum allowed is 20     complexity
+
+C:\Libelula\financiero\src\components\cards\insurance\insurance-detail-modal.tsx
+  45:8  warning  Function 'InsuranceDetailModal' has too many lines (367). Maximum allowed is 300  max-lines-per-function
+  45:8  warning  Function 'InsuranceDetailModal' has a complexity of 29. Maximum allowed is 20     complexity
+
+C:\Libelula\financiero\src\components\forgot-password-screen.tsx
+  122:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Libelula\financiero\src\contexts\tenant-theme-context.tsx
+  54:13  warning  Blocks are nested too deeply (5). Maximum allowed is 4  max-depth
+
+C:\Libelula\financiero\src\utils\formatters\date.ts
+  180:11  warning  Arrow function has a complexity of 23. Maximum allowed is 20  complexity
+
+✖ 11 problems (0 errors, 11 warnings)
+

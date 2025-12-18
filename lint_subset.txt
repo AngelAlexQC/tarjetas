@@ -1,0 +1,12 @@
+(node:15576) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+C:\Libelula\financiero\src\components\auth\recovery-input-screen.tsx
+  20:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Libelula\financiero\src\components\forgot-password-screen.tsx
+  122:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 3 problems (0 errors, 3 warnings)
+
