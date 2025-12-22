@@ -1,7 +1,7 @@
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAppTheme } from '@/hooks';
 import { ShieldCheck } from 'lucide-react-native';
@@ -44,7 +44,7 @@ export function RecoveryCodeScreen({
         label="Código de verificación"
         placeholder="000000"
         value={code}
-        onChangeText={(text) => {
+        onChangeText={(text: string) => {
           setCode(text.replace(/[^0-9]/g, '').slice(0, 6));
           setError('');
         }}

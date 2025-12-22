@@ -2,7 +2,7 @@ import { CreditCard } from "@/components/cards/credit-card";
 import { Insurance } from "@/components/cards/insurance/insurance-generator";
 import { OperationResultScreen } from "@/components/cards/operations/operation-result-screen";
 import { Card, OperationResult } from "@/repositories";
-import { formatCurrency } from "@/utils/formatters/currency";
+import { formatCurrency } from "@/core/formatters/currency";
 import { Modal, View } from "react-native";
 
 interface InsuranceResultModalProps {

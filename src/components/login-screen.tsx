@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme, useResponsiveLayout } from '@/hooks';
@@ -188,8 +188,8 @@ export function LoginScreen({
             setUsername={(text) => { setUsername(text); setError(''); }}
             password={password}
             setPassword={(text) => { setPassword(text); setError(''); }}
-            rememberUser={rememberUser}
-            setRememberUser={setRememberUser}
+            _rememberUser={rememberUser}
+            _setRememberUser={setRememberUser}
             secureTextEntry={secureTextEntry}
             setSecureTextEntry={setSecureTextEntry}
             isLoading={isLoading}
@@ -213,8 +213,8 @@ interface LoginFormProps {
   setUsername: (text: string) => void;
   password: string;
   setPassword: (text: string) => void;
-  rememberUser: boolean;
-  setRememberUser: (value: boolean) => void;
+  _rememberUser: boolean;
+  _setRememberUser: (value: boolean) => void;
   secureTextEntry: boolean;
   setSecureTextEntry: (value: boolean) => void;
   isLoading: boolean;
@@ -227,7 +227,7 @@ interface LoginFormProps {
 }
 
 function LoginForm({
-  username, setUsername, password, setPassword, rememberUser, setRememberUser,
+  username, setUsername, password, setPassword, _rememberUser, _setRememberUser,
   secureTextEntry, setSecureTextEntry, isLoading, error, onLogin, onForgotPassword, onRegister, onEmailLogin, onRecoverUser
 }: LoginFormProps) {
   const theme = useAppTheme();

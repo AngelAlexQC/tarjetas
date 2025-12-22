@@ -4,7 +4,7 @@
  * Implementación del repositorio de autenticación con datos mock.
  */
 
-import { API_CONFIG } from '@/api/config';
+import { API_CONFIG } from '@/core/http/config';
 import { IAuthRepository } from '../interfaces/auth.repository.interface';
 import type {
     ForgotPasswordRequest,
@@ -58,8 +58,8 @@ export class MockAuthRepository implements IAuthRepository {
       throw new Error('Por favor completa todos los campos');
     }
 
-    if (request.password.length < 1) {
-      throw new Error('La contraseña debe tener al menos 1 caracter');
+    if (request.password.length < 4) {
+      throw new Error('La contraseña debe tener al menos 4 caracteres');
     }
 
     // Simular autenticación exitosa

@@ -4,9 +4,9 @@
  * Usa jest.useFakeTimers con advanceTimers: true para auto-avanzar timers
  */
 
-import { MockCardRepository } from '../card.repository.mock';
+import { MockCardRepository } from '@/domain/cards/repository/card.mock';
 
-jest.mock('@/api/config', () => ({
+jest.mock('@/core/http/config', () => ({
   API_CONFIG: {
     USE_MOCK_API: true,
     MOCK_DELAY: 10, // Delay mínimo para tests

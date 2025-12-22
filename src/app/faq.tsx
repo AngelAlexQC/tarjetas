@@ -1,10 +1,10 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedView } from '@/ui/primitives/themed-view';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { ThemedButton } from '@/components/ui/themed-button';
+import { ThemedButton } from '@/ui/primitives/themed-button';
 import { useTour } from '@/contexts/tour-context';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { loggers } from '@/utils/logger';
+import { useAppTheme } from '@/ui/theming';
+import { loggers } from '@/core/logging';
 import { PlatformAlert } from '@/utils/platform-alert';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

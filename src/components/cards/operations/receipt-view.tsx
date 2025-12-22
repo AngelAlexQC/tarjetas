@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { DragonflyLogo } from '@/components/ui/dragonfly-logo';
 import { OperationResult } from '@/repositories';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import type { Card } from '@/repositories';
 import { Image } from 'expo-image';
 import { Check, XCircle } from 'lucide-react-native';

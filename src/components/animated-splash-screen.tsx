@@ -1,5 +1,5 @@
 import { useSplash } from '@/contexts/splash-context';
-import { loggers } from '@/utils/logger';
+import { loggers } from '@/core/logging';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SplashScreen from 'expo-splash-screen';
@@ -39,10 +39,8 @@ const AnimatedG = Animated.createAnimatedComponent(G);
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Prevenir que el splash screen nativo se oculte automáticamente
-SplashScreen.preventAutoHideAsync().catch(() => {
-  /* Ignorar errores de race condition al recargar la app */
-});
+// NO llamar preventAutoHideAsync() aquí - causa errores en desarrollo
+// Lo manejaremos dentro del componente React
 
 interface AnimatedSplashScreenProps {
   children: ReactNode;
@@ -447,11 +445,25 @@ export function AnimatedSplashScreen({
   const dragonflyScale = useSharedValue(0.3);
   const glowIntensity = useSharedValue(0);
 
+  // Manejar el splash screen nativo de forma segura dentro del componente
+  useEffect(() => {
+    // Intentar prevenir auto-hide solo si es necesario
+    // En SDK 54, el splash se maneja automáticamente
+    if (Platform.OS !== 'web') {
+      SplashScreen.preventAutoHideAsync().catch((error) => {
+        // Ignorar este error completamente - es esperado en desarrollo
+        // El splash screen se ocultará automáticamente
+        log.debug('SplashScreen.preventAutoHideAsync() no disponible:', error?.message);
+      });
+    }
+  }, []);
+
   useEffect(() => {
     async function prepare() {
       try {
-        // Ocultar el splash screen nativo
-        await SplashScreen.hideAsync();
+        // NO llamar a hide() manualmente - dejar que el sistema lo maneje
+        // En SDK 54, el splash screen se oculta automáticamente
+        // Solo mostrar nuestra animación personalizada
 
         // Aquí puedes cargar recursos, fuentes, etc.
         // await loadFonts();

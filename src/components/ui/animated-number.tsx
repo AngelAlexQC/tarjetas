@@ -3,8 +3,8 @@
  * Anima números suavemente cuando cambian de valor
  */
 
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { loggers } from '@/utils/logger';
+import { useAppTheme } from '@/ui/theming';
+import { loggers } from '@/core/logging';
 import React, { useMemo } from 'react';
 import { Text, TextStyle } from 'react-native';
 

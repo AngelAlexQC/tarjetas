@@ -1,12 +1,12 @@
 import { CreditCard } from '@/components/cards/credit-card';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedView } from '@/ui/primitives/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { useCardOperation, useCardQueries } from '@/hooks/cards';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { useCardOperation, useCardQueries } from '@/domain/cards/hooks';
+import { useAppTheme } from '@/ui/theming';
 import type { Rewards } from '@/repositories';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';

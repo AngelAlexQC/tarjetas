@@ -26,8 +26,8 @@ import { RepositoryContainer } from './container';
 export { authRepository$, cardRepository$, RepositoryContainer } from './container';
 
 // Interfaces (para typing)
+export type { ICardRepository } from '@/domain/cards/repository';
 export type { IAuthRepository } from './interfaces/auth.repository.interface';
-export type { ICardRepository } from './interfaces/card.repository.interface';
 
 // Tipos desde Zod Schemas (fuente única de verdad)
 export * from './schemas';

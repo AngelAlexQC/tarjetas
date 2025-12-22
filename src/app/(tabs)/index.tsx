@@ -1,12 +1,11 @@
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { ThemedText } from "@/ui/primitives/themed-text";
+import { ThemedView } from "@/ui/primitives/themed-view";
 import { useAuth } from "@/contexts/auth-context";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
-import { useAppTheme } from "@/hooks/use-app-theme";
-import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
+import { useAppTheme, useResponsiveLayout } from "@/hooks";
 import { useTenants } from "@/hooks/use-tenants";
 import type { Tenant } from "@/repositories/schemas/tenant.schema";
-import { authStorage } from "@/utils/auth-storage";
+import { authStorage } from "@/core/storage/auth-storage";
 import { Ionicons } from '@expo/vector-icons';
 import { useScrollToTop } from '@react-navigation/native';
 import { Image } from "expo-image";

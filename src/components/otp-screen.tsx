@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
 import { FeedbackColors } from '@/constants';
-import { useAppTheme } from '@/hooks';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { useAppTheme } from '@/ui/theming';
 import { ShieldCheck } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';

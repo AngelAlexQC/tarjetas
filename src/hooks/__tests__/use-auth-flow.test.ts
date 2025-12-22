@@ -2,7 +2,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useSplash } from '@/contexts/splash-context';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useTour } from '@/contexts/tour-context';
-import { authStorage } from '@/utils/auth-storage';
+import { authStorage } from '@/core/storage/auth-storage';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 import { useAuthFlow } from '../use-auth-flow';
@@ -17,7 +17,10 @@ jest.mock('@/contexts/tenant-theme-context', () => ({
 jest.mock('@/contexts/tour-context', () => ({
   useTour: jest.fn(),
 }));
-jest.mock('@/utils/auth-storage', () => ({
+jest.mock('@/contexts/splash-context', () => ({
+  useSplash: jest.fn(),
+}));
+jest.mock('@/core/storage/auth-storage', () => ({
   authStorage: {
     setOnboardingCompleted: jest.fn(),
     saveInstallationName: jest.fn(),
@@ -58,6 +61,7 @@ describe('useAuthFlow', () => {
     });
     (useTenantTheme as jest.Mock).mockReturnValue({
       currentTheme: null,
+      clearTenant: jest.fn(),
       isLoading: false,
     });
     (useSplash as jest.Mock).mockReturnValue({

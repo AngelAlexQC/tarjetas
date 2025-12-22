@@ -1,8 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { useAppTheme, useResponsiveLayout } from '@/ui/theming';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {

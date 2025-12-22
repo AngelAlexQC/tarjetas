@@ -5,7 +5,7 @@
 import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
 import { renderHook } from '@testing-library/react-native';
 import React from 'react';
-import { useAppTheme } from '../use-app-theme';
+import { useAppTheme } from '@/ui/theming/use-app-theme';
 
 // Mock useColorScheme - configured per test via mockUseColorScheme
 const mockUseColorScheme = jest.fn(() => 'light');
@@ -26,7 +26,7 @@ jest.mock('react-native', () => ({
 }));
 
 // Mock logger
-jest.mock('@/utils/logger', () => ({
+jest.mock('@/core/logging/logger', () => ({
   loggers: {
     theme: {
       error: jest.fn(),

@@ -6,7 +6,7 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { AuthProvider, useAuth } from '../auth-context';
 import { authRepository$ } from '@/repositories';
-import { authStorage } from '@/utils/auth-storage';
+import { authStorage } from '@/core/storage/auth-storage';
 
 // Mock del repositorio de auth
 jest.mock('@/repositories', () => ({
@@ -14,7 +14,7 @@ jest.mock('@/repositories', () => ({
 }));
 
 // Mock de authStorage
-jest.mock('@/utils/auth-storage', () => ({
+jest.mock('@/core/storage/auth-storage', () => ({
   authStorage: {
     checkBiometricAvailability: jest.fn(),
     loadSession: jest.fn(),
@@ -31,7 +31,7 @@ jest.mock('@/utils/auth-storage', () => ({
 }));
 
 // Mock del logger
-jest.mock('@/utils/logger', () => ({
+jest.mock('@/core/logging/logger', () => ({
   loggers: {
     auth: {
       error: jest.fn(),

@@ -9,8 +9,8 @@
  */
 
 import { z } from 'zod';
-import { loggers } from './logger';
-import { AppError, err, ok, Result } from './result';
+import { loggers } from '@/core/logging/logger';
+import { AppError, err, ok, Result } from '@/core/types/result';
 
 const log = loggers.api;
 

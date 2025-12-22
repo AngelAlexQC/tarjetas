@@ -1,13 +1,13 @@
 import { CreditCard } from '@/components/cards/credit-card';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
 import { SummaryPanel } from '@/components/cards/summary-panel';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedView } from '@/ui/primitives/themed-view';
 import { FinancialIcons } from '@/components/ui/financial-icons';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { useCardOperation } from '@/hooks/cards';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCardOperation } from '@/domain/cards/hooks';
+import { useAppTheme } from '@/ui/theming';
 import type { Subscription } from '@/repositories';
 import { PlatformAlert } from '@/utils/platform-alert';
 import { PauseCircle, PlayCircle } from 'lucide-react-native';

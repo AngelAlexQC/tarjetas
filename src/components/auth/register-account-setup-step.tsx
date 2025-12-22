@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
+import { useAppTheme } from '@/ui/theming';
 import { Ionicons } from '@expo/vector-icons';
 import { Lock, Mail, Phone, User } from 'lucide-react-native';
 import React, { useState } from 'react';
@@ -56,7 +56,7 @@ export function RegisterAccountSetupStep({
           label="Correo electrónico"
           placeholder="correo@ejemplo.com"
           value={formData.email}
-          onChangeText={(text) => updateField('email', text)}
+          onChangeText={(text: string) => updateField('email', text)}
           keyboardType="email-address"
           autoCapitalize="none"
           textContentType="emailAddress"
@@ -68,7 +68,7 @@ export function RegisterAccountSetupStep({
           label="Teléfono"
           placeholder="+593 999 999 999"
           value={formData.phone}
-          onChangeText={(text) => updateField('phone', text)}
+          onChangeText={(text: string) => updateField('phone', text)}
           keyboardType="phone-pad"
           textContentType="telephoneNumber"
           autoComplete="tel"
@@ -79,7 +79,7 @@ export function RegisterAccountSetupStep({
           label="Nombre de usuario"
           placeholder="juanperez"
           value={formData.username}
-          onChangeText={(text) => updateField('username', text.toLowerCase().replace(/\s/g, ''))}
+          onChangeText={(text: string) => updateField('username', text.toLowerCase().replace(/\s/g, ''))}
           autoCapitalize="none"
           textContentType="username"
           autoComplete="username"
@@ -90,7 +90,7 @@ export function RegisterAccountSetupStep({
           label="Contraseña"
           placeholder="••••••••••••"
           value={formData.password}
-          onChangeText={(text) => updateField('password', text)}
+          onChangeText={(text: string) => updateField('password', text)}
           secureTextEntry={secureTextEntry}
           autoCapitalize="none"
           textContentType="newPassword"
@@ -111,7 +111,7 @@ export function RegisterAccountSetupStep({
           label="Confirmar contraseña"
           placeholder="••••••••••••"
           value={formData.confirmPassword}
-          onChangeText={(text) => updateField('confirmPassword', text)}
+          onChangeText={(text: string) => updateField('confirmPassword', text)}
           secureTextEntry={secureConfirmEntry}
           autoCapitalize="none"
           textContentType="newPassword"

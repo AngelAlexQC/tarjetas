@@ -2,7 +2,7 @@
  * InfoIcon - Icono de información minimalista
  */
 
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import React from 'react';
 import Svg, { Circle, Path } from 'react-native-svg';
 

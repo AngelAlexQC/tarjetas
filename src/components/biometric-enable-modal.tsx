@@ -1,8 +1,8 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedButton } from '@/components/ui/themed-button';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedView } from '@/ui/primitives/themed-view';
+import { ThemedButton } from '@/ui/primitives/themed-button';
 import { useAuth } from '@/contexts/auth-context';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import { Fingerprint, ShieldCheck } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Modal, Platform, StyleSheet, View } from 'react-native';

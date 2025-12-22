@@ -1,7 +1,7 @@
 import { ErrorFallback } from '@/components/error-fallback';
 import { HapticTab } from '@/components/haptic-tab';
 import { CardsIcon, HomeIcon } from '@/components/ui/tab-icons';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { BlurView } from 'expo-blur';
 import { Tabs, type ErrorBoundaryProps } from 'expo-router';

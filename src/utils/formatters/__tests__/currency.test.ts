@@ -2,10 +2,10 @@
  * Currency Formatter Tests
  */
 
-import { formatCurrency, formatAmount, formatCompactCurrency } from '../currency';
+import { formatCurrency, formatAmount, formatCompactCurrency } from '@/core/formatters/currency';
 
 // Mock logger
-jest.mock('@/utils/logger', () => ({
+jest.mock('@/core/logging/logger', () => ({
   loggers: {
     formatter: {
       warn: jest.fn(),

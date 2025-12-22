@@ -1,5 +1,5 @@
-import { ThemedText } from '@/components/themed-text';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { useAppTheme } from '@/ui/theming';
 import { Check } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, StyleSheet, View, ViewStyle } from 'react-native';

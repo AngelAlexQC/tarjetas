@@ -7,9 +7,9 @@
 
 import { DragonflyLoading } from '@/components/ui/dragonfly-loading';
 import { GradientText } from '@/components/ui/gradient-text';
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { BrandColors } from '@/constants';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';

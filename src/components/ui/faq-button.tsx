@@ -1,4 +1,4 @@
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/ui/primitives/themed-text";
 import { useThemedColors } from "@/contexts/tenant-theme-context";
 import { Info } from "lucide-react-native";
 import { Platform, Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";

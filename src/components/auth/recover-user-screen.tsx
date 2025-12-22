@@ -1,10 +1,10 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { useAppTheme } from '@/ui/theming';
+import { useResponsiveLayout } from '@/ui/theming/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -180,7 +180,7 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
             <ThemedInput
               label="Número de Documento"
               value={formData.documentId}
-              onChangeText={(text) => setFormData({...formData, documentId: text})}
+              onChangeText={(text: string) => setFormData({...formData, documentId: text})}
               keyboardType="number-pad"
               returnKeyType="done"
               placeholder="Ej. 1723456789"
@@ -207,7 +207,7 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
                 label="Fecha de Nacimiento"
                 placeholder="DD/MM/AAAA"
                 value={formData.birthDate}
-                onChangeText={(text) => setFormData({...formData, birthDate: text})}
+                onChangeText={(text: string) => setFormData({...formData, birthDate: text})}
                 keyboardType="number-pad"
                 returnKeyType="done"
                 maxLength={10}
@@ -217,7 +217,7 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
                 label="PIN de Tarjeta (4 dígitos)"
                 placeholder="****"
                 value={formData.pin}
-                onChangeText={(text) => setFormData({...formData, pin: text})}
+                onChangeText={(text: string) => setFormData({...formData, pin: text})}
                 keyboardType="number-pad"
                 returnKeyType="done"
                 secureTextEntry

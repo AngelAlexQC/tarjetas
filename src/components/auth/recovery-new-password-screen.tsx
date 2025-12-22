@@ -1,7 +1,7 @@
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAppTheme } from '@/hooks';
 import { Ionicons } from '@expo/vector-icons';

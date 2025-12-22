@@ -1,7 +1,7 @@
 import { OTPScreen } from '@/components/otp-screen';
-import { ThemedText } from '@/components/themed-text';
 import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
-import { useAppTheme, useRegister, useResponsiveLayout } from '@/hooks';
+import { useRegister } from '@/hooks'; // Keep useRegister from original hooks
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { ArrowLeft } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
@@ -19,9 +19,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RegisterAccountSetupStep } from '@/components/auth/register-account-setup-step';
 import { RegisterClientVerificationStep } from '@/components/auth/register-client-verification-step';
 import { RegisterIdentificationStep } from '@/components/auth/register-identification-step';
-import { isValidEmail, isValidPassword, isValidPhone } from '@/utils';
+import { isValidEmail, isValidPassword, isValidPhone } from '@/country/common/validators';
 import { Ionicons } from '@expo/vector-icons';
-import { ThemedButton } from './ui/themed-button';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { useAppTheme, useResponsiveLayout } from '@/ui/theming';
 
 type Step = 'identification' | 'client-verification' | 'account-setup' | 'otp' | 'success';
 
@@ -54,7 +55,7 @@ function useRegisterFlow() {
   // Common State
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
+  const [_verificationCode, _setVerificationCode] = useState('');
 
   // Step 1: Validate Identity
   const handleValidateClient = useCallback(async () => {
@@ -127,7 +128,7 @@ function useRegisterFlow() {
       } else {
         setError(result.error || 'Error al crear cuenta');
       }
-    } catch (e: any) {
+    } catch (_e: unknown) {
       setError('Error al crear cuenta');
     } finally {
       setIsLoading(false);
@@ -153,7 +154,7 @@ function useRegisterFlow() {
       } else {
         setError(result.error || 'Código incorrecto');
       }
-    } catch (e) {
+    } catch (_e: unknown) {
       setError('Código incorrecto');
     } finally {
       setIsLoading(false);
@@ -182,12 +183,12 @@ function useRegisterFlow() {
 }
 
 export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
-  const theme = useAppTheme();
-  const layout = useResponsiveLayout();
+  const { colors } = useAppTheme();
+  const { horizontalPadding } = useResponsiveLayout();
   const insets = useSafeAreaInsets();
   
   const logic = useRegisterFlow();
-  const containerMaxWidth = Math.min(layout.screenWidth * 0.9, 420);
+  const containerMaxWidth = Math.min(800, 420);
 
   const renderContent = () => {
     switch (logic.step) {
@@ -241,7 +242,7 @@ export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
               <ThemedText type="subtitle" style={styles.successTitle}>
                 ¡Registro Completo!
               </ThemedText>
-              <ThemedText style={[styles.successDesc, { color: theme.colors.textSecondary }]}>
+              <ThemedText style={[styles.successDesc, { color: colors.textSecondary }]}>
                  Tu cuenta ha sido creada y verificada exitosamente.
               </ThemedText>
               <ThemedButton 
@@ -260,7 +261,7 @@ export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
       <ScrollView
         contentContainerStyle={[
@@ -268,7 +269,7 @@ export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
           {
             paddingTop: insets.top + 20,
             paddingBottom: insets.bottom + 20,
-            paddingHorizontal: layout.horizontalPadding,
+            paddingHorizontal: horizontalPadding,
           },
         ]}
         showsVerticalScrollIndicator={false}
@@ -277,7 +278,7 @@ export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
         {logic.step !== 'success' && (
           <Animated.View entering={FadeInUp.duration(400)} style={styles.header}>
             <Pressable onPress={logic.step === 'identification' ? onBack : () => logic.setStep('identification')} style={styles.backButton}>
-              <ArrowLeft size={24} color={theme.colors.text} />
+              <ArrowLeft size={24} color={colors.text} />
             </Pressable>
           </Animated.View>
         )}

@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { NameInputScreen } from '../name-input-screen';
 
 // Mock Hooks
-jest.mock('@/hooks/use-app-theme', () => ({
+jest.mock('@/ui/theming/use-app-theme', () => ({
   useAppTheme: () => ({
     colors: {
       background: '#ffffff',
@@ -14,7 +14,7 @@ jest.mock('@/hooks/use-app-theme', () => ({
   }),
 }));
 
-jest.mock('@/hooks/use-responsive-layout', () => ({
+jest.mock('@/ui/theming/use-responsive-layout', () => ({
   useResponsiveLayout: () => ({
     screenWidth: 375,
     horizontalPadding: 20,
@@ -47,7 +47,7 @@ jest.mock('react-native-reanimated', () => {
 
 
 // Mock UI Components
-jest.mock('@/components/ui/themed-button', () => {
+jest.mock('@/ui/primitives/themed-button', () => {
   const { TouchableOpacity, Text } = require('react-native');
   return {
     ThemedButton: (props: any) => (
@@ -58,7 +58,7 @@ jest.mock('@/components/ui/themed-button', () => {
   };
 });
 
-jest.mock('@/components/ui/themed-input', () => {
+jest.mock('@/ui/primitives/themed-input', () => {
   const { View, Text, TextInput } = require('react-native');
   return {
     ThemedInput: (props: any) => (
@@ -70,7 +70,7 @@ jest.mock('@/components/ui/themed-input', () => {
   };
 });
 
-jest.mock('@/components/themed-text', () => {
+jest.mock('@/ui/primitives/themed-text', () => {
   const { Text } = require('react-native');
   return {
     ThemedText: ({ children, ...props }: any) => <Text {...props}>{children}</Text>,

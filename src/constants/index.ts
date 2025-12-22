@@ -7,5 +7,5 @@
  */
 
 // Design system - colores más usados
-export { BrandColors, FeedbackColors } from './design-tokens';
+export { BrandColors, FeedbackColors } from '@/ui/theming/design-tokens';
 

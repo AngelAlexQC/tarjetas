@@ -3,11 +3,11 @@
  * Diseño 2025: Clean, animated, con soporte para dark mode
  */
 
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { CalendarIcon } from '@/components/ui/financial-icons';
 import { useTour } from '@/contexts/tour-context';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { loggers } from '@/utils/logger';
+import { useAppTheme } from '@/ui/theming';
+import { loggers } from '@/core/logging';
 import { PlatformAlert } from '@/utils/platform-alert';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';

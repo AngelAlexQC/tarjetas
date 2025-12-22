@@ -1,5 +1,5 @@
 import { CreditCard } from "@/components/cards/credit-card";
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/ui/primitives/themed-text";
 import { Card } from "@/repositories";
 import { RefObject } from "react";
 import { FlatList, StyleSheet, View, ViewToken } from "react-native";

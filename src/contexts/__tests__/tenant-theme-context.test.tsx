@@ -21,7 +21,7 @@ jest.mock('react-native', () => ({
 }));
 
 // Mock logger
-jest.mock('@/utils/logger', () => ({
+jest.mock('@/core/logging/logger', () => ({
   loggers: {
     theme: {
       error: jest.fn(),

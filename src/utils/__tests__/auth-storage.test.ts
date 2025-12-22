@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
-import { authStorage } from '../auth-storage';
+import { authStorage } from '@/core/storage/auth-storage';
 
 // Mock modules
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -35,7 +35,7 @@ jest.mock('react-native', () => ({
   },
 }));
 
-jest.mock('@/utils/logger', () => ({
+jest.mock('@/core/logging/logger', () => ({
   loggers: {
     auth: {
       error: jest.fn(),

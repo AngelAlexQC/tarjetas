@@ -2,18 +2,18 @@
  * HTTP Client Tests
  */
 
-import { authStorage } from '@/utils/auth-storage';
-import { HttpClient } from '../http-client';
+import { authStorage } from '@/core/storage/auth-storage';
+import { HttpClient } from '@/core/http/client';
 
 // Mock authStorage
-jest.mock('@/utils/auth-storage', () => ({
+jest.mock('@/core/storage/auth-storage', () => ({
   authStorage: {
     getToken: jest.fn(),
   },
 }));
 
 // Mock API_CONFIG
-jest.mock('../config', () => ({
+jest.mock('@/core/http/config', () => ({
   API_CONFIG: {
     BASE_URL: 'https://api.test.com',
     DEFAULT_HEADERS: {

@@ -9,7 +9,7 @@ import {
   BlockCardRequestSchema,
   ChangePinRequestSchema,
   DeferRequestSchema,
-} from '../card.schema';
+} from '@/domain/cards/types/card.schema';
 
 describe('CardSchema', () => {
   const validCard = {

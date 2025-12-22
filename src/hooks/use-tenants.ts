@@ -5,9 +5,9 @@
  * Reemplaza la búsqueda hardcoded anterior.
  */
 
+import { loggers } from '@/core/logging';
 import { RepositoryContainer } from '@/repositories';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
-import { loggers } from '@/utils/logger';
 import { useCallback, useEffect, useState } from 'react';
 
 const log = loggers.theme;

@@ -1,6 +1,6 @@
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedButton } from '@/ui/primitives/themed-button';
 import { useAppTheme } from '@/hooks';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';

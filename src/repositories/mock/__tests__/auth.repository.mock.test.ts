@@ -4,7 +4,7 @@
 
 import { MockAuthRepository } from '../auth.repository.mock';
 
-jest.mock('@/api/config', () => ({
+jest.mock('@/core/http/config', () => ({
   API_CONFIG: {
     USE_MOCK_API: true,
     MOCK_DELAY: 10,

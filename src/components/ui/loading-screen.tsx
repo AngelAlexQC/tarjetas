@@ -1,6 +1,6 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedView } from '@/ui/primitives/themed-view';
+import { useAppTheme } from '@/ui/theming';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { DragonflyLoading } from './dragonfly-loading';

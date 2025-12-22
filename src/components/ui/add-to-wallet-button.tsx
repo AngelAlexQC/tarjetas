@@ -1,4 +1,4 @@
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/ui/primitives/themed-text";
 import { useThemedColors } from "@/contexts/tenant-theme-context";
 import { Platform, Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";

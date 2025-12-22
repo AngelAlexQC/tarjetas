@@ -5,7 +5,7 @@
  * Expo Router renderiza este componente automáticamente para rutas no encontradas.
  */
 
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import { Link } from 'expo-router';
 import { FileQuestion, Home } from 'lucide-react-native';
 import React from 'react';

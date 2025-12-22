@@ -1,9 +1,9 @@
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { CardBrandIcons } from '@/components/ui/card-brand-icons';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { useAppTheme } from '@/ui/theming';
 import type { Card } from '@/repositories';
-import { formatCurrency } from '@/utils/formatters/currency';
+import { formatCurrency } from '@/core/formatters/currency';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {

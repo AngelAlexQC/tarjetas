@@ -1,7 +1,7 @@
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/ui/primitives/themed-text";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { useAppTheme } from '@/ui/theming';
+import { useResponsiveLayout } from '@/ui/theming/use-responsive-layout';
 import { homeRoute } from '@/types/routes';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';

@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, Check, ShieldCheck, Sparkles, Zap } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';

@@ -3,11 +3,11 @@
  */
 
 import { RepositoryContainer, cardRepository$, authRepository$ } from '../container';
-import { MockCardRepository } from '../mock/card.repository.mock';
+import { MockCardRepository } from '@/domain/cards/repository';
 import { MockAuthRepository } from '../mock/auth.repository.mock';
 
 // Mock the API_CONFIG
-jest.mock('@/api/config', () => ({
+jest.mock('@/core/http/config', () => ({
   API_CONFIG: {
     USE_MOCK_API: true,
     BASE_URL: 'https://mock.api.com',

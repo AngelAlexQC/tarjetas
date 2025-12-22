@@ -7,7 +7,7 @@ import React from 'react';
 import { ErrorFallback } from '../error-fallback';
 
 // Mock de los hooks
-jest.mock('@/hooks/use-app-theme', () => ({
+jest.mock('@/ui/theming/use-app-theme', () => ({
   useAppTheme: () => ({
     colors: {
       background: '#FFFFFF',
@@ -27,7 +27,7 @@ jest.mock('react-native-safe-area-context', () => ({
 }));
 
 // Silenciar el logger durante los tests
-jest.mock('@/utils/logger', () => ({
+jest.mock('@/core/logging/logger', () => ({
   createLogger: () => ({
     debug: jest.fn(),
     info: jest.fn(),

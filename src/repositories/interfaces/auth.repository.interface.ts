@@ -20,6 +20,7 @@ import type {
     ValidateClientResponse,
     VerifyEmailRequest,
     VerifyEmailResponse,
+    VerifyRecoveryCodeRequest,
     VerifyRecoveryCodeResponse,
 } from '../schemas/auth.schema';
 

@@ -6,9 +6,9 @@
  */
 
 // Logger
-export { loggers } from './logger';
+export { loggers } from '@/core/logging';
 
 // Validators
+export * from '@/country/common/validators';
 export * from './platform-alert';
-export * from './validators';
 

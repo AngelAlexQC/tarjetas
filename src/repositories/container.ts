@@ -6,18 +6,13 @@
  * Si es false, retorna los repositorios que hacen llamadas HTTP reales.
  */
 
-import { API_CONFIG } from '@/api/config';
+import { API_CONFIG } from '@/core/http';
+import { ICardActionRepository, ICardRepository, MockCardActionRepository, MockCardRepository, RealCardActionRepository, RealCardRepository } from '@/domain/cards/repository';
 import { IAuthRepository } from './interfaces/auth.repository.interface';
-import { ICardActionRepository } from './interfaces/card-action.repository.interface';
-import { ICardRepository } from './interfaces/card.repository.interface';
 import { ITenantRepository } from './interfaces/tenant.repository.interface';
 import { MockAuthRepository } from './mock/auth.repository.mock';
-import { MockCardActionRepository } from './mock/card-action.repository.mock';
-import { MockCardRepository } from './mock/card.repository.mock';
 import { MockTenantRepository } from './mock/tenant.repository.mock';
 import { RealAuthRepository } from './real/auth.repository.real';
-import { RealCardActionRepository } from './real/card-action.repository.real';
-import { RealCardRepository } from './real/card.repository.real';
 import { RealTenantRepository } from './real/tenant.repository.real';
 
 // Instancias singleton de los repositorios

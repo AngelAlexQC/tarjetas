@@ -12,10 +12,10 @@ import {
   daysUntil,
   isDateSoon,
   isDateOverdue,
-} from '../date';
+} from '@/core/formatters/date';
 
 // Mock logger
-jest.mock('@/utils/logger', () => ({
+jest.mock('@/core/logging/logger', () => ({
   loggers: {
     formatter: {
       warn: jest.fn(),

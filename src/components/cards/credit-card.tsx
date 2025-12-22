@@ -1,11 +1,11 @@
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/ui/primitives/themed-text";
 import { CardBackgroundPattern } from "@/components/ui/card-background-patterns";
 import { CardBrandIcons } from "@/components/ui/card-brand-icons";
 import { ChipIcon } from "@/components/ui/chip-icon";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { CARD_TYPE_LABELS, getCardDesign } from "@/constants/card-types";
 import { Card } from "@/repositories";
-import { formatCardExpiry } from "@/utils/formatters/date";
+import { formatCardExpiry } from "@/core/formatters/date";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { ColorValue, StyleSheet, View, ViewStyle } from "react-native";

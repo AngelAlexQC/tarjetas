@@ -7,15 +7,16 @@
  * Sigue el patrón de separación de responsabilidades del proyecto.
  */
 
+import { loggers } from '@/core/logging';
 import { authRepository$ } from '@/repositories';
 import type {
+    ForgotPasswordRequest,
     RegisterRequest,
     ResetPasswordRequest,
     ValidateClientRequest,
     VerifyEmailRequest,
     VerifyRecoveryCodeRequest,
 } from '@/repositories/schemas/auth.schema';
-import { loggers } from '@/utils/logger';
 import { useCallback, useState } from 'react';
 
 const log = loggers.auth;
@@ -38,7 +39,7 @@ export function useRegister() {
       const result = await repo.register(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error) {
+    } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Error al registrar';
       log.error('Register error:', error);
       setState({ isLoading: false, error: message });
@@ -53,7 +54,7 @@ export function useRegister() {
       const result = await repo.verifyEmail(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error) {
+    } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Error al verificar';
       log.error('Verify email error:', error);
       setState({ isLoading: false, error: message });
@@ -68,7 +69,7 @@ export function useRegister() {
       await repo.resendVerificationCode(email);
       setState({ isLoading: false, error: null });
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Error al reenviar código';
       log.error('Resend code error:', error);
       setState({ isLoading: false, error: message });
@@ -83,7 +84,7 @@ export function useRegister() {
       const result = await repo.validateClient(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error) {
+    } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Error al validar cliente';
       log.error('Validate client error:', error);
       setState({ isLoading: false, error: message });
@@ -118,7 +119,7 @@ export function usePasswordRecovery() {
       const result = await repo.forgotPassword(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error) {
+    } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Error al enviar código';
       log.error('Forgot password error:', error);
       setState({ isLoading: false, error: message });
@@ -133,7 +134,7 @@ export function usePasswordRecovery() {
       const result = await repo.verifyRecoveryCode(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error) {
+    } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Código incorrecto';
       log.error('Verify recovery code error:', error);
       setState({ isLoading: false, error: message });
@@ -148,7 +149,7 @@ export function usePasswordRecovery() {
       const result = await repo.resetPassword(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error) {
+    } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Error al cambiar contraseña';
       log.error('Reset password error:', error);
       setState({ isLoading: false, error: message });

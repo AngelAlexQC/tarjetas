@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
+import { useAppTheme } from '@/ui/theming';
 import { Calendar, User } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -75,7 +75,7 @@ export function RegisterIdentificationStep({
         <ThemedInput
           label="Número de Identificación"
           value={documentId}
-          onChangeText={(text) => setDocumentId(text.replace(/[^0-9]/g, ''))}
+          onChangeText={(text: string) => setDocumentId(text.replace(/[^0-9]/g, ''))}
           keyboardType="number-pad"
           maxLength={13}
           returnKeyType="done"

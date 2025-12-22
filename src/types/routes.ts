@@ -5,7 +5,7 @@
  * Esto permite navegación tipada sin usar `as any`.
  */
 
-import type { CardActionType } from '@/repositories/schemas/card-action.schema';
+import type { CardActionType } from '@/domain/cards/types/card-action.schema';
 import { Href } from 'expo-router';
 
 // Acciones de tarjeta disponibles como rutas

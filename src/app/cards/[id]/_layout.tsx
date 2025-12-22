@@ -1,5 +1,5 @@
 import { ErrorFallback } from '@/components/error-fallback';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Stack, useRouter, type ErrorBoundaryProps } from 'expo-router';
 import { Platform } from 'react-native';

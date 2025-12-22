@@ -2,7 +2,7 @@ import { STORAGE_KEYS } from '@/constants/app';
 import { defaultTheme, TenantTheme } from '@/constants/tenant-themes';
 import { RepositoryContainer } from '@/repositories';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
-import { loggers } from '@/utils/logger';
+import { loggers } from '@/core/logging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';

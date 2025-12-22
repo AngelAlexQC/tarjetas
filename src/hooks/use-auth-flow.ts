@@ -15,7 +15,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useSplash } from '@/contexts/splash-context';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useTour } from '@/contexts/tour-context';
-import { authStorage } from '@/utils/auth-storage';
+import { authStorage } from '@/core/storage';
 import { useRouter, useSegments } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';

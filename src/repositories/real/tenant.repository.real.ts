@@ -5,11 +5,11 @@
  * Todas las respuestas son validadas con Zod.
  */
 
-import { httpClient } from '@/api/http-client';
+import { httpClient } from '@/core/http';
 import { parseApiData } from '@/utils/api-validation';
+import type { ITenantRepository } from '../interfaces/tenant.repository.interface';
 import type { Tenant } from '../schemas/tenant.schema';
 import { TenantArraySchema, TenantSchema } from '../schemas/tenant.schema';
-import type { ITenantRepository } from '../interfaces/tenant.repository.interface';
 
 export class RealTenantRepository implements ITenantRepository {
   

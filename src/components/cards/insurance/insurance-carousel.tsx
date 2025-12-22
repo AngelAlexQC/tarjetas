@@ -1,5 +1,5 @@
-import { ThemedText } from '@/components/themed-text';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { useResponsiveLayout } from '@/ui/theming/use-responsive-layout';
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, StyleSheet, View } from 'react-native';
 import { InsuranceCard } from './insurance-card';

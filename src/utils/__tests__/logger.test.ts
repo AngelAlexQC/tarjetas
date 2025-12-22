@@ -2,7 +2,7 @@
  * Logger Tests
  */
 
-import { createLogger, logger, loggers } from '../logger';
+import { createLogger, logger, loggers } from '@/core/logging/logger';
 
 describe('Logger', () => {
   let consoleSpy: {

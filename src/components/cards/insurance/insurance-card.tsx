@@ -1,6 +1,6 @@
-import { ThemedText } from '@/components/themed-text';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { formatCurrency } from '@/utils/formatters/currency';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { useAppTheme } from '@/ui/theming';
+import { formatCurrency } from '@/core/formatters/currency';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';

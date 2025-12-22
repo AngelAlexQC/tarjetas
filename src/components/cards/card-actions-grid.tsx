@@ -1,9 +1,9 @@
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { FinancialIcons } from '@/components/ui/financial-icons';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { useCardActions } from '@/hooks/use-card-actions';
-import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
-import { CardAction, CardActionType } from '@/repositories/schemas/card-action.schema';
+import { useAppTheme } from '@/ui/theming';
+import { useCardActions } from '@/domain/cards/hooks/use-card-actions';
+import { useResponsiveLayout } from '@/ui/theming/use-responsive-layout';
+import { CardAction, CardActionType } from '@/domain/cards/types/card-action.schema';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, ColorValue, FlatList, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';

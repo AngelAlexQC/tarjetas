@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme, useResponsiveLayout } from '@/hooks';

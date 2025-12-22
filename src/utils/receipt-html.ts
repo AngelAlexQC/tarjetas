@@ -1,5 +1,5 @@
 import { OperationResult } from '@/repositories';
-import { AppTheme } from '@/hooks/use-app-theme';
+import { AppTheme } from '@/ui/theming';
 import type { Card } from '@/repositories';
 import { getLogoHtmlForPdf } from './image-to-base64';
 

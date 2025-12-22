@@ -4,7 +4,7 @@
  * Tests para el sistema de errores tipados con neverthrow.
  */
 
-import { AppError, err, ErrorCode, isAppError, ok, Result } from '../result';
+import { AppError, err, ErrorCode, isAppError, ok, Result } from '@/core/types/result';
 
 describe('AppError', () => {
   describe('factory methods', () => {
@@ -230,8 +230,8 @@ describe('neverthrow Result integration', () => {
     it('should match Ok correctly', () => {
       const result: Result<number, AppError> = ok(42);
       const output = result.match(
-        (value) => `Value: ${value}`,
-        (error) => `Error: ${error.message}`
+        (value: number) => `Value: ${value}`,
+        (error: AppError) => `Error: ${error.message}`
       );
       expect(output).toBe('Value: 42');
     });
@@ -239,8 +239,8 @@ describe('neverthrow Result integration', () => {
     it('should match Err correctly', () => {
       const result: Result<number, AppError> = err(AppError.network('Failed'));
       const output = result.match(
-        (value) => `Value: ${value}`,
-        (error) => `Error: ${error.message}`
+        (value: number) => `Value: ${value}`,
+        (error: AppError) => `Error: ${error.message}`
       );
       expect(output).toBe('Error: Failed');
     });
@@ -248,7 +248,7 @@ describe('neverthrow Result integration', () => {
 
   describe('map/mapErr', () => {
     it('should map Ok value', () => {
-      const result = ok(10).map((n) => n * 2);
+      const result = ok(10).map((n: number) => n * 2);
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
         expect(result.value).toBe(20);
@@ -257,13 +257,13 @@ describe('neverthrow Result integration', () => {
 
     it('should not map Err value', () => {
       const result: Result<number, AppError> = err(AppError.network());
-      const mapped = result.map((n) => n * 2);
+      const mapped = result.map((n: number) => n * 2);
       expect(mapped.isErr()).toBe(true);
     });
 
     it('should mapErr on Err', () => {
       const result: Result<number, AppError> = err(AppError.network());
-      const mapped = result.mapErr((e) => AppError.server(e.message));
+      const mapped = result.mapErr((e: AppError) => AppError.server(e.message));
       expect(mapped.isErr()).toBe(true);
       if (mapped.isErr()) {
         expect(mapped.error.code).toBe(ErrorCode.SERVER);

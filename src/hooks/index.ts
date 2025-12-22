@@ -6,14 +6,13 @@
  */
 
 // Card hooks (especializados)
-export * from './cards';
+export * from '@/domain/cards/hooks';
 
 // App hooks más usados
-export { useAppTheme } from './use-app-theme';
+export { useAppTheme, useResponsiveLayout } from '@/ui/theming';
 export { usePasswordRecovery, useRegister } from './use-auth-operations';
-export { useResponsiveLayout } from './use-responsive-layout';
 
 // Tenant hooks
-export { useTenants } from './use-tenants';
 export { useFeatures } from './use-features';
+export { useTenants } from './use-tenants';
 

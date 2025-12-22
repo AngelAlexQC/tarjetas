@@ -1,8 +1,8 @@
 import { NavigationButton } from '@/components/navigation/navigation-button';
-import { ThemedText } from '@/components/themed-text';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { CardBrandIcons } from '@/components/ui/card-brand-icons';
 import { FinancialIcons } from '@/components/ui/financial-icons';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import type { Card } from '@/repositories';
 import { useRouter } from 'expo-router';
 import React from 'react';

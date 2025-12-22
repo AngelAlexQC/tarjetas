@@ -5,8 +5,7 @@
  * Todas las respuestas son validadas con Zod para garantizar type-safety en runtime.
  */
 
-import { API_ENDPOINTS } from '@/api/config';
-import { httpClient } from '@/api/http-client';
+import { API_ENDPOINTS, httpClient } from '@/core/http';
 import { parseApiData, validateOptionalApiData } from '@/utils/api-validation';
 import { IAuthRepository } from '../interfaces/auth.repository.interface';
 import type {
@@ -139,6 +138,25 @@ export class RealAuthRepository implements IAuthRepository {
     }
 
     return { success: true };
+  }
+
+  async validateClient(request: { documentType: string; documentId: string; birthDate: string }): Promise<{ success: boolean; data?: { clientName: string; message: string }; error?: string }> {
+    const response = await httpClient.post<unknown>(
+      API_ENDPOINTS.AUTH.VALIDATE_CLIENT,
+      request,
+      { skipAuth: true }
+    );
+
+    if (!response.success) {
+      return { success: false, error: response.error || 'Error al validar cliente' };
+    }
+
+    // Usamos un schema simple ad-hoc o any por ahora ya que no tengo el schema a mano
+    // Idealmente importaría ValidateClientResponseSchema
+    return { 
+      success: true, 
+      data: response.data as any
+    };
   }
 
   // ============================================

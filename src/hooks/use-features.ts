@@ -6,7 +6,7 @@
  */
 
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
-import type { CardActionType } from '@/repositories/schemas/card-action.schema';
+import type { CardActionType } from '@/domain/cards/types/card-action.schema';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
 
 interface UseFeatures {

@@ -5,7 +5,7 @@
  * Los datos aquí son solo para testing, en producción vienen del backend.
  */
 
-import { API_CONFIG } from '@/api/config';
+import { API_CONFIG } from '@/core/http/config';
 import type { Tenant } from '../schemas/tenant.schema';
 import type { ITenantRepository } from '../interfaces/tenant.repository.interface';
 

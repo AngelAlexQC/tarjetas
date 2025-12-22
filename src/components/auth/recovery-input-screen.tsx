@@ -1,7 +1,7 @@
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAppTheme } from '@/hooks';
 import { Calendar, CreditCard, Hash } from 'lucide-react-native';
@@ -56,7 +56,7 @@ export function RecoveryInputScreen({ formData, setFormData, error, setError, is
         label="Número de cuenta / Documento"
         placeholder="1234567890"
         value={formData.accountNumber}
-        onChangeText={(text) => updateField('accountNumber', text)}
+        onChangeText={(text: string) => updateField('accountNumber', text)}
         returnKeyType="next"
         keyboardType="number-pad"
         icon={<Hash size={20} color={theme.colors.textSecondary} />}
@@ -67,7 +67,7 @@ export function RecoveryInputScreen({ formData, setFormData, error, setError, is
           label="Fecha de nacimiento o constitución"
           placeholder="DD/MM/AAAA"
           value={formData.birthDate || formData.constitutionDate}
-          onChangeText={(text) => updateField('birthDate', text)} // Simplified for now
+          onChangeText={(text: string) => updateField('birthDate', text)} // Simplified for now
           keyboardType="numbers-and-punctuation"
           returnKeyType="done"
           maxLength={10}
@@ -79,7 +79,7 @@ export function RecoveryInputScreen({ formData, setFormData, error, setError, is
           label="PIN de Tarjeta"
           placeholder="••••"
           value={formData.cardPin}
-          onChangeText={(text) => updateField('cardPin', text.replace(/[^0-9]/g, '').slice(0, 4))}
+          onChangeText={(text: string) => updateField('cardPin', text.replace(/[^0-9]/g, '').slice(0, 4))}
           keyboardType="number-pad"
           returnKeyType="done"
           secureTextEntry

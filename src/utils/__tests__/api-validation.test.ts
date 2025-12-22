@@ -11,7 +11,7 @@ import {
     validateApiData,
     validateOptionalApiData,
 } from '../api-validation';
-import { AppError, ErrorCode } from '../result';
+import { AppError, ErrorCode } from '@/core/types/result';
 
 // Test schemas
 const UserSchema = z.object({

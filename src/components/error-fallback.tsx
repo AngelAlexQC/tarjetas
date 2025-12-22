@@ -11,8 +11,8 @@
  * - Diseño consistente con el tema de la app
  */
 
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { loggers } from '@/utils/logger';
+import { useAppTheme } from '@/ui/theming';
+import { loggers } from '@/core/logging';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';

@@ -1,11 +1,11 @@
 import { CreditCard } from '@/components/cards/credit-card';
 import { CardOperationHeader } from '@/components/cards/operations/card-operation-header';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedView } from '@/ui/primitives/themed-view';
 import { LoadingScreen } from '@/components/ui/loading-screen';
 import { PoweredBy } from '@/components/ui/powered-by';
-import { useCardQueries } from '@/hooks/cards';
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCardQueries } from '@/domain/cards/hooks';
+import { useAppTheme } from '@/ui/theming';
 import type { Card } from '@/repositories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';

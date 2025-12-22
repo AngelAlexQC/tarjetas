@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { useAppTheme } from '@/hooks/use-app-theme';
-import { loggers } from '@/utils/logger';
+import { ThemedText } from '@/ui/primitives/themed-text';
+import { ThemedView } from '@/ui/primitives/themed-view';
+import { useAppTheme } from '@/ui/theming';
+import { loggers } from '@/core/logging';
 import { PlatformAlert } from '@/utils/platform-alert';
 import * as LocalAuthentication from 'expo-local-authentication';
 import React, { useCallback, useEffect, useRef, useState } from 'react';

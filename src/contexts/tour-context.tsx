@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants/app';
-import { loggers } from '@/utils/logger';
+import { loggers } from '@/core/logging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 

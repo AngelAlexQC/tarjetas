@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/use-app-theme';
+import { useAppTheme } from '@/ui/theming';
 import { ArrowLeft, ChevronLeft, X } from 'lucide-react-native';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, ViewStyle } from 'react-native';
