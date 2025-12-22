@@ -79,7 +79,7 @@
     "globals": "^16.5.0",
     "jest": "^30.2.0",
     "jest-expo": "^54.0.16",
-    "puppeteer": "^24.33.0",
+    "puppeteer": "^24.34.0",
     "react-test-renderer": "^19.2.3",
     "sharp": "^0.34.5",
     "sonar-report": "^3.1.6",
