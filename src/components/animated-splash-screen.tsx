@@ -461,9 +461,16 @@ export function AnimatedSplashScreen({
   useEffect(() => {
     async function prepare() {
       try {
-        // NO llamar a hide() manualmente - dejar que el sistema lo maneje
-        // En SDK 54, el splash screen se oculta automáticamente
-        // Solo mostrar nuestra animación personalizada
+        // Ocultar el splash screen nativo INMEDIATAMENTE para mostrar nuestra animación
+        // El error "No native splash screen registered" es esperado en desarrollo y es seguro ignorarlo
+        if (Platform.OS !== 'web') {
+          try {
+            await SplashScreen.hideAsync();
+          } catch (hideError) {
+            // Ignorar este error - es normal en desarrollo/simuladores
+            log.debug('SplashScreen.hideAsync() esperado en dev:', hideError);
+          }
+        }
 
         // Aquí puedes cargar recursos, fuentes, etc.
         // await loadFonts();
@@ -680,7 +687,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0D1117',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 999,
+    zIndex: 10000, // Mayor que cualquier otro componente para asegurar que se vea
   },
   backgroundOverlay: {
     ...StyleSheet.absoluteFillObject,
