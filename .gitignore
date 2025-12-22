@@ -2,6 +2,7 @@
 
 # Dependencies
 node_modules/
+package-lock.json
 
 # Expo
 .expo/
@@ -41,50 +42,6 @@ Thumbs.db
 # Testing
 coverage/
 *.lcov
-test-results.txt
-test-coverage-output.txt
-final-coverage-report.txt
-
-# Logs temporales
-*_log.txt
-log.txt
-error_log.txt
-failed_log.txt
-full_log.txt
-
-# SonarQube Reports
-sonar-report.html
-sonar-report.pdf
-sonar-professional-report.html
-sonar-professional-report.pdf
-.scannerwork/
-reports/
-*.docx
-*.xlsx
-Dockerfile.sonar-report
-
-# Analysis and Research (temporary files)
-*ANALISIS*.md
-*RESEARCH*.md
-*_RESEARCH.md
-*_ANALISIS.md
-CODIGO_NO_USADO_ANALISIS.md
-SONAR_ISSUES_RESEARCH.md
-
-# Scripts temporales (mantener generate-professional-sonar-report.js)
-scripts/analyze-unused-code.js
-
-# Dependency check
-.dependency-check-suppression.xml
-
-# Logos e imágenes temporales en root
-/LibelulaLogo.png
-
-# Docs temporales
-docs/ESTIMACION_TIEMPOS.md
-docs/**/STATUS.md
-api/*_STATUS.md
-api/*.implementation.md
 
 # IDE
 .vscode/*
@@ -95,10 +52,6 @@ api/*.implementation.md
 .idea/
 *.swp
 *.swo
-.claude/
-
-# Claude AI settings (local configuration only)
-.claude/settings.local.json
 
 # App example
 app-example

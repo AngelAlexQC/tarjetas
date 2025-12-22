@@ -1,0 +1,37 @@
+/**
+ * Repositories Module Index
+ * 
+ * Punto de entrada principal para el sistema de repositorios.
+ * 
+ * USO:
+ * ```typescript
+ * import { cardRepository$, authRepository$ } from '@/repositories';
+ * 
+ * // Obtener tarjetas
+ * const cards = await cardRepository$().getCards();
+ * 
+ * // Login
+ * const result = await authRepository$().login({ username, password });
+ * ```
+ * 
+ * CONFIGURACIÓN:
+ * Edita `api/config.ts` y cambia `USE_MOCK_API` a `false` para
+ * usar el backend real en lugar de datos mock.
+ */
+
+// Container y accesos directos
+// Importar RepositoryContainer para tenant accessor
+import { RepositoryContainer } from './container';
+
+export { authRepository$, cardRepository$, RepositoryContainer } from './container';
+
+// Interfaces (para typing)
+export type { ICardRepository } from '@/domain/cards/repository';
+export type { IAuthRepository } from './interfaces/auth.repository.interface';
+
+// Tipos desde Zod Schemas (fuente única de verdad)
+export * from './schemas';
+
+// Tenant repository accessor
+export const tenantRepository$ = () => RepositoryContainer.getTenantRepository();
+export const cardActionRepository$ = () => RepositoryContainer.getCardActionRepository();

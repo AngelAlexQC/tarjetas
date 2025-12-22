@@ -7,41 +7,49 @@ Este proyecto implementa el **patrón Repository** con **inyección de dependenc
 ## Estructura de Archivos
 
 ```
+src/
 ├── api/
 │   ├── config.ts          # Configuración central (USE_MOCK_API, endpoints)
 │   ├── http-client.ts     # Cliente HTTP para llamadas reales
-│   └── index.ts           # Exportaciones del módulo API
+│   └── __tests__/         # Tests del módulo API
 │
 ├── repositories/
 │   ├── schemas/           # Esquemas Zod (fuente única de tipos)
 │   │   ├── card.schema.ts
 │   │   ├── auth.schema.ts
+│   │   ├── tenant.schema.ts
 │   │   └── index.ts
 │   │
 │   ├── interfaces/        # Contratos/Interfaces de repositorios
 │   │   ├── card.repository.interface.ts
 │   │   ├── auth.repository.interface.ts
+│   │   ├── tenant.repository.interface.ts
 │   │   └── index.ts
 │   │
 │   ├── mock/              # Implementaciones con datos mock
 │   │   ├── card.repository.mock.ts
 │   │   ├── auth.repository.mock.ts
-│   │   └── index.ts
+│   │   ├── tenant.repository.mock.ts
+│   │   └── __tests__/
 │   │
 │   ├── real/              # Implementaciones con HTTP real
 │   │   ├── card.repository.real.ts
 │   │   ├── auth.repository.real.ts
+│   │   ├── tenant.repository.real.ts
 │   │   └── index.ts
 │   │
 │   ├── container.ts       # Fábrica que decide qué implementación usar
-│   └── index.ts           # Exportaciones principales
+│   ├── index.ts           # Exportaciones principales
+│   └── __tests__/         # Tests de integración
 │
 └── hooks/
     ├── cards/             # Hooks especializados de tarjetas
     │   ├── use-card-queries.ts    # Lectura de datos
     │   ├── use-card-mutations.ts  # Escritura de datos
-    │   └── index.ts
-    └── index.ts           # Exporta useCards (alias de useCardQueries)
+    │   ├── use-card-operation.ts  # Operaciones de tarjetas
+    │   ├── use-card-defer.ts      # Simulador de diferidos
+    │   └── __tests__/
+    └── index.ts           # Exportaciones centrales
 ```
 
 ## Configuración

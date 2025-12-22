@@ -1,4 +1,4 @@
-module.exports = ({ config: _config }) => {
+module.exports = ({ config }) => {
   // Detectar si estamos en desarrollo local o en CI/producción
   const isProduction = process.env.EAS_BUILD === 'true' || process.env.CI === 'true';
 
@@ -91,6 +91,15 @@ module.exports = ({ config: _config }) => {
             dark: {
               image: './assets/images/splash-icon.png',
               backgroundColor: '#0D1117',
+            },
+          },
+        ],
+        [
+          'expo-build-properties',
+          {
+            android: {
+              enableProguardInReleaseBuilds: true,
+              enableShrinkResourcesInReleaseBuilds: true,
             },
           },
         ],

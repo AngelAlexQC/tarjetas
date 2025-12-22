@@ -1,0 +1,1 @@
+// export { mexicoConfig } from './config';
