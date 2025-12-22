@@ -7,6 +7,7 @@ import { StyleSheet, TextInput, TextInputProps, View, ViewStyle } from 'react-na
 interface ThemedInputProps extends TextInputProps {
   label?: string;
   icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
   error?: string;
   helperText?: string;
   containerStyle?: ViewStyle;
@@ -15,6 +16,7 @@ interface ThemedInputProps extends TextInputProps {
 export function ThemedInput({ 
   label, 
   icon, 
+  rightIcon,
   error, 
   containerStyle,
   style,
@@ -43,6 +45,7 @@ export function ThemedInput({
           placeholderTextColor={theme.colors.textSecondary}
           {...props}
         />
+        {rightIcon && <View style={styles.rightIconContainer}>{rightIcon}</View>}
       </View>
       
 
@@ -73,6 +76,9 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     marginRight: 10,
+  },
+  rightIconContainer: {
+    marginLeft: 10,
   },
   input: {
     flex: 1,

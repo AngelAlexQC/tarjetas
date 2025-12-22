@@ -254,12 +254,17 @@ function LoginForm({
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
         icon={<LockKeyhole size={20} color={theme.colors.textSecondary} />}
+        rightIcon={
+          <Pressable onPress={() => setSecureTextEntry(!secureTextEntry)}>
+            <Ionicons 
+              name={secureTextEntry ? 'eye-off-outline' : 'eye-outline'} 
+              size={20} 
+              color={theme.colors.textSecondary} 
+            />
+          </Pressable>
+        }
         error={error && !password ? 'Campo requerido' : undefined}
       />
-
-      <Pressable onPress={() => setSecureTextEntry(!secureTextEntry)} style={styles.togglePassword}>
-        <Ionicons name={secureTextEntry ? 'eye-off-outline' : 'eye-outline'} size={20} color={theme.colors.textSecondary} />
-      </Pressable>
 
       {error && (
         <Animated.View entering={FadeInDown.duration(300)}>
@@ -277,10 +282,7 @@ function LoginForm({
         </Pressable>
       </View>
 
-      <Pressable onPress={() => setRememberUser(!rememberUser)} style={styles.rememberRow}>
-        <Ionicons name={rememberUser ? 'checkbox' : 'square-outline'} size={24} color={theme.tenant.mainColor} />
-        <ThemedText style={styles.rememberText}>Recordar mi usuario</ThemedText>
-      </Pressable>
+
 
       <View style={styles.buttonsContainer}>
         <ThemedButton
