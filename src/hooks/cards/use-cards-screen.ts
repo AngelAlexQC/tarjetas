@@ -4,10 +4,11 @@ import { Card, OperationResult } from "@/repositories";
 import { CardActionType } from "@/repositories/schemas/card-action.schema";
 import { cardActionRoute } from "@/types/routes";
 import { formatCurrency } from "@/utils/formatters/currency";
+import { PlatformAlert } from "@/utils/platform-alert";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, FlatList, Platform, ViewToken } from "react-native";
+import { FlatList, Platform, ViewToken } from "react-native";
 import { useCardQueries } from "./use-card-queries";
 
 interface UseCardsScreenOptions {
@@ -116,7 +117,7 @@ export function useCardsScreen({ cardWidth, cardSpacing }: UseCardsScreenOptions
   const handleInsuranceContract = useCallback(
     (insurance: Insurance) => {
       if (!activeCard) {
-        Alert.alert("Error", "No hay una tarjeta seleccionada");
+        PlatformAlert.alert("Error", "No hay una tarjeta seleccionada");
         return;
       }
 
@@ -148,7 +149,7 @@ export function useCardsScreen({ cardWidth, cardSpacing }: UseCardsScreenOptions
 
   const handleAddToWallet = useCallback(() => {
     const walletName = Platform.OS === "android" ? "Google Wallet" : "Apple Wallet";
-    Alert.alert(`Agregar a ${walletName}`, `Esta tarjeta se agregará a tu ${walletName}`);
+    PlatformAlert.alert(`Agregar a ${walletName}`, `Esta tarjeta se agregará a tu ${walletName}`);
   }, []);
 
   const handleFaqPress = useCallback(() => {
@@ -210,7 +211,7 @@ function validateFunds(card: Card, monthlyPrice: number) {
 function showInsufficientFundsAlert(insurance: Insurance, availableFunds: number, fundType: string) {
   const formatOptions = { locale: "es-US", currency: insurance.currency };
 
-  Alert.alert(
+  PlatformAlert.alert(
     "Fondos Insuficientes",
     `No tienes suficiente ${fundType} en esta tarjeta.\n\n` +
       `Necesitas: ${formatCurrency(insurance.monthlyPrice, formatOptions)}\n` +
@@ -229,7 +230,7 @@ function showContractConfirmation(
 ) {
   const formatOptions = { locale: "es-US", currency: insurance.currency };
 
-  Alert.alert(
+  PlatformAlert.alert(
     "Contratar Seguro",
     `¿Deseas contratar el seguro "${insurance.title}"?\n\n` +
       `Costo mensual: ${formatCurrency(insurance.monthlyPrice, formatOptions)}\n` +

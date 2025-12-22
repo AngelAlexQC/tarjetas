@@ -9,4 +9,6 @@
 export { loggers } from './logger';
 
 // Validators
+export * from './platform-alert';
 export * from './validators';
+

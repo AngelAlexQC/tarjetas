@@ -10,12 +10,13 @@ import { AppTheme, useAppTheme } from '@/hooks/use-app-theme';
 import type { Statement, StatementTransaction } from '@/repositories';
 import { getLogoHtmlForPdf } from '@/utils/image-to-base64';
 import { loggers } from '@/utils/logger';
+import { PlatformAlert } from '@/utils/platform-alert';
 import { cacheDirectory, moveAsync } from 'expo-file-system/legacy';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { ArrowDownToLine, Calendar, Check, ChevronDown } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -482,7 +483,7 @@ export default function StatementsScreen() {
       
     } catch (error) {
       loggers.cards.error('Error generando estado de cuenta:', error);
-      Alert.alert('Error', 'No se pudo generar el estado de cuenta');
+      PlatformAlert.alert('Error', 'No se pudo generar el estado de cuenta');
     } finally {
       setIsExporting(false);
     }

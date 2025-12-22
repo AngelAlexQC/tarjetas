@@ -5,13 +5,12 @@ import { ThemedInput } from '@/components/ui/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme, useResponsiveLayout } from '@/hooks';
-import { loggers } from '@/utils';
+import { loggers, PlatformAlert } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { ImageBackground } from 'expo-image';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -113,7 +112,7 @@ export function LoginScreen({
     if (onForgotPassword) {
       onForgotPassword();
     } else {
-      Alert.alert(
+      PlatformAlert.alert(
         'Recuperar Contraseña',
         'Por favor contacta a tu institución financiera para recuperar tu contraseña.',
         [{ text: 'Entendido' }]
@@ -125,7 +124,7 @@ export function LoginScreen({
     if (onRegister) {
       onRegister();
     } else {
-      Alert.alert(
+      PlatformAlert.alert(
         'Registro',
         'Para crear una cuenta, visita la sucursal más cercana de tu institución financiera o descarga la app de registro.',
         [{ text: 'Entendido' }]
@@ -137,7 +136,7 @@ export function LoginScreen({
     if (onEmailLogin) {
       onEmailLogin();
     } else {
-      Alert.alert(
+      PlatformAlert.alert(
         'Próximamente',
         'El inicio de sesión con email estará disponible pronto.',
         [{ text: 'Entendido' }]
@@ -149,7 +148,7 @@ export function LoginScreen({
     if (onRecoverUser) {
       onRecoverUser();
     } else {
-      Alert.alert(
+      PlatformAlert.alert(
         'Recuperar Usuario',
         'Contacta a tu institución.',
         [{ text: 'Entendido' }]

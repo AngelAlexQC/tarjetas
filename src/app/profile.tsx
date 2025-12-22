@@ -8,12 +8,13 @@ import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useTour } from "@/contexts/tour-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { loggers } from "@/utils/logger";
+import { PlatformAlert } from "@/utils/platform-alert";
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type TabType = 'info' | 'version' | 'password';
@@ -46,7 +47,7 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = async () => {
-    Alert.alert(
+    PlatformAlert.alert(
       "Cerrar sesión",
       "¿Estás seguro de que quieres cerrar sesión? Se borrarán los datos locales y la aplicación se reiniciará.",
       [
@@ -164,7 +165,7 @@ export default function ProfileScreen() {
 
             <ThemedButton 
               title="Actualizar Contraseña" 
-              onPress={() => Alert.alert("Éxito", "Contraseña actualizada correctamente")}
+              onPress={() => PlatformAlert.alert("Éxito", "Contraseña actualizada correctamente")}
               style={{ marginTop: 16 }}
             />
           </View>

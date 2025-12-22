@@ -2,9 +2,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { loggers } from '@/utils/logger';
+import { PlatformAlert } from '@/utils/platform-alert';
 import * as LocalAuthentication from 'expo-local-authentication';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Modal, StyleSheet, View } from 'react-native';
 
 const log = loggers.biometric;
 
@@ -63,7 +64,7 @@ export function BiometricGuard({ isVisible, onSuccess, onCancel, reason = 'Confi
         setIsAuthenticating(false);
         if (result.error !== 'user_cancel' && result.error !== 'system_cancel') {
           // Si falla por error técnico (no cancelación), damos feedback
-          Alert.alert('Error', 'No pudimos verificar tu identidad.');
+          PlatformAlert.alert('Error', 'No pudimos verificar tu identidad.');
         }
         onCancelRef.current();
       }

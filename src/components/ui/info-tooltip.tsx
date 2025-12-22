@@ -8,10 +8,11 @@ import { CalendarIcon } from '@/components/ui/financial-icons';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { loggers } from '@/utils/logger';
+import { PlatformAlert } from '@/utils/platform-alert';
 import { BlurView } from 'expo-blur';
 import * as Calendar from 'expo-calendar';
 import React, { useState } from 'react';
-import { Alert, Dimensions, GestureResponderEvent, Linking, Modal, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { Dimensions, GestureResponderEvent, Linking, Modal, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
     Easing,
     FadeIn,
@@ -394,7 +395,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
     try {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permiso denegado', 'Se necesitan permisos de calendario para añadir el evento.');
+        PlatformAlert.alert('Permiso denegado', 'Se necesitan permisos de calendario para añadir el evento.');
         return;
       }
 
@@ -424,7 +425,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
       }
 
       if (!defaultCalendarId) {
-        Alert.alert('Error', 'No se encontró un calendario disponible para guardar el evento.');
+        PlatformAlert.alert('Error', 'No se encontró un calendario disponible para guardar el evento.');
         return;
       }
 
@@ -443,7 +444,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
         timeZone,
       });
       
-      Alert.alert(
+      PlatformAlert.alert(
         'Éxito',
         'Evento añadido al calendario correctamente',
         [
@@ -480,7 +481,7 @@ const TooltipContent: React.FC<TooltipContentProps> = ({
       
     } catch (error) {
       log.error('Error adding to calendar:', error);
-      Alert.alert('Error', 'Ocurrió un problema al intentar guardar el evento.');
+      PlatformAlert.alert('Error', 'Ocurrió un problema al intentar guardar el evento.');
     }
   };
 

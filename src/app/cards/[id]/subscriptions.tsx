@@ -9,9 +9,10 @@ import { PoweredBy } from '@/components/ui/powered-by';
 import { useCardOperation } from '@/hooks/cards';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import type { Subscription } from '@/repositories';
+import { PlatformAlert } from '@/utils/platform-alert';
 import { PauseCircle, PlayCircle } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
-import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 
 // Datos mock de suscripciones
@@ -42,7 +43,7 @@ export default function SubscriptionsScreen() {
     const newStatus = sub.status === 'active' ? 'paused' : 'active';
     const action = newStatus === 'active' ? 'reactivar' : 'pausar';
 
-    Alert.alert(
+    PlatformAlert.alert(
       `¿${action.charAt(0).toUpperCase() + action.slice(1)} suscripción?`,
       `¿Estás seguro que deseas ${action} el pago automático de ${sub.name}?`,
       [

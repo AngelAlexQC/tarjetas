@@ -5,11 +5,12 @@ import { ThemedButton } from '@/components/ui/themed-button';
 import { useTour } from '@/contexts/tour-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { loggers } from '@/utils/logger';
+import { PlatformAlert } from '@/utils/platform-alert';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Updates from 'expo-updates';
 import React from 'react';
-import { Alert, NativeModules, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { NativeModules, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const FAQ_ITEMS = [
@@ -46,7 +47,7 @@ export default function FaqScreen() {
   const { resetTour } = useTour();
 
   const handleResetTour = async () => {
-    Alert.alert(
+    PlatformAlert.alert(
       "Reiniciar Tour",
       "¿Quieres volver a ver el recorrido guiado de la aplicación?",
       [
