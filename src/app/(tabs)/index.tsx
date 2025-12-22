@@ -1,15 +1,17 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useAuth } from "@/contexts/auth-context";
 import { useTenantTheme } from "@/contexts/tenant-theme-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { useResponsiveLayout } from "@/hooks/use-responsive-layout";
 import { useTenants } from "@/hooks/use-tenants";
 import type { Tenant } from "@/repositories/schemas/tenant.schema";
+import { authStorage } from "@/utils/auth-storage";
 import { Ionicons } from '@expo/vector-icons';
 import { useScrollToTop } from '@react-navigation/native';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,11 +31,29 @@ export default function TenantSelectorScreen() {
 
   useScrollToTop(scrollRef);
   
-  // Usuario autenticado - esto debería venir de tu sistema de autenticación
-  const authenticatedUser = {
-    name: "Sofía",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-  };
+  // Estado para el nombre del usuario
+  const { user } = useAuth();
+  const [userName, setUserName] = useState<string>("Usuario");
+
+  useEffect(() => {
+    const loadName = async () => {
+      // 1. Intentar obtener nombre de instalación
+      const installationName = await authStorage.getInstallationName();
+      if (installationName) {
+        setUserName(installationName);
+        return;
+      }
+      
+      // 2. Si no hay nombre de instalación, usar nombre del usuario autenticado
+      if (user?.name) {
+         setUserName(user.name);
+         return;
+      }
+
+      // 3. Fallback a "Usuario" (ya seteado por defecto)
+    };
+    loadName();
+  }, [user]);
 
   const handleTenantSelect = async (tenant: Tenant) => {
     await setTenant(tenant);
@@ -131,17 +151,20 @@ export default function TenantSelectorScreen() {
               elevation: 8,
               borderColor: theme.colors.borderSubtle,
               borderWidth: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: theme.isDark ? '#2C2C2E' : '#F2F2F7',
             }]}>
-              <Image
-                source={{ uri: authenticatedUser.avatar }}
-                style={styles.userAvatar}
-                contentFit="cover"
+              <Ionicons 
+                name="person" 
+                size={40} 
+                color={theme.tenant.mainColor} 
               />
             </View>
           </Pressable>
           <View style={layout.isLandscape ? { flex: 1 } : undefined}>
             <ThemedText type="title" style={[styles.title, layout.isLandscape && { textAlign: 'left', fontSize: 24 }]}>
-              Hola, {authenticatedUser.name}
+              Hola, {userName}
             </ThemedText>
             {layout.isPortrait && (
               <ThemedText style={styles.subtitle}>
