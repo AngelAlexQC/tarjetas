@@ -5,23 +5,23 @@ import { InsuranceCarousel } from "@/components/cards/insurance/insurance-carous
 import { InsuranceDetailModal } from "@/components/cards/insurance/insurance-detail-modal";
 import { InsuranceResultModal } from "@/components/cards/insurance/insurance-result-modal";
 import { InstitutionSelectorHeader } from "@/components/institution-selector-header";
-import { ThemedView } from "@/ui/primitives/themed-view";
 import { AddToWalletButton } from "@/components/ui/add-to-wallet-button";
 import { FaqButton } from "@/components/ui/faq-button";
 import { LoadingScreen } from "@/components/ui/loading-screen";
 import { PoweredBy } from "@/components/ui/powered-by";
 import { useCardsScreen } from "@/domain/cards/hooks";
 import { useAppTheme, useResponsiveLayout } from "@/hooks";
+import { ThemedView } from "@/ui/primitives/themed-view";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import Animated, {
-  FadeInDown,
-  FadeInLeft,
-  FadeInUp,
-  FadeOut,
-  SlideInLeft,
-  SlideInRight,
-  ZoomIn,
-  ZoomOut,
+    FadeInDown,
+    FadeInLeft,
+    FadeInUp,
+    FadeOut,
+    SlideInLeft,
+    SlideInRight,
+    ZoomIn,
+    ZoomOut,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 

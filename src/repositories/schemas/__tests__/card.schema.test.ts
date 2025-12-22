@@ -5,10 +5,10 @@
  */
 
 import {
-  CardSchema,
-  BlockCardRequestSchema,
-  ChangePinRequestSchema,
-  DeferRequestSchema,
+    BlockCardRequestSchema,
+    CardSchema,
+    ChangePinRequestSchema,
+    DeferRequestSchema,
 } from '@/domain/cards/types/card.schema';
 
 describe('CardSchema', () => {

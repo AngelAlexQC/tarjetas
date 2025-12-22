@@ -1,9 +1,9 @@
 import { Insurance } from "@/components/cards/insurance/insurance-generator";
 import { useSplash } from "@/contexts/splash-context";
-import { Card, OperationResult } from "@/repositories";
-import { CardActionType } from "@/domain/cards/types/card-action.schema";
-import { cardActionRoute } from "@/types/routes";
 import { formatCurrency } from "@/core/formatters/currency";
+import { CardActionType } from "@/domain/cards/types/card-action.schema";
+import { Card, OperationResult } from "@/repositories";
+import { cardActionRoute } from "@/types/routes";
 import { PlatformAlert } from "@/utils/platform-alert";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native";
 import { useRouter } from "expo-router";

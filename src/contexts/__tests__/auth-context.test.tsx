@@ -2,11 +2,11 @@
  * Auth Context Tests
  */
 
+import { authStorage } from '@/core/storage/auth-storage';
+import { authRepository$ } from '@/repositories';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { AuthProvider, useAuth } from '../auth-context';
-import { authRepository$ } from '@/repositories';
-import { authStorage } from '@/core/storage/auth-storage';
 
 // Mock del repositorio de auth
 jest.mock('@/repositories', () => ({

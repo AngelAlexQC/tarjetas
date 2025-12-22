@@ -5,12 +5,12 @@ import { ThemedText } from '@/ui/primitives/themed-text';
 import { ArrowLeft } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
 } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,9 +20,9 @@ import { RegisterAccountSetupStep } from '@/components/auth/register-account-set
 import { RegisterClientVerificationStep } from '@/components/auth/register-client-verification-step';
 import { RegisterIdentificationStep } from '@/components/auth/register-identification-step';
 import { isValidEmail, isValidPassword, isValidPhone } from '@/country/common/validators';
-import { Ionicons } from '@expo/vector-icons';
 import { ThemedButton } from '@/ui/primitives/themed-button';
 import { useAppTheme, useResponsiveLayout } from '@/ui/theming';
+import { Ionicons } from '@expo/vector-icons';
 
 type Step = 'identification' | 'client-verification' | 'account-setup' | 'otp' | 'success';
 

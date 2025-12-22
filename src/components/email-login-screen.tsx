@@ -1,10 +1,10 @@
-import { ThemedText } from '@/ui/primitives/themed-text';
 import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
-import { ThemedButton } from '@/ui/primitives/themed-button';
-import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme, useResponsiveLayout } from '@/hooks';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { isValidEmail, loggers } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { ArrowLeft, LockKeyhole, Mail } from 'lucide-react-native';

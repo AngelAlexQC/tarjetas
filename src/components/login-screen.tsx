@@ -1,22 +1,22 @@
-import { ThemedText } from '@/ui/primitives/themed-text';
 import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
-import { ThemedButton } from '@/ui/primitives/themed-button';
-import { ThemedInput } from '@/ui/primitives/themed-input';
 import { FeedbackColors } from '@/constants';
 import { useAuth } from '@/contexts/auth-context';
 import { useAppTheme, useResponsiveLayout } from '@/hooks';
+import { ThemedButton } from '@/ui/primitives/themed-button';
+import { ThemedInput } from '@/ui/primitives/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { loggers, PlatformAlert } from '@/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { ImageBackground } from 'expo-image';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

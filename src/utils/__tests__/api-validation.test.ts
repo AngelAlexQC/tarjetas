@@ -4,6 +4,7 @@
  * Tests para las utilidades de validación que usan neverthrow Result pattern.
  */
 
+import { AppError, ErrorCode } from '@/core/types/result';
 import { z } from 'zod';
 import {
     createApiValidator,
@@ -11,7 +12,6 @@ import {
     validateApiData,
     validateOptionalApiData,
 } from '../api-validation';
-import { AppError, ErrorCode } from '@/core/types/result';
 
 // Test schemas
 const UserSchema = z.object({

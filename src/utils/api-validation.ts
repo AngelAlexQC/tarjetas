@@ -8,9 +8,9 @@
  * Los errores son valores explícitos, no excepciones.
  */
 
-import { z } from 'zod';
 import { loggers } from '@/core/logging/logger';
 import { AppError, err, ok, Result } from '@/core/types/result';
+import { z } from 'zod';
 
 const log = loggers.api;
 

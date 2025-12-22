@@ -2,9 +2,9 @@
  * Card Operation Hook Tests
  */
 
+import { cardRepository$ } from '@/repositories';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useCardOperation } from '../use-card-operation';
-import { cardRepository$ } from '@/repositories';
 
 // Mock del repositorio
 jest.mock('@/repositories', () => ({

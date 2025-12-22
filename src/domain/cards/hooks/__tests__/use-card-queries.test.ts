@@ -2,9 +2,9 @@
  * Card Queries Hook Tests
  */
 
+import { cardRepository$ } from '@/repositories';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useCardQueries } from '../use-card-queries';
-import { cardRepository$ } from '@/repositories';
 
 // Mock del repositorio
 jest.mock('@/repositories', () => ({

@@ -3,6 +3,11 @@
  * Combina tenant theme + design tokens + color scheme
  */
 
+import type { TenantTheme } from '@/constants/tenant-themes';
+import { useTenantTheme } from '@/contexts/tenant-theme-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import type { Tenant, TenantBranding } from '@/repositories/schemas/tenant.schema';
+import { useMemo } from 'react';
 import {
     ComponentTokens,
     getButtonGradient,
@@ -12,11 +17,6 @@ import {
     PrimitiveColors,
     SemanticColors,
 } from './design-tokens';
-import type { TenantTheme } from '@/constants/tenant-themes';
-import { useTenantTheme } from '@/contexts/tenant-theme-context';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import type { Tenant, TenantBranding } from '@/repositories/schemas/tenant.schema';
-import { useMemo } from 'react';
 
 export type ColorMode = 'light' | 'dark';
 export type GlassIntensity = 'light' | 'medium' | 'heavy';

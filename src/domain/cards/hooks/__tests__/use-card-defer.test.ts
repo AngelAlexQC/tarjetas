@@ -2,9 +2,9 @@
  * Card Defer Hook Tests
  */
 
+import { cardRepository$ } from '@/repositories';
 import { act, renderHook } from '@testing-library/react-native';
 import { useCardDefer } from '../use-card-defer';
-import { cardRepository$ } from '@/repositories';
 
 // Mock del repositorio
 jest.mock('@/repositories', () => ({

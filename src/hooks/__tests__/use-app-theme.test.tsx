@@ -3,9 +3,9 @@
  */
 
 import { TenantThemeProvider } from '@/contexts/tenant-theme-context';
+import { useAppTheme } from '@/ui/theming/use-app-theme';
 import { renderHook } from '@testing-library/react-native';
 import React from 'react';
-import { useAppTheme } from '@/ui/theming/use-app-theme';
 
 // Mock useColorScheme - configured per test via mockUseColorScheme
 const mockUseColorScheme = jest.fn(() => 'light');

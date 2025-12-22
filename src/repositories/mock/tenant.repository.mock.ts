@@ -6,8 +6,8 @@
  */
 
 import { API_CONFIG } from '@/core/http/config';
-import type { Tenant } from '../schemas/tenant.schema';
 import type { ITenantRepository } from '../interfaces/tenant.repository.interface';
+import type { Tenant } from '../schemas/tenant.schema';
 
 // Simula delay de red
 const delay = (ms: number = API_CONFIG.MOCK_DELAY) => 

@@ -2,8 +2,8 @@
  * Repository Container Tests
  */
 
-import { RepositoryContainer, cardRepository$, authRepository$ } from '../container';
 import { MockCardRepository } from '@/domain/cards/repository';
+import { RepositoryContainer, authRepository$, cardRepository$ } from '../container';
 import { MockAuthRepository } from '../mock/auth.repository.mock';
 
 // Mock the API_CONFIG

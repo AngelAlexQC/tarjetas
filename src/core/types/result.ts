@@ -32,7 +32,7 @@
  */
 
 // Re-exportar los tipos básicos de neverthrow
-export { err, ok, Result } from 'neverthrow';
+export { Result, err, ok } from 'neverthrow';
 
 // ============================================
 // APP ERROR - Error tipado de la aplicación

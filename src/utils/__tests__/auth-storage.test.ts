@@ -3,11 +3,11 @@
  */
 
 import { STORAGE_KEYS } from '@/constants/app';
+import { authStorage } from '@/core/storage/auth-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
-import { authStorage } from '@/core/storage/auth-storage';
 
 // Mock modules
 jest.mock('@react-native-async-storage/async-storage', () => ({
