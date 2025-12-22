@@ -98,12 +98,12 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
           </ThemedText>
           
           <View style={[styles.resultCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-            <ThemedText style={styles.resultLabel}>Tu usuario es:</ThemedText>
+            <ThemedText style={styles.resultLabel}>Hemos enviado tu usuario a:</ThemedText>
             <ThemedText type="title" style={{ color: theme.tenant.mainColor }}>
-              {recoveredData.username}
+              {recoveredData.maskedEmail}
             </ThemedText>
             <ThemedText style={styles.resultHint}>
-              Hemos enviado un correo de confirmación a {recoveredData.maskedEmail}
+              Revisa tu bandeja de entrada o spam para recuperar tu acceso.
             </ThemedText>
           </View>
 
@@ -181,7 +181,8 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
               label="Número de Documento"
               value={formData.documentId}
               onChangeText={(text) => setFormData({...formData, documentId: text})}
-              keyboardType="numeric"
+              keyboardType="number-pad"
+              returnKeyType="done"
               placeholder="Ej. 1723456789"
             />
 
@@ -207,7 +208,8 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
                 placeholder="DD/MM/AAAA"
                 value={formData.birthDate}
                 onChangeText={(text) => setFormData({...formData, birthDate: text})}
-                keyboardType="numeric"
+                keyboardType="number-pad"
+                returnKeyType="done"
                 maxLength={10}
               />
             ) : (
@@ -216,8 +218,11 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
                 placeholder="****"
                 value={formData.pin}
                 onChangeText={(text) => setFormData({...formData, pin: text})}
-                keyboardType="numeric"
+                keyboardType="number-pad"
+                returnKeyType="done"
                 secureTextEntry
+                textContentType="none"
+                autoComplete="off"
                 maxLength={4}
               />
             )}

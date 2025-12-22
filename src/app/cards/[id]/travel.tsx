@@ -116,6 +116,8 @@ export default function TravelNoticeScreen() {
             label="Destino (País/Ciudad)"
             value={destination}
             onChangeText={setDestination}
+            autoCapitalize="words"
+            returnKeyType="next"
             placeholder="Ej. Estados Unidos"
             containerStyle={{ marginBottom: 16 }}
           />
@@ -126,6 +128,7 @@ export default function TravelNoticeScreen() {
               value={startDate}
               onChangeText={setStartDate}
               placeholder="DD/MM/AAAA"
+              returnKeyType="next"
               keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'default'}
               containerStyle={{ flex: 1, marginRight: 8 }}
             />
@@ -134,6 +137,7 @@ export default function TravelNoticeScreen() {
               value={endDate}
               onChangeText={setEndDate}
               placeholder="DD/MM/AAAA"
+              returnKeyType="done"
               keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'default'}
               containerStyle={{ flex: 1, marginLeft: 8 }}
             />

@@ -57,6 +57,7 @@ export function RecoveryInputScreen({ formData, setFormData, error, setError, is
         placeholder="1234567890"
         value={formData.accountNumber}
         onChangeText={(text) => updateField('accountNumber', text)}
+        returnKeyType="next"
         keyboardType="number-pad"
         icon={<Hash size={20} color={theme.colors.textSecondary} />}
       />
@@ -68,6 +69,8 @@ export function RecoveryInputScreen({ formData, setFormData, error, setError, is
           value={formData.birthDate || formData.constitutionDate}
           onChangeText={(text) => updateField('birthDate', text)} // Simplified for now
           keyboardType="numbers-and-punctuation"
+          returnKeyType="done"
+          maxLength={10}
           icon={<Calendar size={20} color={theme.colors.textSecondary} />}
           helperText="Ejemplo: 01/01/1990"
         />
@@ -78,8 +81,11 @@ export function RecoveryInputScreen({ formData, setFormData, error, setError, is
           value={formData.cardPin}
           onChangeText={(text) => updateField('cardPin', text.replace(/[^0-9]/g, '').slice(0, 4))}
           keyboardType="number-pad"
+          returnKeyType="done"
           secureTextEntry
           maxLength={4}
+          textContentType="none"
+          autoComplete="off"
           icon={<CreditCard size={20} color={theme.colors.textSecondary} />}
         />
       )}

@@ -53,7 +53,7 @@ interface UseAuthFlowReturn extends UseAuthFlowState {
 export function useAuthFlow(): UseAuthFlowReturn {
   const router = useRouter();
   const segments = useSegments();
-  const { currentTheme, isLoading: isTenantLoading } = useTenantTheme();
+  const { currentTheme, isLoading: isTenantLoading, clearTenant } = useTenantTheme();
   const { isSplashComplete } = useSplash();
   const { 
     isAuthenticated, 
@@ -106,11 +106,14 @@ export function useAuthFlow(): UseAuthFlowReturn {
            setShowRecoverUser(false);
            setShowBiometricAccess(false);
            // We keep onboarding status as is (completed)
+           
+           // Clear in-memory tenant theme to revert to default
+           clearTenant();
         }
       };
       checkInstallationName();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, clearTenant]);
 
   // Extraer solo el slug para usarlo como dependencia (es un primitivo, no un objeto)
   const tenantSlug = currentTheme?.slug;

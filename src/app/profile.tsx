@@ -139,6 +139,8 @@ export default function ProfileScreen() {
               label="Contraseña actual"
               placeholder="Ingrese su contraseña actual"
               secureTextEntry
+              textContentType="password"
+              autoComplete="password"
               icon={<Ionicons name="lock-closed-outline" size={20} color={theme.colors.textSecondary} />}
             />
             
@@ -146,6 +148,8 @@ export default function ProfileScreen() {
               label="Nueva contraseña"
               placeholder="Ingrese su nueva contraseña"
               secureTextEntry
+              textContentType="newPassword"
+              autoComplete="password-new"
               icon={<Ionicons name="key-outline" size={20} color={theme.colors.textSecondary} />}
             />
             
@@ -153,6 +157,8 @@ export default function ProfileScreen() {
               label="Confirmar nueva contraseña"
               placeholder="Confirme su nueva contraseña"
               secureTextEntry
+              textContentType="newPassword"
+              autoComplete="password-new"
               icon={<Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.textSecondary} />}
             />
 

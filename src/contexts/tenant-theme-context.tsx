@@ -114,7 +114,8 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
   const clearTenant = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
-      setCurrentTheme(null);
+      setCurrentTheme(defaultTheme); // Reset to defaultTheme instead of null
+      cachedTheme = null; // Clear cache
       log.info('Tenant cleared');
     } catch (error) {
       log.error('Error clearing theme:', error);

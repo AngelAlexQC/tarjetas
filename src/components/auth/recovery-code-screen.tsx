@@ -49,6 +49,8 @@ export function RecoveryCodeScreen({
           setError('');
         }}
         keyboardType="number-pad"
+        textContentType="oneTimeCode"
+        autoComplete="sms-otp"
         maxLength={6}
         icon={<ShieldCheck size={20} color={theme.colors.textSecondary} />}
       />

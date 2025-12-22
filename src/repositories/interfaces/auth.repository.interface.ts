@@ -16,9 +16,10 @@ import type {
     ResetPasswordRequest,
     ResetPasswordResponse,
     User,
+    ValidateClientRequest,
+    ValidateClientResponse,
     VerifyEmailRequest,
     VerifyEmailResponse,
-    VerifyRecoveryCodeRequest,
     VerifyRecoveryCodeResponse,
 } from '../schemas/auth.schema';
 
@@ -44,4 +45,7 @@ export interface IAuthRepository {
   recoverUser(request: RecoverUserRequest): Promise<RecoverUserResponse>;
   verifyRecoveryCode(request: VerifyRecoveryCodeRequest): Promise<VerifyRecoveryCodeResponse>;
   resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse>;
+  
+  // Validación de Cliente (Nuevo flujo)
+  validateClient(request: ValidateClientRequest): Promise<ValidateClientResponse>;
 }

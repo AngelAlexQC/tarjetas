@@ -1,12 +1,8 @@
+import { OTPScreen } from '@/components/otp-screen';
 import { ThemedText } from '@/components/themed-text';
 import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
-import { ThemedButton } from '@/components/ui/themed-button';
-import { ThemedInput } from '@/components/ui/themed-input';
-import { FeedbackColors } from '@/constants';
 import { useAppTheme, useRegister, useResponsiveLayout } from '@/hooks';
-import { isValidEmail, isValidPassword, isValidPhone } from '@/utils';
-import { Ionicons } from '@expo/vector-icons';
-import { ArrowLeft, Mail, Phone, ShieldCheck, User, UserPlus } from 'lucide-react-native';
+import { ArrowLeft } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -16,387 +12,172 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-type Step = 'form' | 'verification' | 'success';
+// Pasos importados
+import { RegisterAccountSetupStep } from '@/components/auth/register-account-setup-step';
+import { RegisterClientVerificationStep } from '@/components/auth/register-client-verification-step';
+import { RegisterIdentificationStep } from '@/components/auth/register-identification-step';
+import { isValidEmail, isValidPassword, isValidPhone } from '@/utils';
+import { Ionicons } from '@expo/vector-icons';
+import { ThemedButton } from './ui/themed-button';
+
+type Step = 'identification' | 'client-verification' | 'account-setup' | 'otp' | 'success';
 
 interface RegisterScreenProps {
   onBack: () => void;
   onSuccess: () => void;
 }
 
-// Componente para el formulario de registro
-interface RegisterFormProps {
-  formData: {
-    fullName: string;
-    email: string;
-    phone: string;
-    username: string;
-    password: string;
-    confirmPassword: string;
-  };
-  setFormData: (data: RegisterFormProps['formData']) => void;
-  acceptedTerms: boolean;
-  setAcceptedTerms: (value: boolean) => void;
-  error: string;
-  setError: (value: string) => void;
-  isLoading: boolean;
-  onSubmit: () => void;
-}
-
-function RegisterForm({ 
-  formData, setFormData, acceptedTerms, setAcceptedTerms, 
-  error, setError, isLoading, onSubmit 
-}: RegisterFormProps) {
-  const theme = useAppTheme();
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
-  const [secureConfirmEntry, setSecureConfirmEntry] = useState(true);
-
-  const updateField = (field: keyof typeof formData, value: string) => {
-    setFormData({ ...formData, [field]: value });
-    setError('');
-  };
+// Hook personalizado para la lógica del nuevo flujo
+function useRegisterFlow() {
+  const { register, verifyEmail, resendCode, validateClient } = useRegister();
+  const [step, setStep] = useState<Step>('identification');
   
-  return (
-    <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.form}>
-      <View style={styles.stepInfo}>
-        <View style={[styles.iconCircle, { backgroundColor: `${theme.tenant.mainColor}15` }]}>
-          <UserPlus size={32} color={theme.tenant.mainColor} />
-        </View>
-        <ThemedText type="subtitle" style={styles.stepTitle}>
-          Crear cuenta
-        </ThemedText>
-        <ThemedText style={[styles.stepDescription, { color: theme.colors.textSecondary }]}>
-          Completa tus datos para registrarte en la plataforma.
-        </ThemedText>
-      </View>
-
-      <ThemedInput
-        label="Nombre completo"
-        placeholder="Juan Pérez"
-        value={formData.fullName}
-        onChangeText={(text) => updateField('fullName', text)}
-        autoCapitalize="words"
-        icon={<User size={20} color={theme.colors.textSecondary} />}
-      />
-
-      <ThemedInput
-        label="Correo electrónico"
-        placeholder="correo@ejemplo.com"
-        value={formData.email}
-        onChangeText={(text) => updateField('email', text)}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        icon={<Mail size={20} color={theme.colors.textSecondary} />}
-      />
-
-      <ThemedInput
-        label="Teléfono"
-        placeholder="+593 999 999 999"
-        value={formData.phone}
-        onChangeText={(text) => updateField('phone', text)}
-        keyboardType="phone-pad"
-        icon={<Phone size={20} color={theme.colors.textSecondary} />}
-      />
-
-      <ThemedInput
-        label="Nombre de usuario"
-        placeholder="juanperez"
-        value={formData.username}
-        onChangeText={(text) => updateField('username', text.toLowerCase().replace(/\s/g, ''))}
-        autoCapitalize="none"
-        autoCorrect={false}
-        icon={<User size={20} color={theme.colors.textSecondary} />}
-      />
-
-      <View>
-        <ThemedInput
-          label="Contraseña"
-          placeholder="••••••••••••"
-          value={formData.password}
-          onChangeText={(text) => updateField('password', text)}
-          secureTextEntry={secureTextEntry}
-          autoCapitalize="none"
-        />
-        <Pressable
-          onPress={() => setSecureTextEntry(!secureTextEntry)}
-          style={styles.togglePassword}
-        >
-          <Ionicons
-            name={secureTextEntry ? 'eye-off-outline' : 'eye-outline'}
-            size={20}
-            color={theme.colors.textSecondary}
-          />
-        </Pressable>
-      </View>
-
-      <View>
-        <ThemedInput
-          label="Confirmar contraseña"
-          placeholder="••••••••••••"
-          value={formData.confirmPassword}
-          onChangeText={(text) => updateField('confirmPassword', text)}
-          secureTextEntry={secureConfirmEntry}
-          autoCapitalize="none"
-        />
-        <Pressable
-          onPress={() => setSecureConfirmEntry(!secureConfirmEntry)}
-          style={styles.togglePassword}
-        >
-          <Ionicons
-            name={secureConfirmEntry ? 'eye-off-outline' : 'eye-outline'}
-            size={20}
-            color={theme.colors.textSecondary}
-          />
-        </Pressable>
-      </View>
-
-      <Pressable 
-        onPress={() => setAcceptedTerms(!acceptedTerms)}
-        style={styles.termsRow}
-      >
-        <Ionicons
-          name={acceptedTerms ? 'checkbox' : 'square-outline'}
-          size={24}
-          color={theme.tenant.mainColor}
-        />
-        <ThemedText style={styles.termsText}>
-          Acepto los{' '}
-          <ThemedText style={[styles.termsLink, { color: theme.tenant.mainColor }]}>
-            términos y condiciones
-          </ThemedText>
-          {' '}y la{' '}
-          <ThemedText style={[styles.termsLink, { color: theme.tenant.mainColor }]}>
-            política de privacidad
-          </ThemedText>
-        </ThemedText>
-      </Pressable>
-
-      {error && (
-        <Animated.View entering={FadeInDown.duration(300)}>
-          <ThemedText style={styles.errorText}>{error}</ThemedText>
-        </Animated.View>
-      )}
-
-      <ThemedButton
-        title="Crear Cuenta"
-        onPress={onSubmit}
-        variant="primary"
-        loading={isLoading}
-        disabled={isLoading || !acceptedTerms}
-        style={styles.actionButton}
-      />
-    </Animated.View>
-  );
-}
-
-// Componente para el paso de verificación
-interface VerificationStepProps {
-  email: string;
-  code: string;
-  setCode: (value: string) => void;
-  error: string;
-  setError: (value: string) => void;
-  isLoading: boolean;
-  onVerify: () => void;
-  onResend: () => void;
-}
-
-function VerificationStep({ 
-  email, code, setCode, error, setError, isLoading, onVerify, onResend 
-}: VerificationStepProps) {
-  const theme = useAppTheme();
+  // State for Step 1
+  const [documentId, setDocumentId] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   
-  return (
-    <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.form}>
-      <View style={styles.stepInfo}>
-        <View style={[styles.iconCircle, { backgroundColor: `${theme.tenant.mainColor}15` }]}>
-          <ShieldCheck size={32} color={theme.tenant.mainColor} />
-        </View>
-        <ThemedText type="subtitle" style={styles.stepTitle}>
-          Verifica tu cuenta
-        </ThemedText>
-        <ThemedText style={[styles.stepDescription, { color: theme.colors.textSecondary }]}>
-          Hemos enviado un código de 6 dígitos a {email}
-        </ThemedText>
-      </View>
-
-      <ThemedInput
-        label="Código de verificación"
-        placeholder="000000"
-        value={code}
-        onChangeText={(text) => {
-          setCode(text.replace(/[^0-9]/g, '').slice(0, 6));
-          setError('');
-        }}
-        keyboardType="number-pad"
-        maxLength={6}
-        icon={<ShieldCheck size={20} color={theme.colors.textSecondary} />}
-      />
-
-      {error && (
-        <Animated.View entering={FadeInDown.duration(300)}>
-          <ThemedText style={styles.errorText}>{error}</ThemedText>
-        </Animated.View>
-      )}
-
-      <Pressable onPress={onResend} disabled={isLoading}>
-        <ThemedText style={[styles.link, { color: theme.tenant.mainColor }]}>
-          ¿No recibiste el código? Reenviar
-        </ThemedText>
-      </Pressable>
-
-      <ThemedButton
-        title="Verificar"
-        onPress={onVerify}
-        variant="primary"
-        loading={isLoading}
-        disabled={isLoading || code.length !== 6}
-        style={styles.actionButton}
-      />
-    </Animated.View>
-  );
-}
-
-// Componente para el paso de éxito
-interface SuccessStepProps {
-  onSuccess: () => void;
-}
-
-function SuccessStep({ onSuccess }: SuccessStepProps) {
-  const theme = useAppTheme();
+  // State for Step 2
+  const [clientName, setClientName] = useState('');
   
-  return (
-    <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.form}>
-      <View style={styles.stepInfo}>
-        <View style={[styles.successCircle, { backgroundColor: '#10b981' }]}>
-          <Ionicons name="checkmark" size={48} color="#FFFFFF" />
-        </View>
-        <ThemedText type="subtitle" style={styles.stepTitle}>
-          ¡Cuenta creada!
-        </ThemedText>
-        <ThemedText style={[styles.stepDescription, { color: theme.colors.textSecondary }]}>
-          Tu cuenta ha sido creada exitosamente. Ya puedes iniciar sesión.
-        </ThemedText>
-      </View>
-
-      <ThemedButton
-        title="Iniciar Sesión"
-        onPress={onSuccess}
-        variant="primary"
-        style={styles.actionButton}
-      />
-    </Animated.View>
-  );
-}
-
-// Función de validación externa
-interface FormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  username: string;
-  password: string;
-  confirmPassword: string;
-}
-
-const validateRegistrationForm = (formData: FormData, acceptedTerms: boolean): string | null => {
-  if (!formData.fullName.trim()) return 'Ingresa tu nombre completo';
-  if (!formData.email.trim() || !isValidEmail(formData.email.trim())) return 'Ingresa un correo electrónico válido';
-  if (!formData.phone.trim() || !isValidPhone(formData.phone)) return 'Ingresa un número de teléfono válido';
-  if (!formData.username.trim() || formData.username.length < 4) return 'El usuario debe tener al menos 4 caracteres';
-  if (!isValidPassword(formData.password)) return 'La contraseña debe tener al menos 8 caracteres';
-  if (formData.password !== formData.confirmPassword) return 'Las contraseñas no coinciden';
-  if (!acceptedTerms) return 'Debes aceptar los términos y condiciones';
-  return null;
-};
-
-// Hook personalizado para la lógica de registro
-function useRegisterLogic() {
-  const { register, verifyEmail, resendCode } = useRegister();
-  const [step, setStep] = useState<Step>('form');
-  const [formData, setFormData] = useState<FormData>({
-    fullName: '', email: '', phone: '', username: '', password: '', confirmPassword: '',
+  // State for Step 3
+  const [accountData, setAccountData] = useState({
+    username: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
   });
-  const [verificationCode, setVerificationCode] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  // Common State
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
 
-  const handleRegister = useCallback(async () => {
+  // Step 1: Validate Identity
+  const handleValidateClient = useCallback(async () => {
     setError('');
-    const validationError = validateRegistrationForm(formData, acceptedTerms);
-    if (validationError) {
-      setError(validationError);
+    setIsLoading(true);
+    try {
+      // Usamos CC por defecto para este ejemplo, pero podría ser configurable
+      const result = await validateClient({
+        documentType: 'CC', 
+        documentId, 
+        birthDate
+      });
+      
+      if (result.success && result.data?.clientName) {
+        setClientName(result.data.clientName);
+        setStep('client-verification');
+      } else {
+        setError(result.error || result.data?.message || 'Cliente no encontrado o datos incorrectos');
+      }
+    } catch (e: any) {
+      setError(e.message || 'Error al validar cliente');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [documentId, birthDate, validateClient]);
+
+  // Step 2: Confirm Identity
+  const handleConfirmIdentity = () => setStep('account-setup');
+
+  // Step 3: Create Account
+  const handleCreateAccount = useCallback(async () => {
+    setError('');
+    
+    // Validations
+    if (!isValidEmail(accountData.email)) {
+      setError('Email inválido');
       return;
     }
+    if (!isValidPhone(accountData.phone)) {
+      setError('Teléfono inválido');
+      return;
+    }
+    if (accountData.username.length < 4) {
+      setError('El usuario debe tener al menos 4 caracteres');
+      return;
+    }
+    if (!isValidPassword(accountData.password)) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+    if (accountData.password !== accountData.confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const result = await register({
-        email: formData.email.trim(),
-        password: formData.password,
-        fullName: formData.fullName.trim(),
-        phone: formData.phone.trim(),
-        username: formData.username.trim(),
+        fullName: clientName, // Use validated name
+        email: accountData.email,
+        phone: accountData.phone,
+        username: accountData.username,
+        password: accountData.password,
+        documentId,
+        documentType: 'CC'
       });
+
       if (result.success) {
-        setStep('verification');
+        setStep('otp');
       } else {
-        setError(result.error || 'Error al crear la cuenta. Intenta de nuevo.');
+        setError(result.error || 'Error al crear cuenta');
       }
-    } catch {
-      setError('Error al crear la cuenta. Intenta de nuevo.');
+    } catch (e: any) {
+      setError('Error al crear cuenta');
     } finally {
       setIsLoading(false);
     }
-  }, [formData, acceptedTerms, register]);
+  }, [accountData, clientName, documentId, register]);
 
-  const handleVerify = useCallback(async () => {
+  // Step 4: OTP
+  const handleVerifyOtp = useCallback(async (code: string) => { // Accept code as arg
     setError('');
-    if (verificationCode.length !== 6) {
-      setError('El código debe tener 6 dígitos');
-      return;
+    if (code.length !== 6) {
+        setError('El código debe tener 6 dígitos');
+        return;
     }
     setIsLoading(true);
     try {
-      const result = await verifyEmail({ 
-        email: formData.email.trim(), 
-        code: verificationCode 
+      const result = await verifyEmail({
+        email: accountData.email,
+        code: code
       });
+      
       if (result.success) {
         setStep('success');
       } else {
-        setError(result.error || 'Código incorrecto. Intenta de nuevo.');
+        setError(result.error || 'Código incorrecto');
       }
-    } catch {
-      setError('Código incorrecto. Intenta de nuevo.');
+    } catch (e) {
+      setError('Código incorrecto');
     } finally {
       setIsLoading(false);
     }
-  }, [verificationCode, formData.email, verifyEmail]);
+  }, [accountData.email, verifyEmail]);
 
-  const handleResendCode = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await resendCode(formData.email.trim());
-      if (result.success) {
-        setError('');
-      } else {
-        setError(result.error || 'Error al reenviar el código.');
-      }
-    } catch {
-      setError('Error al reenviar el código.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formData.email, resendCode]);
+  const handleResendOtp = useCallback(async () => {
+     setIsLoading(true);
+     await resendCode(accountData.email);
+     setIsLoading(false);
+  }, [accountData.email, resendCode]);
 
   return {
-    step, setStep, formData, setFormData, verificationCode, setVerificationCode,
-    acceptedTerms, setAcceptedTerms, isLoading, error, setError,
-    handleRegister, handleVerify, handleResendCode,
+    step, setStep,
+    documentId, setDocumentId,
+    birthDate, setBirthDate,
+    clientName, 
+    accountData, setAccountData,
+    isLoading, error, setError,
+    handleValidateClient,
+    handleConfirmIdentity,
+    handleCreateAccount,
+    handleVerifyOtp,
+    handleResendOtp
   };
 }
 
@@ -405,39 +186,72 @@ export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
   const layout = useResponsiveLayout();
   const insets = useSafeAreaInsets();
   
-  const logic = useRegisterLogic();
+  const logic = useRegisterFlow();
   const containerMaxWidth = Math.min(layout.screenWidth * 0.9, 420);
 
-  const renderStepContent = () => {
+  const renderContent = () => {
     switch (logic.step) {
-      case 'form':
+      case 'identification':
         return (
-          <RegisterForm 
-            formData={logic.formData} 
-            setFormData={logic.setFormData} 
-            acceptedTerms={logic.acceptedTerms} 
-            setAcceptedTerms={logic.setAcceptedTerms} 
-            error={logic.error} 
-            setError={logic.setError} 
-            isLoading={logic.isLoading} 
-            onSubmit={logic.handleRegister} 
+          <RegisterIdentificationStep
+            documentId={logic.documentId}
+            setDocumentId={logic.setDocumentId}
+            birthDate={logic.birthDate}
+            setBirthDate={logic.setBirthDate}
+            onContinue={logic.handleValidateClient}
+            isLoading={logic.isLoading}
           />
         );
-      case 'verification':
+      case 'client-verification':
         return (
-          <VerificationStep 
-            email={logic.formData.email} 
-            code={logic.verificationCode} 
-            setCode={logic.setVerificationCode} 
+          <RegisterClientVerificationStep
+            clientName={logic.clientName}
+            onConfirm={logic.handleConfirmIdentity}
+            onBack={() => logic.setStep('identification')}
+          />
+        );
+      case 'account-setup':
+        return (
+          <RegisterAccountSetupStep
+            formData={logic.accountData}
+            setFormData={logic.setAccountData}
+            onSubmit={logic.handleCreateAccount}
+            isLoading={logic.isLoading}
+            error={logic.error}
+            setError={logic.setError}
+          />
+        );
+      case 'otp':
+        return (
+           <OTPScreen 
+            email={logic.accountData.email} 
+            onVerify={logic.handleVerifyOtp}
+            onResend={logic.handleResendOtp}
+            isLoading={logic.isLoading} 
             error={logic.error} 
             setError={logic.setError} 
-            isLoading={logic.isLoading} 
-            onVerify={logic.handleVerify} 
-            onResend={logic.handleResendCode} 
           />
         );
       case 'success':
-        return <SuccessStep onSuccess={onSuccess} />;
+        return (
+           <Animated.View entering={FadeInUp.duration(600)} style={styles.successContainer}>
+              <View style={[styles.successCircle, { backgroundColor: '#10b981' }]}>
+                <Ionicons name="checkmark" size={48} color="#FFFFFF" />
+              </View>
+              <ThemedText type="subtitle" style={styles.successTitle}>
+                ¡Registro Completo!
+              </ThemedText>
+              <ThemedText style={[styles.successDesc, { color: theme.colors.textSecondary }]}>
+                 Tu cuenta ha sido creada y verificada exitosamente.
+              </ThemedText>
+              <ThemedButton 
+                title="Iniciar Sesión" 
+                onPress={onSuccess} 
+                variant="primary" 
+                style={{ width: '100%', marginTop: 20 }}
+              />
+           </Animated.View>
+        );
       default:
         return null;
     }
@@ -462,7 +276,7 @@ export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
       >
         {logic.step !== 'success' && (
           <Animated.View entering={FadeInUp.duration(400)} style={styles.header}>
-            <Pressable onPress={onBack} style={styles.backButton}>
+            <Pressable onPress={logic.step === 'identification' ? onBack : () => logic.setStep('identification')} style={styles.backButton}>
               <ArrowLeft size={24} color={theme.colors.text} />
             </Pressable>
           </Animated.View>
@@ -473,7 +287,7 @@ export function RegisterScreen({ onBack, onSuccess }: RegisterScreenProps) {
           style={[styles.content, { maxWidth: containerMaxWidth }]}
         >
           <AuthLogoHeader size="medium" />
-          {renderStepContent()}
+          {renderContent()}
         </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -501,21 +315,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  form: {
+  successContainer: {
     width: '100%',
-    gap: 16,
-  },
-  stepInfo: {
     alignItems: 'center',
-    marginBottom: 24,
-  },
-  iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+    padding: 20,
   },
   successCircle: {
     width: 80,
@@ -523,49 +326,14 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
-  stepTitle: {
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  stepDescription: {
-    textAlign: 'center',
-    fontSize: 14,
-    lineHeight: 20,
-    paddingHorizontal: 16,
-  },
-  togglePassword: {
-    position: 'absolute',
-    right: 16,
-    top: 38,
-  },
-  termsRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
-  },
-  termsText: {
-    flex: 1,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  termsLink: {
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
-  errorText: {
-    color: FeedbackColors.error,
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: -8,
-  },
-  link: {
-    fontSize: 14,
-    fontWeight: '500',
+  successTitle: {
+    marginBottom: 10,
     textAlign: 'center',
   },
-  actionButton: {
-    marginTop: 8,
+  successDesc: {
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });

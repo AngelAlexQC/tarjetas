@@ -11,13 +11,13 @@ import { ImageBackground } from 'expo-image';
 import { LockKeyhole, Mail, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -242,6 +242,8 @@ function LoginForm({
         onChangeText={setUsername}
         autoCapitalize="none"
         autoCorrect={false}
+        textContentType="username"
+        autoComplete="username"
         icon={<User size={20} color={theme.colors.textSecondary} />}
         error={error && !username ? 'Campo requerido' : undefined}
       />
@@ -253,6 +255,8 @@ function LoginForm({
         onChangeText={setPassword}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
+        textContentType="password"
+        autoComplete="password"
         icon={<LockKeyhole size={20} color={theme.colors.textSecondary} />}
         rightIcon={
           <Pressable onPress={() => setSecureTextEntry(!secureTextEntry)}>

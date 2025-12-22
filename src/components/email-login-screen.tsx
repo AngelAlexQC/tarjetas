@@ -10,12 +10,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { ArrowLeft, LockKeyhole, Mail } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
 } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -166,6 +166,8 @@ export function EmailLoginScreen({ onBack, onLoginSuccess, onForgotPassword }: E
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              textContentType="emailAddress"
+              autoComplete="email"
               icon={<Mail size={20} color={theme.colors.textSecondary} />}
             />
 
@@ -180,6 +182,8 @@ export function EmailLoginScreen({ onBack, onLoginSuccess, onForgotPassword }: E
                 }}
                 secureTextEntry={secureTextEntry}
                 autoCapitalize="none"
+                textContentType="password"
+                autoComplete="password"
                 icon={<LockKeyhole size={20} color={theme.colors.textSecondary} />}
               />
               <Pressable

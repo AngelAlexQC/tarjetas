@@ -54,6 +54,8 @@ export function RecoveryNewPasswordScreen({
           }}
           secureTextEntry={secureTextEntry}
           autoCapitalize="none"
+          textContentType="newPassword"
+          autoComplete="password-new"
           icon={<KeyRound size={20} color={theme.colors.textSecondary} />}
         />
         <Pressable
@@ -79,6 +81,8 @@ export function RecoveryNewPasswordScreen({
           }}
           secureTextEntry={secureConfirmEntry}
           autoCapitalize="none"
+          textContentType="newPassword"
+          autoComplete="password-new"
           icon={<KeyRound size={20} color={theme.colors.textSecondary} />}
         />
         <Pressable

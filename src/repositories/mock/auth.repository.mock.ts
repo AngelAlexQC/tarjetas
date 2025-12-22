@@ -18,6 +18,8 @@ import type {
     ResetPasswordRequest,
     ResetPasswordResponse,
     User,
+    ValidateClientRequest,
+    ValidateClientResponse,
     VerifyEmailRequest,
     VerifyEmailResponse,
     VerifyRecoveryCodeRequest,
@@ -56,8 +58,8 @@ export class MockAuthRepository implements IAuthRepository {
       throw new Error('Por favor completa todos los campos');
     }
 
-    if (request.password.length < 4) {
-      throw new Error('La contraseña debe tener al menos 4 caracteres');
+    if (request.password.length < 1) {
+      throw new Error('La contraseña debe tener al menos 1 caracter');
     }
 
     // Simular autenticación exitosa
@@ -243,6 +245,30 @@ export class MockAuthRepository implements IAuthRepository {
     return {
       success: true,
       message: 'Contraseña actualizada exitosamente',
+    };
+  }
+
+  // ============================================
+  // VALIDACIÓN CLIENTE (Mock)
+  // ============================================
+
+  async validateClient(request: ValidateClientRequest): Promise<ValidateClientResponse> {
+    await delay();
+
+    // Mock logic: 
+    // ID ending in 1 = Success
+    // ID ending in 0 = Not Found
+    // Other = Error
+
+    if (request.documentId.endsWith('0')) {
+      throw new Error('Cliente no encontrado');
+    }
+    
+    // Simulate finding a client
+    return {
+      success: true,
+      clientName: 'Juan Pérez Consumer', // Placeholder Mock Name
+      message: 'Cliente validado',
     };
   }
 }

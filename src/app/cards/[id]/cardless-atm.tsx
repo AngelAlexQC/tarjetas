@@ -143,6 +143,7 @@ export default function CardlessAtmScreen() {
             value={amount}
             onChangeText={setAmount}
             keyboardType="decimal-pad"
+            returnKeyType="done"
             placeholder="0.00"
             containerStyle={{ marginTop: 16 }}
           />

@@ -75,6 +75,23 @@ export const VerifyEmailResponseSchema = z.object({
   user: UserSchema.optional(),
 });
 
+
+// ============================================
+// CLIENT VALIDATION
+// ============================================
+
+export const ValidateClientRequestSchema = z.object({
+  documentType: z.string().min(1, 'Tipo de documento requerido'),
+  documentId: z.string().min(1, 'Número de documento requerido'),
+  birthDate: z.string().min(1, 'Fecha de nacimiento requerida'),
+});
+
+export const ValidateClientResponseSchema = z.object({
+  success: z.boolean(),
+  clientName: z.string().optional(),
+  message: z.string().optional(),
+});
+
 // ============================================
 // USER RECOVERY
 // ============================================
@@ -189,6 +206,8 @@ export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 export type RegisterResponse = z.infer<typeof RegisterResponseSchema>;
 export type VerifyEmailRequest = z.infer<typeof VerifyEmailRequestSchema>;
 export type VerifyEmailResponse = z.infer<typeof VerifyEmailResponseSchema>;
+export type ValidateClientRequest = z.infer<typeof ValidateClientRequestSchema>;
+export type ValidateClientResponse = z.infer<typeof ValidateClientResponseSchema>;
 
 // Password recovery types
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;

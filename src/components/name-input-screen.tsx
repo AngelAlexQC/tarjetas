@@ -77,6 +77,8 @@ export function NameInputScreen({ onContinue }: NameInputScreenProps) {
               onChangeText={setName}
               autoCapitalize="words"
               autoFocus
+              textContentType="name"
+              autoComplete="name"
               icon={<Ionicons name="happy-outline" size={20} color={theme.colors.textSecondary} />}
             />
 

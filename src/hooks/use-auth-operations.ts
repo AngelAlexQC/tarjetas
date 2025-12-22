@@ -9,11 +9,11 @@
 
 import { authRepository$ } from '@/repositories';
 import type {
-  ForgotPasswordRequest,
-  RegisterRequest,
-  ResetPasswordRequest,
-  VerifyEmailRequest,
-  VerifyRecoveryCodeRequest,
+    RegisterRequest,
+    ResetPasswordRequest,
+    ValidateClientRequest,
+    VerifyEmailRequest,
+    VerifyRecoveryCodeRequest,
 } from '@/repositories/schemas/auth.schema';
 import { loggers } from '@/utils/logger';
 import { useCallback, useState } from 'react';
@@ -76,6 +76,21 @@ export function useRegister() {
     }
   }, []);
 
+  const validateClient = useCallback(async (request: ValidateClientRequest) => {
+    setState({ isLoading: true, error: null });
+    try {
+      const repo = authRepository$();
+      const result = await repo.validateClient(request);
+      setState({ isLoading: false, error: null });
+      return { success: true, data: result };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error al validar cliente';
+      log.error('Validate client error:', error);
+      setState({ isLoading: false, error: message });
+      return { success: false, error: message };
+    }
+  }, []);
+
   const clearError = useCallback(() => {
     setState(prev => ({ ...prev, error: null }));
   }, []);
@@ -85,6 +100,7 @@ export function useRegister() {
     register,
     verifyEmail,
     resendCode,
+    validateClient,
     clearError,
   };
 }
