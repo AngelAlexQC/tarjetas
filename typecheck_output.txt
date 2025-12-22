@@ -1,6 +1,0 @@
-
-> financiero@1.0.0 typecheck
-> tsc --noEmit
-
-src/components/auth/recovery-input-screen.tsx(72,11): error TS2322: Type '{ label: string; placeholder: string; value: string; onChangeText: (text: string) => void; keyboardType: "numbers-and-punctuation"; icon: Element; helperText: string; }' is not assignable to type 'IntrinsicAttributes & ThemedInputProps'.
-  Property 'helperText' does not exist on type 'IntrinsicAttributes & ThemedInputProps'.

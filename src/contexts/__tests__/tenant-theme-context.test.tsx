@@ -2,11 +2,11 @@
  * Tenant Theme Context Tests
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { useColorScheme } from 'react-native';
 import { TenantThemeProvider, useTenantTheme, useThemedColors } from '../tenant-theme-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -58,14 +58,14 @@ describe('TenantThemeContext', () => {
   });
 
   describe('useTenantTheme hook', () => {
-    it('should throw error when used outside provider', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    it('should return fallback when used outside provider', () => {
+      // useTenantTheme returns a fallback instead of throwing
+      const { result } = renderHook(() => useTenantTheme());
       
-      expect(() => {
-        renderHook(() => useTenantTheme());
-      }).toThrow('useTenantTheme must be used within a TenantThemeProvider');
-      
-      consoleSpy.mockRestore();
+      // Should return default theme gracefully
+      expect(result.current.currentTheme).toBeDefined();
+      expect(result.current.currentTheme?.slug).toBe('default');
+      expect(result.current.isLoading).toBe(false);
     });
   });
 

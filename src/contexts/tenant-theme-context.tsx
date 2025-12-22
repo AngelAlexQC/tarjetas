@@ -36,44 +36,48 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
 
   // Cargar tema guardado al iniciar
   useEffect(() => {
-    loadSavedTheme();
-  }, []);
+    const validateAndLoadTenant = async (parsed: Tenant) => {
+      try {
+        const repo = RepositoryContainer.getTenantRepository();
+        const current = await repo.getTenantById(parsed.id);
+        
+        if (current) {
+          setCurrentTheme(current);
+          log.info(`Loaded tenant: ${current.name}`);
+        } else {
+          log.warn('Saved tenant no longer exists, clearing');
+          await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
+        }
+      } catch {
+        log.warn('Could not verify tenant, using cached version');
+        setCurrentTheme(parsed);
+      }
+    };
 
-  const loadSavedTheme = async () => {
-    try {
-      const savedTheme = await AsyncStorage.getItem(STORAGE_KEYS.TENANT_THEME);
-      if (savedTheme) {
+    const loadSavedTheme = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem(STORAGE_KEYS.TENANT_THEME);
+        if (!savedTheme) {
+          return;
+        }
+
         const parsed = JSON.parse(savedTheme);
         
-        // Si es un tenant nuevo (con branding y features), validar que aún exista
-        if ('branding' in parsed && 'features' in parsed) {
-          try {
-            const repo = RepositoryContainer.getTenantRepository();
-            const current = await repo.getTenantById(parsed.id);
-            
-            if (current) {
-              setCurrentTheme(current); // Usar versión actualizada
-              log.info(`Loaded tenant: ${current.name}`);
-            } else {
-              log.warn('Saved tenant no longer exists, clearing');
-              await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
-            }
-          } catch {
-            // Si falla la verificación, usar lo guardado (modo offline)
-            log.warn('Could not verify tenant, using cached version');
-            setCurrentTheme(parsed);
-          }
-        } else {
-          // Formato antiguo, mantener compatibilidad
+        if (!('branding' in parsed && 'features' in parsed)) {
           setCurrentTheme(parsed);
+          return;
         }
+
+        await validateAndLoadTenant(parsed);
+      } catch (error) {
+        log.error('Error loading saved theme:', error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      log.error('Error loading saved theme:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    loadSavedTheme();
+  }, []);
 
   const setTenant = async (tenant: TenantThemeType) => {
     try {

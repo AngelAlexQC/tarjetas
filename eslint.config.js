@@ -11,22 +11,22 @@ module.exports = [
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       // TypeScript
-      '@typescript-eslint/no-unused-vars': ['warn', { 
+      '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
       }],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      
+
       // React Hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // General
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-const': 'error',
       'no-var': 'error',
-      
+
       // Complexity (ayuda a mantener código limpio)
       // Límites relajados para screens y componentes complejos de UI
       'max-lines-per-function': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
@@ -40,6 +40,19 @@ module.exports = [
     rules: {
       'max-lines-per-function': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    // Componentes UI complejos que requieren más líneas por su naturaleza visual
+    files: [
+      '**/statements.tsx',
+      '**/card-financial-info.tsx',
+      '**/insurance-detail-modal.tsx',
+    ],
+    rules: {
+      'max-lines-per-function': ['warn', { max: 600, skipBlankLines: true, skipComments: true }],
+      'complexity': ['warn', 35],
     },
   },
 ];

@@ -169,6 +169,39 @@ export const formatDateTime = (
 };
 
 /**
+ * Helper: Get relative time text based on unit and value
+ */
+const getRelativeText = (
+  value: number,
+  unit: 'day' | 'hour' | 'minute' | 'now',
+  isPast: boolean,
+  isSpanish: boolean
+): string => {
+  if (unit === 'now') {
+    return isSpanish ? 'ahora' : 'now';
+  }
+
+  if (unit === 'day' && value === 1) {
+    return isPast 
+      ? (isSpanish ? 'ayer' : 'yesterday')
+      : (isSpanish ? 'mañana' : 'tomorrow');
+  }
+
+  const units: Record<string, { es: string; en: string; spaced: boolean }> = {
+    day: { es: 'días', en: 'days', spaced: true },
+    hour: { es: 'h', en: 'h', spaced: false },
+    minute: { es: 'm', en: 'm', spaced: false },
+  };
+
+  const unit_info = units[unit];
+  const space = unit_info.spaced ? ' ' : '';
+  if (isPast) {
+    return isSpanish ? `hace ${value}${space}${unit_info.es}` : `${value} ${unit_info.en} ago`;
+  }
+  return isSpanish ? `en ${value}${space}${unit_info.es}` : `in ${value} ${unit_info.en}`;
+};
+
+/**
  * Formatea una fecha de manera relativa (hace X tiempo)
  * @param date - Fecha a formatear
  * @param locale - Locale a usar
@@ -185,41 +218,30 @@ export const formatRelativeDate = (
 
     const now = new Date();
     const diffInSeconds = Math.floor((dateObj.getTime() - now.getTime()) / 1000);
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const diffInDays = Math.floor(diffInHours / 24);
-
     const isPast = diffInSeconds < 0;
-    const absDays = Math.abs(diffInDays);
-    const absHours = Math.abs(diffInHours);
-    const absMinutes = Math.abs(diffInMinutes);
-
     const isSpanish = locale.startsWith('es');
 
-    // Determinar la unidad más apropiada
+    const absSeconds = Math.abs(diffInSeconds);
+    const absMinutes = Math.floor(absSeconds / 60);
+    const absHours = Math.floor(absMinutes / 60);
+    const absDays = Math.floor(absHours / 24);
+
+    // Más de 7 días: mostrar fecha absoluta
     if (absDays >= 7) {
-      // Más de 7 días: mostrar fecha absoluta
       return formatDate(dateObj, { locale, dateStyle: 'medium' });
-    } else if (absDays >= 1) {
-      if (absDays === 1) {
-        return isPast 
-          ? (isSpanish ? 'ayer' : 'yesterday')
-          : (isSpanish ? 'mañana' : 'tomorrow');
-      }
-      return isPast
-        ? (isSpanish ? `hace ${absDays} días` : `${absDays} days ago`)
-        : (isSpanish ? `en ${absDays} días` : `in ${absDays} days`);
-    } else if (absHours >= 1) {
-      return isPast
-        ? (isSpanish ? `hace ${absHours}h` : `${absHours}h ago`)
-        : (isSpanish ? `en ${absHours}h` : `in ${absHours}h`);
-    } else if (absMinutes >= 1) {
-      return isPast
-        ? (isSpanish ? `hace ${absMinutes}m` : `${absMinutes}m ago`)
-        : (isSpanish ? `en ${absMinutes}m` : `in ${absMinutes}m`);
-    } else {
-      return isSpanish ? 'ahora' : 'now';
     }
+    
+    // Determinar unidad apropiada
+    if (absDays >= 1) {
+      return getRelativeText(absDays, 'day', isPast, isSpanish);
+    }
+    if (absHours >= 1) {
+      return getRelativeText(absHours, 'hour', isPast, isSpanish);
+    }
+    if (absMinutes >= 1) {
+      return getRelativeText(absMinutes, 'minute', isPast, isSpanish);
+    }
+    return getRelativeText(0, 'now', isPast, isSpanish);
   } catch (error) {
     log.warn('Error formateando fecha relativa:', error);
     return 'Fecha inválida';

@@ -20,8 +20,8 @@ export function useUserRecovery(): UseUserRecoveryReturn {
     try {
       const response = await repository.recoverUser(request);
       return response;
-    } catch (err: any) {
-      const errorMessage = err.message || 'No se pudo recuperar el usuario';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'No se pudo recuperar el usuario';
       setError(errorMessage);
       return { success: false, username: '', maskedEmail: '' };
     } finally {

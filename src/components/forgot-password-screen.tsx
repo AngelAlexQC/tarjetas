@@ -103,23 +103,10 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
     }
     setIsLoading(true);
     try {
-      // Note: We might need to pass email/account again if backend is stateless, usually email is the key.
-      // But verifyRecoveryCode schema asks for 'email'. 
-      // ERROR: The updated schema for verifyRecoveryCodeRequestSchema still requires 'email'.
-      // We probably need to update that schema too if we want to support Account Number verification!
-      // However, usually the first step returns a TEMPORARY TOKEN or we blindly use the associated email.
-      // For now, let's assume Mock/Real accepts 'accountNumber' in place of email if I update the Interface/Schema suitable for verification too.
-      // Let's check `VerifyRecoveryCodeRequestSchema` in auth.schema.ts again.
-      // It says: email: z.string().email(), code: z.string().
-      
-      // I NEED TO FIX VerifyRecoveryCodeRequestSchema too!
-      // But for this step, I'll assume account number can be passed as "email" (hack) or I update the schema.
-      // I BETTER UPDATE THE SCHEMA FOR `VerifyRecoveryCodeRequest` as well.
-      
-      const result = await verifyCode({ 
-        email: formData.accountNumber, // Passing Account Number as Identifier for now
+      const result = await verifyCode({
+        email: formData.accountNumber,
         code 
-      } as any); // Casting as any to bypass strict check if I haven't updated that specific schema yet.
+      });
       
       if (result.success) {
         setStep('newPassword');
@@ -146,11 +133,11 @@ export function ForgotPasswordScreen({ onBack, onSuccess }: ForgotPasswordScreen
     }
     setIsLoading(true);
     try {
-      const result = await resetPassword({ 
-        email: formData.accountNumber, // Passing Account Number for now
+      const result = await resetPassword({
+        email: formData.accountNumber,
         code, 
         newPassword 
-      } as any);
+      });
       if (result.success) {
         setStep('success');
       } else {

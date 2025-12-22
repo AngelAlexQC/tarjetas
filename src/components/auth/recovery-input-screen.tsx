@@ -17,7 +17,7 @@ interface RecoveryInputScreenProps {
     cardPin: string;
     verificationMethod: 'dob' | 'pin'; // 'constitution' could be merged with 'dob' as 'date'
   };
-  setFormData: (data: any) => void;
+  setFormData: (data: Partial<RecoveryInputScreenProps['formData']> & RecoveryInputScreenProps['formData']) => void;
   error: string;
   setError: (value: string) => void;
   isLoading: boolean;

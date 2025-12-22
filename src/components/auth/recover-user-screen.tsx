@@ -6,7 +6,6 @@ import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useAppTheme } from '@/hooks/use-app-theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
     KeyboardAvoidingView,
@@ -30,22 +29,24 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
   const { currentTheme } = useTenantTheme(); // Access tenant config for allowed ID types
   const layout = useResponsiveLayout();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  
   
   const { recoverUser, isLoading, error, setError } = useUserRecovery();
   
   const [step, setStep] = useState<'input' | 'success'>('input');
   const [recoveredData, setRecoveredData] = useState<{username: string, maskedEmail: string} | null>(null);
   
+  const tenantFeatures = currentTheme && 'features' in currentTheme ? currentTheme.features : null;
+  
   const [formData, setFormData] = useState({
-    documentType: (currentTheme as any)?.features?.auth?.allowedDocumentTypes?.[0] || 'CC',
+    documentType: tenantFeatures?.auth?.allowedDocumentTypes?.[0] || 'CC',
     documentId: '',
     birthDate: '',
     pin: '',
     verificationMethod: 'dob' as 'dob' | 'pin',
   });
 
-  const allowedDocTypes = (currentTheme as any)?.features?.auth?.allowedDocumentTypes || ['CC', 'CE', 'PAS'];
+  const allowedDocTypes = tenantFeatures?.auth?.allowedDocumentTypes || ['CC', 'CE', 'PAS'];
 
   const handleRecover = async () => {
     if (!formData.documentId) {

@@ -7,9 +7,10 @@ import { renderHook } from '@testing-library/react-native';
 import React from 'react';
 import { useAppTheme } from '../use-app-theme';
 
-// Mock useColorScheme
+// Mock useColorScheme - configured per test via mockUseColorScheme
+const mockUseColorScheme = jest.fn(() => 'light');
 jest.mock('@/hooks/use-color-scheme', () => ({
-  useColorScheme: jest.fn(() => 'light'),
+  useColorScheme: () => mockUseColorScheme(),
 }));
 
 // Mock AsyncStorage (required by TenantThemeContext)
@@ -38,11 +39,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
   <TenantThemeProvider>{children}</TenantThemeProvider>
 );
 
-// Import mock at top level
-const mockUseColorScheme = jest.fn();
-jest.mock('@/hooks/use-color-scheme', () => ({
-  useColorScheme: mockUseColorScheme,
-}));
+
 
 describe('useAppTheme', () => {
 

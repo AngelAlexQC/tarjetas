@@ -58,10 +58,10 @@ export function useAuthFlow(): UseAuthFlowReturn {
     isBiometricAvailable,
     enableBiometric 
   } = useAuth();
-  const { setAppReady, pauseTour, resumeTour } = useTour();
+  const { setAppReady, resumeTour } = useTour();
 
   const initialCheckDone = useRef(false);
-  const appState = useRef<AppStateStatus>(AppState.currentState);
+  const _appState = useRef<AppStateStatus>(AppState.currentState);
   const lastBiometricSuccess = useRef<number>(0);
 
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
@@ -82,7 +82,7 @@ export function useAuthFlow(): UseAuthFlowReturn {
         
         setShowOnboarding(!onboardingCompleted);
         setShowNameInput(!installationName);
-      } catch (error) {
+      } catch {
         setShowOnboarding(true);
         setShowNameInput(true);
       }

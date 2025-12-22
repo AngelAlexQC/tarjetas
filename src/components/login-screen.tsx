@@ -158,7 +158,10 @@ export function LoginScreen({
   };
 
   const containerMaxWidth = Math.min(layout.screenWidth * 0.9, 420);
-  const bgImage = (theme.tenant as any).branding?.images?.loginBackground;
+  
+  // Access login background from tenant branding images (optional feature)
+  type TenantWithBranding = { branding?: { images?: { loginBackground?: string } } };
+  const bgImage = (theme.tenant as TenantWithBranding).branding?.images?.loginBackground;
 
   return (
     <ImageBackground

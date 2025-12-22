@@ -29,16 +29,18 @@ jest.mock('react-native-reanimated', () => {
   const { View } = require('react-native');
   return {
     default: {
-        View: View,
-        createAnimatedComponent: (component: any) => component,
+      View,
+      createAnimatedComponent: (component: any) => component,
     },
+    View,
     FadeInUp: {
-        duration: () => ({ delay: () => ({}) }),
-        springify: () => ({}),
+      duration: () => ({ delay: () => ({}) }),
+      springify: () => ({}),
+      delay: () => ({ duration: () => ({}) }),
     },
     FadeInDown: {
-        duration: () => ({ delay: () => ({}) }),
-        delay: () => ({ duration: () => ({}) }),
+      duration: () => ({ delay: () => ({}) }),
+      delay: () => ({ duration: () => ({}) }),
     },
   };
 });
@@ -93,20 +95,21 @@ describe('NameInputScreen', () => {
   });
 
   it('disables continue button when input is empty', () => {
-    const { getByText, getByTestId } = render(<NameInputScreen onContinue={mockOnContinue} />);
-    const button = getByTestId('themed-button'); // Find the mocked button by testID
-    expect(button.props.disabled).toBe(true);
+    const { getByTestId } = render(<NameInputScreen onContinue={mockOnContinue} />);
+    const button = getByTestId('themed-button');
+    // TouchableOpacity sets accessibilityState.disabled when disabled prop is true
+    expect(button.props.accessibilityState?.disabled).toBe(true);
   });
 
   it('enables continue button when input has text', () => {
-    const { getByPlaceholderText, getByText, getByTestId } = render(<NameInputScreen onContinue={mockOnContinue} />);
+    const { getByPlaceholderText, getByTestId } = render(<NameInputScreen onContinue={mockOnContinue} />);
     
-    // "Ej. Sofía"
     const input = getByPlaceholderText('Ej. Sofía');
     fireEvent.changeText(input, 'Sofia');
 
     const button = getByTestId('themed-button');
-    expect(button.props.disabled).toBe(false);
+    // When disabled=false, accessibilityState.disabled should be false or undefined
+    expect(button.props.accessibilityState?.disabled).toBeFalsy();
   });
 
   it('calls onContinue with trimmed name', () => {
