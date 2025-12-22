@@ -53,7 +53,7 @@ jobs:
         run: npm audit --json > npm-audit-report.json || true
 
       - name: Upload npm audit report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: npm-audit-report
           path: npm-audit-report.json
@@ -63,7 +63,7 @@ jobs:
         run: npm run test:ci
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage
           path: coverage/
@@ -115,7 +115,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload OWASP Dependency Check report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: owasp-dependency-check-report
@@ -192,14 +192,14 @@ jobs:
           node scripts/generate-professional-sonar-report.js
 
       - name: Upload PDF Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sonar-quality-report-pdf
           path: output/sonar-professional-report.pdf
           retention-days: 30
 
       - name: Upload HTML Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sonar-quality-report-html
           path: output/sonar-professional-report.html
