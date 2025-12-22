@@ -5,6 +5,8 @@ import { FeedbackColors } from '@/constants';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useAppTheme } from '@/ui/theming';
 import { useResponsiveLayout } from '@/ui/theming/use-responsive-layout';
+import { useCountryConfig } from '@/hooks';
+import { DocumentTypeSelector } from '@/components/ui/document-type-selector';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -26,10 +28,10 @@ interface RecoverUserScreenProps {
 
 export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps) {
   const theme = useAppTheme();
-  const { currentTheme } = useTenantTheme(); // Access tenant config for allowed ID types
+  const { currentTheme } = useTenantTheme();
   const layout = useResponsiveLayout();
   const insets = useSafeAreaInsets();
-  
+  const { validators, documentTypes, documentTypeDetails, countryName } = useCountryConfig();
   
   const { recoverUser, isLoading, error, setError } = useUserRecovery();
   
@@ -38,19 +40,28 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
   
   const tenantFeatures = currentTheme && 'features' in currentTheme ? currentTheme.features : null;
   
+  // Usar documentTypes del país o fallback a tenant features
+  const allowedDocTypes = documentTypes.length > 0 
+    ? documentTypes 
+    : (tenantFeatures?.auth?.allowedDocumentTypes || ['CC', 'CE', 'PAS']);
+  
   const [formData, setFormData] = useState({
-    documentType: tenantFeatures?.auth?.allowedDocumentTypes?.[0] || 'CC',
+    documentType: allowedDocTypes[0] || 'CC',
     documentId: '',
     birthDate: '',
     pin: '',
     verificationMethod: 'dob' as 'dob' | 'pin',
   });
 
-  const allowedDocTypes = tenantFeatures?.auth?.allowedDocumentTypes || ['CC', 'CE', 'PAS'];
-
   const handleRecover = async () => {
     if (!formData.documentId) {
       setError('Ingresa tu número de documento');
+      return;
+    }
+
+    // Validar documento con validadores del país
+    if (validators?.nationalId && !validators.nationalId(formData.documentId)) {
+      setError(`Documento inválido para ${countryName || 'este país'}`);
       return;
     }
 
@@ -163,22 +174,16 @@ export function RecoverUserScreen({ onBack, onSuccess }: RecoverUserScreenProps)
           )}
 
           <View style={styles.form}>
-            {/* Document Type Selector (Simplified as Input for now, ideally a picker) */}
-             <View style={styles.typeSelector}>
-                 {allowedDocTypes.map((type: string) => (
-                   <ThemedButton
-                      key={type}
-                      title={type}
-                      variant={formData.documentType === type ? 'primary' : 'outline'}
-                      onPress={() => setFormData({...formData, documentType: type})}
-                      style={{ flex: 1, marginHorizontal: 4, minWidth: 60 }}
-                      textStyle={{ fontSize: 12 }}
-                   />
-                 ))}
-             </View>
+            <DocumentTypeSelector
+              documentTypes={allowedDocTypes}
+              documentTypeDetails={documentTypeDetails}
+              selectedType={formData.documentType}
+              onSelect={(type) => setFormData({...formData, documentType: type})}
+              disabled={isLoading}
+            />
 
             <ThemedInput
-              label="Número de Documento"
+              label={`Número de ${formData.documentType}`}
               value={formData.documentId}
               onChangeText={(text: string) => setFormData({...formData, documentId: text})}
               keyboardType="number-pad"
@@ -295,12 +300,6 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 14,
-  },
-  typeSelector: {
-    flexDirection: 'row',
-    marginBottom: 8,
-    flexWrap: 'wrap',
-    gap: 8,
   },
   methodToggle: {
     flexDirection: 'row',

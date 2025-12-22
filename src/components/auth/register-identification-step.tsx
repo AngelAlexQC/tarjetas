@@ -2,6 +2,8 @@ import { ThemedText } from '@/ui/primitives/themed-text';
 import { ThemedButton } from '@/ui/primitives/themed-button';
 import { ThemedInput } from '@/ui/primitives/themed-input';
 import { useAppTheme } from '@/ui/theming';
+import { useCountryConfig } from '@/hooks';
+import { DocumentTypeSelector } from '@/components/ui/document-type-selector';
 import { Calendar, User } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -25,7 +27,10 @@ export function RegisterIdentificationStep({
   isLoading,
 }: RegisterIdentificationStepProps) {
   const theme = useAppTheme();
+  const { validators, documentTypes, documentTypeDetails, countryName } = useCountryConfig();
   const [dateError, setDateError] = useState('');
+  const [documentError, setDocumentError] = useState('');
+  const [selectedDocType, setSelectedDocType] = useState(documentTypes[0] || 'CC');
 
   // Mascara de fecha DD/MM/AAAA
   const handleDateChange = (text: string) => {
@@ -58,7 +63,28 @@ export function RegisterIdentificationStep({
     }
   };
 
-  const isValid = documentId.length >= 8 && birthDate.length === 10 && !dateError;
+  const handleDocumentChange = (text: string) => {
+    setDocumentId(text);
+    setDocumentError('');
+    
+    // Validar cuando tenga contenido
+    if (text.length > 0 && validators?.nationalId) {
+      if (!validators.nationalId(text)) {
+        setDocumentError(`Documento inválido para ${countryName || 'este país'}`);
+      }
+    }
+  };
+
+  const handleContinue = () => {
+    // Validar documento antes de continuar
+    if (validators?.nationalId && !validators.nationalId(documentId)) {
+      setDocumentError(`Documento inválido para ${countryName || 'este país'}`);
+      return;
+    }
+    onContinue();
+  };
+
+  const isValid = documentId.length >= 8 && birthDate.length === 10 && !dateError && !documentError;
 
   return (
     <Animated.View entering={FadeInDown.duration(400)} style={styles.container}>
@@ -68,19 +94,29 @@ export function RegisterIdentificationStep({
         </ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
           Ingresa tus datos para validar tu identidad en el banco.
+          {countryName && ` País: ${countryName}`}
         </ThemedText>
       </View>
 
       <View style={styles.form}>
+        <DocumentTypeSelector
+          documentTypes={documentTypes}
+          documentTypeDetails={documentTypeDetails}
+          selectedType={selectedDocType}
+          onSelect={setSelectedDocType}
+          disabled={isLoading}
+        />
+
         <ThemedInput
-          label="Número de Identificación"
+          label={`Número de ${selectedDocType}`}
           value={documentId}
-          onChangeText={(text: string) => setDocumentId(text.replace(/[^0-9]/g, ''))}
+          onChangeText={handleDocumentChange}
           keyboardType="number-pad"
-          maxLength={13}
+          maxLength={18}
           returnKeyType="done"
           placeholder="Ej: 1712345678"
           icon={<User size={20} color={theme.colors.textSecondary} />}
+          error={documentError}
         />
 
         <ThemedInput
@@ -97,7 +133,7 @@ export function RegisterIdentificationStep({
 
         <ThemedButton
           title="Continuar"
-          onPress={onContinue}
+          onPress={handleContinue}
           variant="primary"
           loading={isLoading}
           disabled={!isValid || isLoading}
