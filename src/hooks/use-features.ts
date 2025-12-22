@@ -5,8 +5,8 @@
  * Permite feature flags dinámicos basados en la configuración del backend.
  */
 
-import type { CardActionType } from '@/constants/card-actions';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
+import type { CardActionType } from '@/repositories/schemas/card-action.schema';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
 
 interface UseFeatures {

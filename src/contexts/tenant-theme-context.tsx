@@ -4,7 +4,7 @@ import { RepositoryContainer } from '@/repositories';
 import type { Tenant } from '@/repositories/schemas/tenant.schema';
 import { loggers } from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
 const log = loggers.theme;
@@ -29,19 +29,39 @@ const TenantThemeContext = createContext<TenantThemeContextType | undefined>(und
 
 let hasWarnedMissingProvider = false;
 
+// Variables a nivel de módulo para persistir entre remounts
+let hasLoadedTheme = false;
+let cachedTheme: TenantThemeType | null = null;
+
+export const resetThemeCacheForTesting = () => {
+  hasLoadedTheme = false;
+  cachedTheme = null;
+};
+
 export function TenantThemeProvider({ children }: { children: ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<TenantThemeType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentTheme, setCurrentTheme] = useState<TenantThemeType | null>(cachedTheme);
+  const [isLoading, setIsLoading] = useState(!hasLoadedTheme);
   const colorScheme = useRNColorScheme() ?? 'light';
 
   // Cargar tema guardado al iniciar
   useEffect(() => {
+    // Guard para evitar ejecuciones múltiples (persiste entre remounts)
+    if (hasLoadedTheme) {
+      // Si ya cargamos antes, usar el tema cacheado
+      if (cachedTheme && !currentTheme) {
+        setCurrentTheme(cachedTheme);
+      }
+      return;
+    }
+    hasLoadedTheme = true;
+
     const validateAndLoadTenant = async (parsed: Tenant) => {
       try {
         const repo = RepositoryContainer.getTenantRepository();
         const current = await repo.getTenantById(parsed.id);
         
         if (current) {
+          cachedTheme = current;
           setCurrentTheme(current);
           log.info(`Loaded tenant: ${current.name}`);
         } else {
@@ -50,6 +70,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         log.warn('Could not verify tenant, using cached version');
+        cachedTheme = parsed;
         setCurrentTheme(parsed);
       }
     };
@@ -64,6 +85,7 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(savedTheme);
         
         if (!('branding' in parsed && 'features' in parsed)) {
+          cachedTheme = parsed;
           setCurrentTheme(parsed);
           return;
         }
@@ -77,9 +99,9 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     };
 
     loadSavedTheme();
-  }, []);
+  }, [currentTheme]);
 
-  const setTenant = async (tenant: TenantThemeType) => {
+  const setTenant = useCallback(async (tenant: TenantThemeType) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.TENANT_THEME, JSON.stringify(tenant));
       setCurrentTheme(tenant);
@@ -87,9 +109,9 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       log.error('Error saving theme:', error);
     }
-  };
+  }, []);
 
-  const clearTenant = async () => {
+  const clearTenant = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.TENANT_THEME);
       setCurrentTheme(null);
@@ -97,18 +119,18 @@ export function TenantThemeProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       log.error('Error clearing theme:', error);
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    currentTheme: currentTheme || defaultTheme,
+    colorScheme,
+    setTenant,
+    clearTenant,
+    isLoading,
+  }), [currentTheme, colorScheme, setTenant, clearTenant, isLoading]);
 
   return (
-    <TenantThemeContext.Provider
-      value={{
-        currentTheme: currentTheme || defaultTheme,
-        colorScheme,
-        setTenant,
-        clearTenant,
-        isLoading,
-      }}
-    >
+    <TenantThemeContext.Provider value={contextValue}>
       {children}
     </TenantThemeContext.Provider>
   );

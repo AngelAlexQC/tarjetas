@@ -1,32 +1,6 @@
-import type { FinancialIconType } from '@/components/ui/financial-icons';
+import { ICardActionRepository } from '@/repositories/interfaces/card-action.repository.interface';
+import { CardAction } from '@/repositories/schemas/card-action.schema';
 
-export type CardActionType =
-  | 'block'
-  | 'unblock'
-  | 'defer'
-  | 'statement'
-  | 'advances'
-  | 'limits'
-  | 'pin'
-  | 'subscriptions'
-  | 'pay'
-  | 'cardless_atm'
-  | 'travel'
-  | 'channels'
-  | 'cvv'
-  | 'replace'
-  | 'rewards';
-
-export interface CardAction {
-  id: CardActionType;
-  title: string;
-  description: string;
-  icon: FinancialIconType;
-  color: string;
-  requiresAuth?: boolean;
-}
-
-// Constante interna - usar getAvailableActions() para obtener acciones filtradas
 const CARD_ACTIONS: CardAction[] = [
   {
     id: 'pay',
@@ -134,31 +108,30 @@ const CARD_ACTIONS: CardAction[] = [
   },
 ];
 
-/**
- * Obtiene las acciones disponibles según el tipo de tarjeta
- * Crédito: todas las acciones
- * Débito: sin diferir ni avances
- * Virtual: sin PIN físico
- */
-export function getAvailableActions(cardType: 'credit' | 'debit' | 'virtual'): CardAction[] {
-  let actions = [...CARD_ACTIONS];
+export class MockCardActionRepository implements ICardActionRepository {
+  async getActions(cardType: 'credit' | 'debit' | 'virtual'): Promise<CardAction[]> {
+    // Simular delay de red
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-  if (cardType === 'debit') {
-    // Débito: no puede diferir, avances, pagar tarjeta, recompensas
-    actions = actions.filter(action => 
-      !['defer', 'advances', 'pay', 'rewards'].includes(action.id)
-    );
-  } else if (cardType === 'credit') {
-      // Crédito: no retiro sin tarjeta (usualmente es avance)
+    let actions = [...CARD_ACTIONS];
+
+    if (cardType === 'debit') {
+      // Débito: no puede diferir, avances, pagar tarjeta, recompensas
+      actions = actions.filter(action => 
+        !['defer', 'advances', 'pay', 'rewards'].includes(action.id)
+      );
+    } else if (cardType === 'credit') {
+        // Crédito: no retiro sin tarjeta (usualmente es avance)
+         actions = actions.filter(action => 
+        !['cardless_atm'].includes(action.id)
+      );
+    } else if (cardType === 'virtual') {
+      // Virtual: no PIN, no reposición física, no retiro cajero (a menos que sea NFC), no viaje (no física)
        actions = actions.filter(action => 
-      !['cardless_atm'].includes(action.id)
-    );
-  } else if (cardType === 'virtual') {
-    // Virtual: no PIN, no reposición física, no retiro cajero (a menos que sea NFC), no viaje (no física)
-     actions = actions.filter(action => 
-      !['pin', 'replace', 'cardless_atm', 'travel'].includes(action.id)
-    );
+        !['pin', 'replace', 'cardless_atm', 'travel'].includes(action.id)
+      );
+    }
+    
+    return actions;
   }
-  
-  return actions;
 }

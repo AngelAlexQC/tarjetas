@@ -1,8 +1,9 @@
 import { ThemedText } from '@/components/themed-text';
 import { FinancialIcons } from '@/components/ui/financial-icons';
-import { CardAction, CardActionType, getAvailableActions } from '@/constants/card-actions';
 import { useAppTheme } from '@/hooks/use-app-theme';
+import { useCardActions } from '@/hooks/use-card-actions';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { CardAction, CardActionType } from '@/repositories/schemas/card-action.schema';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, ColorValue, FlatList, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
@@ -78,10 +79,12 @@ const ActionButton = ({ action, onPress, isLoading }: { action: CardAction, onPr
   );
 };
 
-export function CardActionsGrid({ cardType, isLoading, onActionPress }: CardActionsGridProps) {
+export function CardActionsGrid({ cardType, isLoading: propsIsLoading, onActionPress }: CardActionsGridProps) {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();
-  const availableActions = getAvailableActions(cardType);
+  const { actions: availableActions, isLoading: actionsLoading } = useCardActions(cardType);
+  
+  const isLoading = propsIsLoading || actionsLoading;
 
   // Determinar si usar grid o carrusel horizontal
   const useGrid = layout.isLandscape || layout.screenWidth >= 768;

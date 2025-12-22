@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { useColorScheme } from 'react-native';
-import { TenantThemeProvider, useTenantTheme, useThemedColors } from '../tenant-theme-context';
+import { resetThemeCacheForTesting, TenantThemeProvider, useTenantTheme, useThemedColors } from '../tenant-theme-context';
 
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -54,6 +54,7 @@ describe('TenantThemeContext', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    resetThemeCacheForTesting();
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
   });
 
@@ -204,6 +205,7 @@ describe('TenantThemeContext', () => {
 describe('useThemedColors', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resetThemeCacheForTesting();
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
   });
 

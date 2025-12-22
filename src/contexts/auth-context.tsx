@@ -1,7 +1,7 @@
 import { authRepository$, User } from '@/repositories';
 import { authStorage } from '@/utils/auth-storage';
 import { loggers } from '@/utils/logger';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const log = loggers.auth;
 
@@ -121,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [isBiometricAvailable]);
 
-  const value: AuthContextType = {
+  const value = useMemo<AuthContextType>(() => ({
     user,
     isAuthenticated: !!user,
     isLoading,
@@ -135,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     rememberUsername: authStorage.rememberUsername,
     getRememberedUsername: authStorage.getRememberedUsername,
     clearRememberedUsername: authStorage.clearRememberedUsername,
-  };
+  }), [user, isLoading, isBiometricEnabled, isBiometricAvailable, login, logout, enableBiometric, disableBiometric, authenticateWithBiometric]);
 
   return (
     <AuthContext.Provider value={value}>

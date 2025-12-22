@@ -1,7 +1,7 @@
 import { Insurance } from "@/components/cards/insurance/insurance-generator";
-import { CardActionType } from "@/constants/card-actions";
 import { useSplash } from "@/contexts/splash-context";
 import { Card, OperationResult } from "@/repositories";
+import { CardActionType } from "@/repositories/schemas/card-action.schema";
 import { cardActionRoute } from "@/types/routes";
 import { formatCurrency } from "@/utils/formatters/currency";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native";

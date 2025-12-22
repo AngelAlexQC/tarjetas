@@ -23,7 +23,7 @@
 // Importar RepositoryContainer para tenant accessor
 import { RepositoryContainer } from './container';
 
-export { RepositoryContainer, authRepository$, cardRepository$ } from './container';
+export { authRepository$, cardRepository$, RepositoryContainer } from './container';
 
 // Interfaces (para typing)
 export type { IAuthRepository } from './interfaces/auth.repository.interface';
@@ -34,3 +34,4 @@ export * from './schemas';
 
 // Tenant repository accessor
 export const tenantRepository$ = () => RepositoryContainer.getTenantRepository();
+export const cardActionRepository$ = () => RepositoryContainer.getCardActionRepository();

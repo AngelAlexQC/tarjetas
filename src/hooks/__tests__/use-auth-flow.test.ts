@@ -26,6 +26,7 @@ jest.mock('@/utils/auth-storage', () => ({
 }));
 jest.mock('expo-router', () => ({
   useRouter: jest.fn(),
+  useSegments: jest.fn().mockReturnValue([]),
 }));
 jest.mock('@/constants/app', () => ({
   TIMING: {

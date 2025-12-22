@@ -10,11 +10,12 @@
  */
 
 import { TIMING } from '@/constants/app';
+import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/contexts/auth-context';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useTour } from '@/contexts/tour-context';
 import { authStorage } from '@/utils/auth-storage';
-import { useRouter } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 
@@ -50,6 +51,7 @@ interface UseAuthFlowReturn extends UseAuthFlowState {
 
 export function useAuthFlow(): UseAuthFlowReturn {
   const router = useRouter();
+  const segments = useSegments();
   const { currentTheme, isLoading: isTenantLoading } = useTenantTheme();
   const { 
     isAuthenticated, 
@@ -90,27 +92,37 @@ export function useAuthFlow(): UseAuthFlowReturn {
     loadState();
   }, []);
 
+  // Extraer solo el slug para usarlo como dependencia (es un primitivo, no un objeto)
+  const tenantSlug = currentTheme?.slug;
+
   // Navegación después de la autenticación
   useEffect(() => {
     if (!isTenantLoading && !initialCheckDone.current && isAuthenticated) {
       initialCheckDone.current = true;
-      const hasTenant = currentTheme && currentTheme.slug !== 'default';
+      const hasTenant = tenantSlug && tenantSlug !== 'default';
       
+      const inTabs = segments[0] === '(tabs)';
+      const inCards = segments[1] === 'cards';
+
       if (hasTenant) {
-        router.replace('/(tabs)/cards');
+        if (!inTabs || !inCards) {
+           router.replace(ROUTES.CARDS);
+        }
         setTimeout(setAppReady, TIMING.APP_READY_DELAY_WITH_TENANT);
       } else {
-        router.replace('/(tabs)');
+        if (!inTabs) {
+          router.replace(ROUTES.TABS);
+        }
         setTimeout(setAppReady, TIMING.APP_READY_DELAY_WITHOUT_TENANT);
       }
     }
-  }, [isTenantLoading, isAuthenticated, currentTheme, router, setAppReady]);
+  }, [isTenantLoading, isAuthenticated, tenantSlug, router, setAppReady, segments]);
 
   // Helper para navegar según el estado del tenant
   const navigateToMain = useCallback(() => {
-    const hasTenant = currentTheme && currentTheme.slug !== 'default';
-    router.replace(hasTenant ? '/(tabs)/cards' : '/(tabs)');
-  }, [currentTheme, router]);
+    const hasTenant = tenantSlug && tenantSlug !== 'default';
+    router.replace(hasTenant ? ROUTES.CARDS : ROUTES.TABS);
+  }, [tenantSlug, router]);
 
   // Handlers
   const handleOnboardingFinish = useCallback(async () => {
