@@ -12,6 +12,7 @@
 import { TIMING } from '@/constants/app';
 import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/contexts/auth-context';
+import { useSplash } from '@/contexts/splash-context';
 import { useTenantTheme } from '@/contexts/tenant-theme-context';
 import { useTour } from '@/contexts/tour-context';
 import { authStorage } from '@/utils/auth-storage';
@@ -53,6 +54,7 @@ export function useAuthFlow(): UseAuthFlowReturn {
   const router = useRouter();
   const segments = useSegments();
   const { currentTheme, isLoading: isTenantLoading } = useTenantTheme();
+  const { isSplashComplete } = useSplash();
   const { 
     isAuthenticated, 
     isLoading: isAuthLoading, 
@@ -91,6 +93,24 @@ export function useAuthFlow(): UseAuthFlowReturn {
     };
     loadState();
   }, []);
+
+  // Re-check state on logout (when isAuthenticated becomes false)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const checkInstallationName = async () => {
+        const installationName = await authStorage.getInstallationName();
+        // If installation name was wiped (logout), force showNameInput
+        if (!installationName) {
+           setShowNameInput(true);
+           setShowLogin(false);
+           setShowRecoverUser(false);
+           setShowBiometricAccess(false);
+           // We keep onboarding status as is (completed)
+        }
+      };
+      checkInstallationName();
+    }
+  }, [isAuthenticated]);
 
   // Extraer solo el slug para usarlo como dependencia (es un primitivo, no un objeto)
   const tenantSlug = currentTheme?.slug;
@@ -179,7 +199,7 @@ export function useAuthFlow(): UseAuthFlowReturn {
   }, [navigateToMain]);
 
   // Calcular pantalla actual
-  const isLoading = showOnboarding === null || showNameInput === null || isAuthLoading || isTenantLoading;
+  const isLoading = showOnboarding === null || showNameInput === null || isAuthLoading || isTenantLoading || !isSplashComplete;
   
   let currentScreen: AuthFlowScreen;
   if (isLoading) {
@@ -192,7 +212,8 @@ export function useAuthFlow(): UseAuthFlowReturn {
     currentScreen = 'recover-user';
   } else if (showBiometricAccess) {
     currentScreen = 'biometric-access';
-  } else if (showLogin) {
+  } else if (showLogin || !isAuthenticated) {
+    // If not authenticated (and not in onboarding/name phases), default to login
     currentScreen = 'login';
   } else {
     currentScreen = 'main';

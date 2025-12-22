@@ -2,12 +2,12 @@
  * Auth Storage Tests
  */
 
-import { authStorage } from '../auth-storage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SecureStore from 'expo-secure-store';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { Platform } from 'react-native';
 import { STORAGE_KEYS } from '@/constants/app';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+import { authStorage } from '../auth-storage';
 
 // Mock modules
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -230,6 +230,9 @@ describe('authStorage', () => {
       expect(AsyncStorage.multiRemove).toHaveBeenCalledWith([
         STORAGE_KEYS.USER_DATA,
         STORAGE_KEYS.BIOMETRIC_ENABLED,
+        STORAGE_KEYS.USERNAME_REMEMBERED,
+        STORAGE_KEYS.TENANT_THEME,
+        'installation_name',
       ]);
     });
   });

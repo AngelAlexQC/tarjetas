@@ -9,6 +9,7 @@ import { useTour } from "@/contexts/tour-context";
 import { useAppTheme } from "@/hooks/use-app-theme";
 import { loggers } from "@/utils/logger";
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -22,25 +23,26 @@ export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabType>('info');
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { clearTenant } = useTenantTheme();
   const { resetTour } = useTour();
 
-  // Mock user data
-  const user = {
-    name: "Sofía Durán",
-    fullName: "Sofía Jaqueline Durán Arévalo",
-    id: "0105168991",
-    clientNumber: "34896777747433",
-    email: "sofia1991@gmail.com",
-    phone: "097 90 68 798",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+  // Si no hay usuario (caso raro si está en esta pantalla), usar placeholders
+  const userData = user || {
+    name: "Usuario",
+    fullName: "Usuario Invitado",
+    id: "---",
+    clientNumber: "---",
+    email: "---",
+    phone: "---",
+    documentId: "---",
+    avatar: "https://ui-avatars.com/api/?name=User",
   };
 
   const appVersion = {
-    version: "1.0.0",
-    build: "145",
-    date: "21 de Noviembre, 2025"
+    version: Constants.expoConfig?.version ?? "1.0.0",
+    build: Constants.expoConfig?.android?.versionCode?.toString() ?? Constants.expoConfig?.ios?.buildNumber ?? "100",
+    date: new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })
   };
 
   const handleLogout = async () => {
@@ -84,27 +86,27 @@ export default function ProfileScreen() {
             <InfoCard 
               icon="person-outline" 
               label="Nombre completo" 
-              value={user.fullName} 
+              value={userData.fullName || userData.name || ''} 
             />
             <InfoCard 
               icon="card-outline" 
               label="Número de identificación" 
-              value={user.id} 
+              value={userData.documentId || userData.id} 
             />
             <InfoCard 
               icon="wallet-outline" 
               label="Número de cliente" 
-              value={user.clientNumber} 
+              value={userData.clientNumber || 'N/A'} 
             />
             <InfoCard 
               icon="mail-outline" 
               label="Correo electrónico" 
-              value={user.email} 
+              value={userData.email || 'N/A'} 
             />
             <InfoCard 
               icon="call-outline" 
               label="Número de teléfono celular" 
-              value={user.phone} 
+              value={userData.phone || 'N/A'} 
             />
           </View>
         );
@@ -180,10 +182,13 @@ export default function ProfileScreen() {
         
         <View style={styles.profileInfo}>
           <View style={styles.avatarContainer}>
-            <Image source={{ uri: user.avatar }} style={styles.avatar} />
+            <Image 
+              source={{ uri: userData.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || 'User')}&background=random` }} 
+              style={styles.avatar} 
+            />
           </View>
-          <ThemedText type="title" style={styles.userName}>{user.name}</ThemedText>
-          <ThemedText style={styles.userEmail}>{user.email}</ThemedText>
+          <ThemedText type="title" style={styles.userName}>{userData.name}</ThemedText>
+          <ThemedText style={styles.userEmail}>{userData.email}</ThemedText>
         </View>
       </View>
 

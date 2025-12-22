@@ -98,6 +98,9 @@ export const authStorage = {
     await AsyncStorage.multiRemove([
       STORAGE_KEYS.USER_DATA,
       STORAGE_KEYS.BIOMETRIC_ENABLED,
+      STORAGE_KEYS.USERNAME_REMEMBERED,
+      STORAGE_KEYS.TENANT_THEME,
+      'installation_name',
     ]);
   },
 
