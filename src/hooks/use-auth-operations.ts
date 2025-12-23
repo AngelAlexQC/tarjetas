@@ -1,9 +1,9 @@
 /**
  * useAuthOperations Hook
- * 
+ *
  * Hook para manejar operaciones de autenticación como registro,
  * recuperación de contraseña y verificación de códigos.
- * 
+ *
  * Sigue el patrón de separación de responsabilidades del proyecto.
  */
 
@@ -17,6 +17,11 @@ import type {
     VerifyEmailRequest,
     VerifyRecoveryCodeRequest,
 } from '@/repositories/schemas/auth.schema';
+import {
+    sanitizeRecoveryError,
+    sanitizeRegisterError,
+    sanitizeVerificationError,
+} from '@/utils/error-sanitizer';
 import { useCallback, useState } from 'react';
 
 const log = loggers.auth;
@@ -39,8 +44,8 @@ export function useRegister() {
       const result = await repo.register(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : 'Error al registrar';
+    } catch (error: unknown) {
+      const message = sanitizeRegisterError(error);
       log.error('Register error:', error);
       setState({ isLoading: false, error: message });
       return { success: false, error: message };
@@ -54,8 +59,8 @@ export function useRegister() {
       const result = await repo.verifyEmail(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : 'Error al verificar';
+    } catch (error: unknown) {
+      const message = sanitizeVerificationError(error);
       log.error('Verify email error:', error);
       setState({ isLoading: false, error: message });
       return { success: false, error: message };
@@ -69,8 +74,8 @@ export function useRegister() {
       await repo.resendVerificationCode(email);
       setState({ isLoading: false, error: null });
       return { success: true };
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : 'Error al reenviar código';
+    } catch (error: unknown) {
+      const message = sanitizeVerificationError(error);
       log.error('Resend code error:', error);
       setState({ isLoading: false, error: message });
       return { success: false, error: message };
@@ -84,8 +89,8 @@ export function useRegister() {
       const result = await repo.validateClient(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : 'Error al validar cliente';
+    } catch (error: unknown) {
+      const message = sanitizeRegisterError(error);
       log.error('Validate client error:', error);
       setState({ isLoading: false, error: message });
       return { success: false, error: message };
@@ -119,8 +124,8 @@ export function usePasswordRecovery() {
       const result = await repo.forgotPassword(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : 'Error al enviar código';
+    } catch (error: unknown) {
+      const message = sanitizeRecoveryError(error);
       log.error('Forgot password error:', error);
       setState({ isLoading: false, error: message });
       return { success: false, error: message };
@@ -134,8 +139,8 @@ export function usePasswordRecovery() {
       const result = await repo.verifyRecoveryCode(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : 'Código incorrecto';
+    } catch (error: unknown) {
+      const message = sanitizeVerificationError(error);
       log.error('Verify recovery code error:', error);
       setState({ isLoading: false, error: message });
       return { success: false, error: message };
@@ -149,8 +154,8 @@ export function usePasswordRecovery() {
       const result = await repo.resetPassword(request);
       setState({ isLoading: false, error: null });
       return { success: true, data: result };
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : 'Error al cambiar contraseña';
+    } catch (error: unknown) {
+      const message = sanitizeRecoveryError(error);
       log.error('Reset password error:', error);
       setState({ isLoading: false, error: message });
       return { success: false, error: message };

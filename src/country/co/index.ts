@@ -1,1 +1,2 @@
-// export { colombiaConfig } from './config';
+export { colombiaConfig } from './config';
+export { validateCedula, validateNit } from './validators';

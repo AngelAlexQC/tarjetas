@@ -154,7 +154,7 @@ class HttpClient {
     try {
       const response = await this.fetchWithTimeout(url, config, timeout);
       return this.processResponse<T>(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           return {

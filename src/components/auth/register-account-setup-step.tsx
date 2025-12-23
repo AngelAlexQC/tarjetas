@@ -1,6 +1,7 @@
-import { ThemedText } from '@/ui/primitives/themed-text';
+import type { RegisterRequest } from '@/repositories/schemas/auth.schema';
 import { ThemedButton } from '@/ui/primitives/themed-button';
 import { ThemedInput } from '@/ui/primitives/themed-input';
+import { ThemedText } from '@/ui/primitives/themed-text';
 import { useAppTheme } from '@/ui/theming';
 import { Ionicons } from '@expo/vector-icons';
 import { Lock, Mail, Phone, User } from 'lucide-react-native';
@@ -16,7 +17,7 @@ interface RegisterAccountSetupStepProps {
     password: string;
     confirmPassword: string;
   };
-  setFormData: (data: any) => void;
+  setFormData: (data: Partial<RegisterRequest>) => void;
   onSubmit: () => void;
   isLoading: boolean;
   error: string;

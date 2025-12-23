@@ -4,9 +4,9 @@
  * Hook especializado para operaciones de diferimiento de pagos.
  */
 
+import { loggers } from '@/core/logging';
 import type { CardActionResult, DeferRequest, DeferSimulation } from '@/repositories';
 import { cardRepository$ } from '@/repositories';
-import { loggers } from '@/core/logging';
 import { useCallback, useState } from 'react';
 
 const log = loggers.cards;
@@ -42,7 +42,7 @@ export function useCardDefer() {
       const simulation = await repository.simulateDefer(cardId, amount, months);
       setState(prev => ({ ...prev, simulation, isSimulating: false }));
       return simulation;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al simular diferimiento';
       setState(prev => ({ ...prev, error: message, isSimulating: false }));
       log.error('Error simulating defer:', error);
@@ -57,7 +57,7 @@ export function useCardDefer() {
       const result = await repository.deferPayment(request);
       setState(prev => ({ ...prev, isLoading: false, simulation: null }));
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al diferir pago';
       setState(prev => ({ ...prev, error: message, isLoading: false }));
       log.error('Error deferring payment:', error);

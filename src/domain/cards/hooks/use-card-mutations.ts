@@ -58,7 +58,7 @@ export function useCardMutations() {
       const result = await repository.blockCard(request);
       setState(prev => ({ ...prev, isLoading: false }));
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al bloquear tarjeta';
       setError(message);
       log.error('Error blocking card:', error);
@@ -73,7 +73,7 @@ export function useCardMutations() {
       const result = await repository.unblockCard(cardId);
       setState(prev => ({ ...prev, isLoading: false }));
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al desbloquear tarjeta';
       setError(message);
       log.error('Error unblocking card:', error);
@@ -91,7 +91,7 @@ export function useCardMutations() {
       const result = await repository.updateLimits(cardId, limits);
       setState(prev => ({ ...prev, isLoading: false }));
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al actualizar límites';
       setError(message);
       log.error('Error updating limits:', error);
@@ -106,7 +106,7 @@ export function useCardMutations() {
       const result = await repository.changePin(request);
       setState(prev => ({ ...prev, isLoading: false }));
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al cambiar PIN';
       setError(message);
       log.error('Error changing PIN:', error);
@@ -121,7 +121,7 @@ export function useCardMutations() {
       const result = await repository.createTravelNotice(notice);
       setState(prev => ({ ...prev, isLoading: false }));
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al crear aviso de viaje';
       setError(message);
       log.error('Error creating travel notice:', error);
@@ -136,7 +136,7 @@ export function useCardMutations() {
       const result = await repository.requestReplacement(request);
       setState(prev => ({ ...prev, isLoading: false }));
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al solicitar reemplazo';
       setError(message);
       log.error('Error requesting replacement:', error);
@@ -151,7 +151,7 @@ export function useCardMutations() {
   ): Promise<CardActionResult> => {
     try {
       return await repository.toggleSubscription(cardId, subscriptionId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al modificar suscripción';
       log.error('Error toggling subscription:', error);
       return { success: false, message };
@@ -165,7 +165,7 @@ export function useCardMutations() {
   ): Promise<CardActionResult> => {
     try {
       return await repository.updateNotifications(cardId, settings);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al actualizar notificaciones';
       log.error('Error updating notifications:', error);
       return { success: false, message };

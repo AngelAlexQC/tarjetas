@@ -58,7 +58,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
       const cards = await repository.getCards();
       setState({ cards, isLoading: false, error: null });
       return cards;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al obtener tarjetas';
       setState(prev => ({ ...prev, error: message, isLoading: false }));
       log.error('Error fetching cards:', error);
@@ -91,7 +91,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   const getCardById = useCallback(async (id: string): Promise<Card | undefined> => {
     try {
       return await repository.getCardById(id);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting card:', error);
       return undefined;
     }
@@ -101,7 +101,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   const getLimits = useCallback(async (cardId: string): Promise<CardLimits | null> => {
     try {
       return await repository.getLimits(cardId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting limits:', error);
       return null;
     }
@@ -115,7 +115,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   ): Promise<Statement | null> => {
     try {
       return await repository.getStatement(cardId, month, year);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting statement:', error);
       return null;
     }
@@ -125,7 +125,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   const getSubscriptions = useCallback(async (cardId: string): Promise<Subscription[]> => {
     try {
       return await repository.getSubscriptions(cardId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting subscriptions:', error);
       return [];
     }
@@ -135,7 +135,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   const getRewards = useCallback(async (cardId: string): Promise<Rewards | null> => {
     try {
       return await repository.getRewards(cardId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting rewards:', error);
       return null;
     }
@@ -145,7 +145,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   const generateDynamicCvv = useCallback(async (cardId: string): Promise<DynamicCvv | null> => {
     try {
       return await repository.generateDynamicCvv(cardId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error generating CVV:', error);
       return null;
     }
@@ -155,7 +155,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   const getDeferrableTransactions = useCallback(async (cardId: string): Promise<Transaction[]> => {
     try {
       return await repository.getDeferrableTransactions(cardId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting deferrable transactions:', error);
       return [];
     }
@@ -165,7 +165,7 @@ export function useCardQueries(options: UseCardQueriesOptions = {}) {
   const getAccounts = useCallback(async (): Promise<Account[]> => {
     try {
       return await repository.getAccounts();
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting accounts:', error);
       return [];
     }

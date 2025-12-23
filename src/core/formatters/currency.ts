@@ -40,7 +40,7 @@ export const formatCurrency = (
     });
 
     return formatter.format(amount);
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Fallback en caso de error
     log.warn('Error formateando moneda:', error);
     return `${currency} ${amount.toFixed(2)}`;
@@ -70,7 +70,7 @@ export const formatAmount = (
     });
 
     return formatter.format(amount);
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando cantidad:', error);
     return amount.toFixed(2);
   }
@@ -142,7 +142,7 @@ export const formatCompactCurrency = (
     }
 
     return `${sign}${formattedValue}${suffix}`;
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando moneda compacta:', error);
     
     // Fallback simple
@@ -178,7 +178,7 @@ export const getCurrencySymbol = (
       .format(0)
       .replace(/\d/g, '')
       .trim();
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error obteniendo símbolo de moneda:', error);
     return currency;
   }

@@ -55,6 +55,55 @@ export const defaultTheme: TenantTheme = {
 };
 
 /**
+ * Type guard para verificar si es un Tenant (nuevo formato)
+ */
+function isTenantFormat(theme: TenantTheme | Tenant): theme is Tenant {
+  return 'branding' in theme && 'features' in theme;
+}
+
+/**
+ * Extrae el branding de un tenant (o usa defaults)
+ * Soporta tanto el formato nuevo (Tenant) como el legacy (TenantTheme)
+ */
+export function getBrandingFromTenant(tenant: TenantTheme | Tenant | null) {
+  if (!tenant) {
+    return {
+      logoUrl: defaultTheme.logoUrl,
+      primaryColor: defaultTheme.mainColor,
+      secondaryColor: defaultTheme.secondaryColor,
+      accentColor: defaultTheme.accentColor,
+      gradientColors: defaultTheme.gradientColors,
+      textOnPrimary: defaultTheme.textOnPrimary,
+      textOnSecondary: defaultTheme.textOnSecondary,
+    };
+  }
+
+  // Si es el nuevo formato (Tenant con branding)
+  if (isTenantFormat(tenant)) {
+    return {
+      logoUrl: tenant.branding.logoUrl,
+      primaryColor: tenant.branding.primaryColor,
+      secondaryColor: tenant.branding.secondaryColor,
+      accentColor: tenant.branding.accentColor,
+      gradientColors: tenant.branding.gradientColors,
+      textOnPrimary: tenant.branding.textOnPrimary,
+      textOnSecondary: tenant.branding.textOnSecondary,
+    };
+  }
+
+  // Formato legacy (TenantTheme)
+  return {
+    logoUrl: tenant.logoUrl,
+    primaryColor: tenant.mainColor,
+    secondaryColor: tenant.secondaryColor,
+    accentColor: tenant.accentColor,
+    gradientColors: tenant.gradientColors,
+    textOnPrimary: tenant.textOnPrimary,
+    textOnSecondary: tenant.textOnSecondary,
+  };
+}
+
+/**
  * Convierte un Tenant (nuevo formato) a TenantTheme (formato legacy)
  * @deprecated Solo para compatibilidad temporal durante migración
  */

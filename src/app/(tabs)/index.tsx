@@ -15,6 +15,54 @@ import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, T
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+function LoadingState({ mainColor }: { mainColor: string }) {
+  return (
+    <ThemedView style={[styles.container, styles.centerContent]}>
+      <ActivityIndicator size="large" color={mainColor} />
+      <ThemedText style={{ marginTop: 16 }}>Cargando instituciones...</ThemedText>
+    </ThemedView>
+  );
+}
+
+function ErrorState({ error, theme }: { error: string; theme: ReturnType<typeof useAppTheme> }) {
+  return (
+    <ThemedView style={[styles.container, styles.centerContent]}>
+      <Ionicons name="warning-outline" size={48} color={theme.colors.textSecondary} />
+      <ThemedText style={{ marginTop: 16, textAlign: 'center' }}>
+        {error}
+      </ThemedText>
+      <Pressable
+        onPress={() => window.location.reload()}
+        style={{
+          marginTop: 24,
+          paddingHorizontal: 24,
+          paddingVertical: 12,
+          backgroundColor: theme.tenant.mainColor,
+          borderRadius: 8,
+        }}
+      >
+        <ThemedText style={{ color: theme.tenant.textOnPrimary }}>
+          Reintentar
+        </ThemedText>
+      </Pressable>
+    </ThemedView>
+  );
+}
+
+function sortCountriesByPriority(countries: string[]): string[] {
+  const priority = ["Ecuador", "Colombia", "México"];
+  return countries.sort((a, b) => {
+    const indexA = priority.indexOf(a);
+    const indexB = priority.indexOf(b);
+
+    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+
+    return a.localeCompare(b);
+  });
+}
+
 export default function TenantSelectorScreen() {
   const theme = useAppTheme();
   const layout = useResponsiveLayout();
@@ -76,53 +124,17 @@ export default function TenantSelectorScreen() {
     return grouped;
   }, [searchQuery, searchTenants]);
 
-  const countries = Object.keys(groupedTenants).sort((a, b) => {
-    const priority = ["Ecuador", "Colombia", "México"];
-    const indexA = priority.indexOf(a);
-    const indexB = priority.indexOf(b);
-
-    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-    if (indexA !== -1) return -1;
-    if (indexB !== -1) return 1;
-
-    return a.localeCompare(b);
-  });
+  const countries = sortCountriesByPriority(Object.keys(groupedTenants));
   const isIOS = Platform.OS === 'ios';
 
   // Mostrar loading
   if (isLoading) {
-    return (
-      <ThemedView style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={theme.tenant.mainColor} />
-        <ThemedText style={{ marginTop: 16 }}>Cargando instituciones...</ThemedText>
-      </ThemedView>
-    );
+    return <LoadingState mainColor={theme.tenant.mainColor} />;
   }
 
   // Mostrar error
   if (error) {
-    return (
-      <ThemedView style={[styles.container, styles.centerContent]}>
-        <Ionicons name="warning-outline" size={48} color={theme.colors.textSecondary} />
-        <ThemedText style={{ marginTop: 16, textAlign: 'center' }}>
-          {error}
-        </ThemedText>
-        <Pressable
-          onPress={() => window.location.reload()}
-          style={{
-            marginTop: 24,
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            backgroundColor: theme.tenant.mainColor,
-            borderRadius: 8,
-          }}
-        >
-          <ThemedText style={{ color: theme.tenant.textOnPrimary }}>
-            Reintentar
-          </ThemedText>
-        </Pressable>
-      </ThemedView>
-    );
+    return <ErrorState error={error} theme={theme} />;
   }
 
   return (

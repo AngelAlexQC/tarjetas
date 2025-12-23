@@ -20,6 +20,8 @@ import type {
     ResetPasswordRequest,
     ResetPasswordResponse,
     User,
+    ValidateClientRequest,
+    ValidateClientResponse,
     VerifyEmailRequest,
     VerifyEmailResponse,
     VerifyRecoveryCodeRequest,
@@ -33,6 +35,7 @@ import {
     RegisterResponseSchema,
     ResetPasswordResponseSchema,
     UserSchema,
+    ValidateClientResponseSchema,
     VerifyEmailResponseSchema,
     VerifyRecoveryCodeResponseSchema,
 } from '../schemas/auth.schema';
@@ -140,23 +143,18 @@ export class RealAuthRepository implements IAuthRepository {
     return { success: true };
   }
 
-  async validateClient(request: { documentType: string; documentId: string; birthDate: string }): Promise<{ success: boolean; data?: { clientName: string; message: string }; error?: string }> {
+  async validateClient(request: ValidateClientRequest): Promise<ValidateClientResponse> {
     const response = await httpClient.post<unknown>(
       API_ENDPOINTS.AUTH.VALIDATE_CLIENT,
       request,
       { skipAuth: true }
     );
 
-    if (!response.success) {
-      return { success: false, error: response.error || 'Error al validar cliente' };
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Error al validar cliente');
     }
 
-    // Usamos un schema simple ad-hoc o any por ahora ya que no tengo el schema a mano
-    // Idealmente importaría ValidateClientResponseSchema
-    return { 
-      success: true, 
-      data: response.data as any
-    };
+    return parseApiData(ValidateClientResponseSchema, response.data, 'validación de cliente');
   }
 
   // ============================================

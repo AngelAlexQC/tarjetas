@@ -1,6 +1,6 @@
 import { OTPScreen } from '@/components/otp-screen';
 import { AuthLogoHeader } from '@/components/ui/auth-logo-header';
-import { useRegister } from '@/hooks'; // Keep useRegister from original hooks
+import { useCountryConfig, useRegister } from '@/hooks';
 import { ThemedText } from '@/ui/primitives/themed-text';
 import { ArrowLeft } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
@@ -34,6 +34,7 @@ interface RegisterScreenProps {
 // Hook personalizado para la lógica del nuevo flujo
 function useRegisterFlow() {
   const { register, verifyEmail, resendCode, validateClient } = useRegister();
+  const { documentTypes } = useCountryConfig();
   const [step, setStep] = useState<Step>('identification');
   
   // State for Step 1
@@ -44,7 +45,7 @@ function useRegisterFlow() {
   const [clientName, setClientName] = useState('');
   
   // State for Step 3
-  const [accountData, setAccountData] = useState({
+  const [accountData, setAccountDataState] = useState({
     username: '',
     email: '',
     phone: '',
@@ -52,19 +53,26 @@ function useRegisterFlow() {
     confirmPassword: '',
   });
 
+  // Wrapper to match expected signature
+  const setAccountData = (data: Partial<typeof accountData>) => {
+    setAccountDataState(prev => ({ ...prev, ...data }));
+  };
+
   // Common State
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [_verificationCode, _setVerificationCode] = useState('');
+
+  // Obtener el primer tipo de documento disponible para el país
+  const defaultDocType = documentTypes[0] || 'CC';
 
   // Step 1: Validate Identity
   const handleValidateClient = useCallback(async () => {
     setError('');
     setIsLoading(true);
     try {
-      // Usamos CC por defecto para este ejemplo, pero podría ser configurable
       const result = await validateClient({
-        documentType: 'CC', 
+        documentType: defaultDocType, 
         documentId, 
         birthDate
       });
@@ -75,12 +83,12 @@ function useRegisterFlow() {
       } else {
         setError(result.error || result.data?.message || 'Cliente no encontrado o datos incorrectos');
       }
-    } catch (e: any) {
-      setError(e.message || 'Error al validar cliente');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error al validar cliente');
     } finally {
       setIsLoading(false);
     }
-  }, [documentId, birthDate, validateClient]);
+  }, [documentId, birthDate, defaultDocType, validateClient]);
 
   // Step 2: Confirm Identity
   const handleConfirmIdentity = () => setStep('account-setup');
@@ -120,7 +128,7 @@ function useRegisterFlow() {
         username: accountData.username,
         password: accountData.password,
         documentId,
-        documentType: 'CC'
+        documentType: defaultDocType
       });
 
       if (result.success) {
@@ -128,12 +136,12 @@ function useRegisterFlow() {
       } else {
         setError(result.error || 'Error al crear cuenta');
       }
-    } catch (_e: unknown) {
+    } catch {
       setError('Error al crear cuenta');
     } finally {
       setIsLoading(false);
     }
-  }, [accountData, clientName, documentId, register]);
+  }, [accountData, clientName, documentId, defaultDocType, register]);
 
   // Step 4: OTP
   const handleVerifyOtp = useCallback(async (code: string) => { // Accept code as arg
@@ -154,7 +162,7 @@ function useRegisterFlow() {
       } else {
         setError(result.error || 'Código incorrecto');
       }
-    } catch (_e: unknown) {
+    } catch {
       setError('Código incorrecto');
     } finally {
       setIsLoading(false);

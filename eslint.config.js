@@ -49,10 +49,32 @@ module.exports = [
       '**/statements.tsx',
       '**/card-financial-info.tsx',
       '**/insurance-detail-modal.tsx',
+      '**/app/(tabs)/index.tsx',
     ],
     rules: {
       'max-lines-per-function': ['warn', { max: 600, skipBlankLines: true, skipComments: true }],
       'complexity': ['warn', 35],
+    },
+  },
+  {
+    // Scripts de Node.js
+    files: ['scripts/**/*.js', 'jest.polyfills.js', 'jest.setup.ts'],
+    languageOptions: {
+      globals: {
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        Buffer: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        jest: 'readonly',
+        global: 'readonly',
+        console: 'readonly',
+      },
+    },
+    rules: {
+      'no-undef': 'off',
     },
   },
 ];

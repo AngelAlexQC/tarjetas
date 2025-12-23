@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-env node */
 /**
  * Generador de Reporte de Calidad de Código
  * Basado en datos locales de Jest Coverage

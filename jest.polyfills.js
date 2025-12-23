@@ -1,6 +1,8 @@
+/* eslint-env node, jest */
+ 
 /**
  * Jest Polyfills
- * 
+ *
  * Mocks y polyfills que deben ejecutarse antes que cualquier otro código.
  * Este archivo se ejecuta antes que jest.setup.ts
  */

@@ -69,7 +69,7 @@ export function useCardOperation(options: UseCardOperationOptions = {}) {
     try {
       const card = await repository.getCardById(targetId);
       setState(prev => ({ ...prev, card, isLoadingCard: false }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error al cargar tarjeta';
       setState(prev => ({ ...prev, isLoadingCard: false, error: message }));
       log.error('Error loading card:', error);
@@ -142,7 +142,7 @@ export function useCardOperation(options: UseCardOperationOptions = {}) {
       }
       
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Error desconocido';
       finishWithError(message);
       executeOptions?.onError?.(message);

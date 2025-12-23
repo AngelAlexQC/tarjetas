@@ -29,7 +29,7 @@ interface EmailLoginScreenProps {
 }
 
 // Hook personalizado para la lógica de login con email
-function useEmailLoginLogic(onLoginSuccess: () => void) {
+export function useEmailLoginLogic(onLoginSuccess: () => void) {
   const { login, rememberUsername, getRememberedUsername } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -187,6 +187,7 @@ export function EmailLoginScreen({ onBack, onLoginSuccess, onForgotPassword }: E
                 icon={<LockKeyhole size={20} color={theme.colors.textSecondary} />}
               />
               <Pressable
+                testID="toggle-password"
                 onPress={() => setSecureTextEntry(!secureTextEntry)}
                 style={styles.togglePassword}
               >

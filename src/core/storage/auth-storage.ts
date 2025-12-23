@@ -1,6 +1,6 @@
 import { STORAGE_KEYS } from '@/constants/app';
-import type { User } from '@/repositories';
 import { loggers } from '@/core/logging';
+import type { User } from '@/repositories';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
@@ -20,7 +20,7 @@ export const authStorage = {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
       return hasHardware && isEnrolled;
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error checking biometric availability:', error);
       return false;
     }
@@ -40,7 +40,7 @@ export const authStorage = {
         user: userDataStr ? JSON.parse(userDataStr) : null,
         isBiometricEnabled: biometricEnabledStr === 'true',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error loading session:', error);
       return { user: null, isBiometricEnabled: false };
     }
@@ -55,7 +55,7 @@ export const authStorage = {
         return await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
       }
       return await SecureStore.getItemAsync(STORAGE_KEYS.AUTH_TOKEN);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting token:', error);
       return null;
     }
@@ -151,7 +151,7 @@ export const authStorage = {
   async rememberUsername(username: string): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.USERNAME_REMEMBERED, username);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error saving username:', error);
     }
   },
@@ -162,7 +162,7 @@ export const authStorage = {
   async getRememberedUsername(): Promise<string | null> {
     try {
       return await AsyncStorage.getItem(STORAGE_KEYS.USERNAME_REMEMBERED);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error loading username:', error);
       return null;
     }
@@ -174,7 +174,7 @@ export const authStorage = {
   async clearRememberedUsername(): Promise<void> {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.USERNAME_REMEMBERED);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error clearing username:', error);
     }
   },
@@ -185,7 +185,7 @@ export const authStorage = {
   async saveInstallationName(name: string): Promise<void> {
     try {
       await AsyncStorage.setItem('installation_name', name);
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error saving installation name:', error);
     }
   },
@@ -196,7 +196,7 @@ export const authStorage = {
   async getInstallationName(): Promise<string | null> {
     try {
       return await AsyncStorage.getItem('installation_name');
-    } catch (error: any) {
+    } catch (error: unknown) {
       log.error('Error getting installation name:', error);
       return null;
     }

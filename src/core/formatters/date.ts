@@ -38,7 +38,7 @@ export const formatDate = (
     });
 
     return formatter.format(dateObj);
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando fecha:', error);
     return 'Fecha inválida';
   }
@@ -83,7 +83,7 @@ export const formatCardExpiry = (
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     const year = String(dateObj.getFullYear()).slice(-2);
     return `${month}/${year}`;
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando fecha de vencimiento:', error);
     return '--/--';
   }
@@ -129,7 +129,7 @@ export const formatPaymentDueDate = (
     const absolute = `Vence el ${formatter.format(dateObj)}`;
 
     return { relative, absolute };
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando fecha de pago:', error);
     return { relative: 'Fecha inválida', absolute: 'Fecha inválida' };
   }
@@ -162,7 +162,7 @@ export const formatDateTime = (
     });
 
     return formatter.format(dateObj);
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando fecha y hora:', error);
     return 'Fecha inválida';
   }
@@ -242,7 +242,7 @@ export const formatRelativeDate = (
       return getRelativeText(absMinutes, 'minute', isPast, isSpanish);
     }
     return getRelativeText(0, 'now', isPast, isSpanish);
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando fecha relativa:', error);
     return 'Fecha inválida';
   }
@@ -277,7 +277,7 @@ export const formatDueDate = (
       // Pasado
       return `Venció ${formatRelativeDate(dateObj, locale)}`.replace('hace ', 'hace ');
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error formateando fecha de vencimiento:', error);
     return 'Fecha inválida';
   }
@@ -297,7 +297,7 @@ export const daysUntil = (date: Date | string | number): number => {
     const now = new Date();
     const diffInMs = dateObj.getTime() - now.getTime();
     return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn('Error calculando días hasta fecha:', error);
     return 0;
   }

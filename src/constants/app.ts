@@ -23,6 +23,16 @@ export const TIMING = {
    */
   SPLASH_ANIMATION_DURATION: 600,
   SPLASH_FADE_DURATION: 400,
+
+  /**
+   * Tiempo de expiración del CVV dinámico (segundos).
+   */
+  DYNAMIC_CVV_EXPIRY_SECONDS: 300,
+
+  /**
+   * Delay para simular procesamiento (ms).
+   */
+  PROCESSING_DELAY: 1500,
 };
 
 /**
